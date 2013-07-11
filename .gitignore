@@ -1,0 +1,5 @@
+/.idea
+/log
+/vendor
+clover.xml
+composer.lock
