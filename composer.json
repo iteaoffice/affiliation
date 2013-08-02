@@ -21,8 +21,8 @@
         "zendframework/zendframework": "2.2.*",
         "doctrine/doctrine-orm-module": "dev-master",
         "gedmo/doctrine-extensions": "dev-master",
-        "debranova/contact": "dev-master",
-        "debranova/project": "dev-master"
+        "debranova/contact": "dev-develop",
+        "debranova/project": "dev-develop"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
