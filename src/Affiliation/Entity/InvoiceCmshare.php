@@ -1,5 +1,6 @@
 <?php
 
+namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -9,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="affiliation_invoice_cmshare")
  * @ORM\Entity
  */
-class AffiliationInvoiceCmshare
+class InvoiceCmshare
 {
     /**
      * @var integer

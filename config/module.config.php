@@ -29,7 +29,6 @@ $config = array(
             'affiliation_form_service'        => 'Affiliation\Service\FormService',
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
 
-
         )
     ),
     'doctrine'        => array(

@@ -1,9 +1,16 @@
 {
     "name": "debranova/affiliation",
     "type": "library",
+    "license": "proprietary",
     "description": "General code for Debranova Affiliations",
     "keywords": ["affiliation"],
     "homepage": "http://debranova.org",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.debranova.org"
+        }
+    ],
     "authors": [
         {
             "name": "Johan van der Heide",
@@ -15,8 +22,6 @@
         }
     ],
     "minimum-stability": "dev",
-    "repositories": [
-    ],
     "require": {
         "zendframework/zendframework": "2.2.*",
         "doctrine/doctrine-orm-module": "dev-master",

@@ -21,7 +21,6 @@ define('DEBRANOVA_HOST', 'test');
 define('DEBRANOVA_APP', 'test');
 define('DEBRANOVA_ENV', 'development');
 
-
 /**
  * Test bootstrap, for setting up autoloading
  */
@@ -43,7 +42,6 @@ class Bootstrap
 
         $config = include 'config/application.config.php';
 
-
         $serviceManager = new ServiceManager(new ServiceManagerConfig());
         $serviceManager->setService('ApplicationConfig', $config);
         $serviceManager->get('ModuleManager')->loadModules();
@@ -64,12 +62,10 @@ class Bootstrap
             die();
         }
 
-
         //Create the schema
         $tool      = new \Doctrine\ORM\Tools\SchemaTool($entityManager);
         $mdFactory = $entityManager->getMetadataFactory();
         $mdFactory->getAllMetadata();
-
 
         $tool->dropDatabase();
         $tool->createSchema($mdFactory->getAllMetadata());
@@ -81,7 +77,6 @@ class Bootstrap
         $purger   = new ORMPurger();
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute($loader->getFixtures());
-
 
     }
 

@@ -19,7 +19,7 @@ class Affiliation
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $affiliationId;
+    private $id;
 
     /**
      * @var string

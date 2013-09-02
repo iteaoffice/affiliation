@@ -1,5 +1,6 @@
 <?php
 
+namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -9,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="affiliation_description")
  * @ORM\Entity
  */
-class AffiliationDescription
+class Description
 {
     /**
      * @var integer
@@ -18,7 +19,7 @@ class AffiliationDescription
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $affiliationDescriptionId;
+    private $id;
 
     /**
      * @var \Affiliation

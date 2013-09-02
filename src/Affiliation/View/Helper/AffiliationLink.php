@@ -26,9 +26,9 @@ class AffiliationLink extends AbstractHelper
 {
 
     /**
-     * @param  \Affiliation\Entity\Affiliation $subArea
-     * @param                                  $action
-     * @param                                  $show
+     * @param \Affiliation\Entity\Affiliation $subArea
+     * @param                                 $action
+     * @param                                 $show
      *
      * @return string
      * @throws \RuntimeException
