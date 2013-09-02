@@ -19,7 +19,7 @@ class IctOrganisation
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $affiliationIctId;
+    private $id;
 
     /**
      * @var \Affiliation

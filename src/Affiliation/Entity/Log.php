@@ -19,7 +19,7 @@ class Log
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $logId;
+    private $id;
 
     /**
      * @var integer

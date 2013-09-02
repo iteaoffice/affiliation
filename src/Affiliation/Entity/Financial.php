@@ -19,7 +19,7 @@ class Financial
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;cd v
+    private $id;
 
     /**
      * @var string

@@ -19,7 +19,7 @@ class InvoiceCmshare
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $cmshareId;
+    private $id;
 
     /**
      * @var integer

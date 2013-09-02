@@ -19,7 +19,7 @@ class InvoicePostcalc
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $postcalcId;
+    private $id;
 
     /**
      * @var float
