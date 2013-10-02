@@ -69,7 +69,6 @@ class AffiliationController extends AbstractActionController implements
         return new ViewModel(array('affiliation' => $affiliation));
     }
 
-
     /**
      * Edit an entity
      *
