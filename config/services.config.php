@@ -8,32 +8,13 @@
  * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
  */
 use Affiliation\Form;
+use Affiliation\Entity;
 
 return array(
     'factories' => array(
-        'affiliation_affiliation_form'       => function ($sm) {
-            return new Form\CreateAffiliation($sm);
+        'affiliation_affiliation_form' => function ($sm) {
+            return new Form\CreateObject($sm, new Entity\Affiliation());
         },
-        'affiliation_facility_form'      => function ($sm) {
-            return new Form\CreateFacility($sm);
-        },
-        'affiliation_area_form'          => function ($sm) {
-            return new Form\CreateArea($sm);
-        },
-        'affiliation_area2_form'         => function ($sm) {
-            return new Form\CreateArea2($sm);
-        },
-        'affiliation_sub_area_form'      => function ($sm) {
-            return new Form\CreateSubArea($sm);
-        },
-        'affiliation_oper_area_form'     => function ($sm) {
-            return new Form\CreateOperArea($sm);
-        },
-        'affiliation_oper_sub_area_form' => function ($sm) {
-            return new Form\CreateOperSubArea($sm);
-        },
-        'affiliation_message_form'       => function ($sm) {
-            return new Form\CreateMessage($sm);
-        },
+
     ),
 );

@@ -10,7 +10,7 @@
 namespace Affiliation\Entity;
 
 use Zend\InputFilter\InputFilterAwareInterface;
-use Project\Entity\EntityInterface;
+use Zend\InputFilter\InputFilter;
 
 /**
  * Annotations class
@@ -19,24 +19,10 @@ use Project\Entity\EntityInterface;
  */
 abstract class EntityAbstract implements EntityInterface, InputFilterAwareInterface
 {
-    protected $inputFilter;
-
     /**
-     * @param $prop
-     *
-     * @return bool
+     * @var InputFilter
      */
-    public function has($prop)
-    {
-        $getter = 'get' . ucfirst($prop);
-        if (method_exists($this, $getter)) {
-            if ('s' === substr($prop, 0, -1) && is_array($this->$getter())) {
-                return true;
-            } elseif ($this->$getter()) {
-                return true;
-            }
-        }
-    }
+    protected $inputFilter;
 
     /**
      * @param $switch

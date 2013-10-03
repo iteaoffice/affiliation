@@ -58,10 +58,7 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
      */
     public function findEntityById($entity, $id, $populate = false)
     {
-        $entity = $this->getEntityManager()->getRepository($this->getFullEntityName($entity))->find($id);
-        if ($entity) {
-            return $entity;
-        }
+        return $this->getEntityManager()->getRepository($this->getFullEntityName($entity))->find($id);
     }
 
     /**
@@ -71,15 +68,6 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
      */
     public function newEntity(EntityAbstract $entity)
     {
-        if (method_exists($entity, 'getLastUpdateBy')) {
-            $authService = $this->getServiceLocator()->get('zfcuser_auth_service');
-            if ($authService->hasIdentity()) {
-                $entity->setLastUpdateBy($authService->getIdentity()->getDisplayName());
-            } else {
-                $entity->setLastUpdateBy('guest');
-            }
-        }
-
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
 
@@ -93,14 +81,6 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
      */
     public function updateEntity(EntityAbstract $entity)
     {
-        if (method_exists($entity, 'getLastUpdateBy')) {
-            $authService = $this->getServiceLocator()->get('zfcuser_auth_service');
-            if ($authService->hasIdentity()) {
-                $entity->setLastUpdateBy($authService->getIdentity()->getDisplayName());
-            } else {
-                $entity->setLastUpdateBy('guest');
-            }
-        }
 
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
@@ -191,21 +171,9 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     public function getEntityManager()
     {
         if (null === $this->entityManager) {
-            $this->entityManager = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+            $this->setEntityManager($this->getServiceLocator()->get('doctrine.entitymanager.orm_default'));
         }
 
         return $this->entityManager;
-    }
-
-    /**
-     * @return AuthenticationService
-     */
-    public function getAuthenticationService()
-    {
-        if (null === $this->authenticationService) {
-            $this->authenticationService = $this->getServiceLocator()->get('zfcuser_auth_service');
-        }
-
-        return $this->authenticationService;
     }
 }

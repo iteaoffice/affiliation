@@ -20,13 +20,19 @@ $config = array(
 
         )
     ),
+    'view_manager'    => array(
+        'template_path_stack' => array(
+            __DIR__ . '/../view'
+        ),
+    ),
     'service_manager' => array(
         'factories'  => array(
             'affiliation-assertion' => 'Affiliation\Acl\Assertion\Affiliation',
         ),
         'invokables' => array(
-            'affiliation_generic_service'     => 'Affiliation\Service\AffiliationService',
-            'affiliation_form_service'        => 'Affiliation\Service\FormService',
+            'affiliation_generic_service'         => 'Affiliation\Service\GeneralService',
+            'affiliation_affiliation_service'     => 'Affiliation\Service\AffiliationService',
+            'affiliation_form_service'            => 'Affiliation\Service\FormService',
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
 
         )
@@ -39,7 +45,7 @@ $config = array(
                     __DIR__ . '/../src/Affiliation/Entity/'
                 )
             ),
-            'orm_default'               => array(
+            'orm_default'                   => array(
                 'drivers' => array(
                     'Affiliation\Entity' => 'affiliation_annotation_driver',
                 )
