@@ -27,8 +27,8 @@ return array(
                 'allow' => array(
                     // allow guests and users (and admins, through inheritance)
                     // the "wear" privilege on the resource "pants"d
-                    array(array(4, 2, 3), 'affiliation', array('listings', 'view')),
-                    array(array(1), 'affiliation', array('edit', 'new', 'delete'))
+                    array(array('public'), 'affiliation', array('listings', 'view')),
+                    array(array(), 'affiliation', array('edit', 'new', 'delete'))
                 ),
                 // Don't mix allow/deny rules if you are using role inheritance.
                 // There are some weird bugs.
