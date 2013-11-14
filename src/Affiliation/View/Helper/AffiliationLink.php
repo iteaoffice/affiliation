@@ -52,7 +52,7 @@ class AffiliationLink extends AbstractHelper
         switch ($action) {
             case 'new':
                 $router  = 'zfcadmin/affiliation-manager/new';
-                $text    = sprintf($translate("txt-new-area"));
+                $text    = sprintf($translate("txt-new-affiliation"));
                 $subArea = new Entity\Affiliation();
                 break;
             case 'edit':
