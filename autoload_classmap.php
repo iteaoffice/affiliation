@@ -4,7 +4,6 @@ return array(
   'Affiliation\Controller\AffiliationController'        => __DIR__ . '/src/Affiliation/Controller/AffiliationController.php',
   'Affiliation\Controller\AffiliationManagerController' => __DIR__ . '/src/Affiliation/Controller/AffiliationManagerController.php',
   'Affiliation\Entity\Affiliation'                      => __DIR__ . '/src/Affiliation/Entity/Affiliation.php',
-  'Associate'                                           => __DIR__ . '/src/Affiliation/Entity/Associate.php',
   'Affiliation\Entity\Description'                      => __DIR__ . '/src/Affiliation/Entity/Description.php',
   'Affiliation\Entity\EntityAbstract'                   => __DIR__ . '/src/Affiliation/Entity/EntityAbstract.php',
   'Affiliation\Entity\EntityInterface'                  => __DIR__ . '/src/Affiliation/Entity/EntityInterface.php',
