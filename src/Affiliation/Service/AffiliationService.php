@@ -82,8 +82,10 @@ class AffiliationService extends ServiceAbstract
 
         $result = array();
         foreach ($affiliations as $affiliation) {
-            $result[$affiliation->getOrganisation()->getCountry()->getId()] = $affiliation->getOrganisation()->getCountry();
+            $result[$affiliation->getOrganisation()->getCountry()->getIso3()] = $affiliation->getOrganisation()->getCountry();
         }
+
+        ksort($result);
 
         return $result;
     }
