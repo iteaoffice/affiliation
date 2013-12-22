@@ -25,5 +25,6 @@ return array(
   'Affiliation\Service\GeneralService'                  => __DIR__ . '/src/Affiliation/Service/GeneralService.php',
   'Affiliation\Service\ServiceAbstract'                 => __DIR__ . '/src/Affiliation/Service/ServiceAbstract.php',
   'Affiliation\Service\ServiceInterface'                => __DIR__ . '/src/Affiliation/Service/ServiceInterface.php',
+  'Affiliation\Version\Version'                         => __DIR__ . '/src/Affiliation/Version/Version.php',
   'Affiliation\View\Helper\AffiliationLink'             => __DIR__ . '/src/Affiliation/View/Helper/AffiliationLink.php',
 );
