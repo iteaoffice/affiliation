@@ -9,8 +9,6 @@
  */
 namespace Affiliation\Service;
 
-use Affiliation\Service\FormService;
-
 interface FormServiceAwareInterface
 {
     /**

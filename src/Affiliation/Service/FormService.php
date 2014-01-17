@@ -14,8 +14,6 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Form;
 
-use Affiliation\Service\AffiliationService;
-
 class FormService implements ServiceLocatorAwareInterface
 {
 
