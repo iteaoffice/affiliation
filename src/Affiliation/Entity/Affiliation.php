@@ -239,6 +239,30 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
      * @var \Contact\Entity\Contact[]
      */
     private $associate;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     * @var \Project\Entity\Cost\Cost[]
+     */
+    private $cost;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     * @var \Project\Entity\Funding\Funding[]
+     */
+    private $funding;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     * @var \Project\Entity\Effort\Effort[]
+     */
+    private $effort;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Spent", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     * @var \Project\Entity\Effort\Spent[]
+     */
+    private $spent;
 
     /**
      * Class constructor
@@ -254,6 +278,10 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
         $this->log             = new Collections\ArrayCollection();
         $this->version         = new Collections\ArrayCollection();
         $this->associate       = new Collections\ArrayCollection();
+        $this->cost            = new Collections\ArrayCollection();
+        $this->funding         = new Collections\ArrayCollection();
+        $this->effort          = new Collections\ArrayCollection();
+        $this->spent           = new Collections\ArrayCollection();
     }
 
     /**
@@ -284,7 +312,7 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
      */
     public function __toString()
     {
-        return (string) $this->contact->getFirstName() . ' ' .
+        return (string)$this->contact->getFirstName() . ' ' .
         $this->contact->getLastName() . ' ' . $this->getOrganisation()->getOrganisation();
     }
 
@@ -759,5 +787,69 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
     public function getAssociate()
     {
         return $this->associate;
+    }
+
+    /**
+     * @param \Project\Entity\Cost\Cost[] $cost
+     */
+    public function setCost($cost)
+    {
+        $this->cost = $cost;
+    }
+
+    /**
+     * @return \Project\Entity\Cost\Cost[]
+     */
+    public function getCost()
+    {
+        return $this->cost;
+    }
+
+    /**
+     * @param \Project\Entity\Funding\Funding[] $funding
+     */
+    public function setFunding($funding)
+    {
+        $this->funding = $funding;
+    }
+
+    /**
+     * @return \Project\Entity\Funding\Funding[]
+     */
+    public function getFunding()
+    {
+        return $this->funding;
+    }
+
+    /**
+     * @param \Project\Entity\Effort\Spent[] $spent
+     */
+    public function setSpent($spent)
+    {
+        $this->spent = $spent;
+    }
+
+    /**
+     * @return \Project\Entity\Effort\Spent[]
+     */
+    public function getSpent()
+    {
+        return $this->spent;
+    }
+
+    /**
+     * @param \Project\Entity\Effort\Effort[] $effort
+     */
+    public function setEffort($effort)
+    {
+        $this->effort = $effort;
+    }
+
+    /**
+     * @return \Project\Entity\Effort\Effort[]
+     */
+    public function getEffort()
+    {
+        return $this->effort;
     }
 }

@@ -55,7 +55,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return AffiliationService[]
      */
-    public function findAffiliationByProjectAndWhich(Project $project, $which)
+    public function findAffiliationByProjectAndWhich(Project $project, $which = 2)
     {
         $affiliations = $this->getEntityManager()
             ->getRepository($this->getFullEntityName('affiliation'))
