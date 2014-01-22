@@ -12,6 +12,7 @@ namespace Affiliation\Service;
 use Project\Entity\Project;
 
 use Affiliation\Entity\Affiliation;
+use General\Entity\Country;
 
 /**
  * AffiliationService
@@ -69,12 +70,34 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * Produce a list of affiliations per country
+     *
+     * @param Project $project
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return AffiliationService[]
+     */
+    public function findAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, $which = 2)
+    {
+        $affiliations = $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('affiliation'))
+            ->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
+        $result       = array();
+        foreach ($affiliations as $affiliation) {
+            $result[] = $this->createServiceElement($affiliation);
+        }
+
+        return $result;
+    }
+
+    /**
      * @param Project $project
      * @param int     $which
      *
      * @return \General\Entity\Country[]
      */
-    public function findAffiliationCountriesByProjectAndWhich(Project $project, $which)
+    public function findAffiliationCountriesByProjectAndWhich(Project $project, $which = 2)
     {
         $affiliations = $this->getEntityManager()
             ->getRepository($this->getFullEntityName('affiliation'))
