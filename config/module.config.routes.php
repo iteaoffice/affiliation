@@ -9,6 +9,34 @@
  */
 return array(
     'router' => array(
-        'routes' => array()
+        'routes' => array(
+            'community' => array(
+                'child_routes' => array(
+                    'affiliation' => array(
+                        'type'          => 'Segment',
+                        'priority'      => 1000,
+                        'options'       => array(
+                            'route'    => '/affiliation',
+                            'defaults' => array(
+                                'controller' => 'affiliation-community',
+                                'action'     => 'index',
+                            ),
+                        ),
+                        'may_terminate' => true,
+                        'child_routes'  => array(
+                            'affiliation' => array(
+                                'type'    => 'Segment',
+                                'options' => array(
+                                    'route'    => '/affiliation/[:id].html',
+                                    'defaults' => array(
+                                        'action' => 'affiliation',
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        )
     )
 );

@@ -26,7 +26,7 @@ class AffiliationLink extends AbstractHelper
 {
 
     /**
-     * @param \Affiliation\Entity\Affiliation $subArea
+     * @param \Affiliation\Entity\Affiliation $affiliation
      * @param                                 $action
      * @param                                 $show
      *
@@ -34,52 +34,24 @@ class AffiliationLink extends AbstractHelper
      * @throws \RuntimeException
      * @throws \Exception
      */
-    public function __invoke(Entity\Affiliation $subArea = null, $action = 'view', $show = 'name')
+    public function __invoke(Entity\Affiliation $affiliation = null, $action = 'view', $show = 'name')
     {
         $translate = $this->view->plugin('translate');
         $url       = $this->view->plugin('url');
         $serverUrl = $this->view->plugin('serverUrl');
         $isAllowed = $this->view->plugin('isAllowed');
 
-        if (!$isAllowed('affiliation', $action)) {
-            if ($action === 'view' && $show === 'name') {
-                return $subArea;
-            }
-
-            return '';
-        }
-
         switch ($action) {
-            case 'new':
-                $router  = 'zfcadmin/affiliation-manager/new';
-                $text    = sprintf($translate("txt-new-affiliation"));
-                $subArea = new Entity\Affiliation();
-                break;
-            case 'edit':
-                $router = 'zfcadmin/affiliation-manager/edit';
-                $text   = sprintf($translate("txt-edit-affiliation-%s"), $subArea);
-                break;
             case 'view':
-                $router = 'affiliation/affiliation';
-                $text   = sprintf($translate("txt-view-affiliation-%s"), $subArea);
+                $router = 'community/affiliation/affiliation';
+                $text   = sprintf($translate("txt-view-affiliation-%s"), $affiliation);
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));
         }
 
-        if (is_null($subArea)) {
-            throw new \RuntimeException(
-                sprintf(
-                    "Area needs to be an instance of %s, %s given in %s",
-                    "Affiliation\Entity\Affiliation",
-                    get_class($subArea),
-                    __CLASS__
-                )
-            );
-        }
-
         $params = array(
-            'id'     => $subArea->getId(),
+            'id'     => $affiliation->getId(),
             'entity' => 'affiliation'
         );
 
@@ -100,11 +72,11 @@ class AffiliationLink extends AbstractHelper
                 $linkContent[] = '<i class="icon-pencil icon-white"></i> ' . $text;
                 $classes[]     = "btn btn-primary";
                 break;
-            case 'name':
-                $linkContent[] = $subArea->getName();
+            case 'organisation':
+                $linkContent[] = $affiliation->getOrganisation()->getOrganisation();
                 break;
             default:
-                $linkContent[] = $subArea;
+                $linkContent[] = $affiliation;
                 break;
         }
 
