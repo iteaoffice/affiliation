@@ -9,9 +9,15 @@
  */
 namespace Affiliation\Entity;
 
+use Zend\InputFilter\InputFilter;
+use Zend\InputFilter\InputFilterInterface;
+use Zend\InputFilter\Factory as InputFactory;
 use Zend\Form\Annotation;
 
+use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
+
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Entity for the Affiliation
@@ -24,7 +30,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @category    Affiliation
  * @package     Entity
  */
-class Financial
+class Financial extends EntityAbstract
 {
     /**
      * @ORM\Column(name="affiliation_financial_id", type="integer", nullable=false)
@@ -39,7 +45,7 @@ class Financial
      */
     private $branch;
     /**
-     * @ORM\ManyToOne(targetEntity="\Affiliation\Entity\Affiliation", inversedBy="financial", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="\Affiliation\Entity\Affiliation", inversedBy="financial", cascade={"persist"})
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
@@ -62,4 +68,156 @@ class Financial
      * @var \Organisation\Entity\Organisation
      */
     private $organisation;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+    }
+
+    /**
+     * @param $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $this->$property;
+    }
+
+    /**
+     * @param $property
+     * @param $value
+     *
+     * @return void
+     */
+    public function __set($property, $value)
+    {
+        $this->$property = $value;
+    }
+
+    /**
+     * @param InputFilterInterface $inputFilter
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function setInputFilter(InputFilterInterface $inputFilter)
+    {
+        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
+    }
+
+    /**
+     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
+     */
+    public function getInputFilter()
+    {
+        if (!$this->inputFilter) {
+            $inputFilter = new InputFilter();
+            $factory     = new InputFactory();
+
+
+            $this->inputFilter = $inputFilter;
+        }
+
+        return $this->inputFilter;
+    }
+
+    /**
+     * Needed for the hydration of form elements
+     * @return array
+     */
+    public function getArrayCopy()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    public function populate()
+    {
+        return $this->getArrayCopy();
+    }
+
+    /**
+     * @param \Affiliation\Entity\Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
+
+    /**
+     * @return \Affiliation\Entity\Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param string $branch
+     */
+    public function setBranch($branch)
+    {
+        $this->branch = $branch;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBranch()
+    {
+        return $this->branch;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param \Organisation\Entity\Organisation $organisation
+     */
+    public function setOrganisation($organisation)
+    {
+        $this->organisation = $organisation;
+    }
+
+    /**
+     * @return \Organisation\Entity\Organisation
+     */
+    public function getOrganisation()
+    {
+        return $this->organisation;
+    }
 }

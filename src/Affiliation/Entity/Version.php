@@ -47,11 +47,11 @@ class Version
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * })
-     * @var \Project\Entity\Version
+     * @var \Project\Entity\Version\Version
      */
     private $contact;
     /**
-     * @ORM\ManyToOne(targetEntity="Project\Entity\Version", inversedBy="affiliationVersion")
+     * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="affiliationVersion")
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
      * })
@@ -92,7 +92,7 @@ class Version
     }
 
     /**
-     * @param \Project\Entity\Version $contact
+     * @param \Project\Entity\Version\Version $contact
      */
     public function setContact($contact)
     {
@@ -100,7 +100,7 @@ class Version
     }
 
     /**
-     * @return \Project\Entity\Version
+     * @return \Project\Entity\Version\Version
      */
     public function getContact()
     {

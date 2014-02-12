@@ -13,6 +13,7 @@ use Project\Entity\Project;
 
 use Affiliation\Entity\Affiliation;
 use General\Entity\Country;
+use Contact\Entity\Contact;
 
 /**
  * AffiliationService
@@ -97,7 +98,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return \General\Entity\Country[]
      */
-    public function findAffiliationCountriesByProjectAndWhich(Project $project, $which = 2)
+    public function findAffiliationCountriesByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {
         $affiliations = $this->getEntityManager()
             ->getRepository($this->getFullEntityName('affiliation'))
@@ -112,6 +113,37 @@ class AffiliationService extends ServiceAbstract
         ksort($result);
 
         return $result;
+    }
+
+    /**
+     * @param Project $project
+     * @param Contact $contact
+     * @param int     $which
+     *
+     * @return null|Affiliation
+     */
+    public function findAffiliationByProjectAndContactAndWhich(Project $project, Contact $contact, $which = self::WHICH_ONLY_ACTIVE)
+    {
+        /**
+         * If the contact has no contact organisation, return null because we will not have a affiliation
+         */
+        if (is_null($contact->getContactOrganisation())) {
+            return null;
+        }
+
+        foreach ($project->getAffiliation() as $affiliation) {
+            if ($which === self::WHICH_ONLY_ACTIVE && !is_null($affiliation->getDateEnd())) {
+                continue;
+            }
+            if ($which === self::WHICH_ONLY_INACTIVE && is_null($affiliation->getDateEnd())) {
+                continue;
+            }
+            if ($affiliation->getOrganisation()->getId() === $contact->getContactOrganisation()->getOrganisation()->getId()) {
+                return $affiliation;
+            }
+        }
+
+        return null;
     }
 
     /**

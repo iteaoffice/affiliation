@@ -180,9 +180,9 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
      */
     private $description;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Financial", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Financial", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Financial[]
+     * @var \Affiliation\Entity\Financial
      */
     private $financial;
     /**
@@ -271,7 +271,6 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
     {
         $this->ictOrganisation = new Collections\ArrayCollection();
         $this->description     = new Collections\ArrayCollection();
-        $this->financial       = new Collections\ArrayCollection();
         $this->invoice         = new Collections\ArrayCollection();
         $this->invoiceCmShare  = new Collections\ArrayCollection();
         $this->invoicePostCalc = new Collections\ArrayCollection();
@@ -282,6 +281,11 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
         $this->funding         = new Collections\ArrayCollection();
         $this->effort          = new Collections\ArrayCollection();
         $this->spent           = new Collections\ArrayCollection();
+
+        /**
+         * Self-funded is default NOT
+         */
+        $this->selfFunded = self::NOT_SELF_FUNDED;
     }
 
     /**
@@ -566,7 +570,7 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Financial[] $financial
+     * @param \Affiliation\Entity\Financial $financial
      */
     public function setFinancial($financial)
     {
@@ -574,7 +578,7 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Financial[]
+     * @return \Affiliation\Entity\Financial
      */
     public function getFinancial()
     {
