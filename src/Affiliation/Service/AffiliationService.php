@@ -149,7 +149,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Affiliation $affiliation
      *
-     * @return createServiceElement
+     * @return $this
      */
     private function createServiceElement(Affiliation $affiliation)
     {
