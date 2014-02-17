@@ -9,6 +9,8 @@
  */
 namespace Affiliation\Entity;
 
+use Zend\InputFilter\InputFilter;
+use Zend\InputFilter\InputFilterInterface;
 use Zend\Form\Annotation;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +26,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @category    Affiliation
  * @package     Entity
  */
-class Version
+class Version extends EntityAbstract
 {
     /**
      * @var integer
@@ -47,7 +49,7 @@ class Version
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * })
-     * @var \Project\Entity\Version\Version
+     * @var \Contact\Entity\Contact
      */
     private $contact;
     /**
@@ -55,25 +57,82 @@ class Version
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
      * })
-     * @var \Contact\Entity\Contact
+     * @var \Project\Entity\Version\Version
      */
     private $version;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Version", cascade="persist", mappedBy="affiliationVersion")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
-     * })
-     * @var \Contact\Entity\Contact
+     * @var \Project\Entity\Cost\Version
      */
     private $costVersion;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Version", cascade="persist", mappedBy="affiliationVersion")
-     * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
-     * })
-     * @var \Contact\Entity\Contact
+     * @var \Project\Entity\Effort\Version
      */
     private $effortVersion;
+
+    /**
+     * @param $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $this->$property;
+    }
+
+    /**
+     * @param $property
+     * @param $value
+     *
+     * @return void
+     */
+    public function __set($property, $value)
+    {
+        $this->$property = $value;
+    }
+
+    /**
+     * @param InputFilterInterface $inputFilter
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function setInputFilter(InputFilterInterface $inputFilter)
+    {
+        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
+    }
+
+    /**
+     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
+     */
+    public function getInputFilter()
+    {
+        if (!$this->inputFilter) {
+            $inputFilter = new InputFilter();
+
+            $this->inputFilter = $inputFilter;
+        }
+
+        return $this->inputFilter;
+    }
+
+    /**
+     * Needed for the hydration of form elements
+     * @return array
+     */
+    public function getArrayCopy()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    public function populate()
+    {
+        return $this->getArrayCopy();
+    }
 
     /**
      * @param \Contact\Entity\Contact $affiliation
@@ -92,7 +151,7 @@ class Version
     }
 
     /**
-     * @param \Project\Entity\Version\Version $contact
+     * @param \Contact\Entity\Contact $contact
      */
     public function setContact($contact)
     {
@@ -100,7 +159,7 @@ class Version
     }
 
     /**
-     * @return \Project\Entity\Version\Version
+     * @return \Contact\Entity\Contact
      */
     public function getContact()
     {
@@ -108,7 +167,7 @@ class Version
     }
 
     /**
-     * @param \Contact\Entity\Contact $costVersion
+     * @param \Project\Entity\Cost\Version $costVersion
      */
     public function setCostVersion($costVersion)
     {
@@ -116,7 +175,7 @@ class Version
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @return \Project\Entity\Cost\Version
      */
     public function getCostVersion()
     {
@@ -124,7 +183,7 @@ class Version
     }
 
     /**
-     * @param \Contact\Entity\Contact $effortVersion
+     * @param \Project\Entity\Effort\Version $effortVersion
      */
     public function setEffortVersion($effortVersion)
     {
@@ -132,7 +191,7 @@ class Version
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @return \Project\Entity\Effort\Version
      */
     public function getEffortVersion()
     {
@@ -156,7 +215,7 @@ class Version
     }
 
     /**
-     * @param \Contact\Entity\Contact $version
+     * @param \Project\Entity\Version\Version $version
      */
     public function setVersion($version)
     {
@@ -164,7 +223,7 @@ class Version
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @return \Project\Entity\Version\Version
      */
     public function getVersion()
     {
