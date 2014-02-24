@@ -27,7 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Description //extends EntityAbstract
 {
     /**
-     * @ORM\Column(name="affiliation_description_id", type="integer", nullable=false)
+     * @ORM\Column(name="description_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @var integer
@@ -37,7 +37,7 @@ class Description //extends EntityAbstract
      * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Affiliation", inversedBy="description", cascade={"persist"})
      * @ORM\OrderBy=({"Description"="ASC"})
      * @ORM\JoinTable(name="affiliation_description",
-     *    joinColumns={@ORM\JoinColumn(name="affiliation_description_id", referencedColumnName="affiliation_description_id")},
+     *    joinColumns={@ORM\JoinColumn(name="description_id", referencedColumnName="description_id")},
      *    inverseJoinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")}
      * )
      * @Annotation\Type("DoctrineORMModule\Form\Element\EntityMultiSelect")
@@ -54,7 +54,7 @@ class Description //extends EntityAbstract
      *      }
      * )
      * @Annotation\Attributes({"label":"txt-affiliation"})
-     * @var \Project\Entity\Affiliation[]
+     * @var \Affiliation\Entity\Affiliation[]
      */
     private $affiliation;
     /**
@@ -70,4 +70,68 @@ class Description //extends EntityAbstract
      * @var \Contact\Entity\Contact
      */
     private $contact;
+
+    /**
+     * @param \Affiliation\Entity\Affiliation[] $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
+
+    /**
+     * @return \Affiliation\Entity\Affiliation[]
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

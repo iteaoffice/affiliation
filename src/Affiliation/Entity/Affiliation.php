@@ -263,6 +263,12 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
      * @var \Project\Entity\Effort\Spent[]
      */
     private $spent;
+    /**
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     * @var \Affiliation\Entity\Loi
+     */
+    private $loi;
 
     /**
      * Class constructor
@@ -311,13 +317,11 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
 
     /**
      * ToString
-     * Return the id here for form population
      * @return string
      */
     public function __toString()
     {
-        return (string)$this->contact->getFirstName() . ' ' .
-        $this->contact->getLastName() . ' ' . $this->getOrganisation()->getOrganisation();
+        return $this->getOrganisation()->getOrganisation();
     }
 
     /**
@@ -855,5 +859,21 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
     public function getEffort()
     {
         return $this->effort;
+    }
+
+    /**
+     * @param \Affiliation\Entity\Loi $loi
+     */
+    public function setLoi($loi)
+    {
+        $this->loi = $loi;
+    }
+
+    /**
+     * @return \Affiliation\Entity\Loi
+     */
+    public function getLoi()
+    {
+        return $this->loi;
     }
 }

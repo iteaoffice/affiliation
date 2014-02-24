@@ -27,9 +27,18 @@ return array(
                             'affiliation' => array(
                                 'type'    => 'Segment',
                                 'options' => array(
-                                    'route'    => '/affiliation/[:id].html',
+                                    'route'    => '/details/[:id].html',
                                     'defaults' => array(
                                         'action' => 'affiliation',
+                                    ),
+                                ),
+                            ),
+                            'edit'        => array(
+                                'type'    => 'Segment',
+                                'options' => array(
+                                    'route'    => '/edit/[:id].html',
+                                    'defaults' => array(
+                                        'action' => 'edit',
                                     ),
                                 ),
                             ),

@@ -42,9 +42,14 @@ class AffiliationLink extends AbstractHelper
         $isAllowed = $this->view->plugin('isAllowed');
 
         switch ($action) {
+            case 'view-community':
             case 'view':
                 $router = 'community/affiliation/affiliation';
                 $text   = sprintf($translate("txt-view-affiliation-%s"), $affiliation);
+                break;
+            case 'edit-community':
+                $router = 'community/affiliation/edit';
+                $text   = sprintf($translate("txt-edit-affiliation-%s"), $affiliation);
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));

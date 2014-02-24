@@ -10,8 +10,8 @@
 $config = array(
     'controllers'     => array(
         'invokables' => array(
-            'affiliation'         => 'Affiliation\Controller\AffiliationController',
-            'affiliation-manager' => 'Affiliation\Controller\AffiliationManagerController',
+            'affiliation-community' => 'Affiliation\Controller\CommunityController',
+            'affiliation-manager'   => 'Affiliation\Controller\AffiliationManagerController',
         ),
     ),
     'view_helpers'    => array(

@@ -14,6 +14,8 @@ use Project\Entity\Project;
 use Affiliation\Entity\Affiliation;
 use General\Entity\Country;
 use Contact\Entity\Contact;
+use Project\Service\ProjectService;
+use Organisation\Service\OrganisationService;
 
 /**
  * AffiliationService
@@ -49,6 +51,14 @@ class AffiliationService extends ServiceAbstract
         $this->setAffiliation($this->findEntityById('affiliation', $id));
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return is_null($this->affiliation->getDateEnd());
     }
 
     /**
@@ -147,6 +157,133 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * Deactivate an affiliation
+     *
+     * @param Affiliation $affiliation
+     */
+    public function deactivateAffiliation(Affiliation $affiliation)
+    {
+        $projectService = $this->getProjectService()->setProject($affiliation->getProject());
+
+        $affiliation->setDateEnd(new \DateTime());
+        $this->updateEntity($affiliation);
+
+        $editYearRange = $projectService->parseEditYearRange();
+        $minEditYear   = array_shift($editYearRange);
+
+        /**
+         * Remove the current cost and effort of the affiliation
+         */
+        foreach ($affiliation->getEffort() as $effort) {
+            if ($effort->getDateStart()->format('Y') >= $minEditYear) {
+                $this->getProjectService()->removeEntity($effort);
+            }
+        }
+
+        /**
+         * Remove the current cost and effort of the affiliation
+         */
+        foreach ($affiliation->getCost() as $cost) {
+            if ($cost->getDateStart()->format('Y') >= $minEditYear) {
+                $this->getProjectService()->removeEntity($cost);
+            }
+        }
+    }
+
+    /**
+     * Reactivate an affiliation
+     *
+     * @param Affiliation $affiliation
+     */
+    public function reactivateAffiliation(Affiliation $affiliation)
+    {
+        $affiliation->setDateEnd(null);
+        $this->updateEntity($affiliation);
+    }
+
+    /**
+     * This function creates an array of organisations with branches which are optional when a user wants to change
+     * his affiliation
+     */
+    public function parseRenameOptions()
+    {
+        $options = array();
+
+        $organisation = $this->getAffiliation()->getOrganisation();
+        $contact      = $this->getAffiliation()->getContact();
+
+
+        /**
+         * Go over the organisation and grab all its affiliations
+         */
+        foreach ($organisation->getAffiliation() as $affiliation) {
+            $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+                $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+        }
+
+        /**
+         * Go over the organisation and join the clusters and grab all its affiliations
+         */
+        foreach ($organisation->getCluster() as $cluster) {
+            foreach ($cluster->getMember() as $clusterMember) {
+                foreach ($clusterMember->getAffiliation() as $affiliation) {
+                    $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
+                    $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+                        $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+                }
+            }
+        }
+
+        /**
+         * Go over the contact and grab all its affiliations
+         */
+        foreach ($contact->getAffiliation() as $affiliation) {
+            $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+                $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+        }
+
+        /**
+         * Add the contact organisation (from the contact)
+         */
+        if (!is_null($contact->getContactOrganisation())) {
+            $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
+            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()->getBranch()] =
+                $this->getOrganisationService()->parseOrganisationWithBranch($contact->getContactOrganisation()->getBranch());
+        }
+
+        /**
+         * Add the contact organisation (from the organisation)
+         */
+        if (!is_null($organisation->getContactOrganisation())) {
+            /**
+             * Add the contact organisation
+             */
+            $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
+            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()->getBranch()] =
+                $this->getOrganisationService()->parseOrganisationWithBranch($contact->getContactOrganisation()->getBranch());
+
+            /**
+             * Go over the clusters
+             */
+            foreach ($organisation->getContactOrganisation()->getOrganisation()->getCluster() as $cluster) {
+                foreach ($cluster->getMember() as $clusterMember) {
+                    foreach ($clusterMember->getAffiliation() as $affiliation) {
+                        $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
+                        $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+                            $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+                    }
+                }
+            }
+        }
+
+
+        return $options;
+    }
+
+
+    /**
      * @param Affiliation $affiliation
      *
      * @return $this
@@ -174,5 +311,25 @@ class AffiliationService extends ServiceAbstract
     public function getAffiliation()
     {
         return $this->affiliation;
+    }
+
+    /**
+     * Gateway to the Project Service
+     *
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->getServiceLocator()->get('project_project_service');
+    }
+
+    /**
+     * Gateway to the Organisation Service
+     *
+     * @return OrganisationService
+     */
+    public function getOrganisationService()
+    {
+        return $this->getServiceLocator()->get('organisation_organisation_service');
     }
 }
