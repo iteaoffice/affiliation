@@ -47,6 +47,10 @@ class AffiliationLink extends AbstractHelper
                 $router = 'community/affiliation/affiliation';
                 $text   = sprintf($translate("txt-view-affiliation-%s"), $affiliation);
                 break;
+            case 'upload-program-doa':
+                $router = 'community/affiliation/upload-program-doa';
+                $text   = sprintf($translate("txt-upload-program-doa-for-affiliation-%s"), $affiliation);
+                break;
             case 'edit-community':
                 $router = 'community/affiliation/edit';
                 $text   = sprintf($translate("txt-edit-affiliation-%s"), $affiliation);
@@ -76,6 +80,9 @@ class AffiliationLink extends AbstractHelper
             case 'button':
                 $linkContent[] = '<i class="icon-pencil icon-white"></i> ' . $text;
                 $classes[]     = "btn btn-primary";
+                break;
+            case 'text':
+                $linkContent[] = $text;
                 break;
             case 'organisation':
                 $linkContent[] = $affiliation->getOrganisation()->getOrganisation();

@@ -24,7 +24,7 @@ return array(
                         ),
                         'may_terminate' => true,
                         'child_routes'  => array(
-                            'affiliation' => array(
+                            'affiliation'        => array(
                                 'type'    => 'Segment',
                                 'options' => array(
                                     'route'    => '/details/[:id].html',
@@ -33,7 +33,16 @@ return array(
                                     ),
                                 ),
                             ),
-                            'edit'        => array(
+                            'upload-program-doa' => array(
+                                'type'    => 'Segment',
+                                'options' => array(
+                                    'route'    => '/upload-program-doa/[:id].html',
+                                    'defaults' => array(
+                                        'action' => 'upload-program-doa',
+                                    ),
+                                ),
+                            ),
+                            'edit'               => array(
                                 'type'    => 'Segment',
                                 'options' => array(
                                     'route'    => '/edit/[:id].html',

@@ -40,6 +40,8 @@ class Affiliation extends EntityRepository
         $qb->select('a');
         $qb->from('Affiliation\Entity\Affiliation', 'a');
 
+        $qb->join('a.organisation', 'o');
+
         $qb->where('a.project = ?1');
         $qb->setParameter(1, $project);
 
@@ -55,6 +57,8 @@ class Affiliation extends EntityRepository
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
+
+        $qb->addOrderBy('o.organisation', 'ASC');
 
         return $qb->getQuery()->getResult();
     }

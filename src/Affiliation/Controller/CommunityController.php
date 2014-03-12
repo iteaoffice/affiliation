@@ -9,15 +9,15 @@
  */
 namespace Affiliation\Controller;
 
-use Affiliation\Form\Affiliation;
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\Validator\File\FilesSize;
 
-use Affiliation\Service\AffiliationService;
-use Affiliation\Service\FormServiceAwareInterface;
-use Affiliation\Service\FormService;
+use Affiliation\Form\Affiliation;
+use Affiliation\Form\CreateProgramDoa;
 use Affiliation\Entity;
+
+use Program\Entity\ProgramDoa;
+use Program\Entity\ProgramDoaObject;
 
 /**
  * @category    Affiliation
@@ -146,5 +146,69 @@ class CommunityController extends AffiliationAbstractController
                 'form'               => $form
             )
         );
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function uploadProgramDoaAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
+
+        $form = new CreateProgramDoa();
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+
+            if (!isset($data['cancel'])) {
+                $fileData = $this->params()->fromFiles();
+
+                //Create a article object element
+                $programDoaObject = new ProgramDoaObject();
+                $programDoaObject->setObject(file_get_contents($fileData['file']['tmp_name']));
+
+                $fileSizeValidator = new FilesSize(PHP_INT_MAX);
+                $fileSizeValidator->isValid($fileData['file']);
+
+                $programDoa = new ProgramDoa();
+                $programDoa->setSize($fileSizeValidator->size);
+                $programDoa->setContentType(
+                    $this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type'])
+                );
+
+                $programDoa->setContact($this->zfcUserAuthentication()->getIdentity());
+                $programDoa->setBranch($affiliationService->getAffiliation()->getBranch());
+                $programDoa->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
+                $programDoa->setProgram($affiliationService->getAffiliation()->getProject()->getCall()->getProgram());
+
+                $programDoaObject->setProgramDoa($programDoa);
+
+                $this->getProgramService()->newEntity($programDoaObject);
+
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(_("txt-program-doa-for-organisation-%s-and-program-%s-has-been-uploaded"),
+                        $affiliationService->getAffiliation()->getOrganisation(),
+                        $affiliationService->getAffiliation()->getProject()->getCall()->getProgram()
+                    )
+                );
+            }
+
+            $this->redirect()->toRoute('community/affiliation/affiliation',
+                array('id' => $affiliationService->getAffiliation()->getId())
+            );
+        }
+
+
+        return new ViewModel(array(
+            'affiliationService' => $affiliationService,
+            'form'               => $form
+        ));
     }
 }

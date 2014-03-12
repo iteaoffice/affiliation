@@ -15,6 +15,8 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Project\Service\ProjectService;
 use Organisation\Service\OrganisationService;
 use Contact\Service\ContactService;
+use General\Service\GeneralService;
+use Program\Service\ProgramService;
 
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\FormServiceAwareInterface;
@@ -114,6 +116,26 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     public function getContactService()
     {
         return $this->getServiceLocator()->get('contact_contact_service');
+    }
+
+    /**
+     * Gateway to the Program Service
+     *
+     * @return ProgramService
+     */
+    public function getProgramService()
+    {
+        return $this->getServiceLocator()->get('program_program_service');
+    }
+
+    /**
+     * Gateway to the General Service
+     *
+     * @return GeneralService
+     */
+    public function getGeneralService()
+    {
+        return $this->getServiceLocator()->get('general_general_service');
     }
 
     /**

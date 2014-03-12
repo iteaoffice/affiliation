@@ -48,11 +48,19 @@
             {% endif %}
         </dd>
         <dt>{{ translate("txt-declaration-of-acceptance") }}</dt>
-        <dd>{% if affiliationService.affiliation.organisation.doa %}
-                {{ translate("txt-doa-received") }}
+        <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
+
+                {% if programDoa.dateApproved is null %}
+                    {{ translate("txt-doa-received-but-waiting-for-approval") }}
+                {% elseif programDoa.object.count() > 0 %}
+                    {#{{ programDoaLink(programDoa,'download','text') }}#}
+                {% else %}
+                    {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|string_date) }}
+                {% endif %}
+
             {% else %}
-                {{ translate("txt-no-doa-received") }}
-            {% endif %}
+                {{ affiliationLink(affiliationService.affiliation,'upload-program-doa','text') }}
+            {% endfor %}
         </dd>
         <dt>{{ translate("txt-technical-contact") }}</dt>
         <dd>{{ affiliationService.affiliation.contact.displayName() }}</dd>

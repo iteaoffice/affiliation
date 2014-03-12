@@ -16,6 +16,7 @@ use Zend\Authentication\AuthenticationService;
 use Doctrine\ORM\EntityManager;
 
 use Affiliation\Entity\EntityAbstract;
+use Affiliation\Entity\Affiliation;
 
 /**
  * ServiceAbstract
@@ -47,15 +48,12 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     }
 
     /**
-     * Find 1 entity based on the id
+     * @param $entity
+     * @param $id
      *
-     * @param      $entity
-     * @param      $id
-     * @param bool $populate
-     *
-     * @return object
+     * @return null|object|Affiliation
      */
-    public function findEntityById($entity, $id, $populate = false)
+    public function findEntityById($entity, $id)
     {
         return $this->getEntityManager()->getRepository($this->getFullEntityName($entity))->find($id);
     }

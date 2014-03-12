@@ -44,6 +44,7 @@ return array(
              */
             'BjyAuthorize\Guard\Route' => array(
                 array('route' => 'community/affiliation/affiliation', 'roles' => array('office')),
+                array('route' => 'community/affiliation/upload-program-doa', 'roles' => array('office')),
                 array('route' => 'community/affiliation/edit', 'roles' => array('office')),
             ),
         ),
