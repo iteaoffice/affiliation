@@ -177,7 +177,7 @@
 
             {% set totalPerYear = 0 %}
             <tr>
-                <td colspan="2">{{ translate("new") }}</td>
+                <td colspan="2">{{ translate("txt-new") }}</td>
                 {% for year in years %}
                     <td>{{ costPerYear[year]|number_format(0, '.', ',') }}
                         {% if costPerYear[year] > costPerYearInVersion[year] %}
