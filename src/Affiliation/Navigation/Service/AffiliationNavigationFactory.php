@@ -38,7 +38,6 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
      */
     protected $projectService;
 
-
     /**
      * @param ServiceLocatorInterface $serviceLocator
      * @param array                   $pages

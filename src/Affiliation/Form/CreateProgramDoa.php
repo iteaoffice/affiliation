@@ -15,7 +15,6 @@ use Zend\Validator\File\MimeType;
 
 use Zend\Form\Form;
 
-
 use Zend\InputFilter\InputFilterProviderInterface;
 
 /**
@@ -32,7 +31,6 @@ class CreateProgramDoa extends Form implements InputFilterProviderInterface
 
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
-
 
         $this->add(
             array(

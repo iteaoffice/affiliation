@@ -10,7 +10,6 @@
 namespace Affiliation\Form;
 
 use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
 use Affiliation\Service\AffiliationService;
 
 /**

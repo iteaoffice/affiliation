@@ -212,7 +212,6 @@ class AffiliationService extends ServiceAbstract
         $organisation = $this->getAffiliation()->getOrganisation();
         $contact      = $this->getAffiliation()->getContact();
 
-
         /**
          * Go over the organisation and grab all its affiliations
          */
@@ -278,10 +277,8 @@ class AffiliationService extends ServiceAbstract
             }
         }
 
-
         return $options;
     }
-
 
     /**
      * @param Affiliation $affiliation

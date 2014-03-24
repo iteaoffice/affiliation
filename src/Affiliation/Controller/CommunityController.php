@@ -107,7 +107,6 @@ class CommunityController extends AffiliationAbstractController
                 );
             }
 
-
             /**
              * Parse the organisation and branch
              */
@@ -204,7 +203,6 @@ class CommunityController extends AffiliationAbstractController
                 array('id' => $affiliationService->getAffiliation()->getId())
             );
         }
-
 
         return new ViewModel(array(
             'affiliationService' => $affiliationService,
