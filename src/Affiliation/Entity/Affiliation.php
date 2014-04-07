@@ -269,6 +269,12 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
      * @var \Affiliation\Entity\Loi
      */
     private $loi;
+    /**
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     * @var \Affiliation\Entity\Doa
+     */
+    private $doa;
 
     /**
      * Class constructor
@@ -875,5 +881,21 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
     public function getLoi()
     {
         return $this->loi;
+    }
+
+    /**
+     * @return Doa
+     */
+    public function getDoa()
+    {
+        return $this->doa;
+    }
+
+    /**
+     * @param Doa $doa
+     */
+    public function setDoa($doa)
+    {
+        $this->doa = $doa;
     }
 }

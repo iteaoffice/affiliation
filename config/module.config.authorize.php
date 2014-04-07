@@ -45,6 +45,13 @@ return array(
             'BjyAuthorize\Guard\Route' => array(
                 array('route' => 'community/affiliation/affiliation', 'roles' => array('office')),
                 array('route' => 'community/affiliation/upload-program-doa', 'roles' => array('office')),
+                array('route' => 'community/affiliation/render-program-doa', 'roles' => array('office')),
+                array('route' => 'community/affiliation/doa/upload', 'roles' => array('office')),
+                array('route' => 'community/affiliation/doa/render', 'roles' => array('office')),
+                array('route' => 'community/affiliation/doa/download', 'roles' => array('office')),
+                array('route' => 'community/affiliation/loi/upload', 'roles' => array('office')),
+                array('route' => 'community/affiliation/loi/render', 'roles' => array('office')),
+                array('route' => 'community/affiliation/loi/download', 'roles' => array('office')),
                 array('route' => 'community/affiliation/edit', 'roles' => array('office')),
             ),
         ),

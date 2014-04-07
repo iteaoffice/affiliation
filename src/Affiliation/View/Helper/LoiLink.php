@@ -22,19 +22,19 @@ use Affiliation\Entity;
  * @package     View
  * @subpackage  Helper
  */
-class AffiliationLink extends AbstractHelper
+class LoiLink extends AbstractHelper
 {
 
     /**
-     * @param \Affiliation\Entity\Affiliation $affiliation
-     * @param                                 $action
-     * @param                                 $show
+     * @param Entity\Loi         $loi
+     * @param string             $action
+     * @param string             $show
+     * @param Entity\Affiliation $affiliation
      *
      * @return string
-     * @throws \RuntimeException
      * @throws \Exception
      */
-    public function __invoke(Entity\Affiliation $affiliation = null, $action = 'view', $show = 'name')
+    public function __invoke(Entity\Loi $loi = null, $action = 'view', $show = 'name', Entity\Affiliation $affiliation = null)
     {
         $translate = $this->view->plugin('translate');
         $url       = $this->view->plugin('url');
@@ -42,36 +42,35 @@ class AffiliationLink extends AbstractHelper
         $isAllowed = $this->view->plugin('isAllowed');
 
         switch ($action) {
-            case 'view-community':
-            case 'view':
-                $router = 'community/affiliation/affiliation';
-                $text   = sprintf($translate("txt-view-affiliation-%s"), $affiliation);
-                break;
-            case 'upload-program-doa':
-                $router = 'community/affiliation/upload-program-doa';
-                $text   = sprintf($translate("txt-upload-program-doa-for-organisation-%s-in-program-%s-link-title"),
+            case 'upload':
+                $router = 'community/affiliation/loi/upload';
+                $text   = sprintf($translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
                     $affiliation->getOrganisation(),
-                    $affiliation->getProject()->getCall()->getProgram()
+                    $affiliation->getProject()
                 );
                 break;
-            case 'render-program-doa':
-                $router = 'community/affiliation/render-program-doa';
-                $text   = sprintf($translate("txt-render-program-doa-for-organisation-%s-in-program-%s-link-title"),
+            case 'render':
+                $router = 'community/affiliation/loi/render';
+                $text   = sprintf($translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
                     $affiliation->getOrganisation(),
-                    $affiliation->getProject()->getCall()->getProgram()
+                    $affiliation->getProject()
                 );
                 break;
-            case 'edit-community':
-                $router = 'community/affiliation/edit';
-                $text   = sprintf($translate("txt-edit-affiliation-%s"), $affiliation);
+            case 'download':
+                $router = 'community/affiliation/loi/download';
+                $text   = sprintf($translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
+                    $loi->getAffiliation()->getOrganisation(),
+                    $loi->getAffiliation()->getProject()
+                );
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));
         }
 
         $params = array(
-            'id'     => $affiliation->getId(),
-            'entity' => 'affiliation'
+            'id'             => (!is_null($loi) ? $loi->getId() : null),
+            'affiliation-id' => (!is_null($affiliation) ? $affiliation->getId() : null),
+            'entity'         => 'doa'
         );
 
         $classes     = array();
@@ -80,22 +79,19 @@ class AffiliationLink extends AbstractHelper
         switch ($show) {
             case 'icon':
                 if ($action === 'edit') {
-                    $linkContent[] = '<i class="icon-pencil"></i>';
-                } elseif ($action === 'delete') {
-                    $linkContent[] = '<i class="icon-remove"></i>';
+                    $linkContent[] = '<span class="glyphicon glyphicon-edit"></span>';
+                } elseif ($action === 'download') {
+                    $linkContent[] = '<span class="glyphicon glyphicon-download"></span>';
                 } else {
-                    $linkContent[] = '<i class="icon-info-sign"></i>';
+                    $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span>';
                 }
                 break;
             case 'button':
-                $linkContent[] = '<i class="icon-pencil icon-white"></i> ' . $text;
+                $linkContent[] = '<span class="glyphicon glyphicon-info"></span> ' . $text;
                 $classes[]     = "btn btn-primary";
                 break;
             case 'text':
                 $linkContent[] = $text;
-                break;
-            case 'organisation':
-                $linkContent[] = $affiliation->getOrganisation()->getOrganisation();
                 break;
             default:
                 $linkContent[] = $affiliation;

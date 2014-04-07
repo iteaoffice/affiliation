@@ -12,11 +12,15 @@ $config = array(
         'invokables' => array(
             'affiliation-community' => 'Affiliation\Controller\CommunityController',
             'affiliation-manager'   => 'Affiliation\Controller\AffiliationManagerController',
+            'affiliation-doa'       => 'Affiliation\Controller\DoaController',
+            'affiliation-loi'       => 'Affiliation\Controller\LoiController',
         ),
     ),
     'view_helpers'    => array(
         'invokables' => array(
             'affiliationLink' => 'Affiliation\View\Helper\AffiliationLink',
+            'doaLink'         => 'Affiliation\View\Helper\DoaLink',
+            'loiLink'         => 'Affiliation\View\Helper\LoiLink',
 
         )
     ),
@@ -25,7 +29,8 @@ $config = array(
     ),
     'service_manager' => array(
         'factories'  => array(
-            'affiliation-assertion' => 'Affiliation\Acl\Assertion\Affiliation',
+            'affiliation-assertion'      => 'Affiliation\Acl\Assertion\Affiliation',
+            'affiliation_module_options' => 'Affiliation\Service\OptionServiceFactory',
         ),
         'invokables' => array(
             'affiliation_generic_service'         => 'Affiliation\Service\GeneralService',
@@ -64,6 +69,7 @@ $configFiles = array(
     __DIR__ . '/module.config.routes.php',
     __DIR__ . '/module.config.navigation.php',
     __DIR__ . '/module.config.authorize.php',
+    __DIR__ . '/module.option.affiliation.php',
 );
 
 foreach ($configFiles as $configFile) {

@@ -9,6 +9,7 @@
  */
 namespace Affiliation\Form;
 
+use Organisation\Entity\Financial;
 use Zend\Form\Form;
 use Affiliation\Service\AffiliationService;
 
@@ -114,6 +115,39 @@ class Affiliation extends Form
             )
         );
 
+        $organisationFinancial = new Financial();
+
+        $this->add(
+            array(
+                'type'       => 'Zend\Form\Element\Radio',
+                'name'       => 'preferredDelivery',
+
+                'options'    => array(
+                    'value_options' => $organisationFinancial->getEmailTemplates(),
+                    'label'         => _("txt-preferred-delivery"),
+                ),
+                'attributes' => array(
+                    'class'    => 'form-control',
+                    'required' => true,
+                )
+            )
+        );
+
+
+        $this->add(
+            array(
+                'type'       => 'Zend\Form\Element\Text',
+                'name'       => 'valueChain',
+                'options'    => array(
+                    'label' => _("txt-position-on-value-chain"),
+                ),
+                'attributes' => array(
+                    'class'    => 'form-control',
+                    'required' => true,
+                )
+            )
+        );
+
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',
@@ -121,6 +155,17 @@ class Affiliation extends Form
                 'attributes' => array(
                     'class' => "btn btn-primary",
                     'value' => _("txt-update")
+                )
+            )
+        );
+
+        $this->add(
+            array(
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'cancel',
+                'attributes' => array(
+                    'class' => "btn btn-warning",
+                    'value' => _("txt-cancel")
                 )
             )
         );

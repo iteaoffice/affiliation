@@ -10,14 +10,10 @@
 namespace Affiliation\Controller;
 
 use Zend\View\Model\ViewModel;
-use Zend\Validator\File\FilesSize;
 
 use Affiliation\Form\Affiliation;
-use Affiliation\Form\CreateProgramDoa;
 use Affiliation\Entity;
 
-use Program\Entity\ProgramDoa;
-use Program\Entity\ProgramDoaObject;
 
 /**
  * @category    Affiliation
@@ -59,12 +55,14 @@ class CommunityController extends AffiliationAbstractController
 
         $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
-        $formData                = array();
-        $formData['affiliation'] = sprintf("%s|%s",
+        $formData                      = array();
+        $formData['affiliation']       = sprintf("%s|%s",
             $affiliationService->getAffiliation()->getOrganisation()->getId(),
             $affiliationService->getAffiliation()->getBranch()
         );
-        $formData['technical']   = $affiliationService->getAffiliation()->getContact()->getId();
+        $formData['technical']         = $affiliationService->getAffiliation()->getContact()->getId();
+        $formData['valueChain']        = $affiliationService->getAffiliation()->getValueChain();
+        $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()->getEmail();
         if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
             $formData['financial'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getId();
         }
@@ -86,9 +84,9 @@ class CommunityController extends AffiliationAbstractController
                     sprintf(_("txt-affiliation-%s-has-successfully-been-deactivated"), $affiliationService->getAffiliation())
                 );
 
-                return $this->redirect()->toRoute('community/project/project', array(
-                        'docRef' => $projectService->getProject()->getDocRef()
-                    )
+                return $this->redirect()->toRoute('community/project/project',
+                    array('docRef' => $projectService->getProject()->getDocRef()),
+                    array('fragment' => 'partners')
                 );
             }
 
@@ -117,6 +115,8 @@ class CommunityController extends AffiliationAbstractController
             $affiliation->setBranch($branch);
             $this->getAffiliationService()->updateEntity($affiliation);
 
+            $affiliation->setValueChain($formData['valueChain']);
+
             /**
              * Handle the financial organisation
              */
@@ -128,6 +128,14 @@ class CommunityController extends AffiliationAbstractController
             $financial->setBranch($branch);
             $financial->setContact($this->getContactService()->setContactId($formData['financial'])->getContact());
             $this->getAffiliationService()->updateEntity($financial);
+
+            /**
+             * Handle the preferred delivery for the organisation (OrganisationFinancial)
+             */
+            $organisationFinancial = $affiliation->getOrganisation()->getFinancial();
+            $organisationFinancial->setEmail((bool)$formData['preferredDelivery']);
+            $this->getOrganisationService()->updateEntity($organisationFinancial);
+
 
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
@@ -145,68 +153,5 @@ class CommunityController extends AffiliationAbstractController
                 'form'               => $form
             )
         );
-    }
-
-    /**
-     * @return ViewModel
-     */
-    public function uploadProgramDoaAction()
-    {
-        $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
-        );
-
-        $data = array_merge_recursive(
-            $this->getRequest()->getPost()->toArray(),
-            $this->getRequest()->getFiles()->toArray()
-        );
-
-        $form = new CreateProgramDoa();
-        $form->setData($data);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-
-            if (!isset($data['cancel'])) {
-                $fileData = $this->params()->fromFiles();
-
-                //Create a article object element
-                $programDoaObject = new ProgramDoaObject();
-                $programDoaObject->setObject(file_get_contents($fileData['file']['tmp_name']));
-
-                $fileSizeValidator = new FilesSize(PHP_INT_MAX);
-                $fileSizeValidator->isValid($fileData['file']);
-
-                $programDoa = new ProgramDoa();
-                $programDoa->setSize($fileSizeValidator->size);
-                $programDoa->setContentType(
-                    $this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type'])
-                );
-
-                $programDoa->setContact($this->zfcUserAuthentication()->getIdentity());
-                $programDoa->setBranch($affiliationService->getAffiliation()->getBranch());
-                $programDoa->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
-                $programDoa->setProgram($affiliationService->getAffiliation()->getProject()->getCall()->getProgram());
-
-                $programDoaObject->setProgramDoa($programDoa);
-
-                $this->getProgramService()->newEntity($programDoaObject);
-
-                $this->flashMessenger()->setNamespace('success')->addMessage(
-                    sprintf(_("txt-program-doa-for-organisation-%s-and-program-%s-has-been-uploaded"),
-                        $affiliationService->getAffiliation()->getOrganisation(),
-                        $affiliationService->getAffiliation()->getProject()->getCall()->getProgram()
-                    )
-                );
-            }
-
-            $this->redirect()->toRoute('community/affiliation/affiliation',
-                array('id' => $affiliationService->getAffiliation()->getId())
-            );
-        }
-
-        return new ViewModel(array(
-            'affiliationService' => $affiliationService,
-            'form'               => $form
-        ));
     }
 }

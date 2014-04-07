@@ -61,12 +61,12 @@ class Version extends EntityAbstract
      */
     private $version;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Version", cascade="persist", mappedBy="affiliationVersion")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Version", cascade={"persist","remove"},  mappedBy="affiliationVersion")
      * @var \Project\Entity\Cost\Version
      */
     private $costVersion;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Version", cascade="persist", mappedBy="affiliationVersion")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Version", cascade={"persist","remove"}, mappedBy="affiliationVersion")
      * @var \Project\Entity\Effort\Version
      */
     private $effortVersion;

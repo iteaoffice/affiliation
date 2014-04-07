@@ -17,12 +17,12 @@ use Zend\InputFilter\Factory as InputFactory;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ProjectLoiObject
+ * ProjectDoaObject
  *
- * @ORM\Table(name="project_loi_object")
+ * @ORM\Table(name="project_doa_object")
  * @ORM\Entity
  */
-class LoiObject extends EntityAbstract
+class DoaObject extends EntityAbstract
 {
     /**
      * @ORM\Column(name="object_id", type="integer", nullable=false)
@@ -37,13 +37,13 @@ class LoiObject extends EntityAbstract
      */
     private $object;
     /**
-     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Loi", cascade="persist", inversedBy="object")
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Doa", cascade="persist", inversedBy="object")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="loi_id", referencedColumnName="loi_id")
+     *   @ORM\JoinColumn(name="doa_id", referencedColumnName="doa_id")
      * })
-     * @var \Affiliation\Entity\Loi
+     * @var \Affiliation\Entity\Doa
      */
-    private $loi;
+    private $doa;
 
     /**
      * Magic Getter
@@ -129,19 +129,19 @@ class LoiObject extends EntityAbstract
     }
 
     /**
-     * @param \Affiliation\Entity\Loi $loi
+     * @param \Affiliation\Entity\Doa $doa
      */
-    public function setLoi($loi)
+    public function setDoa($doa)
     {
-        $this->loi = $loi;
+        $this->doa = $doa;
     }
 
     /**
-     * @return \Affiliation\Entity\Loi
+     * @return \Affiliation\Entity\Doa
      */
-    public function getLoi()
+    public function getDoa()
     {
-        return $this->loi;
+        return $this->doa;
     }
 
     /**

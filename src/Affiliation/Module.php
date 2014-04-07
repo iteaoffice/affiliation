@@ -15,6 +15,8 @@ use Zend\ModuleManager\Feature; //Makes the module class more strict
 use Zend\EventManager\EventInterface;
 
 use Affiliation\Service\FormServiceAwareInterface;
+use Affiliation\Controller\Plugin\RenderLoi;
+use Affiliation\Controller\Plugin\RenderDoa;
 
 /**
  *
@@ -73,6 +75,30 @@ class Module implements
                     }
                 },
             ),
+        );
+    }
+
+    /**
+     * Move this to here to have config cache working
+     * @return array
+     */
+    public function getControllerPluginConfig()
+    {
+        return array(
+            'factories' => array(
+                'renderDoa' => function ($sm) {
+                    $renderDoa = new RenderDoa();
+                    $renderDoa->setServiceLocator($sm->getServiceLocator());
+
+                    return $renderDoa;
+                },
+                'renderLoi' => function ($sm) {
+                    $renderLoi = new RenderLoi();
+                    $renderLoi->setServiceLocator($sm->getServiceLocator());
+
+                    return $renderLoi;
+                },
+            )
         );
     }
 

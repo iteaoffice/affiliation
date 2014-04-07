@@ -20,7 +20,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 /**
  *
  */
-class CreateProgramDoa extends Form implements InputFilterProviderInterface
+class UploadDoa extends Form implements InputFilterProviderInterface
 {
     /**
      * Class constructor
@@ -31,6 +31,7 @@ class CreateProgramDoa extends Form implements InputFilterProviderInterface
 
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
+        $this->setAttribute('enctype', 'multipart/form-data');
 
         $this->add(
             array(
@@ -38,7 +39,7 @@ class CreateProgramDoa extends Form implements InputFilterProviderInterface
                 'name'    => 'file',
                 'options' => array(
                     "label"      => "txt-file",
-                    "help-block" => _("txt-a-doa-in-pdf-format-is-required")
+                    "help-block" => _("txt-a-project-doa-in-pdf-format-is-required")
                 )
             )
         );
@@ -56,7 +57,7 @@ class CreateProgramDoa extends Form implements InputFilterProviderInterface
                 'name'       => 'submit',
                 'attributes' => array(
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update")
+                    'value' => _("txt-upload-project-doa")
                 )
             )
         );

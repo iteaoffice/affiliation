@@ -19,15 +19,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * ProjectLoi
+ * ProjectDoa
  *
- * @ORM\Table(name="project_loi")
+ * @ORM\Table(name="project_doa")
  * @ORM\Entity
  */
-class Loi extends EntityAbstract
+class Doa extends EntityAbstract
 {
     /**
-     * @ORM\Column(name="loi_id", type="integer", nullable=false)
+     * @ORM\Column(name="doa_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @var integer
@@ -44,7 +44,7 @@ class Loi extends EntityAbstract
      */
     private $dateApproved;
     /**
-     * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="loi")
+     * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="affiliationDoa")
      * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=false)
      * @Annotation\Exclude()
      * @var \General\Entity\ContentType
@@ -56,9 +56,9 @@ class Loi extends EntityAbstract
      */
     private $size;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist"}, mappedBy="loi")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist"}, mappedBy="doa")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\LoiObject[]
+     * @var \Affiliation\Entity\DoaObject[]
      */
     private $object;
     /**
@@ -76,7 +76,7 @@ class Loi extends EntityAbstract
      */
     private $dateCreated;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="loi")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="doa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
      * })
@@ -84,7 +84,7 @@ class Loi extends EntityAbstract
      */
     private $affiliation;
     /**
-     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="loi")
+     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="affiliationDoa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * })
@@ -150,16 +150,6 @@ class Loi extends EntityAbstract
     }
 
     /**
-     * Parse a filename
-     *
-     * @return string
-     */
-    public function parseFileName()
-    {
-        return sprintf("LOI_%s_%s", $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
-    }
-
-    /**
      * Needed for the hydration of form elements
      * @return array
      */
@@ -174,6 +164,16 @@ class Loi extends EntityAbstract
     public function populate()
     {
         return $this->getArrayCopy();
+    }
+
+    /**
+     * Parse a filename
+     *
+     * @return string
+     */
+    public function parseFileName()
+    {
+        return sprintf("DOA_%s_%s", $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
     }
 
     /**
@@ -305,7 +305,7 @@ class Loi extends EntityAbstract
     }
 
     /**
-     * @param \Affiliation\Entity\LoiObject[] $object
+     * @param \Affiliation\Entity\DoaObject[] $object
      */
     public function setObject($object)
     {
@@ -313,7 +313,7 @@ class Loi extends EntityAbstract
     }
 
     /**
-     * @return \Affiliation\Entity\LoiObject[]
+     * @return \Affiliation\Entity\DoaObject[]
      */
     public function getObject()
     {

@@ -34,33 +34,50 @@
         <dd>{{ projectService.parseStatus() }}</dd>
         <dt>{{ translate("txt-project-leader") }}</dt>
         <dd>{{ projectService.project.contact.displayName() }}</dd>
-        <dt>{{ translate("txt-call-name") }}</dt>
-        <dd>{{ projectService.project.call }}</dd>
+        {#<dt>{{ translate("txt-call-name") }}</dt>#}
+        {#<dd>{{ projectService.project.call }}</dd>#}
         <dt>{{ translate("txt-project-country") }}</dt>
         <dd>{{ projectService.project.contact.contactOrganisation.organisation.country }}</dd>
         <dt>{{ translate("txt-position-on-value-chain") }}</dt>
         <dd>{{ affiliationService.affiliation.valueChain }}</dd>
-        <dt>{{ translate("txt-letter-of-intent") }}</dt>
-        <dd>{% if affiliationService.affiliation.loi %}
-                {{ translate("txt-loi-received-on-%s")|format(affiliationService.affiliation.loi.dateSigned|string_date) }}
+        <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
+        <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
+                {% if programDoa.dateApproved is null %}
+                    {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
+                    {{ programDoaLink(programDoa,'download','icon') }}
+                {% else %}
+                    {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}
+                    {{ programDoaLink(programDoa,'download','icon') }}
+                {% endif %}
             {% else %}
-                {{ translate("txt-no-loi-received") }}
+                {{ programDoaLink(null,'upload','text', affiliationService.affiliation) }}
+            {% endfor %}
+        </dd>
+        <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
+        <dd>
+            {% if not affiliationService.affiliation.doa %}
+                {{ doaLink(null,'upload','text', affiliationService.affiliation) }}
+            {% elseif affiliation.doa.dateApproved is null %}
+                {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
+                format(affiliationService.affiliation.doa.dateReceived|date("d-m-Y"))|raw }}
+                {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
+            {% else %}
+                {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliationService.affiliation.doa.dateApproved|string_date) }}
+                {{ loiLink(affiliationService.affiliation.doa,'download','text') }}
             {% endif %}
         </dd>
-        <dt>{{ translate("txt-declaration-of-acceptance") }}</dt>
-        <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
-
-                {% if programDoa.dateApproved is null %}
-                    {{ translate("txt-doa-received-but-waiting-for-approval") }}
-                {% elseif programDoa.object.count() > 0 %}
-                    {#{{ programDoaLink(programDoa,'download','text') }}#}
-                {% else %}
-                    {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|string_date) }}
-                {% endif %}
-
+        <dt>{{ translate("txt-letter-of-intent") }}</dt>
+        <dd>
+            {% if not affiliationService.affiliation.loi %}
+                {{ loiLink(null,'upload','text', affiliationService.affiliation) }}
+            {% elseif affiliation.loi.dateApproved is null %}
+                {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
+                format(affiliationService.affiliation.loi.dateReceived|date("d-m-Y"))|raw }}
+                {{ loiLink(affiliationService.affiliation.loi,'download','icon') }}
             {% else %}
-                {{ affiliationLink(affiliationService.affiliation,'upload-program-doa','text') }}
-            {% endfor %}
+                {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliationService.affiliation.loi.dateApproved|string_date) }}
+                {{ loiLink(affiliationService.affiliation.loi,'download','icon') }}
+            {% endif %}
         </dd>
         <dt>{{ translate("txt-technical-contact") }}</dt>
         <dd>{{ affiliationService.affiliation.contact.displayName() }}</dd>
@@ -181,11 +198,9 @@
                 {% for year in years %}
                     <td>{{ costPerYear[year]|number_format(0, '.', ',') }}
                         {% if costPerYear[year] > costPerYearInVersion[year] %}
-                            <span class="label label-success"><span
-                                        class="glyphicon glyphicon-arrow-up"></span></span>
+                            <span class="glyphicon glyphicon-plus-sign increase pull-right"></span>
                         {% elseif costPerYear[year] < costPerYearInVersion[year] %}
-                            <span class="label label-danger"><span
-                                        class="glyphicon glyphicon-arrow-down"></span></span>
+                            <span class="glyphicon glyphicon-minus-sign decrease pull-right"></span>
                         {% endif %}
                     </td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
@@ -226,12 +241,11 @@
                     {% for year in years %}
                         <td>
                             {{ effortPerYear[year] }}
+
                             {% if effortPerYear[year] > effortPerYearInVersion[year] %}
-                                <span class="label label-success"><span
-                                            class="glyphicon glyphicon-arrow-up"></span></span>
+                                <span class="glyphicon glyphicon-plus-sign increase pull-right"></span>
                             {% elseif effortPerYear[year] < effortPerYearInVersion[year] %}
-                                <span class="label label-danger"><span
-                                            class="glyphicon glyphicon-arrow-down"></span></span>
+                                <span class="glyphicon glyphicon-minus-sign decrease pull-right"></span>
                             {% endif %}
                         </td>
                         {% set totalPerWP = totalPerWP + effortPerYear[year] %}

@@ -39,12 +39,15 @@ affiliationService.affiliation.organisation
 {{ ztbformelement(form.get('affiliation')) }}
 {{ ztbformelement(form.get('technical')) }}
 {{ ztbformelement(form.get('financial')) }}
+{{ ztbformelement(form.get('valueChain')) }}
+{{ ztbformelement(form.get('preferredDelivery')) }}
 
 <hr>
 
 <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
         {% if affiliationService.isActive() %}
             {{ ztbformelement(form.get('deactivate')) }}
         {% else %}

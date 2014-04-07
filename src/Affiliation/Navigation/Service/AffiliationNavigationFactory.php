@@ -54,7 +54,13 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
 
         if (strpos($this->routeMatch->getMatchedRouteName(), 'community/affiliation') !== false) {
 
-            $this->affiliationService->setAffiliationId($this->routeMatch->getParam('id'));
+            /**
+             * The affiliationId can be deliverd to this service in 2 ways. Either via 'id' or 'affiliation-id'
+             */
+            $affiliationId = !is_null($this->routeMatch->getParam('affiliation-id')) ?
+                $this->routeMatch->getParam('affiliation-id') : $this->routeMatch->getParam('id');
+
+            $this->affiliationService->setAffiliationId($affiliationId);
 
             if (is_null($this->affiliationService->getAffiliation()->getId())) {
                 return false;
@@ -86,17 +92,50 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
                 )
             );
 
-            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/upload-program-doa') {
-                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['upload-program-doa'] = array(
-                    'label'      => sprintf(_("txt-upload-program-doa-for-program-%s"),
-                        $this->affiliationService->getAffiliation()->getProject()->getCall()->getProgram()
+            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/edit') {
+                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['edit'] = array(
+                    'label'      => sprintf(_("txt-edit-affiliation-%s-in-%s"),
+                        $this->affiliationService->getAffiliation()->getOrganisation()->getOrganisation(),
+                        $this->affiliationService->getAffiliation()->getProject()->getProject()
                     ),
-                    'route'      => 'community/affiliation/upload-program-doa',
+                    'route'      => 'community/affiliation/edit',
                     'routeMatch' => $this->routeMatch,
                     'active'     => true,
                     'router'     => $router,
                     'params'     => array(
-                        'id' => $this->routeMatch->getParam('id')
+                        'id' => $affiliationId
+                    )
+                );
+            }
+
+            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/upload-doa') {
+                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['upload-doa'] = array(
+                    'label'      => sprintf(_("txt-doa-for-organisation-%s-for-project-%s"),
+                        $this->affiliationService->getAffiliation()->getOrganisation(),
+                        $this->affiliationService->getAffiliation()->getProject()
+                    ),
+                    'route'      => 'community/affiliation/doa/upload',
+                    'routeMatch' => $this->routeMatch,
+                    'active'     => true,
+                    'router'     => $router,
+                    'params'     => array(
+                        'affiliation-id' => $affiliationId
+                    )
+                );
+            }
+
+            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/upload-loi') {
+                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['upload-loi'] = array(
+                    'label'      => sprintf(_("txt-loi-for-organisation-%s-for-project-%s"),
+                        $this->affiliationService->getAffiliation()->getOrganisation(),
+                        $this->affiliationService->getAffiliation()->getProject()
+                    ),
+                    'route'      => 'community/affiliation/loi/upload',
+                    'routeMatch' => $this->routeMatch,
+                    'active'     => true,
+                    'router'     => $router,
+                    'params'     => array(
+                        'affiliation-id' => $affiliationId
                     )
                 );
             }
