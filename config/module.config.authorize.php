@@ -25,14 +25,9 @@ return array(
         'rule_providers'     => array(
             'BjyAuthorize\Provider\Rule\Config' => array(
                 'allow' => array(
-                    // allow guests and users (and admins, through inheritance)
-                    // the "wear" privilege on the resource "pants"d
-                    array(array('public'), 'affiliation', array('listings', 'view')),
-                    array(array(), 'affiliation', array('edit', 'new', 'delete'))
-                ),
-                // Don't mix allow/deny rules if you are using role inheritance.
-                // There are some weird bugs.
-                'deny'  => array( // ...
+                    array(array('office'), 'affiliation', array(
+                        'edit-community',
+                    ), 'affiliation_acl_assertion_affiliation'),
                 ),
             ),
         ),
@@ -43,16 +38,17 @@ return array(
              * access to all routes unless they are specified here.
              */
             'BjyAuthorize\Guard\Route' => array(
-                array('route' => 'community/affiliation/affiliation', 'roles' => array('office')),
-                array('route' => 'community/affiliation/upload-program-doa', 'roles' => array('office')),
-                array('route' => 'community/affiliation/render-program-doa', 'roles' => array('office')),
-                array('route' => 'community/affiliation/doa/upload', 'roles' => array('office')),
-                array('route' => 'community/affiliation/doa/render', 'roles' => array('office')),
-                array('route' => 'community/affiliation/doa/download', 'roles' => array('office')),
-                array('route' => 'community/affiliation/loi/upload', 'roles' => array('office')),
-                array('route' => 'community/affiliation/loi/render', 'roles' => array('office')),
-                array('route' => 'community/affiliation/loi/download', 'roles' => array('office')),
-                array('route' => 'community/affiliation/edit', 'roles' => array('office')),
+                array('route' => 'community/affiliation/affiliation', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_affiliation'),
+                array('route' => 'community/affiliation/edit', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_affiliation'),
+                array('route' => 'community/affiliation/edit-financial', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_affiliation'),
+
+                array('route' => 'community/affiliation/doa/upload', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_doa'),
+                array('route' => 'community/affiliation/doa/render', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_doa'),
+                array('route' => 'community/affiliation/doa/download', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_doa'),
+
+                array('route' => 'community/affiliation/loi/upload', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_loi'),
+                array('route' => 'community/affiliation/loi/render', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_loi'),
+                array('route' => 'community/affiliation/loi/download', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_loi'),
             ),
         ),
     ),

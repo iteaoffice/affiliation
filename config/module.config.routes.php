@@ -29,7 +29,8 @@ return array(
                                 'options' => array(
                                     'route'    => '/details/[:id].html',
                                     'defaults' => array(
-                                        'action' => 'affiliation',
+                                        'action'    => 'affiliation',
+                                        'privilege' => 'view-community'
                                     ),
                                 ),
                             ),
@@ -38,7 +39,18 @@ return array(
                                 'options' => array(
                                     'route'    => '/edit/[:id].html',
                                     'defaults' => array(
-                                        'action' => 'edit',
+                                        'action'    => 'edit',
+                                        'privilege' => 'edit-community'
+                                    ),
+                                ),
+                            ),
+                            'edit-financial'        => array(
+                                'type'    => 'Segment',
+                                'options' => array(
+                                    'route'    => '/edit-financial/[:id].html',
+                                    'defaults' => array(
+                                        'action'    => 'edit-financial',
+                                        'privilege' => 'edit-financial'
                                     ),
                                 ),
                             ),
@@ -57,7 +69,8 @@ return array(
                                         'options' => array(
                                             'route'    => '/render/affiliation-[:affiliation-id].html',
                                             'defaults' => array(
-                                                'action' => 'render',
+                                                'action'    => 'render',
+                                                'privilege' => 'render'
                                             ),
                                         ),
                                     ),
@@ -66,7 +79,8 @@ return array(
                                         'options' => array(
                                             'route'    => '/upload/affiliation-[:affiliation-id].html',
                                             'defaults' => array(
-                                                'action' => 'upload',
+                                                'action'    => 'upload',
+                                                'privilege' => 'upload'
                                             ),
                                         ),
                                     ),
@@ -75,7 +89,8 @@ return array(
                                         'options' => array(
                                             'route'    => '/download/[:id].pdf',
                                             'defaults' => array(
-                                                'action' => 'download',
+                                                'action'    => 'download',
+                                                'privilege' => 'download'
                                             ),
                                         ),
                                     ),
@@ -96,7 +111,8 @@ return array(
                                         'options' => array(
                                             'route'    => '/render/affiliation-[:affiliation-id].html',
                                             'defaults' => array(
-                                                'action' => 'render',
+                                                'action'    => 'render',
+                                                'privilege' => 'render'
                                             ),
                                         ),
                                     ),
@@ -105,7 +121,8 @@ return array(
                                         'options' => array(
                                             'route'    => '/upload/affiliation-[:affiliation-id].html',
                                             'defaults' => array(
-                                                'action' => 'upload',
+                                                'action'    => 'upload',
+                                                'privilege' => 'upload'
                                             ),
                                         ),
                                     ),
@@ -114,11 +131,12 @@ return array(
                                         'options' => array(
                                             'route'    => '/download/[:id].pdf',
                                             'defaults' => array(
-                                                'action' => 'download',
+                                                'action'    => 'download',
+                                                'privilege' => 'download'
                                             ),
                                         ),
                                     ),
-                                )
+                                ),
                             ),
                         ),
                     ),

@@ -1,0 +1,69 @@
+<h1>{{ translate("txt-edit-financial-affiliation-%s-in-%s")|format(
+    affiliationService.affiliation.organisation.organisation,
+    projectService.parseFullName()
+    ) }}</h1>
+
+{% set organisationService = organisationServiceProxy(
+affiliationService.affiliation.organisation
+) %}
+
+{% do form.prepare() %}
+
+{{ form().openTag(form)|raw }}
+
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ projectLink(projectService,'view-community', 'name') }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ organisationService.parseOrganisationWithBranch(affiliationService.affiliation.branch) }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-country") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ affiliationService.affiliation.organisation.country }}</p>
+    </div>
+</div>
+
+<fieldset>
+    <legend>{{ translate("txt-organisation") }}</legend>
+    {{ ztbformelement(form.get('organisation')) }}
+    {{ ztbformelement(form.get('registeredCountry')) }}
+    {{ ztbformelement(form.get('vat')) }}
+</fieldset>
+
+<fieldset>
+    <legend>{{ translate("txt-billing-address") }}</legend>
+
+    {{ ztbformelement(form.get('attention')) }}
+    {{ ztbformelement(form.get('omitContact')) }}
+    {{ ztbformelement(form.get('address')) }}
+    {{ ztbformelement(form.get('zipCode')) }}
+    {{ ztbformelement(form.get('city')) }}
+    {{ ztbformelement(form.get('country')) }}
+</fieldset>
+
+
+{{ ztbformelement(form.get('preferredDelivery')) }}
+
+<hr>
+
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

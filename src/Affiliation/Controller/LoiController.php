@@ -12,7 +12,7 @@ namespace Affiliation\Controller;
 use Zend\View\Model\ViewModel;
 use Zend\Validator\File\FilesSize;
 
-use Affiliation\Form\CreateLoi;
+use Affiliation\Form\UploadLoi;
 use Affiliation\Entity;
 use Affiliation\Entity\Loi;
 
@@ -28,7 +28,7 @@ class LoiController extends AffiliationAbstractController
      *
      * @return ViewModel
      */
-    public function uploadLoiAction()
+    public function uploadAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
@@ -39,7 +39,7 @@ class LoiController extends AffiliationAbstractController
             $this->getRequest()->getFiles()->toArray()
         );
 
-        $form = new CreateLoi();
+        $form = new UploadLoi();
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
@@ -87,7 +87,7 @@ class LoiController extends AffiliationAbstractController
     /**
      * @return \Zend\Stdlib\ResponseInterface
      */
-    public function renderLoiAction()
+    public function renderAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('affiliation-id')

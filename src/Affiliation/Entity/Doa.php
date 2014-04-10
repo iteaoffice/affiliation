@@ -45,13 +45,13 @@ class Doa extends EntityAbstract
     private $dateApproved;
     /**
      * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="affiliationDoa")
-     * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=false)
+     * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=true)
      * @Annotation\Exclude()
      * @var \General\Entity\ContentType
      */
     private $contentType;
     /**
-     * @ORM\Column(name="size", type="integer", nullable=false)
+     * @ORM\Column(name="size", type="integer", nullable=false, nullable=true)
      * @var integer
      */
     private $size;
@@ -69,7 +69,7 @@ class Doa extends EntityAbstract
      */
     private $dateUpdated;
     /**
-     * @ORM\Column(name="date_created", type="datetime", nullable=false)
+     * @ORM\Column(name="date_received", type="date", nullable=true)
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
      * @var \DateTime

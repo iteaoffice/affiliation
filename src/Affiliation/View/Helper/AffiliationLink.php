@@ -41,29 +41,38 @@ class AffiliationLink extends AbstractHelper
         $serverUrl = $this->view->plugin('serverUrl');
         $isAllowed = $this->view->plugin('isAllowed');
 
+        /**
+         * Add the resource on the fly
+         */
+        if (is_null($affiliation)) {
+            $affiliation = new Entity\Affiliation();
+        }
+
+        $auth      = $this->view->getHelperPluginManager()->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
+        $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get('affiliation_acl_assertion_affiliation');
+
+
+        if (!is_null($affiliation) && !$auth->getAcl()->hasResource($affiliation)) {
+            $auth->getAcl()->addResource($affiliation);
+            $auth->getAcl()->allow(array(), $affiliation, array(), $assertion);
+        }
+
+        if (!is_null($affiliation) && !$isAllowed($affiliation, $action)) {
+            return $action . ' is not possible for ' . $affiliation;
+        }
+
         switch ($action) {
             case 'view-community':
-            case 'view':
                 $router = 'community/affiliation/affiliation';
                 $text   = sprintf($translate("txt-view-affiliation-%s"), $affiliation);
-                break;
-            case 'upload-program-doa':
-                $router = 'community/affiliation/upload-program-doa';
-                $text   = sprintf($translate("txt-upload-program-doa-for-organisation-%s-in-program-%s-link-title"),
-                    $affiliation->getOrganisation(),
-                    $affiliation->getProject()->getCall()->getProgram()
-                );
-                break;
-            case 'render-program-doa':
-                $router = 'community/affiliation/render-program-doa';
-                $text   = sprintf($translate("txt-render-program-doa-for-organisation-%s-in-program-%s-link-title"),
-                    $affiliation->getOrganisation(),
-                    $affiliation->getProject()->getCall()->getProgram()
-                );
                 break;
             case 'edit-community':
                 $router = 'community/affiliation/edit';
                 $text   = sprintf($translate("txt-edit-affiliation-%s"), $affiliation);
+                break;
+            case 'edit-financial':
+                $router = 'community/affiliation/edit-financial';
+                $text   = sprintf($translate("txt-edit-financial-affiliation-%s"), $affiliation);
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));
@@ -80,15 +89,13 @@ class AffiliationLink extends AbstractHelper
         switch ($show) {
             case 'icon':
                 if ($action === 'edit') {
-                    $linkContent[] = '<i class="icon-pencil"></i>';
-                } elseif ($action === 'delete') {
-                    $linkContent[] = '<i class="icon-remove"></i>';
+                    $linkContent[] = '<span class="glyphicon glyphicon-edit"></span>';
                 } else {
-                    $linkContent[] = '<i class="icon-info-sign"></i>';
+                    $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span>';
                 }
                 break;
             case 'button':
-                $linkContent[] = '<i class="icon-pencil icon-white"></i> ' . $text;
+                $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span> ' . $text;
                 $classes[]     = "btn btn-primary";
                 break;
             case 'text':

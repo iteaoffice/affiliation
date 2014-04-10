@@ -12,7 +12,7 @@ namespace Affiliation\Form;
 use Zend\Form\Form;
 use Zend\ServiceManager\ServiceManager;
 
-use Content\Entity\EntityAbstract;
+use Affiliation\Entity\EntityAbstract;
 
 /**
  *

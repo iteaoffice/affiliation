@@ -13,10 +13,10 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Authentication\AuthenticationService;
 
-use Doctrine\ORM\EntityManager;
-
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Doa;
+use Affiliation\Entity\Loi;
 
 /**
  * ServiceAbstract
@@ -51,7 +51,7 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
      * @param $entity
      * @param $id
      *
-     * @return null|object|Affiliation
+     * @return null|Affiliation|Doa|Loi
      */
     public function findEntityById($entity, $id)
     {

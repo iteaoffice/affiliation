@@ -13,6 +13,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\Form\Annotation;
+use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
@@ -30,7 +31,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @category    Affiliation
  * @package     Entity
  */
-class Affiliation extends EntityAbstract //implements ResourceInterface
+class Affiliation extends EntityAbstract implements ResourceInterface
 {
     /**
      * Constant for mode = 0 (not self funded)
@@ -328,6 +329,16 @@ class Affiliation extends EntityAbstract //implements ResourceInterface
     public function __toString()
     {
         return $this->getOrganisation()->getOrganisation();
+    }
+
+    /**
+     * Returns the string identifier of the Resource
+     *
+     * @return string
+     */
+    public function getResourceId()
+    {
+        return sprintf("%s:%s", __CLASS__, $this->id);
     }
 
     /**
