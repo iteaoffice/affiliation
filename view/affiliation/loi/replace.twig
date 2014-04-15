@@ -1,0 +1,60 @@
+{% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
+
+<h1>{{ translate("txt-replace-loi-for-organisation-%s-for-project-%s")|
+    format(affiliationService.affiliation.organisation, affiliationService.affiliation.project)|raw }}</h1>
+
+<p class="lead">{{ translate("txt-replace-loi-for-organisation-%s-for-project-%s-explanation")|
+    format(affiliationService.affiliation.organisation, affiliationService.affiliation.project)|raw }}</p>
+
+
+{% do form.prepare() %}
+{% do form.setAttribute('class','form-horizontal') %}
+
+{{ form().openTag(form)|raw }}
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-project") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ projectLink(projectService,'view-community') }}
+            ({{ projectService.project.call.program }})</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-organisation") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ affiliationService.affiliation.organisation }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-download-current-loi") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ loiLink(affiliationService.affiliation.loi,'download','text') }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-render-new-loi") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ loiLink(affiliationService.affiliation.loi,'render','text', affiliationService.affiliation)|raw }}</p>
+    </div>
+</div>
+
+
+{{ ztbformelement(form.get('file')) }}
+
+{{ ztbformelement(form.get('csrf')) }}
+
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+        {{ ztbformelement(form.get('submit'))|raw }}
+        {{ ztbformelement(form.get('cancel')) }}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

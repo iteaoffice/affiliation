@@ -90,6 +90,86 @@ class DoaController extends AffiliationAbstractController
     }
 
     /**
+     * Action to replace an mis-uploaded DoA
+     *
+     * @return ViewModel
+     * @throws \Zend\Form\Exception\InvalidArgumentException
+     * @throws \InvalidArgumentException
+     * @throws \Zend\Mvc\Exception\DomainException
+     * @throws \Zend\Form\Exception\DomainException
+     */
+    public function replaceAction()
+    {
+
+        $doa = $this->getAffiliationService()->findEntityById(
+            'Doa',
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+        $this->getAffiliationService()->setAffiliation($doa->getAffiliation());
+
+        if (is_null($doa) || sizeof($doa->getObject()) === 0) {
+            return $this->notFoundAction();
+        }
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
+
+        $form = new UploadDoa();
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+
+            if (!isset($data['cancel'])) {
+                $fileData = $this->params()->fromFiles();
+
+                /**
+                 * Remove the current entity
+                 */
+                foreach ($doa->getObject() as $object) {
+                    $this->getAffiliationService()->removeEntity($object);
+                }
+
+                //Create a article object element
+                $affiliationDoaObject = new Entity\DoaObject();
+                $affiliationDoaObject->setObject(file_get_contents($fileData['file']['tmp_name']));
+
+                $fileSizeValidator = new FilesSize(PHP_INT_MAX);
+                $fileSizeValidator->isValid($fileData['file']);
+
+
+                $doa->setSize($fileSizeValidator->size);
+                $doa->setContact($this->zfcUserAuthentication()->getIdentity());
+                $doa->setContentType(
+                    $this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type'])
+                );
+
+                $affiliationDoaObject->setDoa($doa);
+
+                $this->getAffiliationService()->newEntity($affiliationDoaObject);
+
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(_("txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced"),
+                        $doa->getAffiliation()->getOrganisation(),
+                        $doa->getAffiliation()->getProject()
+                    )
+                );
+            }
+
+            $this->redirect()->toRoute('community/affiliation/affiliation',
+                array('id' => $doa->getAffiliation()->getId()),
+                array('fragment' => 'details')
+            );
+        }
+
+        return new ViewModel(array(
+            'affiliationService' => $this->getAffiliationService(),
+            'form'               => $form
+        ));
+    }
+
+    /**
      * @return \Zend\Stdlib\ResponseInterface
      */
     public function renderAction()

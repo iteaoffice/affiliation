@@ -41,6 +41,25 @@ class LoiLink extends AbstractHelper
         $serverUrl = $this->view->plugin('serverUrl');
         $isAllowed = $this->view->plugin('isAllowed');
 
+        /**
+         * Add the resource on the fly
+         */
+        if (is_null($loi)) {
+            $loi = new Entity\Loi();
+        }
+
+        $auth      = $this->view->getHelperPluginManager()->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
+        $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get('affiliation_acl_assertion_loi');
+
+        if (!is_null($loi) && !$auth->getAcl()->hasResource($loi)) {
+            $auth->getAcl()->addResource($loi);
+            $auth->getAcl()->allow(array(), $loi, array(), $assertion);
+        }
+
+        if (!is_null($loi) && !$isAllowed($loi, $action)) {
+            return $action . ' is not possible for ' . $loi->getId();
+        }
+
         switch ($action) {
             case 'upload':
                 $router = 'community/affiliation/loi/upload';
@@ -54,6 +73,13 @@ class LoiLink extends AbstractHelper
                 $text   = sprintf($translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
                     $affiliation->getOrganisation(),
                     $affiliation->getProject()
+                );
+                break;
+            case 'replace':
+                $router = 'community/affiliation/loi/replace';
+                $text   = sprintf($translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
+                    $loi->getAffiliation()->getOrganisation(),
+                    $loi->getAffiliation()->getProject()
                 );
                 break;
             case 'download':
@@ -82,6 +108,8 @@ class LoiLink extends AbstractHelper
                     $linkContent[] = '<span class="glyphicon glyphicon-edit"></span>';
                 } elseif ($action === 'download') {
                     $linkContent[] = '<span class="glyphicon glyphicon-download"></span>';
+                } elseif ($action === 'replace') {
+                    $linkContent[] = '<span class="glyphicon glyphicon-repeat"></span>';
                 } else {
                     $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span>';
                 }

@@ -85,6 +85,86 @@ class LoiController extends AffiliationAbstractController
     }
 
     /**
+     * Action to replace an mis-uploaded LoI
+     *
+     * @return ViewModel
+     * @throws \Zend\Form\Exception\InvalidArgumentException
+     * @throws \InvalidArgumentException
+     * @throws \Zend\Mvc\Exception\DomainException
+     * @throws \Zend\Form\Exception\DomainException
+     */
+    public function replaceAction()
+    {
+
+        $loi = $this->getAffiliationService()->findEntityById(
+            'Loi',
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+        $this->getAffiliationService()->setAffiliation($loi->getAffiliation());
+
+        if (is_null($loi) || sizeof($loi->getObject()) === 0) {
+            return $this->notFoundAction();
+        }
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
+
+        $form = new UploadLoi();
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+
+            if (!isset($data['cancel'])) {
+                $fileData = $this->params()->fromFiles();
+
+                /**
+                 * Remove the current entity
+                 */
+                foreach ($loi->getObject() as $object) {
+                    $this->getAffiliationService()->removeEntity($object);
+                }
+
+                //Create a article object element
+                $affiliationLoiObject = new Entity\LoiObject();
+                $affiliationLoiObject->setObject(file_get_contents($fileData['file']['tmp_name']));
+
+                $fileSizeValidator = new FilesSize(PHP_INT_MAX);
+                $fileSizeValidator->isValid($fileData['file']);
+
+
+                $loi->setSize($fileSizeValidator->size);
+                $loi->setContact($this->zfcUserAuthentication()->getIdentity());
+                $loi->setContentType(
+                    $this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type'])
+                );
+
+                $affiliationLoiObject->setLoi($loi);
+
+                $this->getAffiliationService()->newEntity($affiliationLoiObject);
+
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(_("txt-project-loi-for-organisation-%s-in-project-%s-has-been-replaced"),
+                        $loi->getAffiliation()->getOrganisation(),
+                        $loi->getAffiliation()->getProject()
+                    )
+                );
+            }
+
+            $this->redirect()->toRoute('community/affiliation/affiliation',
+                array('id' => $loi->getAffiliation()->getId()),
+                array('fragment' => 'details')
+            );
+        }
+
+        return new ViewModel(array(
+            'affiliationService' => $this->getAffiliationService(),
+            'form'               => $form
+        ));
+    }
+
+    /**
      * @return \Zend\Stdlib\ResponseInterface
      */
     public function renderAction()

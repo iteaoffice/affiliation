@@ -55,12 +55,25 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
         if (strpos($this->routeMatch->getMatchedRouteName(), 'community/affiliation') !== false) {
 
             /**
-             * The affiliationId can be deliverd to this service in 2 ways. Either via 'id' or 'affiliation-id'
+             * The affiliationId can be delivered to this service in 2 ways. Either via 'id' or 'affiliation-id'
+             * Except for the case when we replace a DoA or LOI
              */
-            $affiliationId = !is_null($this->routeMatch->getParam('affiliation-id')) ?
-                $this->routeMatch->getParam('affiliation-id') : $this->routeMatch->getParam('id');
+            switch ($this->routeMatch->getMatchedRouteName()) {
+                case 'community/affiliation/doa/replace';
+                    $doa = $this->affiliationService->findEntityById('Doa', $this->routeMatch->getParam('id'));
+                    $this->affiliationService->setAffiliation($doa->getAffiliation());
+                    break;
+                case 'community/affiliation/loi/replace';
+                    $loi = $this->affiliationService->findEntityById('Loi', $this->routeMatch->getParam('id'));
+                    $this->affiliationService->setAffiliation($loi->getAffiliation());
+                    break;
+                default:
+                    $affiliationId = !is_null($this->routeMatch->getParam('affiliation-id')) ?
+                        $this->routeMatch->getParam('affiliation-id') : $this->routeMatch->getParam('id');
 
-            $this->affiliationService->setAffiliationId($affiliationId);
+                    $this->affiliationService->setAffiliationId($affiliationId);
+                    break;
+            }
 
             if (is_null($this->affiliationService->getAffiliation()->getId())) {
                 return false;
@@ -108,7 +121,7 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
                 );
             }
 
-            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/upload-doa') {
+            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/doa/upload') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['upload-doa'] = array(
                     'label'      => sprintf(_("txt-doa-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
@@ -124,18 +137,34 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
                 );
             }
 
-            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/upload-loi') {
-                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['upload-loi'] = array(
-                    'label'      => sprintf(_("txt-loi-for-organisation-%s-for-project-%s"),
+            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/doa/replace') {
+                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['replace-doa'] = array(
+                    'label'      => sprintf(_("txt-replace-doa-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
                         $this->affiliationService->getAffiliation()->getProject()
                     ),
-                    'route'      => 'community/affiliation/loi/upload',
+                    'route'      => 'community/affiliation/doa/replace',
                     'routeMatch' => $this->routeMatch,
                     'active'     => true,
                     'router'     => $router,
                     'params'     => array(
-                        'affiliation-id' => $affiliationId
+                        'id' => $doa->getId()
+                    )
+                );
+            }
+
+            if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/loi/replace') {
+                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['replace-loi'] = array(
+                    'label'      => sprintf(_("txt-replace-loi-for-organisation-%s-for-project-%s"),
+                        $this->affiliationService->getAffiliation()->getOrganisation(),
+                        $this->affiliationService->getAffiliation()->getProject()
+                    ),
+                    'route'      => 'community/affiliation/loi/replace',
+                    'routeMatch' => $this->routeMatch,
+                    'active'     => true,
+                    'router'     => $router,
+                    'params'     => array(
+                        'id' => $loi->getId()
                     )
                 );
             }

@@ -44,10 +44,12 @@ return array(
 
                 array('route' => 'community/affiliation/doa/upload', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_doa'),
                 array('route' => 'community/affiliation/doa/render', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_doa'),
+                array('route' => 'community/affiliation/doa/replace', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_doa'),
                 array('route' => 'community/affiliation/doa/download', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_doa'),
 
                 array('route' => 'community/affiliation/loi/upload', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_loi'),
                 array('route' => 'community/affiliation/loi/render', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_loi'),
+                array('route' => 'community/affiliation/loi/replace', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_loi'),
                 array('route' => 'community/affiliation/loi/download', 'roles' => array('office'), 'assertion' => 'affiliation_acl_assertion_loi'),
             ),
         ),

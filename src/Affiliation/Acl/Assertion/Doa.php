@@ -17,7 +17,7 @@ use Zend\Permissions\Acl\Role\RoleInterface;
 use Zend\ServiceManager\ServiceManager;
 
 use Affiliation\Service\AffiliationService;
-use Affiliation\Entity\Affiliation as AffiliationEntity;
+use Affiliation\Entity\Doa as DoaEntity;
 
 use Contact\Service\ContactService;
 
@@ -90,9 +90,10 @@ class Doa implements AssertionInterface
             $privilege = $routeMatch->getParam('privilege');
         }
 
-        if (!$resource instanceof AffiliationEntity && !is_null($id)) {
+        if (!$resource instanceof DoaEntity && !is_null($id)) {
             $resource = $this->affiliationService->findEntityById('Doa', $id);
         }
+
 
         $affiliationAssert = $this->serviceManager->get("affiliation_acl_assertion_affiliation");
 
@@ -101,13 +102,31 @@ class Doa implements AssertionInterface
 
                 /**
                  * For the upload we need to see if the user has access on the editing of the affiliation
+                 * The affiliation can already be known, but if not grab it from the routeMatch
                  */
-                $affiliation = $this->affiliationService->setAffiliationId(
-                    $routeMatch->getParam('affiliation-id')
-                )->getAffiliation();
+                $affiliation = null;
+                if ($resource instanceof DoaEntity) {
+                    $affiliation = $resource->getAffiliation();
+                }
 
+                if (is_null($affiliation)) {
+                    $affiliation = $this->affiliationService->setAffiliationId(
+                        !is_null($routeMatch->getParam('id')) ?
+                            $routeMatch->getParam('id') : $routeMatch->getParam('affiliation-id')
+                    )->getAffiliation();
+                }
 
                 return $affiliationAssert->assert($acl, $role, $affiliation, 'edit-community');
+
+                break;
+
+            case 'replace':
+                /**
+                 * For the replace we need to see if the user has access on the editing of the affiliation
+                 * and the acl should not be approved
+                 */
+                return is_null($resource->getDateApproved()) &&
+                $affiliationAssert->assert($acl, $role, $resource->getAffiliation(), 'edit-community');
 
                 break;
 
@@ -117,7 +136,8 @@ class Doa implements AssertionInterface
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
                 $affiliation = $this->affiliationService->setAffiliationId(
-                    $routeMatch->getParam('affiliation-id')
+                    !is_null($routeMatch->getParam('id')) ?
+                        $routeMatch->getParam('id') : $routeMatch->getParam('affiliation-id')
                 )->getAffiliation();
 
                 return $affiliationAssert->assert($acl, $role, $affiliation, 'view-community');

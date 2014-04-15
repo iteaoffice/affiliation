@@ -12,6 +12,7 @@ namespace Affiliation\Entity;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\InputFilter\Factory as InputFactory;
+use Zend\Permissions\Acl\Resource\ResourceInterface;
 use Zend\Form\Annotation;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +25,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table(name="project_loi")
  * @ORM\Entity
  */
-class Loi extends EntityAbstract
+class Loi extends EntityAbstract implements ResourceInterface
 {
     /**
      * @ORM\Column(name="loi_id", type="integer", nullable=false)
@@ -112,6 +113,24 @@ class Loi extends EntityAbstract
     public function __set($property, $value)
     {
         $this->$property = $value;
+    }
+
+    /**
+     * Returns the string identifier of the Resource
+     *
+     * @return string
+     */
+    public function getResourceId()
+    {
+        return sprintf("%s:%s", __CLASS__, $this->id);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return sprintf("Loi: %s", $this->id);
     }
 
     /**

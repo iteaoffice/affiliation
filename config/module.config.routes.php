@@ -24,7 +24,7 @@ return array(
                         ),
                         'may_terminate' => true,
                         'child_routes'  => array(
-                            'affiliation' => array(
+                            'affiliation'    => array(
                                 'type'    => 'Segment',
                                 'options' => array(
                                     'route'    => '/details/[:id].html',
@@ -34,7 +34,7 @@ return array(
                                     ),
                                 ),
                             ),
-                            'edit'        => array(
+                            'edit'           => array(
                                 'type'    => 'Segment',
                                 'options' => array(
                                     'route'    => '/edit/[:id].html',
@@ -44,7 +44,7 @@ return array(
                                     ),
                                 ),
                             ),
-                            'edit-financial'        => array(
+                            'edit-financial' => array(
                                 'type'    => 'Segment',
                                 'options' => array(
                                     'route'    => '/edit-financial/[:id].html',
@@ -54,7 +54,7 @@ return array(
                                     ),
                                 ),
                             ),
-                            'doa'         => array(
+                            'doa'            => array(
                                 'type'         => 'Segment',
                                 'options'      => array(
                                     'route'    => '/doa',
@@ -67,7 +67,7 @@ return array(
                                     'render'   => array(
                                         'type'    => 'Segment',
                                         'options' => array(
-                                            'route'    => '/render/affiliation-[:affiliation-id].html',
+                                            'route'    => '/render/affiliation-[:affiliation-id].pdf',
                                             'defaults' => array(
                                                 'action'    => 'render',
                                                 'privilege' => 'render'
@@ -81,6 +81,16 @@ return array(
                                             'defaults' => array(
                                                 'action'    => 'upload',
                                                 'privilege' => 'upload'
+                                            ),
+                                        ),
+                                    ),
+                                    'replace'  => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/replace/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'replace',
+                                                'privilege' => 'replace'
                                             ),
                                         ),
                                     ),
@@ -96,7 +106,7 @@ return array(
                                     ),
                                 )
                             ),
-                            'loi'         => array(
+                            'loi'            => array(
                                 'type'         => 'Segment',
                                 'options'      => array(
                                     'route'    => '/loi',
@@ -109,7 +119,7 @@ return array(
                                     'render'   => array(
                                         'type'    => 'Segment',
                                         'options' => array(
-                                            'route'    => '/render/affiliation-[:affiliation-id].html',
+                                            'route'    => '/render/affiliation-[:affiliation-id].pdf',
                                             'defaults' => array(
                                                 'action'    => 'render',
                                                 'privilege' => 'render'
@@ -123,6 +133,16 @@ return array(
                                             'defaults' => array(
                                                 'action'    => 'upload',
                                                 'privilege' => 'upload'
+                                            ),
+                                        ),
+                                    ),
+                                    'replace'  => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/replace/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'replace',
+                                                'privilege' => 'replace'
                                             ),
                                         ),
                                     ),

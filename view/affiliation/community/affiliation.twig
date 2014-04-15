@@ -46,6 +46,7 @@
         <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
                 {% if programDoa.dateApproved is null %}
                     {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
+                    {{ programDoaLink(programDoa,'replace','icon') }}
                     {{ programDoaLink(programDoa,'download','icon') }}
                 {% else %}
                     {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}
@@ -62,6 +63,7 @@
             {% elseif affiliation.doa.dateApproved is null %}
                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
                 format(affiliationService.affiliation.doa.dateReceived|date("d-m-Y"))|raw }}
+                {{ doaLink(affiliationService.affiliation.doa,'replace','icon') }}
                 {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
             {% else %}
                 {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliationService.affiliation.doa.dateApproved|string_date) }}
@@ -75,6 +77,7 @@
             {% elseif affiliation.loi.dateApproved is null %}
                 {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
                 format(affiliationService.affiliation.loi.dateReceived|date("d-m-Y"))|raw }}
+                {{ loiLink(affiliationService.affiliation.loi,'replace','icon') }}
                 {{ loiLink(affiliationService.affiliation.loi,'download','icon') }}
             {% else %}
                 {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliationService.affiliation.loi.dateApproved|string_date) }}

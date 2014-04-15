@@ -13,6 +13,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\Form\Annotation;
+use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -24,7 +25,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table(name="project_doa")
  * @ORM\Entity
  */
-class Doa extends EntityAbstract
+class Doa extends EntityAbstract implements ResourceInterface
 {
     /**
      * @ORM\Column(name="doa_id", type="integer", nullable=false)
@@ -112,6 +113,24 @@ class Doa extends EntityAbstract
     public function __set($property, $value)
     {
         $this->$property = $value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return sprintf("Doa: %s", $this->id);
+    }
+
+    /**
+     * Returns the string identifier of the Resource
+     *
+     * @return string
+     */
+    public function getResourceId()
+    {
+        return sprintf("%s:%s", __CLASS__, $this->id);
     }
 
     /**
