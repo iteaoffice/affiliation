@@ -51,6 +51,7 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
         $router                   = $application->getMvcEvent()->getRouter();
         $this->affiliationService = $serviceLocator->get('affiliation_affiliation_service');
         $this->projectService     = $serviceLocator->get('project_project_service');
+        $translate                = $serviceLocator->get('viewhelpermanager')->get('translate');
 
         if (strpos($this->routeMatch->getMatchedRouteName(), 'community/affiliation') !== false) {
 
@@ -92,7 +93,7 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
             );
 
             $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation'] = array(
-                'label'      => sprintf(_("txt-affiliation-%s-in-%s"),
+                'label'      => sprintf($translate("txt-affiliation-%s-in-%s"),
                     $this->affiliationService->getAffiliation()->getOrganisation()->getOrganisation(),
                     $this->affiliationService->getAffiliation()->getProject()->getProject()
                 ),
@@ -106,24 +107,25 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
             );
 
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/edit') {
-                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['edit'] = array(
-                    'label'      => sprintf(_("txt-edit-affiliation-%s-in-%s"),
-                        $this->affiliationService->getAffiliation()->getOrganisation()->getOrganisation(),
-                        $this->affiliationService->getAffiliation()->getProject()->getProject()
-                    ),
-                    'route'      => 'community/affiliation/edit',
-                    'routeMatch' => $this->routeMatch,
-                    'active'     => true,
-                    'router'     => $router,
-                    'params'     => array(
-                        'id' => $affiliationId
-                    )
-                );
+                $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['edit'] =
+                    array(
+                        'label'      => sprintf($translate("txt-edit-affiliation-%s-in-%s"),
+                            $this->affiliationService->getAffiliation()->getOrganisation()->getOrganisation(),
+                            $this->affiliationService->getAffiliation()->getProject()->getProject()
+                        ),
+                        'route'      => 'community/affiliation/edit',
+                        'routeMatch' => $this->routeMatch,
+                        'active'     => true,
+                        'router'     => $router,
+                        'params'     => array(
+                            'id' => $affiliationId
+                        )
+                    );
             }
 
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/doa/upload') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['upload-doa'] = array(
-                    'label'      => sprintf(_("txt-doa-for-organisation-%s-for-project-%s"),
+                    'label'      => sprintf($translate("txt-doa-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
                         $this->affiliationService->getAffiliation()->getProject()
                     ),
@@ -139,7 +141,7 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
 
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/doa/replace') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['replace-doa'] = array(
-                    'label'      => sprintf(_("txt-replace-doa-for-organisation-%s-for-project-%s"),
+                    'label'      => sprintf($translate("txt-replace-doa-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
                         $this->affiliationService->getAffiliation()->getProject()
                     ),
@@ -155,7 +157,7 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
 
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/loi/replace') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['replace-loi'] = array(
-                    'label'      => sprintf(_("txt-replace-loi-for-organisation-%s-for-project-%s"),
+                    'label'      => sprintf($translate("txt-replace-loi-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
                         $this->affiliationService->getAffiliation()->getProject()
                     ),
