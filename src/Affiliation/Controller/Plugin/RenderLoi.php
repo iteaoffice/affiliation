@@ -18,7 +18,6 @@ use Contact\Service\ContactService;
 use Application\Options\ModuleOptions;
 use Affiliation\Entity\Loi;
 
-
 /**
  *
  * Class RenderLoi
@@ -103,7 +102,6 @@ class RenderLoi extends AbstractPlugin
 
         return $pdf;
     }
-
 
     /**
      * Gateway to the General Service

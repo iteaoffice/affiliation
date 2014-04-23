@@ -50,7 +50,6 @@ class Affiliation implements AssertionInterface
      */
     protected $accessRoles = array();
 
-
     /**
      * @param ServiceManager $serviceManager
      */
@@ -116,7 +115,6 @@ class Affiliation implements AssertionInterface
 
                 $this->projectService->setProject($resource->getProject());
 
-
                 if ($this->projectService->isStopped()) {
                     return false;
                 }
@@ -124,7 +122,6 @@ class Affiliation implements AssertionInterface
                 if ($this->contactService->hasPermit('edit', $resource)) {
                     return true;
                 }
-
 
                 $projectAssert = $this->serviceManager->get("project_acl_assertion_project");
 

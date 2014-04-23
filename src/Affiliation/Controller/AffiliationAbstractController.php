@@ -11,6 +11,9 @@ namespace Affiliation\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
+
+use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 use Project\Service\ProjectService;
 use Organisation\Service\OrganisationService;
@@ -26,6 +29,9 @@ use Affiliation\Service\ConfigAwareInterface;
 /**
  * @category    Affiliation
  * @package     Controller
+ * @method      ZfcUserAuthentication zfcUserAuthentication()
+ * @method      FlashMessenger flashMessenger()
+ * @method      bool isAllowed($resource, $action)
  */
 abstract class AffiliationAbstractController extends AbstractActionController implements
     FormServiceAwareInterface,

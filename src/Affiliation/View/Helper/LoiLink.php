@@ -24,7 +24,6 @@ use Affiliation\Entity;
  */
 class LoiLink extends AbstractHelper
 {
-
     /**
      * @param Entity\Loi         $loi
      * @param string             $action
@@ -34,8 +33,12 @@ class LoiLink extends AbstractHelper
      * @return string
      * @throws \Exception
      */
-    public function __invoke(Entity\Loi $loi = null, $action = 'view', $show = 'name', Entity\Affiliation $affiliation = null)
-    {
+    public function __invoke(
+        Entity\Loi $loi = null,
+        $action = 'view',
+        $show = 'name',
+        Entity\Affiliation $affiliation = null
+    ) {
         $translate = $this->view->plugin('translate');
         $url       = $this->view->plugin('url');
         $serverUrl = $this->view->plugin('serverUrl');
@@ -63,28 +66,32 @@ class LoiLink extends AbstractHelper
         switch ($action) {
             case 'upload':
                 $router = 'community/affiliation/loi/upload';
-                $text   = sprintf($translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
                     $affiliation->getOrganisation(),
                     $affiliation->getProject()
                 );
                 break;
             case 'render':
                 $router = 'community/affiliation/loi/render';
-                $text   = sprintf($translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
                     $affiliation->getOrganisation(),
                     $affiliation->getProject()
                 );
                 break;
             case 'replace':
                 $router = 'community/affiliation/loi/replace';
-                $text   = sprintf($translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
                     $loi->getAffiliation()->getOrganisation(),
                     $loi->getAffiliation()->getProject()
                 );
                 break;
             case 'download':
                 $router = 'community/affiliation/loi/download';
-                $text   = sprintf($translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
                     $loi->getAffiliation()->getOrganisation(),
                     $loi->getAffiliation()->getProject()
                 );

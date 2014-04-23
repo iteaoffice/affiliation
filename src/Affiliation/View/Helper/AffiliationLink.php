@@ -24,7 +24,6 @@ use Affiliation\Entity;
  */
 class AffiliationLink extends AbstractHelper
 {
-
     /**
      * @param \Affiliation\Entity\Affiliation $affiliation
      * @param                                 $action
@@ -49,8 +48,9 @@ class AffiliationLink extends AbstractHelper
         }
 
         $auth      = $this->view->getHelperPluginManager()->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
-        $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get('affiliation_acl_assertion_affiliation');
-
+        $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get(
+            'affiliation_acl_assertion_affiliation'
+        );
 
         if (!is_null($affiliation) && !$auth->getAcl()->hasResource($affiliation)) {
             $auth->getAcl()->addResource($affiliation);

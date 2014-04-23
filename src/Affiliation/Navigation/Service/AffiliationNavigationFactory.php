@@ -60,11 +60,11 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
              * Except for the case when we replace a DoA or LOI
              */
             switch ($this->routeMatch->getMatchedRouteName()) {
-                case 'community/affiliation/doa/replace';
+                case 'community/affiliation/doa/replace':
                     $doa = $this->affiliationService->findEntityById('Doa', $this->routeMatch->getParam('id'));
                     $this->affiliationService->setAffiliation($doa->getAffiliation());
                     break;
-                case 'community/affiliation/loi/replace';
+                case 'community/affiliation/loi/replace':
                     $loi = $this->affiliationService->findEntityById('Loi', $this->routeMatch->getParam('id'));
                     $this->affiliationService->setAffiliation($loi->getAffiliation());
                     break;
@@ -93,7 +93,8 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
             );
 
             $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation'] = array(
-                'label'      => sprintf($translate("txt-affiliation-%s-in-%s"),
+                'label'      => sprintf(
+                    $translate("txt-affiliation-%s-in-%s"),
                     $this->affiliationService->getAffiliation()->getOrganisation()->getOrganisation(),
                     $this->affiliationService->getAffiliation()->getProject()->getProject()
                 ),
@@ -109,7 +110,8 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/edit') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['edit'] =
                     array(
-                        'label'      => sprintf($translate("txt-edit-affiliation-%s-in-%s"),
+                        'label'      => sprintf(
+                            $translate("txt-edit-affiliation-%s-in-%s"),
                             $this->affiliationService->getAffiliation()->getOrganisation()->getOrganisation(),
                             $this->affiliationService->getAffiliation()->getProject()->getProject()
                         ),
@@ -125,7 +127,8 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
 
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/doa/upload') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['upload-doa'] = array(
-                    'label'      => sprintf($translate("txt-doa-for-organisation-%s-for-project-%s"),
+                    'label'      => sprintf(
+                        $translate("txt-doa-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
                         $this->affiliationService->getAffiliation()->getProject()
                     ),
@@ -141,7 +144,8 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
 
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/doa/replace') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['replace-doa'] = array(
-                    'label'      => sprintf($translate("txt-replace-doa-for-organisation-%s-for-project-%s"),
+                    'label'      => sprintf(
+                        $translate("txt-replace-doa-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
                         $this->affiliationService->getAffiliation()->getProject()
                     ),
@@ -157,7 +161,8 @@ class AffiliationNavigationFactory extends DefaultNavigationFactory
 
             if ($this->routeMatch->getMatchedRouteName() === 'community/affiliation/loi/replace') {
                 $pages['project']['pages']['projects']['pages']['project']['pages']['affiliation']['pages']['replace-loi'] = array(
-                    'label'      => sprintf($translate("txt-replace-loi-for-organisation-%s-for-project-%s"),
+                    'label'      => sprintf(
+                        $translate("txt-replace-loi-for-organisation-%s-for-project-%s"),
                         $this->affiliationService->getAffiliation()->getOrganisation(),
                         $this->affiliationService->getAffiliation()->getProject()
                     ),

@@ -71,7 +71,6 @@ class Affiliation extends Form
             array(
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'affiliation',
-
                 'options'    => array(
                     'value_options' => $affiliationValueOptions,
                     'label'         => _("txt-change-affiliation"),
@@ -87,7 +86,6 @@ class Affiliation extends Form
             array(
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'technical',
-
                 'options'    => array(
                     'value_options' => $technicalContactValueOptions,
                     'label'         => _("txt-technical-contact"),
@@ -103,7 +101,6 @@ class Affiliation extends Form
             array(
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'financial',
-
                 'options'    => array(
                     'value_options' => $financialContactValueOptions,
                     'label'         => _("txt-financial-contact"),
@@ -121,7 +118,6 @@ class Affiliation extends Form
             array(
                 'type'       => 'Zend\Form\Element\Radio',
                 'name'       => 'preferredDelivery',
-
                 'options'    => array(
                     'value_options' => $organisationFinancial->getEmailTemplates(),
                     'label'         => _("txt-preferred-delivery"),
@@ -132,7 +128,6 @@ class Affiliation extends Form
                 )
             )
         );
-
 
         $this->add(
             array(
@@ -176,7 +171,10 @@ class Affiliation extends Form
                 'name'       => 'deactivate',
                 'attributes' => array(
                     'class' => "btn btn-danger",
-                    'value' => sprintf(_("txt-deactivate-partner-%s"), $affiliationService->getAffiliation()->getOrganisation()->getOrganisation())
+                    'value' => sprintf(
+                        _("txt-deactivate-partner-%s"),
+                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
+                    )
                 )
             )
         );
@@ -187,7 +185,10 @@ class Affiliation extends Form
                 'name'       => 'reactivate',
                 'attributes' => array(
                     'class' => "btn btn-warning",
-                    'value' => sprintf(_("txt-reactivate-partner-%s"), $affiliationService->getAffiliation()->getOrganisation()->getOrganisation())
+                    'value' => sprintf(
+                        _("txt-reactivate-partner-%s"),
+                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
+                    )
                 )
             )
         );

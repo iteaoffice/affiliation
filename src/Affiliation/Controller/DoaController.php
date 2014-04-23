@@ -13,7 +13,6 @@ use Affiliation\Form\UploadDoa;
 use Zend\View\Model\ViewModel;
 use Zend\Validator\File\FilesSize;
 
-use Affiliation\Form\CreateProjectDoa;
 use Affiliation\Entity;
 use Affiliation\Entity\Doa;
 
@@ -23,7 +22,6 @@ use Affiliation\Entity\Doa;
  */
 class DoaController extends AffiliationAbstractController
 {
-
     /**
      * Upload a DOA for a project (based on the affiliation)
      *
@@ -70,23 +68,27 @@ class DoaController extends AffiliationAbstractController
                 $this->getAffiliationService()->newEntity($affiliationDoaObject);
 
                 $this->flashMessenger()->setNamespace('success')->addMessage(
-                    sprintf(_("txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded"),
+                    sprintf(
+                        _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded"),
                         $affiliationService->getAffiliation()->getOrganisation(),
                         $affiliationService->getAffiliation()->getProject()
                     )
                 );
             }
 
-            $this->redirect()->toRoute('community/affiliation/affiliation',
+            $this->redirect()->toRoute(
+                'community/affiliation/affiliation',
                 array('id' => $affiliationService->getAffiliation()->getId()),
                 array('fragment' => 'details')
             );
         }
 
-        return new ViewModel(array(
-            'affiliationService' => $affiliationService,
-            'form'               => $form
-        ));
+        return new ViewModel(
+            array(
+                'affiliationService' => $affiliationService,
+                'form'               => $form
+            )
+        );
     }
 
     /**
@@ -138,7 +140,6 @@ class DoaController extends AffiliationAbstractController
                 $fileSizeValidator = new FilesSize(PHP_INT_MAX);
                 $fileSizeValidator->isValid($fileData['file']);
 
-
                 $doa->setSize($fileSizeValidator->size);
                 $doa->setContact($this->zfcUserAuthentication()->getIdentity());
                 $doa->setContentType(
@@ -150,23 +151,27 @@ class DoaController extends AffiliationAbstractController
                 $this->getAffiliationService()->newEntity($affiliationDoaObject);
 
                 $this->flashMessenger()->setNamespace('success')->addMessage(
-                    sprintf(_("txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced"),
+                    sprintf(
+                        _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced"),
                         $doa->getAffiliation()->getOrganisation(),
                         $doa->getAffiliation()->getProject()
                     )
                 );
             }
 
-            $this->redirect()->toRoute('community/affiliation/affiliation',
+            $this->redirect()->toRoute(
+                'community/affiliation/affiliation',
                 array('id' => $doa->getAffiliation()->getId()),
                 array('fragment' => 'details')
             );
         }
 
-        return new ViewModel(array(
-            'affiliationService' => $this->getAffiliationService(),
-            'form'               => $form
-        ));
+        return new ViewModel(
+            array(
+                'affiliationService' => $this->getAffiliationService(),
+                'form'               => $form
+            )
+        );
     }
 
     /**

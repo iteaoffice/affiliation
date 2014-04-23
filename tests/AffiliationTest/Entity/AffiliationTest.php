@@ -11,9 +11,8 @@ namespace AffiliationTest\Entity;
 
 use Affiliation\Entity\Affiliation;
 
-class ProjectTest extends \PHPUnit_Framework_TestCase
+class AffiliationTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testCanCreateEntity()
     {
         $affiliation = new Affiliation();

@@ -44,7 +44,6 @@ class Loi implements AssertionInterface
      */
     protected $accessRoles = array();
 
-
     /**
      * @param ServiceManager $serviceManager
      */
@@ -94,7 +93,6 @@ class Loi implements AssertionInterface
             $resource = $this->affiliationService->findEntityById('Loi', $id);
         }
 
-
         $affiliationAssert = $this->serviceManager->get("affiliation_acl_assertion_affiliation");
 
         switch ($privilege) {
@@ -104,9 +102,10 @@ class Loi implements AssertionInterface
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
                 $affiliation = $this->affiliationService->setAffiliationId(
-                    !is_null($routeMatch->getParam('id')) ? $routeMatch->getParam('id') : $routeMatch->getParam('affiliation-id')
+                    !is_null($routeMatch->getParam('id')) ? $routeMatch->getParam('id') : $routeMatch->getParam(
+                        'affiliation-id'
+                    )
                 )->getAffiliation();
-
 
                 return $affiliationAssert->assert($acl, $role, $affiliation, 'edit-community');
 
@@ -125,7 +124,9 @@ class Loi implements AssertionInterface
 
                 if (is_null($affiliation)) {
                     $affiliation = $this->affiliationService->setAffiliationId(
-                        !is_null($routeMatch->getParam('id')) ? $routeMatch->getParam('id') : $routeMatch->getParam('affiliation-id')
+                        !is_null($routeMatch->getParam('id')) ? $routeMatch->getParam('id') : $routeMatch->getParam(
+                            'affiliation-id'
+                        )
                     )->getAffiliation();
                 }
 
@@ -138,10 +139,15 @@ class Loi implements AssertionInterface
                  * For the replace we need to see if the user has access on the editing of the affiliation
                  * and the acl should not be approved
                  */
-                return is_null($resource->getDateApproved()) && $affiliationAssert->assert($acl, $role, $resource->getAffiliation(), 'edit-community');
+
+                return is_null($resource->getDateApproved()) && $affiliationAssert->assert(
+                    $acl,
+                    $role,
+                    $resource->getAffiliation(),
+                    'edit-community'
+                );
 
                 break;
-
 
             case 'download':
                 return $affiliationAssert->assert($acl, $role, $resource->getAffiliation(), 'view-community');

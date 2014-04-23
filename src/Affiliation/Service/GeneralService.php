@@ -21,5 +21,4 @@ namespace Affiliation\Service;
  */
 class GeneralService extends ServiceAbstract
 {
-
 }

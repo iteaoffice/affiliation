@@ -53,7 +53,6 @@ class Financial extends Form
             array(
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'registeredCountry',
-
                 'options'    => array(
                     'value_options' => $countries,
                     'label'         => _("txt-registered-country"),
@@ -99,7 +98,6 @@ class Financial extends Form
             array(
                 'type'       => 'Zend\Form\Element\Radio',
                 'name'       => 'omitContact',
-
                 'options'    => array(
                     'value_options' => $organisationFinancial->getOmitContactTemplates(),
                     'label'         => _("txt-omit-contact"),
@@ -110,7 +108,6 @@ class Financial extends Form
                 )
             )
         );
-
 
         $this->add(
             array(
@@ -161,7 +158,6 @@ class Financial extends Form
             array(
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'country',
-
                 'options'    => array(
                     'value_options' => $countries,
                     'label'         => _("txt-country"),
@@ -173,12 +169,10 @@ class Financial extends Form
             )
         );
 
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Radio',
                 'name'       => 'preferredDelivery',
-
                 'options'    => array(
                     'value_options' => $organisationFinancial->getEmailTemplates(),
                     'label'         => _("txt-preferred-delivery"),
@@ -189,7 +183,6 @@ class Financial extends Form
                 )
             )
         );
-
 
         $this->add(
             array(

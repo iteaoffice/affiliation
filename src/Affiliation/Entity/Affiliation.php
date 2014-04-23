@@ -41,7 +41,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * Constant for mode = 1 (self funded)
      */
     const SELF_FUNDED = 1;
-
     /**
      * Templates for the self funded parameter
      * @var array
@@ -50,7 +49,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         self::NOT_SELF_FUNDED => 'txt-not-self-funded',
         self::SELF_FUNDED     => 'txt-self-funded',
     );
-
     /**
      * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
      * @ORM\Id

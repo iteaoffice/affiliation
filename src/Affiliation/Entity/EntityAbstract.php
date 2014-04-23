@@ -46,7 +46,7 @@ abstract class EntityAbstract implements EntityInterface, InputFilterAwareInterf
                 };
 
                 return preg_replace_callback('/([A-Z])/', $underscore, lcfirst($this->get('entity_name')));
-            break;
+                break;
             case 'underscore_full_entity_name':
                 $underscore = function ($m) {
                     return '_' . strtolower($m[1]);
@@ -55,7 +55,8 @@ abstract class EntityAbstract implements EntityInterface, InputFilterAwareInterf
                 return preg_replace_callback(
                     '/([A-Z])/',
                     $underscore,
-                    lcfirst(str_replace('\\', '', __NAMESPACE__) . $this->get('entity_name')));
+                    lcfirst(str_replace('\\', '', __NAMESPACE__) . $this->get('entity_name'))
+                );
         }
     }
 }

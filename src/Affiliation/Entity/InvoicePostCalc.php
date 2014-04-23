@@ -33,7 +33,6 @@ class InvoicePostCalc
      * @var integer
      */
     private $id;
-
     /**
      * @ORM\Column(name="amount_invoiced", type="decimal", nullable=false)
      * @var float

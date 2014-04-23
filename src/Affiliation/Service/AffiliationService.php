@@ -32,10 +32,9 @@ class AffiliationService extends ServiceAbstract
     /**
      * Constant to determine which affiliations must be taken from the database
      */
-    const WHICH_ALL           = 1;
-    const WHICH_ONLY_ACTIVE   = 2;
+    const WHICH_ALL = 1;
+    const WHICH_ONLY_ACTIVE = 2;
     const WHICH_ONLY_INACTIVE = 3;
-
     /**
      * @var Affiliation
      */
@@ -132,8 +131,11 @@ class AffiliationService extends ServiceAbstract
      *
      * @return null|Affiliation
      */
-    public function findAffiliationByProjectAndContactAndWhich(Project $project, Contact $contact, $which = self::WHICH_ONLY_ACTIVE)
-    {
+    public function findAffiliationByProjectAndContactAndWhich(
+        Project $project,
+        Contact $contact,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
         /**
          * If the contact has no contact organisation, return null because we will not have a affiliation
          */
@@ -148,7 +150,9 @@ class AffiliationService extends ServiceAbstract
             if ($which === self::WHICH_ONLY_INACTIVE && is_null($affiliation->getDateEnd())) {
                 continue;
             }
-            if ($affiliation->getOrganisation()->getId() === $contact->getContactOrganisation()->getOrganisation()->getId()) {
+            if ($affiliation->getOrganisation()->getId() ===
+                $contact->getContactOrganisation()->getOrganisation()->getId()
+            ) {
                 return $affiliation;
             }
         }
@@ -217,7 +221,8 @@ class AffiliationService extends ServiceAbstract
          */
         foreach ($organisation->getAffiliation() as $affiliation) {
             $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation(
+            )->getId()][$affiliation->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
 
@@ -228,7 +233,8 @@ class AffiliationService extends ServiceAbstract
             foreach ($cluster->getMember() as $clusterMember) {
                 foreach ($clusterMember->getAffiliation() as $affiliation) {
                     $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-                    $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+                    $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation(
+                    )->getId()][$affiliation->getBranch()] =
                         $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
                 }
             }
@@ -239,7 +245,8 @@ class AffiliationService extends ServiceAbstract
          */
         foreach ($contact->getAffiliation() as $affiliation) {
             $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation(
+            )->getId()][$affiliation->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
 
@@ -248,8 +255,12 @@ class AffiliationService extends ServiceAbstract
          */
         if (!is_null($contact->getContactOrganisation())) {
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
-            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()->getBranch()] =
-                $this->getOrganisationService()->parseOrganisationWithBranch($contact->getContactOrganisation()->getBranch());
+            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
+            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation(
+            )->getBranch()] =
+                $this->getOrganisationService()->parseOrganisationWithBranch(
+                    $contact->getContactOrganisation()->getBranch()
+                );
         }
 
         /**
@@ -260,8 +271,12 @@ class AffiliationService extends ServiceAbstract
              * Add the contact organisation
              */
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
-            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()->getBranch()] =
-                $this->getOrganisationService()->parseOrganisationWithBranch($contact->getContactOrganisation()->getBranch());
+            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
+            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation(
+            )->getBranch()] =
+                $this->getOrganisationService()->parseOrganisationWithBranch(
+                    $contact->getContactOrganisation()->getBranch()
+                );
 
             /**
              * Go over the clusters
@@ -270,7 +285,8 @@ class AffiliationService extends ServiceAbstract
                 foreach ($cluster->getMember() as $clusterMember) {
                     foreach ($clusterMember->getAffiliation() as $affiliation) {
                         $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-                        $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+                        $options[$affiliation->getOrganisation()->getCountry()->getCountry(
+                        )][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
                             $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
                     }
                 }

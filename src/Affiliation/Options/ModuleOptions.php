@@ -18,7 +18,6 @@ class ModuleOptions extends AbstractOptions implements
      * Turn off strict options mode
      */
     protected $__strictMode__ = false;
-
     /**
      * Location of the PDF having the DOA template
      *

@@ -20,14 +20,16 @@ class AffiliationPdf extends \FPDI
      */
     protected $_tplIdx;
     /**
-     * @var Location of the template
+     * Location of the template
+     *
+     * @var string
      */
     protected $template;
 
     /**
      * Draw an imported PDF logo on every page
      */
-    public function Header()
+    public function header()
     {
         if (is_null($this->_tplIdx)) {
 
@@ -45,7 +47,7 @@ class AffiliationPdf extends \FPDI
         $this->SetXY(PDF_MARGIN_LEFT, 5);
     }
 
-    public function Footer()
+    public function footer()
     {
         // emtpy method body
     }

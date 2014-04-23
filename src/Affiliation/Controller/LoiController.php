@@ -22,7 +22,6 @@ use Affiliation\Entity\Loi;
  */
 class LoiController extends AffiliationAbstractController
 {
-
     /**
      * Upload the LOI for a project (based on the affiliation)
      *
@@ -56,7 +55,9 @@ class LoiController extends AffiliationAbstractController
 
                 $loi = new Entity\Loi();
                 $loi->setSize($fileSizeValidator->size);
-                $loi->setContentType($this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type']));
+                $loi->setContentType(
+                    $this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type'])
+                );
                 $loi->setContact($this->zfcUserAuthentication()->getIdentity());
                 $loi->setAffiliation($affiliationService->getAffiliation());
 
@@ -65,23 +66,27 @@ class LoiController extends AffiliationAbstractController
                 $this->getAffiliationService()->newEntity($loiObject);
 
                 $this->flashMessenger()->setNamespace('success')->addMessage(
-                    sprintf(_("txt-loi-for-organisation-%s-project-%s-has-been-uploaded"),
+                    sprintf(
+                        _("txt-loi-for-organisation-%s-project-%s-has-been-uploaded"),
                         $affiliationService->getAffiliation()->getOrganisation(),
                         $affiliationService->getAffiliation()->getProject()
                     )
                 );
             }
 
-            $this->redirect()->toRoute('community/affiliation/affiliation',
+            $this->redirect()->toRoute(
+                'community/affiliation/affiliation',
                 array('id' => $affiliationService->getAffiliation()->getId()),
                 array('fragment' => 'details')
             );
         }
 
-        return new ViewModel(array(
-            'affiliationService' => $affiliationService,
-            'form'               => $form
-        ));
+        return new ViewModel(
+            array(
+                'affiliationService' => $affiliationService,
+                'form'               => $form
+            )
+        );
     }
 
     /**
@@ -133,7 +138,6 @@ class LoiController extends AffiliationAbstractController
                 $fileSizeValidator = new FilesSize(PHP_INT_MAX);
                 $fileSizeValidator->isValid($fileData['file']);
 
-
                 $loi->setSize($fileSizeValidator->size);
                 $loi->setContact($this->zfcUserAuthentication()->getIdentity());
                 $loi->setContentType(
@@ -145,23 +149,27 @@ class LoiController extends AffiliationAbstractController
                 $this->getAffiliationService()->newEntity($affiliationLoiObject);
 
                 $this->flashMessenger()->setNamespace('success')->addMessage(
-                    sprintf(_("txt-project-loi-for-organisation-%s-in-project-%s-has-been-replaced"),
+                    sprintf(
+                        _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-replaced"),
                         $loi->getAffiliation()->getOrganisation(),
                         $loi->getAffiliation()->getProject()
                     )
                 );
             }
 
-            $this->redirect()->toRoute('community/affiliation/affiliation',
+            $this->redirect()->toRoute(
+                'community/affiliation/affiliation',
                 array('id' => $loi->getAffiliation()->getId()),
                 array('fragment' => 'details')
             );
         }
 
-        return new ViewModel(array(
-            'affiliationService' => $this->getAffiliationService(),
-            'form'               => $form
-        ));
+        return new ViewModel(
+            array(
+                'affiliationService' => $this->getAffiliationService(),
+                'form'               => $form
+            )
+        );
     }
 
     /**
@@ -213,7 +221,7 @@ class LoiController extends AffiliationAbstractController
         /**
          * Due to the BLOB issue, we treat this as an array and we need to capture the first element
          */
-        $object   = $loi->getObject()->first()->getObject();
+        $object = $loi->getObject()->first()->getObject();
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
 

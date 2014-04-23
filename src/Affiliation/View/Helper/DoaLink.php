@@ -24,7 +24,6 @@ use Affiliation\Entity;
  */
 class DoaLink extends AbstractHelper
 {
-
     /**
      * @param Entity\Doa         $doa
      * @param string             $action
@@ -34,8 +33,12 @@ class DoaLink extends AbstractHelper
      * @return string
      * @throws \Exception
      */
-    public function __invoke(Entity\Doa $doa = null, $action = 'view', $show = 'name', Entity\Affiliation $affiliation = null)
-    {
+    public function __invoke(
+        Entity\Doa $doa = null,
+        $action = 'view',
+        $show = 'name',
+        Entity\Affiliation $affiliation = null
+    ) {
         $translate = $this->view->plugin('translate');
         $url       = $this->view->plugin('url');
         $serverUrl = $this->view->plugin('serverUrl');
@@ -51,7 +54,6 @@ class DoaLink extends AbstractHelper
         $auth      = $this->view->getHelperPluginManager()->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
         $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get('affiliation_acl_assertion_doa');
 
-
         if (!is_null($doa) && !$auth->getAcl()->hasResource($doa)) {
             $auth->getAcl()->addResource($doa);
             $auth->getAcl()->allow(array(), $doa, array(), $assertion);
@@ -64,28 +66,32 @@ class DoaLink extends AbstractHelper
         switch ($action) {
             case 'upload':
                 $router = 'community/affiliation/doa/upload';
-                $text   = sprintf($translate("txt-upload-doa-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-upload-doa-for-organisation-%s-in-project-%s-link-title"),
                     $affiliation->getOrganisation(),
                     $affiliation->getProject()
                 );
                 break;
             case 'render':
                 $router = 'community/affiliation/doa/render';
-                $text   = sprintf($translate("txt-render-doa-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-render-doa-for-organisation-%s-in-project-%s-link-title"),
                     $affiliation->getOrganisation(),
                     $affiliation->getProject()
                 );
                 break;
             case 'replace':
                 $router = 'community/affiliation/doa/replace';
-                $text   = sprintf($translate("txt-replace-doa-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-replace-doa-for-organisation-%s-in-project-%s-link-title"),
                     $doa->getAffiliation()->getOrganisation(),
                     $doa->getAffiliation()->getProject()
                 );
                 break;
             case 'download':
                 $router = 'community/affiliation/doa/download';
-                $text   = sprintf($translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
+                $text   = sprintf(
+                    $translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
                     $doa->getAffiliation()->getOrganisation(),
                     $doa->getAffiliation()->getProject()
                 );
