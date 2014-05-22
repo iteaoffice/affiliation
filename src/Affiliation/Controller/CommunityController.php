@@ -9,21 +9,21 @@
  */
 namespace Affiliation\Controller;
 
+use Affiliation\Entity;
+use Affiliation\Form\Affiliation;
+use Affiliation\Form\Financial;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Organisation\Entity\Organisation;
-use Organisation\Entity\Type;
+use Project\Service\ProjectServiceAwareInterface;
 use Zend\View\Model\ViewModel;
-
-use Affiliation\Form\Affiliation;
-use Affiliation\Form\Financial;
-use Affiliation\Entity;
 
 /**
  * @category    Affiliation
  * @package     Controller
  */
-class CommunityController extends AffiliationAbstractController
+class CommunityController extends AffiliationAbstractController implements
+    ProjectServiceAwareInterface
 {
     /**
      * Show the details of 1 affiliation
@@ -36,14 +36,14 @@ class CommunityController extends AffiliationAbstractController
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
 
-        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+        $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
         return new ViewModel(
             array(
                 'affiliationService' => $affiliationService,
-                'projectService'     => $projectService,
-                'latestVersion'      => $projectService->getLatestProjectVersion(),
-                'versionType'        => $projectService->getNextMode()->versionType
+                'projectService'     => $this->getProjectService(),
+                'latestVersion'      => $this->getProjectService()->getLatestProjectVersion(),
+                'versionType'        => $this->getProjectService()->getNextMode()->versionType
             )
         );
     }
@@ -74,8 +74,8 @@ class CommunityController extends AffiliationAbstractController
          * Check if the organisation has a financial contact
          */
         if (!is_null($affiliationService->getAffiliation()->getOrganisation()->getFinancial())) {
-            $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial(
-            )->getEmail();
+            $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
+                                                                ->getEmail();
         }
 
         /**
@@ -220,12 +220,12 @@ class CommunityController extends AffiliationAbstractController
         $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
 
         if (!is_null($affiliationService->getAffiliation()->getOrganisation()->getFinancial())) {
-            $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial(
-            )->getEmail();
-            $formData['vat']               = $affiliationService->getAffiliation()->getOrganisation()->getFinancial(
-            )->getVat();
-            $formData['omitContact']       = $affiliationService->getAffiliation()->getOrganisation()->getFinancial(
-            )->getOmitContact();
+            $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
+                                                                ->getEmail();
+            $formData['vat']               = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
+                                                                ->getVat();
+            $formData['omitContact']       = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
+                                                                ->getOmitContact();
         }
 
         $form = new Financial($affiliationService, $this->getGeneralService());

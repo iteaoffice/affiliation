@@ -9,22 +9,19 @@
  */
 namespace Affiliation\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\Mvc\Controller\Plugin\FlashMessenger;
-
-use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
-
-use Project\Service\ProjectService;
-use Organisation\Service\OrganisationService;
+use Affiliation\Service\AffiliationService;
+use Affiliation\Service\AffiliationServiceAwareInterface;
+use Affiliation\Service\ConfigAwareInterface;
+use Affiliation\Service\FormService;
+use Affiliation\Service\FormServiceAwareInterface;
 use Contact\Service\ContactService;
 use General\Service\GeneralService;
+use Organisation\Service\OrganisationService;
 use Program\Service\ProgramService;
-
-use Affiliation\Service\AffiliationService;
-use Affiliation\Service\FormServiceAwareInterface;
-use Affiliation\Service\FormService;
-use Affiliation\Service\ConfigAwareInterface;
+use Project\Service\ProjectService;
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
+use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 /**
  * @category    Affiliation
@@ -34,10 +31,14 @@ use Affiliation\Service\ConfigAwareInterface;
  * @method      bool isAllowed($resource, $action)
  */
 abstract class AffiliationAbstractController extends AbstractActionController implements
+    AffiliationServiceAwareInterface,
     FormServiceAwareInterface,
-    ServiceLocatorAwareInterface,
     ConfigAwareInterface
 {
+    /**
+     * @var FormService
+     */
+    protected $formService;
     /**
      * @var AffiliationService
      */
@@ -51,9 +52,17 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      */
     protected $projectService;
     /**
-     * @var FormService
+     * @var ContactService
      */
-    protected $formService;
+    protected $contactService;
+    /**
+     * @var ProgramService
+     */
+    protected $programService;
+    /**
+     * @var GeneralService
+     */
+    protected $generalService;
     /**
      * @var array
      */
@@ -80,75 +89,19 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * Gateway to the Affiliation Service
-     *
      * @return AffiliationService
      */
     public function getAffiliationService()
     {
-        if (null === $this->affiliationService) {
-            $this->setAffiliationService($this->getServiceLocator()->get('affiliation_affiliation_service'));
-        }
-
         return $this->affiliationService;
     }
 
     /**
-     * Gateway to the Project Service
+     * @param AffiliationService $affiliationService
      *
-     * @return ProjectService
+     * @return AffiliationAbstractController
      */
-    public function getProjectService()
-    {
-        return $this->getServiceLocator()->get('project_project_service');
-    }
-
-    /**
-     * Gateway to the Organisation Service
-     *
-     * @return OrganisationService
-     */
-    public function getOrganisationService()
-    {
-        return $this->getServiceLocator()->get('organisation_organisation_service');
-    }
-
-    /**
-     * Gateway to the Contact Service
-     *
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->getServiceLocator()->get('contact_contact_service');
-    }
-
-    /**
-     * Gateway to the Program Service
-     *
-     * @return ProgramService
-     */
-    public function getProgramService()
-    {
-        return $this->getServiceLocator()->get('program_program_service');
-    }
-
-    /**
-     * Gateway to the General Service
-     *
-     * @return GeneralService
-     */
-    public function getGeneralService()
-    {
-        return $this->getServiceLocator()->get('general_general_service');
-    }
-
-    /**
-     * @param $affiliationService
-     *
-     * @return $this
-     */
-    public function setAffiliationService($affiliationService)
+    public function setAffiliationService(AffiliationService $affiliationService)
     {
         $this->affiliationService = $affiliationService;
 
@@ -156,22 +109,122 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param array $config
-     */
-    public function setConfig($config)
-    {
-        $this->config = $config;
-    }
-
-    /**
      * @return array
      */
     public function getConfig()
     {
-        if (null === $this->config) {
-            $this->setConfig($this->config);
-        }
-
         return $this->config;
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setConfig($config)
+    {
+        $this->config = $config;
+
+        return $this;
+    }
+
+    /**
+     * @return ContactService
+     */
+    public function getContactService()
+    {
+        return $this->contactService;
+    }
+
+    /**
+     * @param ContactService $contactService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setContactService(ContactService $contactService)
+    {
+        $this->contactService = $contactService;
+
+        return $this;
+    }
+
+    /**
+     * @return GeneralService
+     */
+    public function getGeneralService()
+    {
+        return $this->generalService;
+    }
+
+    /**
+     * @param GeneralService $generalService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setGeneralService(GeneralService $generalService)
+    {
+        $this->generalService = $generalService;
+
+        return $this;
+    }
+
+    /**
+     * @return OrganisationService
+     */
+    public function getOrganisationService()
+    {
+        return $this->organisationService;
+    }
+
+    /**
+     * @param OrganisationService $organisationService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setOrganisationService(OrganisationService $organisationService)
+    {
+        $this->organisationService = $organisationService;
+
+        return $this;
+    }
+
+    /**
+     * @return ProgramService
+     */
+    public function getProgramService()
+    {
+        return $this->programService;
+    }
+
+    /**
+     * @param ProgramService $programService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setProgramService(ProgramService $programService)
+    {
+        $this->programService = $programService;
+
+        return $this;
+    }
+
+    /**
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->projectService;
+    }
+
+    /**
+     * @param ProjectService $projectService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setProjectService(ProjectService $projectService)
+    {
+        $this->projectService = $projectService;
+
+        return $this;
     }
 }

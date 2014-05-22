@@ -8,15 +8,18 @@
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
 $config = array(
-    'controllers'     => array(
-        'invokables' => array(
+    'controllers'  => array(
+        'initializers' => array(
+            'affiliation_controller_initializer' => 'Affiliation\Controller\ControllerInitializer'
+        ),
+        'invokables'   => array(
             'affiliation-community' => 'Affiliation\Controller\CommunityController',
             'affiliation-manager'   => 'Affiliation\Controller\AffiliationManagerController',
             'affiliation-doa'       => 'Affiliation\Controller\DoaController',
             'affiliation-loi'       => 'Affiliation\Controller\LoiController',
         ),
     ),
-    'view_helpers'    => array(
+    'view_helpers' => array(
         'invokables' => array(
             'affiliationLink' => 'Affiliation\View\Helper\AffiliationLink',
             'doaLink'         => 'Affiliation\View\Helper\DoaLink',
@@ -24,23 +27,10 @@ $config = array(
 
         )
     ),
-    'view_manager'    => array(
+    'view_manager' => array(
         'template_map' => include __DIR__ . '/../template_map.php',
     ),
-    'service_manager' => array(
-        'factories'  => array(
-            'affiliation-assertion'      => 'Affiliation\Acl\Assertion\Affiliation',
-            'affiliation_module_options' => 'Affiliation\Service\OptionServiceFactory',
-        ),
-        'invokables' => array(
-            'affiliation_generic_service'         => 'Affiliation\Service\GeneralService',
-            'affiliation_affiliation_service'     => 'Affiliation\Service\AffiliationService',
-            'affiliation_form_service'            => 'Affiliation\Service\FormService',
-            'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
-
-        )
-    ),
-    'doctrine'        => array(
+    'doctrine'     => array(
         'driver'       => array(
             'affiliation_annotation_driver' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
