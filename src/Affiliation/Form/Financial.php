@@ -29,7 +29,7 @@ class Financial extends Form
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
 
-        $countries = array();
+        $countries = [];
         foreach ($generalService->findAll('country') as $country) {
             $countries[$country->getId()] = $country->getCountry();
         }

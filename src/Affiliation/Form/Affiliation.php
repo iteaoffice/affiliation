@@ -27,12 +27,12 @@ class Affiliation extends Form
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
 
-        $technicalContactValueOptions = array();
-        $affiliationValueOptions      = array();
+        $technicalContactValueOptions = [];
+        $affiliationValueOptions      = [];
 
         foreach ($affiliationService->parseRenameOptions() as $country => $options) {
 
-            $groupOptions = array();
+            $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
                 foreach ($branchAndName as $branch => $organisationWithBranch) {
                     $groupOptions[sprintf("%s|%s", $organisationId, $branch)] = $organisationWithBranch;

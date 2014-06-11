@@ -71,7 +71,7 @@ class AffiliationService extends ServiceAbstract
         $affiliations = $this->getEntityManager()
             ->getRepository($this->getFullEntityName('Affiliation'))
             ->findAffiliationByProjectAndWhich($project, $which);
-        $result       = array();
+        $result       = [];
         foreach ($affiliations as $affiliation) {
             $result[] = $this->createServiceElement($affiliation);
         }
@@ -93,7 +93,7 @@ class AffiliationService extends ServiceAbstract
         $affiliations = $this->getEntityManager()
             ->getRepository($this->getFullEntityName('affiliation'))
             ->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
-        $result       = array();
+        $result       = [];
         foreach ($affiliations as $affiliation) {
             $result[] = $this->createServiceElement($affiliation);
         }
@@ -113,7 +113,7 @@ class AffiliationService extends ServiceAbstract
             ->getRepository($this->getFullEntityName('affiliation'))
             ->findAffiliationByProjectAndWhich($project, $which);
 
-        $result = array();
+        $result = [];
         foreach ($affiliations as $affiliation) {
             $result[$affiliation->getOrganisation()->getCountry()->getCountry()] =
                 $affiliation->getOrganisation()->getCountry();
@@ -211,7 +211,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseRenameOptions()
     {
-        $options = array();
+        $options = [];
 
         $organisation = $this->getAffiliation()->getOrganisation();
         $contact      = $this->getAffiliation()->getContact();

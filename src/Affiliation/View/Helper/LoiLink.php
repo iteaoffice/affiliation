@@ -56,7 +56,7 @@ class LoiLink extends AbstractHelper
 
         if (!is_null($loi) && !$auth->getAcl()->hasResource($loi)) {
             $auth->getAcl()->addResource($loi);
-            $auth->getAcl()->allow(array(), $loi, array(), $assertion);
+            $auth->getAcl()->allow([], $loi, [], $assertion);
         }
 
         if (!is_null($loi) && !$isAllowed($loi, $action)) {
@@ -106,8 +106,8 @@ class LoiLink extends AbstractHelper
             'entity'         => 'doa'
         );
 
-        $classes     = array();
-        $linkContent = array();
+        $classes     = [];
+        $linkContent = [];
 
         switch ($show) {
             case 'icon':

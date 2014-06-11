@@ -7,10 +7,13 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+use Affiliation\Controller\ControllerInitializer;
+use Affiliation\Service\ServiceInitializer;
+
 $config = array(
-    'controllers'  => array(
+    'controllers'     => array(
         'initializers' => array(
-            'affiliation_controller_initializer' => 'Affiliation\Controller\ControllerInitializer'
+            ControllerInitializer::class
         ),
         'invokables'   => array(
             'affiliation-community' => 'Affiliation\Controller\CommunityController',
@@ -19,7 +22,19 @@ $config = array(
             'affiliation-loi'       => 'Affiliation\Controller\LoiController',
         ),
     ),
-    'view_helpers' => array(
+    'service_manager' => array(
+        'initializers' => array(
+            ServiceInitializer::class
+        ),
+        'invokables'   => array(
+            'affiliation_affiliation_service'     => 'Affiliation\Service\AffiliationService',
+            'affiliation_form_service'            => 'Affiliation\Service\FormService',
+            'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
+            'affiliation_assertion'               => 'Affiliation\Acl\Assertion\Affiliation',
+            'affiliation_module_options'          => 'Affiliation\Service\OptionServiceFactory',
+        ),
+    ),
+    'view_helpers'    => array(
         'invokables' => array(
             'affiliationLink' => 'Affiliation\View\Helper\AffiliationLink',
             'doaLink'         => 'Affiliation\View\Helper\DoaLink',
@@ -27,10 +42,10 @@ $config = array(
 
         )
     ),
-    'view_manager' => array(
+    'view_manager'    => array(
         'template_map' => include __DIR__ . '/../template_map.php',
     ),
-    'doctrine'     => array(
+    'doctrine'        => array(
         'driver'       => array(
             'affiliation_annotation_driver' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',

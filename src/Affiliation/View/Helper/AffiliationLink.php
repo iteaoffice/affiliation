@@ -54,7 +54,7 @@ class AffiliationLink extends AbstractHelper
 
         if (!is_null($affiliation) && !$auth->getAcl()->hasResource($affiliation)) {
             $auth->getAcl()->addResource($affiliation);
-            $auth->getAcl()->allow(array(), $affiliation, array(), $assertion);
+            $auth->getAcl()->allow([], $affiliation, [], $assertion);
         }
 
         if (!is_null($affiliation) && !$isAllowed($affiliation, $action)) {
@@ -83,8 +83,8 @@ class AffiliationLink extends AbstractHelper
             'entity' => 'affiliation'
         );
 
-        $classes     = array();
-        $linkContent = array();
+        $classes     = [];
+        $linkContent = [];
 
         switch ($show) {
             case 'icon':

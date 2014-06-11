@@ -66,7 +66,7 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     /**
      * @var array
      */
-    protected $config = array();
+    protected $config = [];
 
     /**
      * @return FormService

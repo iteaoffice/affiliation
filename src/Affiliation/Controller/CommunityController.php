@@ -61,7 +61,7 @@ class CommunityController extends AffiliationAbstractController implements
 
         $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
-        $formData                = array();
+        $formData                = [];
         $formData['affiliation'] = sprintf(
             "%s|%s",
             $affiliationService->getAffiliation()->getOrganisation()->getId(),
@@ -197,7 +197,7 @@ class CommunityController extends AffiliationAbstractController implements
             $affiliationService->getAffiliation()->getOrganisation()
         );
 
-        $formData = array();
+        $formData = [];
 
         $branch = null;
 

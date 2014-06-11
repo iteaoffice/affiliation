@@ -184,7 +184,7 @@ class Loi extends EntityAbstract implements ResourceInterface
      */
     public function getArrayCopy()
     {
-        return array();
+        return [];
     }
 
     /**

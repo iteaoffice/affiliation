@@ -56,7 +56,7 @@ class DoaLink extends AbstractHelper
 
         if (!is_null($doa) && !$auth->getAcl()->hasResource($doa)) {
             $auth->getAcl()->addResource($doa);
-            $auth->getAcl()->allow(array(), $doa, array(), $assertion);
+            $auth->getAcl()->allow([], $doa, [], $assertion);
         }
 
         if (!is_null($doa) && !$isAllowed($doa, $action)) {
@@ -106,8 +106,8 @@ class DoaLink extends AbstractHelper
             'entity'         => 'doa'
         );
 
-        $classes     = array();
-        $linkContent = array();
+        $classes     = [];
+        $linkContent = [];
 
         switch ($show) {
             case 'icon':

@@ -2,36 +2,34 @@
 /**
  * Japaveh Webdesign copyright message placeholder
  *
- * @category    Admin
- * @package     Controller
+ * @category    Affiliation
+ * @package     Service
  * @author      Johan van der Heide <info@japaveh.nl>
  * @copyright   2004-2014 Japaveh Webdesign
  * @license     http://solodb.net/license.txt proprietary
  * @link        http://solodb.net
  */
-namespace Affiliation\Controller;
+namespace Affiliation\Service;
 
-use Admin\Service\FormServiceAwareInterface;
-use Affiliation\Service\AffiliationServiceAwareInterface;
-use Zend\Mvc\Controller\ControllerManager;
+use Application\Service\EntityManagerAwareInterface;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Japaveh Webdesign copyright message placeholder
  *
- * @category    Admin
- * @package     Controller
+ * @category    Affiliation
+ * @package     Service
  * @author      Johan van der Heide <info@japaveh.nl>
  * @copyright   2004-2014 Japaveh Webdesign
  * @license     http://solodb.net/license.txt proprietary
  * @link        http://solodb.net
  */
-class ControllerInitializer implements InitializerInterface
+class ServiceInitializer implements InitializerInterface
 {
     /**
-     * @param                                           $instance
-     * @param ServiceLocatorInterface|ControllerManager $serviceLocator
+     * @param                         $instance
+     * @param ServiceLocatorInterface $serviceLocator
      *
      * @return void
      */
@@ -42,21 +40,18 @@ class ControllerInitializer implements InitializerInterface
         }
 
         $arrayCheck = [
+            EntityManagerAwareInterface::class      => 'doctrine.entitymanager.orm_default',
             FormServiceAwareInterface::class        => 'affiliation_form_service',
             AffiliationServiceAwareInterface::class => 'affiliation_affiliation_service',
+            ConfigAwareInterface::class             => 'affiliation_module_config'
         ];
-
-        /**
-         * @var $sm ServiceLocatorInterface
-         */
-        $sm = $serviceLocator->getServiceLocator();
 
         /**
          * Go over each interface to see if we should add an interface
          */
         foreach (class_implements($instance) as $interface) {
             if (array_key_exists($interface, $arrayCheck)) {
-                $this->setInterface($instance, $interface, $sm->get($arrayCheck[$interface]));
+                $this->setInterface($instance, $interface, $serviceLocator->get($arrayCheck[$interface]));
             }
         }
 

@@ -12,12 +12,8 @@ use Affiliation\Entity;
 use Affiliation\Form;
 
 return array(
-    'invokables' => array(
-        'affiliation_affiliation_service'     => 'Affiliation\Service\AffiliationService',
-        'affiliation_form_service'            => 'Affiliation\Service\FormService',
-        'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
-    ),
-    'factories'  => array(
+
+    'factories' => array(
         'affiliation_affiliation_form'          => function ($sm) {
             return new Form\CreateObject($sm, new Entity\Affiliation());
         },
@@ -30,7 +26,6 @@ return array(
         'affiliation_acl_assertion_loi'         => function ($sm) {
             return new Assertion\Loi($sm);
         },
-        'affiliation_assertion'                 => 'Affiliation\Acl\Assertion\Affiliation',
-        'affiliation_module_options'            => 'Affiliation\Service\OptionServiceFactory',
+
     ),
 );

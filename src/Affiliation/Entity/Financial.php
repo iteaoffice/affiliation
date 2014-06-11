@@ -126,7 +126,7 @@ class Financial extends EntityAbstract
      */
     public function getArrayCopy()
     {
-        return array();
+        return [];
     }
 
     /**

@@ -174,7 +174,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      */
     public function getArrayCopy()
     {
-        return array();
+        return [];
     }
 
     /**
