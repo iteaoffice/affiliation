@@ -9,14 +9,12 @@
  */
 namespace Affiliation\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
-use General\Service\GeneralService;
-use Contact\Service\ContactService;
-
 use Affiliation\Entity\Doa;
 use Affiliation\Options\ModuleOptions;
+use Contact\Service\ContactService;
+use General\Service\GeneralService;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  *
@@ -40,12 +38,9 @@ class RenderDoa extends AbstractPlugin
     {
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
-
         $pdf->addPage();
         $pdf->SetFontSize(9);
-
         $twig = $this->getServiceLocator()->get('ZfcTwigRenderer');
-
         /**
          * Write the contact details
          */
@@ -54,13 +49,11 @@ class RenderDoa extends AbstractPlugin
         $pdf->Write(0, $contactService->parseFullName());
         $pdf->SetXY(14, 60);
         $pdf->Write(0, $contactService->parseOrganisation());
-
         /**
          * Write the current date
          */
         $pdf->SetXY(77, 55);
         $pdf->Write(0, date("Y-m-d"));
-
         /**
          * Write the Reference
          */
@@ -69,7 +62,6 @@ class RenderDoa extends AbstractPlugin
          * Use the NDA object to render the filename
          */
         $pdf->Write(0, $doa->parseFileName());
-
         $ndaContent = $twig->render(
             'affiliation/pdf/doa-project',
             array(
@@ -78,9 +70,7 @@ class RenderDoa extends AbstractPlugin
                 'organisation' => $doa->getAffiliation()->getOrganisation(),
             )
         );
-
-        $pdf->writeHTMLCell(0, 0, 14, 70, $ndaContent);
-
+        $pdf->writeHTMLCell(0, 0, 14, 85, $ndaContent);
         /**
          * Signage block
          */
@@ -92,10 +82,8 @@ class RenderDoa extends AbstractPlugin
         $pdf->Write(0, 'Date of Signature:');
         $pdf->SetXY(14, 270);
         $pdf->Write(0, 'Function:');
-
         $pdf->SetXY(100, 270);
         $pdf->Write(0, 'Signature:');
-
         $pdf->Line(130, 275, 190, 275);
         $pdf->Line(30, 265, 90, 265);
         $pdf->Line(130, 265, 190, 265);
@@ -111,7 +99,7 @@ class RenderDoa extends AbstractPlugin
      */
     public function getGeneralService()
     {
-        return $this->getServiceLocator()->get('general_general_service');
+        return $this->getServiceLocator()->get(GeneralService::class);
     }
 
     /**

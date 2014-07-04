@@ -9,10 +9,9 @@
  */
 namespace Affiliation\Service;
 
+use Affiliation\Options\ModuleOptions;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-
-use Affiliation\Options\ModuleOptions;
 
 /**
  * Factory responsible of retrieving an array containing the program configuration
@@ -32,6 +31,6 @@ class OptionServiceFactory implements FactoryInterface
     {
         $config = $serviceLocator->get('Config');
 
-        return new ModuleOptions($config['affiliation-option']);
+        return new ModuleOptions($config['affiliation_option']);
     }
 }

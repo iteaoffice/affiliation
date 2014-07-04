@@ -10,11 +10,10 @@
  */
 namespace Affiliation\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
-use Zend\InputFilter\Factory as InputFactory;
-
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ProjectDoaObject

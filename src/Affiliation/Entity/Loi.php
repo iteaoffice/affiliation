@@ -9,15 +9,13 @@
  */
 namespace Affiliation\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Zend\Form\Annotation;
+use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
-use Zend\InputFilter\Factory as InputFactory;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
-use Zend\Form\Annotation;
-
-use Doctrine\ORM\Mapping as ORM;
-
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * ProjectLoi
@@ -152,7 +150,6 @@ class Loi extends EntityAbstract implements ResourceInterface
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
             $factory     = new InputFactory();
-
             $inputFilter->add(
                 $factory->createInput(
                     array(
@@ -161,7 +158,6 @@ class Loi extends EntityAbstract implements ResourceInterface
                     )
                 )
             );
-
             $this->inputFilter = $inputFilter;
         }
 

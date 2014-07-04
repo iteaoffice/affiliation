@@ -32,16 +32,13 @@ class AffiliationPdf extends \FPDI
     public function header()
     {
         if (is_null($this->_tplIdx)) {
-
             if (!file_exists($this->template)) {
                 throw new \InvalidArgumentException(sprintf("Template %s cannot be found", $this->template));
             }
-
             $this->setSourceFile($this->template);
             $this->_tplIdx = $this->importPage(1);
         }
         $size = $this->useTemplate($this->_tplIdx, 0, 0);
-
         $this->SetFont('freesans', 'N', 15);
         $this->SetTextColor(0);
         $this->SetXY(PDF_MARGIN_LEFT, 5);

@@ -18,6 +18,7 @@ return array(
                         'options'       => array(
                             'route'    => '/affiliation',
                             'defaults' => array(
+                                'namespace'  => 'affiliation',
                                 'controller' => 'affiliation-community',
                                 'action'     => 'index',
                             ),

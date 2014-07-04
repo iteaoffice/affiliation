@@ -10,58 +10,17 @@
  */
 namespace Affiliation\Acl\Assertion;
 
-use Zend\Permissions\Acl\Assertion\AssertionInterface;
+use Affiliation\Entity\Loi as LoiEntity;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 use Zend\Permissions\Acl\Role\RoleInterface;
-use Zend\ServiceManager\ServiceManager;
-
-use Affiliation\Service\AffiliationService;
-use Affiliation\Entity\Loi as LoiEntity;
-
-use Contact\Service\ContactService;
 
 /**
  * Class Affiliation
  * @package Affiliation\Acl\Assertion
  */
-class Loi implements AssertionInterface
+class Loi extends AssertionAbstract
 {
-    /**
-     * @var ServiceManager
-     */
-    protected $serviceManager;
-    /**
-     * @var AffiliationService
-     */
-    protected $affiliationService;
-    /**
-     * @var ContactService
-     */
-    protected $contactService;
-    /**
-     * @var array
-     */
-    protected $accessRoles = [];
-
-    /**
-     * @param ServiceManager $serviceManager
-     */
-    public function __construct(ServiceManager $serviceManager)
-    {
-        $this->serviceManager     = $serviceManager;
-        $this->affiliationService = $this->serviceManager->get("affiliation_affiliation_service");
-        $this->contactService     = $this->serviceManager->get("contact_contact_service");
-
-        /**
-         * Store locally in the object the contact information
-         */
-        if ($this->serviceManager->get('zfcuser_auth_service')->hasIdentity()) {
-            $this->contactService->setContact($this->serviceManager->get('zfcuser_auth_service')->getIdentity());
-            $this->accessRoles = $this->contactService->getContact()->getRoles();
-        }
-    }
-
     /**
      * Returns true if and only if the assertion conditions are met
      *
@@ -78,80 +37,68 @@ class Loi implements AssertionInterface
      */
     public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $resource = null, $privilege = null)
     {
-        $routeMatch = $this->serviceManager->get("Application")->getMvcEvent()->getRouteMatch();
-
-        $id = $routeMatch->getParam('id');
-
+        $id = $this->getRouteMatch()->getParam('id');
         /**
-         * When the privilege is_null (not given by the isAllowed helper), get it from the routeMatch
+         * When the privilege is_null (not given by the isAllowed helper), get it from the getRouteMatch
          */
         if (is_null($privilege)) {
-            $privilege = $routeMatch->getParam('privilege');
+            $privilege = $this->getRouteMatch()->getParam('privilege');
         }
-
         if (!$resource instanceof LoiEntity && !is_null($id)) {
-            $resource = $this->affiliationService->findEntityById('Loi', $id);
+            $resource = $this->getAffiliationService()->findEntityById('Loi', $id);
         }
-
-        $affiliationAssert = $this->serviceManager->get("affiliation_acl_assertion_affiliation");
-
         switch ($privilege) {
             case 'upload':
-
                 /**
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
-                $affiliation = $this->affiliationService->setAffiliationId(
-                    !is_null($routeMatch->getParam('id')) ? $routeMatch->getParam('id') : $routeMatch->getParam(
+                $affiliation = $this->getAffiliationService()->setAffiliationId(
+                    !is_null($this->getRouteMatch()->getParam('id')) ? $this->getRouteMatch()->getParam(
+                        'id'
+                    ) : $this->getRouteMatch()->getParam(
                         'affiliation-id'
                     )
                 )->getAffiliation();
 
-                return $affiliationAssert->assert($acl, $role, $affiliation, 'edit-community');
-
-                break;
-
+                return $this->getAffiliationAssert()->assert($acl, $role, $affiliation, 'edit-community');
             case 'render':
-
                 /**
                  * For the upload we need to see if the user has access on the editing of the affiliation
-                 * The affiliation can already be known, but if not grab it from the routeMatch
+                 * The affiliation can already be known, but if not grab it from the getRouteMatch
                  */
                 $affiliation = null;
                 if ($resource instanceof LoiEntity) {
                     $affiliation = $resource->getAffiliation();
                 }
-
                 if (is_null($affiliation)) {
-                    $affiliation = $this->affiliationService->setAffiliationId(
-                        !is_null($routeMatch->getParam('id')) ? $routeMatch->getParam('id') : $routeMatch->getParam(
+                    $affiliation = $this->getAffiliationService()->setAffiliationId(
+                        !is_null($this->getRouteMatch()->getParam('id')) ? $this->getRouteMatch()->getParam(
+                            'id'
+                        ) : $this->getRouteMatch()->getParam(
                             'affiliation-id'
                         )
                     )->getAffiliation();
                 }
 
-                return $affiliationAssert->assert($acl, $role, $affiliation, 'view-community');
-
-                break;
-
+                return $this->getAffiliationAssert()->assert($acl, $role, $affiliation, 'view-community');
             case 'replace':
                 /**
                  * For the replace we need to see if the user has access on the editing of the affiliation
                  * and the acl should not be approved
                  */
-
-                return is_null($resource->getDateApproved()) && $affiliationAssert->assert(
+                return is_null($resource->getDateApproved()) && $this->getAffiliationAssert()->assert(
                     $acl,
                     $role,
                     $resource->getAffiliation(),
                     'edit-community'
                 );
-
-                break;
-
             case 'download':
-                return $affiliationAssert->assert($acl, $role, $resource->getAffiliation(), 'view-community');
-                break;
+                return $this->getAffiliationAssert()->assert(
+                    $acl,
+                    $role,
+                    $resource->getAffiliation(),
+                    'view-community'
+                );
         }
 
         return false;

@@ -9,15 +9,13 @@
  */
 namespace Affiliation\Form;
 
-use Zend\Form\Fieldset;
-use Zend\Form\Annotation\AnnotationBuilder;
-
+use Affiliation\Entity;
 use Doctrine\ORM\EntityManager;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use DoctrineORMModule\Form\Element\EntitySelect;
 use DoctrineORMModule\Form\Element\EntityMultiCheckbox;
-
-use Affiliation\Entity;
+use DoctrineORMModule\Form\Element\EntitySelect;
+use Zend\Form\Annotation\AnnotationBuilder;
+use Zend\Form\Fieldset;
 
 class ObjectFieldset extends Fieldset
 {
@@ -28,12 +26,9 @@ class ObjectFieldset extends Fieldset
     public function __construct(EntityManager $entityManager, Entity\EntityAbstract $object)
     {
         parent::__construct($object->get('underscore_entity_name'));
-
         $doctrineHydrator = new DoctrineHydrator($entityManager);
         $this->setHydrator($doctrineHydrator)->setObject($object);
-
         $builder = new AnnotationBuilder();
-
         /**
          * Go over the different form elements and add them to the form
          */
@@ -48,7 +43,6 @@ class ObjectFieldset extends Fieldset
                     )
                 );
             }
-
             //Add only when a type is provided
             if (array_key_exists('type', $element->getAttributes())) {
                 $this->add($element);

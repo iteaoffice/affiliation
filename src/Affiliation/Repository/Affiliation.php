@@ -9,14 +9,12 @@
  */
 namespace Affiliation\Repository;
 
-use Doctrine\ORM\EntityRepository;
-use InvalidArgumentException;
-
-use Project\Entity\Project;
-use General\Entity\Country;
-
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
+use Doctrine\ORM\EntityRepository;
+use General\Entity\Country;
+use InvalidArgumentException;
+use Project\Entity\Project;
 
 /**
  * @category    Affiliation
@@ -39,12 +37,9 @@ class Affiliation extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('a');
         $qb->from('Affiliation\Entity\Affiliation', 'a');
-
         $qb->join('a.organisation', 'o');
-
         $qb->where('a.project = ?1');
         $qb->setParameter(1, $project);
-
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;
@@ -57,7 +52,6 @@ class Affiliation extends EntityRepository
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
-
         $qb->addOrderBy('o.organisation', 'ASC');
 
         return $qb->getQuery()->getResult();
@@ -80,13 +74,10 @@ class Affiliation extends EntityRepository
         $qb->select('a');
         $qb->from('Affiliation\Entity\Affiliation', 'a');
         $qb->join('a.organisation', 'o');
-
         $qb->where('a.project = ?1');
         $qb->andWhere('o.country = ?2');
-
         $qb->setParameter(1, $project);
         $qb->setParameter(2, $country);
-
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;

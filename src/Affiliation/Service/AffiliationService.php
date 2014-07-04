@@ -9,13 +9,13 @@
  */
 namespace Affiliation\Service;
 
-use Project\Entity\Project;
-
 use Affiliation\Entity\Affiliation;
-use General\Entity\Country;
 use Contact\Entity\Contact;
-use Project\Service\ProjectService;
+use Doctrine\Common\Collections\ArrayCollection;
+use General\Entity\Country;
 use Organisation\Service\OrganisationService;
+use Project\Entity\Project;
+use Project\Service\ProjectService;
 
 /**
  * AffiliationService
@@ -32,8 +32,8 @@ class AffiliationService extends ServiceAbstract
     /**
      * Constant to determine which affiliations must be taken from the database
      */
-    const WHICH_ALL = 1;
-    const WHICH_ONLY_ACTIVE = 2;
+    const WHICH_ALL           = 1;
+    const WHICH_ONLY_ACTIVE   = 2;
     const WHICH_ONLY_INACTIVE = 3;
     /**
      * @var Affiliation
@@ -69,33 +69,63 @@ class AffiliationService extends ServiceAbstract
     public function findAffiliationByProjectAndWhich(Project $project, $which = 2)
     {
         $affiliations = $this->getEntityManager()
-            ->getRepository($this->getFullEntityName('Affiliation'))
-            ->findAffiliationByProjectAndWhich($project, $which);
-        $result       = [];
+                             ->getRepository($this->getFullEntityName('Affiliation'))
+                             ->findAffiliationByProjectAndWhich($project, $which);
         foreach ($affiliations as $affiliation) {
-            $result[] = $this->createServiceElement($affiliation);
+            yield $this->createServiceElement($affiliation);
         }
-
-        return $result;
     }
 
     /**
-     * Produce a list of affiliations per country
-     *
      * @param Project $project
      * @param Country $country
      * @param int     $which
      *
-     * @return AffiliationService[]
+     * @return \Generator
      */
-    public function findAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, $which = 2)
-    {
+    public function findAffiliationByProjectAndCountryAndWhich(
+        Project $project,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
         $affiliations = $this->getEntityManager()
-            ->getRepository($this->getFullEntityName('affiliation'))
-            ->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
-        $result       = [];
+                             ->getRepository($this->getFullEntityName('Affiliation'))
+                             ->findAffiliationByProjectAndCountryAndWhich(
+                                 $project,
+                                 $country,
+                                 $which
+                             );
         foreach ($affiliations as $affiliation) {
-            $result[] = $this->createServiceElement($affiliation);
+            yield $this->createServiceElement($affiliation);
+        }
+    }
+
+    /**
+     * Produce a list of affiliations grouped per country
+     *
+     * @param Project $project
+     * @param int     $which
+     *
+     * @return ArrayCollection
+     */
+    public function findAffiliationByProjectPerCountryAndWhich(
+        Project $project,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        $countries = $this->findAffiliationCountriesByProjectAndWhich($project, $which);
+        $result    = new ArrayCollection();
+        foreach ($countries as $country) {
+            /**
+             * @var $affiliations Affiliation[]
+             */
+            $result->set(
+                $country->getId(),
+                $this->findAffiliationByProjectAndCountryAndWhich(
+                    $project,
+                    $country,
+                    $which
+                )
+            );
         }
 
         return $result;
@@ -109,16 +139,17 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationCountriesByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {
+        /**
+         * @var $affiliations Affiliation[]
+         */
         $affiliations = $this->getEntityManager()
-            ->getRepository($this->getFullEntityName('affiliation'))
-            ->findAffiliationByProjectAndWhich($project, $which);
-
-        $result = [];
+                             ->getRepository($this->getFullEntityName('affiliation'))
+                             ->findAffiliationByProjectAndWhich($project, $which);
+        $result       = [];
         foreach ($affiliations as $affiliation) {
             $result[$affiliation->getOrganisation()->getCountry()->getCountry()] =
                 $affiliation->getOrganisation()->getCountry();
         }
-
         ksort($result);
 
         return $result;
@@ -142,7 +173,6 @@ class AffiliationService extends ServiceAbstract
         if (is_null($contact->getContactOrganisation())) {
             return null;
         }
-
         foreach ($project->getAffiliation() as $affiliation) {
             if ($which === self::WHICH_ONLY_ACTIVE && !is_null($affiliation->getDateEnd())) {
                 continue;
@@ -151,7 +181,8 @@ class AffiliationService extends ServiceAbstract
                 continue;
             }
             if ($affiliation->getOrganisation()->getId() ===
-                $contact->getContactOrganisation()->getOrganisation()->getId()
+                $contact->getContactOrganisation()->getOrganisation()
+                        ->getId()
             ) {
                 return $affiliation;
             }
@@ -168,13 +199,10 @@ class AffiliationService extends ServiceAbstract
     public function deactivateAffiliation(Affiliation $affiliation)
     {
         $projectService = $this->getProjectService()->setProject($affiliation->getProject());
-
         $affiliation->setDateEnd(new \DateTime());
         $this->updateEntity($affiliation);
-
         $editYearRange = $projectService->parseEditYearRange();
         $minEditYear   = array_shift($editYearRange);
-
         /**
          * Remove the current cost and effort of the affiliation
          */
@@ -183,7 +211,6 @@ class AffiliationService extends ServiceAbstract
                 $this->getProjectService()->removeEntity($effort);
             }
         }
-
         /**
          * Remove the current cost and effort of the affiliation
          */
@@ -211,21 +238,20 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseRenameOptions()
     {
-        $options = [];
-
+        $options      = [];
         $organisation = $this->getAffiliation()->getOrganisation();
         $contact      = $this->getAffiliation()->getContact();
-
         /**
          * Go over the organisation and grab all its affiliations
          */
         foreach ($organisation->getAffiliation() as $affiliation) {
             $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation(
-            )->getId()][$affiliation->getBranch()] =
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()
+                                                                                              ->getId(
+                                                                                              )][$affiliation->getBranch(
+            )] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
-
         /**
          * Go over the organisation and join the clusters and grab all its affiliations
          */
@@ -239,30 +265,29 @@ class AffiliationService extends ServiceAbstract
                 }
             }
         }
-
         /**
          * Go over the contact and grab all its affiliations
          */
         foreach ($contact->getAffiliation() as $affiliation) {
             $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation(
-            )->getId()][$affiliation->getBranch()] =
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()
+                                                                                              ->getId(
+                                                                                              )][$affiliation->getBranch(
+            )] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
-
         /**
          * Add the contact organisation (from the contact)
          */
         if (!is_null($contact->getContactOrganisation())) {
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
-            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation(
-            )->getBranch()] =
+            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()
+                                                                                       ->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()->getBranch()
                 );
         }
-
         /**
          * Add the contact organisation (from the organisation)
          */
@@ -272,12 +297,11 @@ class AffiliationService extends ServiceAbstract
              */
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
-            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation(
-            )->getBranch()] =
+            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()
+                                                                                       ->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()->getBranch()
                 );
-
             /**
              * Go over the clusters
              */
@@ -303,8 +327,7 @@ class AffiliationService extends ServiceAbstract
      */
     private function createServiceElement(Affiliation $affiliation)
     {
-        $affiliationService = new self();
-        $affiliationService->setServiceLocator($this->getServiceLocator());
+        $affiliationService = clone $this;
         $affiliationService->setAffiliation($affiliation);
 
         return $affiliationService;
@@ -333,7 +356,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function getProjectService()
     {
-        return $this->getServiceLocator()->get('project_project_service');
+        return $this->getServiceLocator()->get(ProjectService::class);
     }
 
     /**

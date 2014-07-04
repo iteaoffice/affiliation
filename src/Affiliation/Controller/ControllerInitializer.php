@@ -11,8 +11,10 @@
  */
 namespace Affiliation\Controller;
 
-use Admin\Service\FormServiceAwareInterface;
 use Affiliation\Service\AffiliationServiceAwareInterface;
+use Affiliation\Service\AffiliationService;
+use Affiliation\Service\FormServiceAwareInterface;
+use Affiliation\Service\FormService;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -40,17 +42,14 @@ class ControllerInitializer implements InitializerInterface
         if (!is_object($instance)) {
             return;
         }
-
         $arrayCheck = [
-            FormServiceAwareInterface::class        => 'affiliation_form_service',
-            AffiliationServiceAwareInterface::class => 'affiliation_affiliation_service',
+            FormServiceAwareInterface::class        => FormService::class,
+            AffiliationServiceAwareInterface::class => AffiliationService::class,
         ];
-
         /**
          * @var $sm ServiceLocatorInterface
          */
         $sm = $serviceLocator->getServiceLocator();
-
         /**
          * Go over each interface to see if we should add an interface
          */

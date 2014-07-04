@@ -11,136 +11,162 @@
  */
 namespace Affiliation\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
-
-use Affiliation\Entity;
+use Affiliation\Acl\Assertion\Loi as LoiAssertion;
+use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Loi;
 
 /**
- * Create a link to an affiliation
+ * Create a link to an loi
  *
  * @category    Affiliation
  * @package     View
  * @subpackage  Helper
  */
-class LoiLink extends AbstractHelper
+class LoiLink extends LinkAbstract
 {
     /**
-     * @param Entity\Loi         $loi
-     * @param string             $action
-     * @param string             $show
-     * @param Entity\Affiliation $affiliation
+     * @var Loi
+     */
+    protected $loi;
+    /**
+     * @var Affiliation
+     */
+    protected $affiliation;
+
+    /**
+     * @param Loi         $loi
+     * @param string      $action
+     * @param string      $show
+     * @param Affiliation $affiliation
      *
      * @return string
+     */
+    public function __invoke(Loi $loi = null, $action = 'view', $show = 'name', Affiliation $affiliation = null)
+    {
+        $this->setLoi($loi);
+        $this->setAffiliation($affiliation);
+        $this->setAction($action);
+        $this->setShow($show);
+        /**
+         * Set the non-standard options needed to give an other link value
+         */
+        $this->setShowOptions(
+            array(
+                'name' => $this->getLoi(),
+            )
+        );
+        if (!$this->hasAccess(
+            $this->getLoi(),
+            LoiAssertion::class,
+            $this->getAction()
+        )
+        ) {
+            return 'Access denied';
+        }
+        $this->addRouterParam('entity', 'Loi');
+        $this->addRouterParam('id', $this->getLoi()->getId());
+        $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
+
+        return $this->createLink();
+    }
+
+    /**
+     * Extract the relevant parameters based on the action
+     *
      * @throws \Exception
      */
-    public function __invoke(
-        Entity\Loi $loi = null,
-        $action = 'view',
-        $show = 'name',
-        Entity\Affiliation $affiliation = null
-    ) {
-        $translate = $this->view->plugin('translate');
-        $url       = $this->view->plugin('url');
-        $serverUrl = $this->view->plugin('serverUrl');
-        $isAllowed = $this->view->plugin('isAllowed');
-
-        /**
-         * Add the resource on the fly
-         */
-        if (is_null($loi)) {
-            $loi = new Entity\Loi();
-        }
-
-        $auth      = $this->view->getHelperPluginManager()->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
-        $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get('affiliation_acl_assertion_loi');
-
-        if (!is_null($loi) && !$auth->getAcl()->hasResource($loi)) {
-            $auth->getAcl()->addResource($loi);
-            $auth->getAcl()->allow([], $loi, [], $assertion);
-        }
-
-        if (!is_null($loi) && !$isAllowed($loi, $action)) {
-            return $action . ' is not possible for ' . $loi->getId();
-        }
-
-        switch ($action) {
+    public function parseAction()
+    {
+        switch ($this->getAction()) {
             case 'upload':
-                $router = 'community/affiliation/loi/upload';
-                $text   = sprintf(
-                    $translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
-                    $affiliation->getOrganisation(),
-                    $affiliation->getProject()
+                $this->setRouter('community/affiliation/loi/upload');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getAffiliation()->getOrganisation(),
+                        $this->getAffiliation()->getProject()
+                    )
                 );
                 break;
             case 'render':
-                $router = 'community/affiliation/loi/render';
-                $text   = sprintf(
-                    $translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
-                    $affiliation->getOrganisation(),
-                    $affiliation->getProject()
+                $this->setRouter('community/affiliation/loi/render');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->getProject()
+                    )
                 );
                 break;
             case 'replace':
-                $router = 'community/affiliation/loi/replace';
-                $text   = sprintf(
-                    $translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
-                    $loi->getAffiliation()->getOrganisation(),
-                    $loi->getAffiliation()->getProject()
+                $this->setRouter('community/affiliation/loi/replace');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->getProject()
+                    )
                 );
                 break;
             case 'download':
-                $router = 'community/affiliation/loi/download';
-                $text   = sprintf(
-                    $translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
-                    $loi->getAffiliation()->getOrganisation(),
-                    $loi->getAffiliation()->getProject()
+                $this->setRouter('community/affiliation/loi/download');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->getProject()
+                    )
                 );
                 break;
             default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));
+                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+        }
+    }
+
+    /**
+     * @return Loi
+     */
+    public function getLoi()
+    {
+        if (is_null($this->loi)) {
+            $this->loi = new Loi();
         }
 
-        $params = array(
-            'id'             => (!is_null($loi) ? $loi->getId() : null),
-            'affiliation-id' => (!is_null($affiliation) ? $affiliation->getId() : null),
-            'entity'         => 'doa'
-        );
+        return $this->loi;
+    }
 
-        $classes     = [];
-        $linkContent = [];
+    /**
+     * @param Loi $loi
+     */
+    public function setLoi($loi)
+    {
+        $this->loi = $loi;
+    }
 
-        switch ($show) {
-            case 'icon':
-                if ($action === 'edit') {
-                    $linkContent[] = '<span class="glyphicon glyphicon-edit"></span>';
-                } elseif ($action === 'download') {
-                    $linkContent[] = '<span class="glyphicon glyphicon-download"></span>';
-                } elseif ($action === 'replace') {
-                    $linkContent[] = '<span class="glyphicon glyphicon-repeat"></span>';
-                } else {
-                    $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span>';
-                }
-                break;
-            case 'button':
-                $linkContent[] = '<span class="glyphicon glyphicon-info"></span> ' . $text;
-                $classes[]     = "btn btn-primary";
-                break;
-            case 'text':
-                $linkContent[] = $text;
-                break;
-            default:
-                $linkContent[] = $affiliation;
-                break;
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
         }
 
-        $uri = '<a href="%s" title="%s" class="%s">%s</a>';
+        return $this->affiliation;
+    }
 
-        return sprintf(
-            $uri,
-            $serverUrl->__invoke() . $url($router, $params),
-            $text,
-            implode($classes),
-            implode($linkContent)
-        );
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+        /**
+         * Only overwrite the the Affiliation in the LOI when this is not is_null
+         */
+        if (!is_null($affiliation)) {
+            $this->getLoi()->setAffiliation($affiliation);
+        }
     }
 }
+

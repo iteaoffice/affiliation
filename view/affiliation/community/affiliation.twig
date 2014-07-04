@@ -60,7 +60,7 @@
         <dd>
             {% if not affiliationService.affiliation.doa %}
                 {{ doaLink(null,'upload','text', affiliationService.affiliation) }}
-            {% elseif affiliation.doa.dateApproved is null %}
+            {% elseif affiliationService.affiliation.doa.dateApproved is null %}
                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
                 format(affiliationService.affiliation.doa.dateReceived|date("d-m-Y"))|raw }}
                 {{ doaLink(affiliationService.affiliation.doa,'replace','icon') }}
@@ -74,7 +74,7 @@
         <dd>
             {% if not affiliationService.affiliation.loi %}
                 {{ loiLink(null,'upload','text', affiliationService.affiliation) }}
-            {% elseif affiliation.loi.dateApproved is null %}
+            {% elseif affiliationService.affiliation.loi.dateApproved is null %}
                 {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
                 format(affiliationService.affiliation.loi.dateReceived|date("d-m-Y"))|raw }}
                 {{ loiLink(affiliationService.affiliation.loi,'replace','icon') }}
@@ -203,9 +203,9 @@
                 {% for year in years %}
                     <td>{{ costPerYear[year]|number_format(0, '.', ',') }}
                         {% if costPerYear[year] > costPerYearInVersion[year] %}
-                            <span class="glyphicon glyphicon-plus-sign increase pull-right"></span>
+                            <span class="glyphicon glyphicon-export increase pull-right"></span>
                         {% elseif costPerYear[year] < costPerYearInVersion[year] %}
-                            <span class="glyphicon glyphicon-minus-sign decrease pull-right"></span>
+                            <span class="glyphicon glyphicon-import decrease pull-right"></span>
                         {% endif %}
                     </td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
@@ -248,9 +248,9 @@
                             {{ effortPerYear[year] }}
 
                             {% if effortPerYear[year] > effortPerYearInVersion[year] %}
-                                <span class="glyphicon glyphicon-plus-sign increase pull-right"></span>
+                                <span class="glyphicon glyphicon-export increase pull-right"></span>
                             {% elseif effortPerYear[year] < effortPerYearInVersion[year] %}
-                                <span class="glyphicon glyphicon-minus-sign decrease pull-right"></span>
+                                <span class="glyphicon glyphicon-import decrease pull-right"></span>
                             {% endif %}
                         </td>
                         {% set totalPerWP = totalPerWP + effortPerYear[year] %}

@@ -9,13 +9,11 @@
  */
 namespace Affiliation\Form;
 
-use Zend\Validator\File\Size;
+use Zend\Form\Form;
+use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Validator\File\Extension;
 use Zend\Validator\File\MimeType;
-
-use Zend\Form\Form;
-
-use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\Validator\File\Size;
 
 /**
  *
@@ -28,11 +26,9 @@ class UploadLoi extends Form implements InputFilterProviderInterface
     public function __construct()
     {
         parent::__construct();
-
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
         $this->setAttribute('enctype', 'multipart/form-data');
-
         $this->add(
             array(
                 'type'    => '\Zend\Form\Element\File',
@@ -43,14 +39,12 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                 )
             )
         );
-
         $this->add(
             array(
                 'type' => 'Zend\Form\Element\Csrf',
                 'name' => 'csrf',
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',
@@ -61,7 +55,6 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',

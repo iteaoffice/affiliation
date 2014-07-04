@@ -11,136 +11,162 @@
  */
 namespace Affiliation\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
-
-use Affiliation\Entity;
+use Affiliation\Acl\Assertion\Doa as DoaAssertion;
+use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Doa;
 
 /**
- * Create a link to an affiliation
+ * Create a link to an doa
  *
  * @category    Affiliation
  * @package     View
  * @subpackage  Helper
  */
-class DoaLink extends AbstractHelper
+class DoaLink extends LinkAbstract
 {
     /**
-     * @param Entity\Doa         $doa
-     * @param string             $action
-     * @param string             $show
-     * @param Entity\Affiliation $affiliation
+     * @var Doa
+     */
+    protected $doa;
+    /**
+     * @var Affiliation
+     */
+    protected $affiliation;
+
+    /**
+     * @param Doa         $doa
+     * @param string      $action
+     * @param string      $show
+     * @param Affiliation $affiliation
      *
      * @return string
+     */
+    public function __invoke(Doa $doa = null, $action = 'view', $show = 'name', Affiliation $affiliation = null)
+    {
+        $this->setDoa($doa);
+        $this->setAction($action);
+        $this->setShow($show);
+        $this->setAffiliation($affiliation);
+        /**
+         * Set the non-standard options needed to give an other link value
+         */
+        $this->setShowOptions(
+            array(
+                'name' => $this->getDoa(),
+            )
+        );
+        if (!$this->hasAccess(
+            $this->getDoa(),
+            DoaAssertion::class,
+            $this->getAction()
+        )
+        ) {
+            return 'Access denied';
+        }
+        $this->addRouterParam('entity', 'Doa');
+        $this->addRouterParam('id', $this->getDoa()->getId());
+        $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
+
+        return $this->createLink();
+    }
+
+    /**
+     * Extract the relevant parameters based on the action
+     *
      * @throws \Exception
      */
-    public function __invoke(
-        Entity\Doa $doa = null,
-        $action = 'view',
-        $show = 'name',
-        Entity\Affiliation $affiliation = null
-    ) {
-        $translate = $this->view->plugin('translate');
-        $url       = $this->view->plugin('url');
-        $serverUrl = $this->view->plugin('serverUrl');
-        $isAllowed = $this->view->plugin('isAllowed');
-
-        /**
-         * Add the resource on the fly
-         */
-        if (is_null($doa)) {
-            $doa = new Entity\Doa();
-        }
-
-        $auth      = $this->view->getHelperPluginManager()->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
-        $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get('affiliation_acl_assertion_doa');
-
-        if (!is_null($doa) && !$auth->getAcl()->hasResource($doa)) {
-            $auth->getAcl()->addResource($doa);
-            $auth->getAcl()->allow([], $doa, [], $assertion);
-        }
-
-        if (!is_null($doa) && !$isAllowed($doa, $action)) {
-            return $action . ' is not possible for ' . $doa->getId();
-        }
-
-        switch ($action) {
+    public function parseAction()
+    {
+        switch ($this->getAction()) {
             case 'upload':
-                $router = 'community/affiliation/doa/upload';
-                $text   = sprintf(
-                    $translate("txt-upload-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $affiliation->getOrganisation(),
-                    $affiliation->getProject()
+                $this->setRouter('community/affiliation/doa/upload');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-upload-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getAffiliation()->getOrganisation(),
+                        $this->getAffiliation()->getProject()
+                    )
                 );
                 break;
             case 'render':
-                $router = 'community/affiliation/doa/render';
-                $text   = sprintf(
-                    $translate("txt-render-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $affiliation->getOrganisation(),
-                    $affiliation->getProject()
+                $this->setRouter('community/affiliation/doa/render');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-render-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getDoa()->getAffiliation()->getOrganisation(),
+                        $this->getDoa()->getAffiliation()->getProject()
+                    )
                 );
                 break;
             case 'replace':
-                $router = 'community/affiliation/doa/replace';
-                $text   = sprintf(
-                    $translate("txt-replace-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $doa->getAffiliation()->getOrganisation(),
-                    $doa->getAffiliation()->getProject()
+                $this->setRouter('community/affiliation/doa/replace');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-replace-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getDoa()->getAffiliation()->getOrganisation(),
+                        $this->getDoa()->getAffiliation()->getProject()
+                    )
                 );
                 break;
             case 'download':
-                $router = 'community/affiliation/doa/download';
-                $text   = sprintf(
-                    $translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $doa->getAffiliation()->getOrganisation(),
-                    $doa->getAffiliation()->getProject()
+                $this->setRouter('community/affiliation/doa/download');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getDoa()->getAffiliation()->getOrganisation(),
+                        $this->getDoa()->getAffiliation()->getProject()
+                    )
                 );
                 break;
             default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));
+                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+        }
+    }
+
+    /**
+     * @return Doa
+     */
+    public function getDoa()
+    {
+        if (is_null($this->doa)) {
+            $this->doa = new Doa();
         }
 
-        $params = array(
-            'id'             => (!is_null($doa) ? $doa->getId() : null),
-            'affiliation-id' => (!is_null($affiliation) ? $affiliation->getId() : null),
-            'entity'         => 'doa'
-        );
+        return $this->doa;
+    }
 
-        $classes     = [];
-        $linkContent = [];
+    /**
+     * @param Doa $doa
+     */
+    public function setDoa($doa)
+    {
+        $this->doa = $doa;
+    }
 
-        switch ($show) {
-            case 'icon':
-                if ($action === 'edit') {
-                    $linkContent[] = '<span class="glyphicon glyphicon-edit"></span>';
-                } elseif ($action === 'download') {
-                    $linkContent[] = '<span class="glyphicon glyphicon-download"></span>';
-                } elseif ($action === 'replace') {
-                    $linkContent[] = '<span class="glyphicon glyphicon-repeat"></span>';
-                } else {
-                    $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span>';
-                }
-                break;
-            case 'button':
-                $linkContent[] = '<span class="glyphicon glyphicon-info"></span> ' . $text;
-                $classes[]     = "btn btn-primary";
-                break;
-            case 'text':
-                $linkContent[] = $text;
-                break;
-            default:
-                $linkContent[] = $affiliation;
-                break;
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
         }
 
-        $uri = '<a href="%s" title="%s" class="%s">%s</a>';
+        return $this->affiliation;
+    }
 
-        return sprintf(
-            $uri,
-            $serverUrl->__invoke() . $url($router, $params),
-            $text,
-            implode($classes),
-            implode($linkContent)
-        );
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+        /**
+         * Only overwrite the the Affiliation in the LOI when this is not is_null
+         */
+        if (!is_null($affiliation)) {
+            $this->getDoa()->setAffiliation($affiliation);
+        }
     }
 }
+

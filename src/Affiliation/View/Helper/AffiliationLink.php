@@ -11,9 +11,8 @@
  */
 namespace Affiliation\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
-
-use Affiliation\Entity;
+use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
+use Affiliation\Entity\Affiliation;
 
 /**
  * Create a link to an affiliation
@@ -22,10 +21,15 @@ use Affiliation\Entity;
  * @package     View
  * @subpackage  Helper
  */
-class AffiliationLink extends AbstractHelper
+class AffiliationLink extends LinkAbstract
 {
     /**
-     * @param \Affiliation\Entity\Affiliation $affiliation
+     * @var Affiliation
+     */
+    protected $affiliation;
+
+    /**
+     * @param Affiliation                     $affiliation
      * @param                                 $action
      * @param                                 $show
      *
@@ -33,90 +37,76 @@ class AffiliationLink extends AbstractHelper
      * @throws \RuntimeException
      * @throws \Exception
      */
-    public function __invoke(Entity\Affiliation $affiliation = null, $action = 'view', $show = 'name')
+    public function __invoke(Affiliation $affiliation = null, $action = 'view', $show = 'name')
     {
-        $translate = $this->view->plugin('translate');
-        $url       = $this->view->plugin('url');
-        $serverUrl = $this->view->plugin('serverUrl');
-        $isAllowed = $this->view->plugin('isAllowed');
-
+        $this->setAffiliation($affiliation);
+        $this->setAction($action);
+        $this->setShow($show);
         /**
-         * Add the resource on the fly
+         * Set the non-standard options needed to give an other link value
          */
-        if (is_null($affiliation)) {
-            $affiliation = new Entity\Affiliation();
-        }
-
-        $auth      = $this->view->getHelperPluginManager()->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
-        $assertion = $this->view->getHelperPluginManager()->getServiceLocator()->get(
-            'affiliation_acl_assertion_affiliation'
+        $this->setShowOptions(
+            array(
+                'name'         => $this->getAffiliation(),
+                'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation(),
+            )
         );
-
-        if (!is_null($affiliation) && !$auth->getAcl()->hasResource($affiliation)) {
-            $auth->getAcl()->addResource($affiliation);
-            $auth->getAcl()->allow([], $affiliation, [], $assertion);
+        if (!$this->hasAccess(
+            $this->getAffiliation(),
+            AffiliationAssertion::class,
+            $this->getAction()
+        )
+        ) {
+            return $this->getAffiliation()->getOrganisation()->getOrganisation();
         }
+        $this->addRouterParam('entity', 'Affiliation');
+        $this->addRouterParam('id', $this->getAffiliation()->getId());
 
-        if (!is_null($affiliation) && !$isAllowed($affiliation, $action)) {
-            return $action . ' is not possible for ' . $affiliation;
-        }
+        return $this->createLink();
+    }
 
-        switch ($action) {
+    /**
+     * Extract the relevant parameters based on the action
+     *
+     * @throws \Exception
+     */
+    public function parseAction()
+    {
+        switch ($this->getAction()) {
             case 'view-community':
-                $router = 'community/affiliation/affiliation';
-                $text   = sprintf($translate("txt-view-affiliation-%s"), $affiliation);
+                $this->setRouter('community/affiliation/affiliation');
+                $this->setText(sprintf($this->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
                 break;
             case 'edit-community':
-                $router = 'community/affiliation/edit';
-                $text   = sprintf($translate("txt-edit-affiliation-%s"), $affiliation);
+                $this->setRouter('community/affiliation/edit');
+                $this->setText(sprintf($this->translate("txt-edit-affiliation-%s"), $this->getAffiliation()));
                 break;
             case 'edit-financial':
-                $router = 'community/affiliation/edit-financial';
-                $text   = sprintf($translate("txt-edit-financial-affiliation-%s"), $affiliation);
+                $this->setRouter('community/affiliation/edit-financial');
+                $this->setText(sprintf($this->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()));
                 break;
             default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));
+                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+        }
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
         }
 
-        $params = array(
-            'id'     => $affiliation->getId(),
-            'entity' => 'affiliation'
-        );
+        return $this->affiliation;
+    }
 
-        $classes     = [];
-        $linkContent = [];
-
-        switch ($show) {
-            case 'icon':
-                if ($action === 'edit') {
-                    $linkContent[] = '<span class="glyphicon glyphicon-edit"></span>';
-                } else {
-                    $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span>';
-                }
-                break;
-            case 'button':
-                $linkContent[] = '<span class="glyphicon glyphicon-info-sign"></span> ' . $text;
-                $classes[]     = "btn btn-primary";
-                break;
-            case 'text':
-                $linkContent[] = $text;
-                break;
-            case 'organisation':
-                $linkContent[] = $affiliation->getOrganisation()->getOrganisation();
-                break;
-            default:
-                $linkContent[] = $affiliation;
-                break;
-        }
-
-        $uri = '<a href="%s" title="%s" class="%s">%s</a>';
-
-        return sprintf(
-            $uri,
-            $serverUrl->__invoke() . $url($router, $params),
-            $text,
-            implode($classes),
-            implode($linkContent)
-        );
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
     }
 }

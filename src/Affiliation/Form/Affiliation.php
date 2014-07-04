@@ -9,9 +9,9 @@
  */
 namespace Affiliation\Form;
 
+use Affiliation\Service\AffiliationService;
 use Organisation\Entity\Financial;
 use Zend\Form\Form;
-use Affiliation\Service\AffiliationService;
 
 /**
  *
@@ -26,25 +26,20 @@ class Affiliation extends Form
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
-
         $technicalContactValueOptions = [];
         $affiliationValueOptions      = [];
-
         foreach ($affiliationService->parseRenameOptions() as $country => $options) {
-
             $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
                 foreach ($branchAndName as $branch => $organisationWithBranch) {
                     $groupOptions[sprintf("%s|%s", $organisationId, $branch)] = $organisationWithBranch;
                 }
             }
-
             $affiliationValueOptions[$country] = array(
                 'label'   => $country,
                 'options' => $groupOptions
             );
         }
-
         /**
          * Collect the technical contacts
          */
@@ -53,7 +48,6 @@ class Affiliation extends Form
         foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
             $technicalContactValueOptions[$contact->getId()] = $contact->getDisplayName();
         }
-
         /**
          * Collect the financial contacts
          * This array starts from the technical contacts
@@ -66,7 +60,6 @@ class Affiliation extends Form
                     $affiliation->getFinancial()->getContact()->getDisplayName();
             }
         }
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Select',
@@ -81,7 +74,6 @@ class Affiliation extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Select',
@@ -96,7 +88,6 @@ class Affiliation extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Select',
@@ -111,9 +102,7 @@ class Affiliation extends Form
                 )
             )
         );
-
         $organisationFinancial = new Financial();
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Radio',
@@ -128,7 +117,6 @@ class Affiliation extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Text',
@@ -142,7 +130,6 @@ class Affiliation extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',
@@ -153,7 +140,6 @@ class Affiliation extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',
@@ -164,7 +150,6 @@ class Affiliation extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',
@@ -178,7 +163,6 @@ class Affiliation extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',

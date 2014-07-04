@@ -38,14 +38,12 @@ class ServiceInitializer implements InitializerInterface
         if (!is_object($instance)) {
             return;
         }
-
         $arrayCheck = [
             EntityManagerAwareInterface::class      => 'doctrine.entitymanager.orm_default',
             FormServiceAwareInterface::class        => 'affiliation_form_service',
-            AffiliationServiceAwareInterface::class => 'affiliation_affiliation_service',
+            AffiliationServiceAwareInterface::class => AffiliationService::class,
             ConfigAwareInterface::class             => 'affiliation_module_config'
         ];
-
         /**
          * Go over each interface to see if we should add an interface
          */

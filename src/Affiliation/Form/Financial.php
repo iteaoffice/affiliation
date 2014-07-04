@@ -9,11 +9,10 @@
  */
 namespace Affiliation\Form;
 
-use General\Service\GeneralService;
-use Zend\Form\Form;
 use Affiliation\Service\AffiliationService;
-
+use General\Service\GeneralService;
 use Organisation\Entity\Financial as FinancialOrganisation;
+use Zend\Form\Form;
 
 /**
  *
@@ -28,13 +27,11 @@ class Financial extends Form
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
-
         $countries = [];
         foreach ($generalService->findAll('country') as $country) {
             $countries[$country->getId()] = $country->getCountry();
         }
         asort($countries);
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Text',
@@ -48,7 +45,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Select',
@@ -63,7 +59,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Text',
@@ -77,7 +72,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Text',
@@ -92,7 +86,6 @@ class Financial extends Form
                 )
             )
         );
-
         $organisationFinancial = new FinancialOrganisation();
         $this->add(
             array(
@@ -108,7 +101,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Text',
@@ -123,7 +115,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Text',
@@ -138,7 +129,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Text',
@@ -153,7 +143,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Select',
@@ -168,7 +157,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Radio',
@@ -183,7 +171,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',
@@ -194,7 +181,6 @@ class Financial extends Form
                 )
             )
         );
-
         $this->add(
             array(
                 'type'       => 'Zend\Form\Element\Submit',

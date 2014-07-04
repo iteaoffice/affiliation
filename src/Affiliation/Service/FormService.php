@@ -10,9 +10,9 @@
  */
 namespace Affiliation\Service;
 
+use Zend\Form;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Form;
 
 class FormService implements ServiceLocatorAwareInterface
 {
@@ -41,15 +41,11 @@ class FormService implements ServiceLocatorAwareInterface
         if (!$entity) {
             $entity = $this->getAffiliationService()->getEntity($className);
         }
-
         $formName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form';
         $form     = $this->getServiceLocator()->get($formName);
-
         $filterName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form_filter';
         $filter     = $this->getServiceLocator()->get($filterName);
-
         $form->setInputFilter($filter);
-
         if ($bind) {
             $form->bind($entity);
         }

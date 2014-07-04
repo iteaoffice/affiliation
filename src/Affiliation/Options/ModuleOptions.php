@@ -11,6 +11,10 @@ namespace Affiliation\Options;
 
 use Zend\Stdlib\AbstractOptions;
 
+/**
+ * Class ModuleOptions
+ * @package Affiliation\Options
+ */
 class ModuleOptions extends AbstractOptions implements
     AffiliationOptionsInterface
 {

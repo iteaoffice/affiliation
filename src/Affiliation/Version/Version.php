@@ -56,9 +56,7 @@ class Version
         if (null === static::$latestVersion) {
             static::$latestVersion = 'not available';
             $url                   = 'https://api.github.com/repos/debranova/affiliation/git/refs/tags/release-';
-
             $apiResponse = Json::decode(file_get_contents($url), Json::TYPE_ARRAY);
-
             // Simplify the API response into a simple array of version numbers
             $tags = array_map(
                 function ($tag) {
@@ -66,7 +64,6 @@ class Version
                 },
                 $apiResponse
             );
-
             // Fetch the latest version number from the array
             static::$latestVersion = array_reduce(
                 $tags,

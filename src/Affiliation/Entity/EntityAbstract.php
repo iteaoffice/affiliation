@@ -9,8 +9,8 @@
  */
 namespace Affiliation\Entity;
 
-use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilter;
+use Zend\InputFilter\InputFilterAwareInterface;
 
 /**
  * Annotations class

@@ -9,14 +9,13 @@
  */
 namespace Affiliation\Service;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Authentication\AuthenticationService;
-
-use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
+use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Loi;
+use Zend\Authentication\AuthenticationService;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * ServiceAbstract
@@ -78,7 +77,6 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
      */
     public function updateEntity(EntityAbstract $entity)
     {
-
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
 

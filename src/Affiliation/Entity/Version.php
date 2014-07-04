@@ -9,11 +9,10 @@
  */
 namespace Affiliation\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Zend\Form\Annotation;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
-use Zend\Form\Annotation;
-
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Entity for the Affiliation
@@ -110,7 +109,6 @@ class Version extends EntityAbstract
     {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
-
             $this->inputFilter = $inputFilter;
         }
 
