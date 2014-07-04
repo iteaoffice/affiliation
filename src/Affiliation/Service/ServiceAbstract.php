@@ -9,6 +9,8 @@
  */
 namespace Affiliation\Service;
 
+use Admin\Service\AdminService;
+use Admin\Service\AdminServiceAwareInterface;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\EntityAbstract;
@@ -20,12 +22,19 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * ServiceAbstract
  */
-abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceInterface
+abstract class ServiceAbstract implements
+    AdminServiceAwareInterface,
+    ServiceLocatorAwareInterface,
+    ServiceInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManager
      */
     protected $entityManager;
+    /**
+     * @var AdminService;
+     */
+    protected $adminService;
     /**
      * @var AuthenticationService;
      */
@@ -66,6 +75,13 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     {
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
+        /**
+         * Update the permissions
+         */
+        $this->getAdminService()->flushPermitsByEntityAndId(
+            $entity->get('underscore_full_entity_name'),
+            $entity->getId()
+        );
 
         return $entity;
     }
@@ -79,6 +95,13 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     {
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
+        /**
+         * Update the permissions
+         */
+        $this->getAdminService()->flushPermitsByEntityAndId(
+            $entity->get('underscore_full_entity_name'),
+            $entity->getId()
+        );
 
         return $entity;
     }
@@ -170,5 +193,25 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
         }
 
         return $this->entityManager;
+    }
+
+    /**
+     * @return AdminService
+     */
+    public function getAdminService()
+    {
+        return $this->adminService;
+    }
+
+    /**
+     * @param AdminService $adminService
+     *
+     * @return ServiceAbstract
+     */
+    public function setAdminService(AdminService $adminService)
+    {
+        $this->adminService = $adminService;
+
+        return $this;
     }
 }

@@ -53,7 +53,7 @@
                     {{ programDoaLink(programDoa,'download','icon') }}
                 {% endif %}
             {% else %}
-                {{ programDoaLink(null,'upload','text', affiliationService.affiliation) }}
+                {{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}
             {% endfor %}
         </dd>
         <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>

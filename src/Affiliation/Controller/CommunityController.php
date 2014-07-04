@@ -14,7 +14,9 @@ use Affiliation\Form\Affiliation;
 use Affiliation\Form\Financial;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
+use Contact\Service\ContactServiceAwareInterface;
 use Organisation\Entity\Organisation;
+use Organisation\Service\OrganisationServiceAwareInterface;
 use Project\Service\ProjectServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
@@ -23,7 +25,9 @@ use Zend\View\Model\ViewModel;
  * @package     Controller
  */
 class CommunityController extends AffiliationAbstractController implements
-    ProjectServiceAwareInterface
+    ProjectServiceAwareInterface,
+    OrganisationServiceAwareInterface,
+    ContactServiceAwareInterface
 {
     /**
      * Show the details of 1 affiliation
@@ -54,10 +58,12 @@ class CommunityController extends AffiliationAbstractController implements
      */
     public function editAction()
     {
-        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+        $affiliationService      = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+        $projectService          = $this->getProjectService()->setProject(
+            $affiliationService->getAffiliation()->getProject()
+        );
         $formData                = [];
         $formData['affiliation'] = sprintf(
             "%s|%s",
@@ -82,7 +88,7 @@ class CommunityController extends AffiliationAbstractController implements
         $form = new Affiliation($affiliationService);
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
-            $formData = $form->getData();
+            $formData    = $form->getData();
             $affiliation = $affiliationService->getAffiliation();
             /**
              * When the deactivate button is pressed, handle this in the service layer
@@ -145,7 +151,10 @@ class CommunityController extends AffiliationAbstractController implements
             /**
              * Handle the preferred delivery for the organisation (OrganisationFinancial)
              */
-            $organisationFinancial = $affiliation->getOrganisation()->getFinancial();
+            if (is_null($organisationFinancial = $affiliation->getOrganisation()->getFinancial())) {
+                $organisationFinancial = new \Organisation\Entity\Financial();
+                $organisationFinancial->setOrganisation($affiliation->getOrganisation());
+            }
             $organisationFinancial->setEmail((bool)$formData['preferredDelivery']);
             $this->getOrganisationService()->updateEntity($organisationFinancial);
             $this->flashMessenger()->setNamespace('success')->addMessage(
@@ -171,20 +180,20 @@ class CommunityController extends AffiliationAbstractController implements
 
     public function editFinancialAction()
     {
-        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+        $affiliationService    = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-        $projectService      = $this->getProjectService()->setProject(
+        $projectService        = $this->getProjectService()->setProject(
             $affiliationService->getAffiliation()->getProject()
         );
-        $organisationService = $this->getOrganisationService()->setOrganisation(
+        $organisationService   = $this->getOrganisationService()->setOrganisation(
             $affiliationService->getAffiliation()->getOrganisation()
         );
-        $formData = [];
-        $branch = null;
+        $formData              = [];
+        $branch                = null;
         $branch                = $affiliationService->getAffiliation()->getFinancial()->getBranch();
         $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getDisplayName();
-        $contactService = $this->getContactService()->setContact(
+        $contactService        = $this->getContactService()->setContact(
             $affiliationService->getAffiliation()->getFinancial()->getContact()
         );
         if (!is_null($contactService->getFinancialAddress())) {
