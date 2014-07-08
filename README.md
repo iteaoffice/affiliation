@@ -1,6 +1,6 @@
-Affiliation
-===========
+debranova/affiliation
+=====================
 
-Version: 1.0.1-dev
+Version: 1.2-dev
 
 Module for the management of affiliates
