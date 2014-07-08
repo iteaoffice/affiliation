@@ -20,7 +20,7 @@ final class Version
     /**
      * Affiliation version identification - see compareVersion()
      */
-    const VERSION = '1.2-dev';
+    const VERSION = '1.1.1';
     /**
      * Github Service Identifier for version information is retrieved from
      */
