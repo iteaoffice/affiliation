@@ -1,4 +1,4 @@
-<phpunit bootstrap="tests/GeneralTest/Bootstrap.php"
+<phpunit bootstrap="tests/AffiliationTest/Bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -9,8 +9,8 @@
          backupGlobals="false"
          syntaxCheck="true"
         >
-    <testsuite name="debranova/general Test Suite">
-        <directory>./tests/GeneralTest</directory>
+    <testsuite name="debranova/affiliation Test Suite">
+        <directory>./tests/AffiliationTest</directory>
     </testsuite>
 
     <php>
@@ -18,7 +18,7 @@
         <const name="DEBRANOVA_APP" value="test"/>
         <const name="DEBRANOVA_APPLICATION" value="test"/>
         <const name="DEBRANOVA_ENV" value="development"/>
-        <const name="TEST_SUITE" value="full"/>
+        <const name="TEST_SUITE" value="quick"/>
     </php>
 
     <filter>

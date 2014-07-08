@@ -254,10 +254,9 @@ class AffiliationService extends ServiceAbstract
          */
         foreach ($organisation->getAffiliation() as $affiliation) {
             $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()
-                                                                                              ->getId(
-                                                                                              )][$affiliation->getBranch(
-            )] =
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()]
+            [$affiliation->getOrganisation()->getId()]
+            [$affiliation->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
         /**
@@ -278,10 +277,9 @@ class AffiliationService extends ServiceAbstract
          */
         foreach ($contact->getAffiliation() as $affiliation) {
             $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()
-                                                                                              ->getId(
-                                                                                              )][$affiliation->getBranch(
-            )] =
+            $options[$affiliation->getOrganisation()->getCountry()->getCountry()]
+            [$affiliation->getOrganisation()->getId()]
+            [$affiliation->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
         /**
@@ -290,8 +288,8 @@ class AffiliationService extends ServiceAbstract
         if (!is_null($contact->getContactOrganisation())) {
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
-            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()
-                                                                                       ->getBranch()] =
+            )][$contact->getContactOrganisation()->getOrganisation()->getId()]
+            [$contact->getContactOrganisation()->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()->getBranch()
                 );
@@ -305,8 +303,8 @@ class AffiliationService extends ServiceAbstract
              */
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
-            )][$contact->getContactOrganisation()->getOrganisation()->getId()][$contact->getContactOrganisation()
-                                                                                       ->getBranch()] =
+            )][$contact->getContactOrganisation()->getOrganisation()->getId()]
+            [$contact->getContactOrganisation()->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()->getBranch()
                 );

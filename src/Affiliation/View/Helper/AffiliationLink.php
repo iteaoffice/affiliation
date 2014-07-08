@@ -29,9 +29,9 @@ class AffiliationLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Affiliation                     $affiliation
-     * @param                                 $action
-     * @param                                 $show
+     * @param Affiliation $affiliation
+     * @param             $action
+     * @param             $show
      *
      * @return string
      * @throws \RuntimeException

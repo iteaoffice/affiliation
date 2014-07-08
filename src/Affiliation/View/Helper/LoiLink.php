@@ -169,4 +169,3 @@ class LoiLink extends LinkAbstract
         }
     }
 }
-

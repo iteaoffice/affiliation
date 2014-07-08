@@ -86,6 +86,7 @@ class Loi extends AssertionAbstract
                  * For the replace we need to see if the user has access on the editing of the affiliation
                  * and the acl should not be approved
                  */
+
                 return is_null($resource->getDateApproved()) && $this->getAffiliationAssert()->assert(
                     $acl,
                     $role,
