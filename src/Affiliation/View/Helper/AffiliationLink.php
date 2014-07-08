@@ -1,19 +1,18 @@
 <?php
 
 /**
- * Japaveh Webdesign copyright message placeholder
+ * ITEA Office copyright message placeholder
  *
  * @category    Affiliation
  * @package     View
  * @subpackage  Helper
- * @author      Johan van der Heide <info@japaveh.nl>
- * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
 namespace Affiliation\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
-
-use Affiliation\Entity;
+use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
+use Affiliation\Entity\Affiliation;
 
 /**
  * Create a link to an affiliation
@@ -22,100 +21,98 @@ use Affiliation\Entity;
  * @package     View
  * @subpackage  Helper
  */
-class AffiliationLink extends AbstractHelper
+class AffiliationLink extends LinkAbstract
 {
+    /**
+     * @var Affiliation
+     */
+    protected $affiliation;
 
     /**
-     * @param  \Affiliation\Entity\Affiliation $subArea
-     * @param                                  $action
-     * @param                                  $show
+     * @param Affiliation $affiliation
+     * @param             $action
+     * @param             $show
      *
      * @return string
      * @throws \RuntimeException
      * @throws \Exception
      */
-    public function __invoke(Entity\Affiliation $subArea = null, $action = 'view', $show = 'name')
+    public function __invoke(Affiliation $affiliation = null, $action = 'view', $show = 'name')
     {
-        $translate = $this->view->plugin('translate');
-        $url       = $this->view->plugin('url');
-        $serverUrl = $this->view->plugin('serverUrl');
-        $isAllowed = $this->view->plugin('isAllowed');
-
-        if (!$isAllowed('affiliation', $action)) {
-            if ($action === 'view' && $show === 'name') {
-                return $subArea;
-            }
-
-            return '';
+        $this->setAffiliation($affiliation);
+        $this->setAction($action);
+        $this->setShow($show);
+        /**
+         * Set the non-standard options needed to give an other link value
+         */
+        $this->setShowOptions(
+            [
+                'name'         => $this->getAffiliation(),
+                'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation(),
+            ]
+        );
+        if (!$this->hasAccess(
+            $this->getAffiliation(),
+            AffiliationAssertion::class,
+            $this->getAction()
+        )
+        ) {
+            return $this->getAffiliation()->getOrganisation()->getOrganisation();
         }
+        $this->addRouterParam('entity', 'Affiliation');
+        $this->addRouterParam('id', $this->getAffiliation()->getId());
 
-        switch ($action) {
-            case 'new':
-                $router  = 'zfcadmin/affiliation-manager/new';
-                $text    = sprintf($translate("txt-new-area"));
-                $subArea = new Entity\Affiliation();
+        return $this->createLink();
+    }
+
+    /**
+     * Extract the relevant parameters based on the action
+     *
+     * @throws \Exception
+     */
+    public function parseAction()
+    {
+        switch ($this->getAction()) {
+            case 'view-community':
+                $this->setRouter('community/affiliation/affiliation');
+                $this->setText(sprintf($this->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
                 break;
-            case 'edit':
-                $router = 'zfcadmin/affiliation-manager/edit';
-                $text   = sprintf($translate("txt-edit-affiliation-%s"), $subArea);
+            case 'edit-community':
+                $this->setRouter('community/affiliation/edit/affiliation');
+                $this->setText(sprintf($this->translate("txt-edit-affiliation-%s"), $this->getAffiliation()));
                 break;
-            case 'view':
-                $router = 'affiliation/affiliation';
-                $text   = sprintf($translate("txt-view-affiliation-%s"), $subArea);
+            case 'edit-financial':
+                $this->setRouter('community/affiliation/edit/financial');
+                $this->setText(sprintf($this->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()));
+                break;
+            case 'edit-description':
+                $this->setRouter('community/affiliation/edit/description');
+                $this->setText(
+                    sprintf($this->translate("txt-edit-description-affiliation-%s"), $this->getAffiliation())
+                );
                 break;
             default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $action, __CLASS__));
+                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+        }
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
         }
 
-        if (is_null($subArea)) {
-            throw new \RuntimeException(
-                sprintf(
-                    "Area needs to be an instance of %s, %s given in %s",
-                    "Affiliation\Entity\Affiliation",
-                    get_class($subArea),
-                    __CLASS__
-                )
-            );
-        }
+        return $this->affiliation;
+    }
 
-        $params = array(
-            'id'     => $subArea->getId(),
-            'entity' => 'affiliation'
-        );
-
-        $classes     = array();
-        $linkContent = array();
-
-        switch ($show) {
-            case 'icon':
-                if ($action === 'edit') {
-                    $linkContent[] = '<i class="icon-pencil"></i>';
-                } elseif ($action === 'delete') {
-                    $linkContent[] = '<i class="icon-remove"></i>';
-                } else {
-                    $linkContent[] = '<i class="icon-info-sign"></i>';
-                }
-                break;
-            case 'button':
-                $linkContent[] = '<i class="icon-pencil icon-white"></i> ' . $text;
-                $classes[]     = "btn btn-primary";
-                break;
-            case 'name':
-                $linkContent[] = $subArea->getName();
-                break;
-            default:
-                $linkContent[] = $subArea;
-                break;
-        }
-
-        $uri = '<a href="%s" title="%s" class="%s">%s</a>';
-
-        return sprintf(
-            $uri,
-            $serverUrl->__invoke() . $url($router, $params),
-            $text,
-            implode($classes),
-            implode($linkContent)
-        );
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
     }
 }

@@ -1,21 +1,24 @@
 <?php
 /**
- * Japaveh Webdesign copyright message placeholder
+ * ITEA Office copyright message placeholder
  *
  * @category    SoloDB
  * @package     Affiliation
  * @subpackage  Module
- * @author      Johan van der Heide <info@japaveh.nl>
- * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  * @version     4.0
  */
 namespace Affiliation;
 
-use Zend\ModuleManager\Feature; //Makes the module class more strict
+use Affiliation\Controller\Plugin\RenderDoa;
+use Affiliation\Controller\Plugin\RenderLoi;
+use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Zend\EventManager\EventInterface;
+use Zend\ModuleManager\Feature;
+use Zend\Mvc\MvcEvent;
 
-use Affiliation\Service\FormServiceAwareInterface;
-
+//Makes the module class more strict
 /**
  *
  */
@@ -25,7 +28,6 @@ class Module implements
     Feature\ConfigProviderInterface,
     Feature\BootstrapListenerInterface
 {
-
     public function getAutoloaderConfig()
     {
         return array(
@@ -59,32 +61,45 @@ class Module implements
     }
 
     /**
+     * Move this to here to have config cache working
      * @return array
      */
-    public function getControllerConfig()
+    public function getControllerPluginConfig()
     {
         return array(
-            'initializers' => array(
-                function ($instance, $sm) {
-                    if ($instance instanceof FormServiceAwareInterface) {
-                        $sm          = $sm->getServiceLocator();
-                        $formService = $sm->get('affiliation_form_service');
-                        $instance->setFormService($formService);
-                    }
+            'factories' => array(
+                'renderDoa' => function ($sm) {
+                    $renderDoa = new RenderDoa();
+                    $renderDoa->setServiceLocator($sm->getServiceLocator());
+
+                    return $renderDoa;
                 },
-            ),
+                'renderLoi' => function ($sm) {
+                    $renderLoi = new RenderLoi();
+                    $renderLoi->setServiceLocator($sm->getServiceLocator());
+
+                    return $renderLoi;
+                },
+            )
         );
     }
 
     /**
      * Listen to the bootstrap event
      *
-     * @param  EventInterface $e
+     * @param EventInterface $e
      *
      * @return array
      */
     public function onBootstrap(EventInterface $e)
     {
-        // TODO: Implement onBootstrap() method.
+        $app = $e->getParam('application');
+        $em  = $app->getEventManager();
+        $em->attach(
+            MvcEvent::EVENT_DISPATCH,
+            function ($event) {
+                $event->getApplication()->getServiceManager()->get(AffiliationNavigationService::class)->update();
+            }
+        );
     }
 }

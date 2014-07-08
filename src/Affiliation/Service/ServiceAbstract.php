@@ -1,32 +1,42 @@
 <?php
 /**
- * Japaveh Webdesign copyright message placeholder
+ * ITEA Office copyright message placeholder
  *
  * @category    Affiliation
  * @package     Service
- * @author      Johan van der Heide <info@japaveh.nl>
- * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
 namespace Affiliation\Service;
 
+use Admin\Service\AdminService;
+use Admin\Service\AdminServiceAwareInterface;
+use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Doa;
+use Affiliation\Entity\EntityAbstract;
+use Affiliation\Entity\Loi;
+use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Authentication\AuthenticationService;
-
-use Doctrine\ORM\EntityManager;
-
-use Affiliation\Service\ServiceInterface;
-use Affiliation\Entity\EntityAbstract;
+use BjyAuthorize\Service\Authorize;
+use Affiliation\Acl\Assertion\AssertionAbstract;
 
 /**
  * ServiceAbstract
  */
-abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceInterface
+abstract class ServiceAbstract implements
+    AdminServiceAwareInterface,
+    ServiceLocatorAwareInterface,
+    ServiceInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManager
      */
     protected $entityManager;
+    /**
+     * @var AdminService;
+     */
+    protected $adminService;
     /**
      * @var AuthenticationService;
      */
@@ -37,8 +47,8 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     protected $serviceLocator;
 
     /**
-     * @param        $entity
-     * @param  bool  $toArray
+     * @param      $entity
+     * @param bool $toArray
      *
      * @return array
      */
@@ -48,68 +58,58 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     }
 
     /**
-     * Find 1 entity based on the id
+     * @param $entity
+     * @param $id
      *
-     * @param         $entity
-     * @param         $id
-     * @param  bool   $populate
-     *
-     * @return object
+     * @return null|Affiliation|Doa|Loi
      */
-    public function findEntityById($entity, $id, $populate = false)
+    public function findEntityById($entity, $id)
     {
-        $entity = $this->getEntityManager()->getRepository($this->getFullEntityName($entity))->find($id);
-        if ($entity) {
-            return $entity;
-        }
+        return $this->getEntityManager()->getRepository($this->getFullEntityName($entity))->find($id);
     }
 
     /**
-     * @param  \Affiliation\Entity\EntityAbstract $entity
+     * @param \Affiliation\Entity\EntityAbstract $entity
      *
      * @return \Affiliation\Entity\EntityAbstract
      */
     public function newEntity(EntityAbstract $entity)
     {
-        if (method_exists($entity, 'getLastUpdateBy')) {
-            $authService = $this->getServiceLocator()->get('zfcuser_auth_service');
-            if ($authService->hasIdentity()) {
-                $entity->setLastUpdateBy($authService->getIdentity()->getDisplayName());
-            } else {
-                $entity->setLastUpdateBy('guest');
-            }
-        }
-
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
+        /**
+         * Update the permissions
+         */
+        $this->getAdminService()->flushPermitsByEntityAndId(
+            $entity->get('underscore_full_entity_name'),
+            $entity->getId()
+        );
 
         return $entity;
     }
 
     /**
-     * @param  \Affiliation\Entity\EntityAbstract $entity
+     * @param \Affiliation\Entity\EntityAbstract $entity
      *
      * @return \Affiliation\Entity\EntityAbstract
      */
     public function updateEntity(EntityAbstract $entity)
     {
-        if (method_exists($entity, 'getLastUpdateBy')) {
-            $authService = $this->getServiceLocator()->get('zfcuser_auth_service');
-            if ($authService->hasIdentity()) {
-                $entity->setLastUpdateBy($authService->getIdentity()->getDisplayName());
-            } else {
-                $entity->setLastUpdateBy('guest');
-            }
-        }
-
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
+        /**
+         * Update the permissions
+         */
+        $this->getAdminService()->flushPermitsByEntityAndId(
+            $entity->get('underscore_full_entity_name'),
+            $entity->getId()
+        );
 
         return $entity;
     }
 
     /**
-     * @param  \Affiliation\Entity\EntityAbstract $entity
+     * @param \Affiliation\Entity\EntityAbstract $entity
      *
      * @return bool
      */
@@ -158,7 +158,37 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     }
 
     /**
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @return Authorize
+     */
+    public function getAuthorizeService()
+    {
+        return $this->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
+    }
+
+    /**
+     * @param EntityAbstract $entity
+     * @param                $assertion
+     */
+    public function addResource(EntityAbstract $entity, $assertion)
+    {
+        /**
+         * @var $assertion AssertionAbstract
+         */
+        $assertion = $this->getServiceLocator()->get($assertion);
+        if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)
+        ) {
+            $this->getAuthorizeService()->getAcl()->addResource($entity);
+            $this->getAuthorizeService()->getAcl()->allow(
+                [],
+                $entity,
+                [],
+                $assertion
+            );
+        }
+    }
+
+    /**
+     * @param ServiceLocatorInterface $serviceLocator
      *
      * @return ServiceAbstract
      */
@@ -191,21 +221,29 @@ abstract class ServiceAbstract implements ServiceLocatorAwareInterface, ServiceI
     public function getEntityManager()
     {
         if (null === $this->entityManager) {
-            $this->entityManager = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+            $this->setEntityManager($this->getServiceLocator()->get('doctrine.entitymanager.orm_default'));
         }
 
         return $this->entityManager;
     }
 
     /**
-     * @return AuthenticationService
+     * @return AdminService
      */
-    public function getAuthenticationService()
+    public function getAdminService()
     {
-        if (null === $this->authenticationService) {
-            $this->authenticationService = $this->getServiceLocator()->get('zfcuser_auth_service');
-        }
+        return $this->adminService;
+    }
 
-        return $this->authenticationService;
+    /**
+     * @param AdminService $adminService
+     *
+     * @return ServiceAbstract
+     */
+    public function setAdminService(AdminService $adminService)
+    {
+        $this->adminService = $adminService;
+
+        return $this;
     }
 }

@@ -1,24 +1,21 @@
 <?php
 
 /**
- * Japaveh Webdesign copyright message placeholder
+ * ITEA Office copyright message placeholder
  *
  * @category    Affiliation
  * @package     Service
- * @author      Johan van der Heide <info@japaveh.nl>
- * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
 namespace Affiliation\Service;
 
+use Zend\Form;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Form;
-
-use Affiliation\Service\AffiliationService;
 
 class FormService implements ServiceLocatorAwareInterface
 {
-
     /**
      * @var \Zend\Form\Form
      */
@@ -33,26 +30,22 @@ class FormService implements ServiceLocatorAwareInterface
     protected $serviceLocator;
 
     /**
-     * @param  null $className
-     * @param  null $entity
-     * @param  bool $bind
+     * @param null $className
+     * @param null $entity
+     * @param bool $bind
      *
      * @return array|object
      */
-    public function getForm($className = null, $entity = null, $bind = true)
+    private function getForm($className = null, $entity = null, $bind = true)
     {
         if (!$entity) {
             $entity = $this->getAffiliationService()->getEntity($className);
         }
-
         $formName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form';
         $form     = $this->getServiceLocator()->get($formName);
-
         $filterName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form_filter';
         $filter     = $this->getServiceLocator()->get($filterName);
-
         $form->setInputFilter($filter);
-
         if ($bind) {
             $form->bind($entity);
         }
@@ -61,13 +54,13 @@ class FormService implements ServiceLocatorAwareInterface
     }
 
     /**
-     * @param               $className
-     * @param  null         $entity
-     * @param  array        $data
+     * @param       $className
+     * @param null  $entity
+     * @param array $data
      *
      * @return array|object
      */
-    public function prepare($className, $entity = null, $data = array())
+    public function prepare($className, $entity = null, $data = [])
     {
         $form = $this->getForm($className, $entity, true);
         $form->setData($data);

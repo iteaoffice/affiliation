@@ -1,36 +1,12 @@
 <?php
 /**
- * Japaveh Webdesign copyright message placeholder
+ * ITEA Office copyright message placeholder
  *
  * @category    Affiliation
  * @package     Config
- * @author      Johan van der Heide <info@japaveh.nl>
- * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
 return array(
-    'navigation' => array(
-        'default' => array(
-            'affiliation' => array(
-                'label' => _("txt-affiliation"),
-                'route' => 'affiliation',
-                'pages' => array(
-                    'affiliations' => array(
-                        'label'     => _("txt-list-affiliations"),
-                        'route'     => 'affiliation/affiliations',
-                        'resource'  => 'affiliation',
-                        'privilege' => 'listings',
-                    ),
-
-                ),
-            ),
-            'admin'       => array(
-                'pages' => array(
-                    'messages' => array(
-                        'label' => _('txt-messages'),
-                        'route' => 'zfcadmin/affiliation-manager/messages',
-                    ),
-                ),
-            ),
-        ),
-    ),
+    'navigation' => [],
 );

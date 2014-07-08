@@ -1,271 +1,191 @@
 <?php
 /**
- * Japaveh Webdesign copyright message placeholder
+ * ITEA Office copyright message placeholder
  *
  * @category    Affiliation
  * @package     Config
- * @author      Johan van der Heide <info@japaveh.nl>
- * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
 return array(
-    'router'       => array(
+    'router' => array(
         'routes' => array(
-            'affiliation_shortcut' => array(
-                'type'     => 'Segment',
-                'priority' => -1000,
-                'options'  => array(
-                    'route'       => 'l/:id',
-                    'constraints' => array(
-                        'id' => '\d+',
-                    ),
-                    'defaults'    => array(
-                        'controller' => 'affiliation',
-                        'action'     => 'affiliationRedirect',
-                    ),
-                ),
-            ),
-            'affiliation'          => array(
-                'type'          => 'Literal',
-                'priority'      => 1000,
-                'options'       => array(
-                    'route'    => '/affiliation',
-                    'defaults' => array(
-                        'controller' => 'affiliation',
-                        'action'     => 'index',
-                    ),
-                ),
-                'may_terminate' => true,
-                'child_routes'  => array(
-                    'affiliations'       => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/list.html',
-                            'defaults' => array(
-                                'action' => 'affiliations',
-                            ),
-                        ),
-                    ),
-                    'affiliation'        => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'       => '/view/[:id].html',
-                            'constraints' => array(
-                                'id' => '\d+',
-                            ),
-                            'defaults'    => array(
-                                'action' => 'affiliation',
-                            ),
-                        ),
-                    ),
-                    'facilities'     => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/facilities.html',
-                            'defaults' => array(
-                                'action' => 'facilities',
-                            ),
-                        ),
-                    ),
-                    'facility'       => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'       => '/facility/[:id].html',
-                            'constraints' => array(
-                                'id' => '\d+',
-                            ),
-                            'defaults'    => array(
-                                'action' => 'facility',
-                            ),
-                        ),
-                    ),
-                    'areas'          => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/areas.html',
-                            'defaults' => array(
-                                'action' => 'areas',
-                            ),
-                        ),
-                    ),
-                    'area'           => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'       => '/area/[:id].html',
-                            'constraints' => array(
-                                'id' => '\d+',
-                            ),
-                            'defaults'    => array(
-                                'action' => 'area',
-                            ),
-                        ),
-                    ),
-                    'area2s'         => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/area2s.html',
-                            'defaults' => array(
-                                'action' => 'area2s',
-                            ),
-                        ),
-                    ),
-                    'area2'          => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'       => '/area2/[:id].html',
-                            'constraints' => array(
-                                'id' => '\d+',
-                            ),
-                            'defaults'    => array(
-                                'action' => 'area2',
-                            ),
-                        ),
-                    ),
-                    'sub-areas'      => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/sub-areas.html',
-                            'defaults' => array(
-                                'action' => 'sub-areas',
-                            ),
-                        ),
-                    ),
-                    'sub-area'       => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'       => '/sub-area/[:id].html',
-                            'constraints' => array(
-                                'id' => '\d+',
-                            ),
-                            'defaults'    => array(
-                                'action' => 'sub-area',
-                            ),
-                        ),
-                    ),
-                    'oper-areas'     => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/operation-areas.html',
-                            'defaults' => array(
-                                'action' => 'operAreas',
-                            ),
-                        ),
-                    ),
-                    'oper-area'      => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'       => '/oper-area/[:id].html',
-                            'constraints' => array(
-                                'id' => '\d+',
-                            ),
-                            'defaults'    => array(
-                                'action' => 'oper-area',
-                            ),
-                        ),
-                    ),
-                    'oper-sub-areas' => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/operation-sub-areas.html',
-                            'defaults' => array(
-                                'action' => 'oper-sub-areas',
-                            ),
-                        ),
-                    ),
-                    'oper-sub-area'  => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'       => '/oper-sub-area/[:id].html',
-                            'constraints' => array(
-                                'id' => '\d+',
-                            ),
-                            'defaults'    => array(
-                                'action' => 'oper-sub-area',
-                            ),
-                        ),
-                    ),
-                    'edit'           => array(
-                        'type'    => 'Segment',
-                        'options' => array(
-                            'route'    => '/edit/[:entity]/[:id].html',
-                            'defaults' => array(
-                                'action' => 'edit',
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            'zfcadmin'         => array(
+            'community' => array(
                 'child_routes' => array(
-                    'affiliation-manager' => array(
+                    'affiliation' => array(
                         'type'          => 'Segment',
                         'priority'      => 1000,
                         'options'       => array(
-                            'route'    => '/affiliation-manager',
+                            'route'    => '/affiliation',
                             'defaults' => array(
-                                'controller' => 'affiliation-manager',
+                                'namespace'  => 'affiliation',
+                                'controller' => 'affiliation-community',
                                 'action'     => 'index',
                             ),
                         ),
                         'may_terminate' => true,
                         'child_routes'  => array(
-                            'messages' => array(
+                            'affiliation' => array(
                                 'type'    => 'Segment',
                                 'options' => array(
-                                    'route'    => '/messages.html',
+                                    'route'    => '/details/[:id].html',
                                     'defaults' => array(
-                                        'action' => 'messages',
+                                        'action'    => 'affiliation',
+                                        'privilege' => 'view-community'
                                     ),
                                 ),
                             ),
-                            'message'  => array(
-                                'type'    => 'Segment',
-                                'options' => array(
-                                    'route'       => '/message/[:id].html',
-                                    'constraints' => array(
-                                        'id' => '\d+',
-                                    ),
-                                    'defaults'    => array(
-                                        'action' => 'message',
-                                    ),
-                                ),
-                            ),
-                            'new'      => array(
-                                'type'    => 'Segment',
-                                'options' => array(
-                                    'route'    => '/new/:entity',
+                            'edit'        => array(
+                                'type'          => 'Segment',
+                                'options'       => array(
+                                    'route'    => '/edit',
                                     'defaults' => array(
-                                        'action' => 'new',
+                                        'controller' => 'affiliation-edit',
+                                        'action'     => 'edit',
                                     ),
                                 ),
+                                'may_terminate' => true,
+                                'child_routes'  => [
+                                    'affiliation' => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/affiliation/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'affiliation',
+                                                'privilege' => 'edit-affiliation'
+                                            ),
+                                        ),
+                                    ),
+                                    'financial'   => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/financial/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'financial',
+                                                'privilege' => 'edit-financial'
+                                            ),
+                                        ),
+                                    ),
+                                    'description' => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/description/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'description',
+                                                'privilege' => 'edit-description'
+                                            ),
+                                        ),
+                                    ),
+                                ]
                             ),
-                            'edit'     => array(
-                                'type'    => 'Segment',
-                                'options' => array(
-                                    'route'    => '/edit/:entity/:id',
+                            'doa'         => array(
+                                'type'         => 'Segment',
+                                'options'      => array(
+                                    'route'    => '/doa',
                                     'defaults' => array(
-                                        'action' => 'edit',
+                                        'controller' => 'affiliation-doa',
+                                        'action'     => 'index',
                                     ),
                                 ),
+                                'child_routes' => array(
+                                    'render'   => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/render/affiliation-[:affiliation-id].pdf',
+                                            'defaults' => array(
+                                                'action'    => 'render',
+                                                'privilege' => 'render'
+                                            ),
+                                        ),
+                                    ),
+                                    'upload'   => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/upload/affiliation-[:affiliation-id].html',
+                                            'defaults' => array(
+                                                'action'    => 'upload',
+                                                'privilege' => 'upload'
+                                            ),
+                                        ),
+                                    ),
+                                    'replace'  => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/replace/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'replace',
+                                                'privilege' => 'replace'
+                                            ),
+                                        ),
+                                    ),
+                                    'download' => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/download/[:id].pdf',
+                                            'defaults' => array(
+                                                'action'    => 'download',
+                                                'privilege' => 'download'
+                                            ),
+                                        ),
+                                    ),
+                                )
                             ),
-                            'delete'   => array(
-                                'type'    => 'Segment',
-                                'options' => array(
-                                    'route'    => '/delete/:entity/:id',
+                            'loi'         => array(
+                                'type'         => 'Segment',
+                                'options'      => array(
+                                    'route'    => '/loi',
                                     'defaults' => array(
-                                        'action' => 'delete',
+                                        'controller' => 'affiliation-loi',
+                                        'action'     => 'index',
                                     ),
                                 ),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-
-        ),
-    ),
-    'view_manager' => array(
-        'template_path_stack' => array(
-            __DIR__ . '/../view'
-        ),
-    ),
+                                'child_routes' => array(
+                                    'render'   => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/render/affiliation-[:affiliation-id].pdf',
+                                            'defaults' => array(
+                                                'action'    => 'render',
+                                                'privilege' => 'render'
+                                            ),
+                                        ),
+                                    ),
+                                    'upload'   => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/upload/affiliation-[:affiliation-id].html',
+                                            'defaults' => array(
+                                                'action'    => 'upload',
+                                                'privilege' => 'upload'
+                                            ),
+                                        ),
+                                    ),
+                                    'replace'  => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/replace/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'replace',
+                                                'privilege' => 'replace'
+                                            ),
+                                        ),
+                                    ),
+                                    'download' => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/download/[:id].pdf',
+                                            'defaults' => array(
+                                                'action'    => 'download',
+                                                'privilege' => 'download'
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
 );

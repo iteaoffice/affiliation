@@ -1,5 +1,4 @@
 /.idea
 /log
-/vendor
-clover.xml
-composer.lock
+/tests/data
+ocular.phar

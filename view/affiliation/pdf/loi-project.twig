@@ -1,0 +1,15 @@
+{% set contactService = contactServiceProxy(contact) %}
+{% set mailAddress = contactService.getMailAddress() %}
+
+<h1>LETTER OF INTENT</h1>
+
+<br>
+{{ contactService.parseFullName() }}<br>
+{{ mailAddress.address.address }}<br>
+{{ mailAddress.address.zipCode }} {{ mailAddress.address.city }}<br>
+{{ mailAddress.address.country|upper }}
+<br>
+
+
+<p>The undersigned, partner in the {{ project }} project, intends to participate in this project, should it be accepted
+    by the ITEA 2 Board.

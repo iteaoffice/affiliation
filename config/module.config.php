@@ -1,70 +1,94 @@
 <?php
 /**
- * Japaveh Webdesign copyright message placeholder
+ * ITEA Office copyright message placeholder
  *
  * @category    Affiliation
  * @package     Config
- * @author      Johan van der Heide <info@japaveh.nl>
- * @copyright   Copyright (c) 2004-2013 Japaveh Webdesign (http://japaveh.nl)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c] 2004-2014 ITEA Office (http://itea3.org]
  */
-$config = array(
-    'controllers'     => array(
-        'invokables' => array(
-            'affiliation'         => 'Affiliation\Controller\AffiliationController',
-            'affiliation-manager' => 'Affiliation\Controller\AffiliationManagerController',
-        ),
-    ),
-    'view_helpers'    => array(
-        'invokables' => array(
-            'affiliationLink' => 'Affiliation\View\Helper\AffiliationLink',
+use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
+use Affiliation\Acl\Assertion\Doa as DoaAssertion;
+use Affiliation\Acl\Assertion\Loi as LoiAssertion;
+use Affiliation\Controller\ControllerInitializer;
+use Affiliation\Navigation\Factory\AffiliationNavigationServiceFactory;
+use Affiliation\Navigation\Service\AffiliationNavigationService;
+use Affiliation\Service\AffiliationService;
+use Affiliation\Service\FormService;
+use Affiliation\Service\ServiceInitializer;
 
-        )
-    ),
-    'service_manager' => array(
-        'factories'  => array(
-            'affiliation-assertion' => 'Affiliation\Acl\Assertion\Affiliation',
-        ),
-        'invokables' => array(
-            'affiliation_generic_service'     => 'Affiliation\Service\AffiliationService',
-            'affiliation_form_service'        => 'Affiliation\Service\FormService',
+$config      = [
+    'controllers'     => [
+        'initializers' => [
+            ControllerInitializer::class
+        ],
+        'invokables'   => [
+            'affiliation-community' => 'Affiliation\Controller\CommunityController',
+            'affiliation-manager'   => 'Affiliation\Controller\AffiliationManagerController',
+            'affiliation-doa'       => 'Affiliation\Controller\DoaController',
+            'affiliation-loi'       => 'Affiliation\Controller\LoiController',
+            'affiliation-edit'      => 'Affiliation\Controller\EditController',
+        ],
+    ],
+    'service_manager' => [
+        'initializers' => [
+            ServiceInitializer::class
+        ],
+        'invokables'   => [
+            AffiliationService::class             => AffiliationService::class,
+            FormService::class                    => FormService::class,
+            AffiliationAssertion::class           => AffiliationAssertion::class,
+            DoaAssertion::class                   => DoaAssertion::class,
+            LoiAssertion::class                   => LoiAssertion::class,
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
-
-
-        )
-    ),
-    'doctrine'        => array(
-        'driver'       => array(
-            'affiliation_annotation_driver' => array(
+            'affiliation_description_form_filter' => 'Affiliation\Form\FilterCreateObject',
+        ],
+        'factories'    => [
+            'affiliation_module_options'        => 'Affiliation\Service\OptionServiceFactory',
+            AffiliationNavigationService::class => AffiliationNavigationServiceFactory::class,
+        ],
+    ],
+    'view_helpers'    => [
+        'invokables' => [
+            'affiliationLink' => 'Affiliation\View\Helper\AffiliationLink',
+            'doaLink'         => 'Affiliation\View\Helper\DoaLink',
+            'loiLink'         => 'Affiliation\View\Helper\LoiLink',
+        ]
+    ],
+    'view_manager'    => [
+        'template_map' => include __DIR__ . '/../template_map.php',
+    ],
+    'doctrine'        => [
+        'driver'       => [
+            'affiliation_annotation_driver' => [
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'paths' => array(
+                'paths' => [
                     __DIR__ . '/../src/Affiliation/Entity/'
-                )
-            ),
-            'orm_default'               => array(
-                'drivers' => array(
+                ]
+            ],
+            'orm_default'                   => [
+                'drivers' => [
                     'Affiliation\Entity' => 'affiliation_annotation_driver',
-                )
-            )
-        ),
-        'eventmanager' => array(
-            'orm_default' => array(
-                'subscribers' => array(
+                ]
+            ]
+        ],
+        'eventmanager' => [
+            'orm_default' => [
+                'subscribers' => [
                     'Gedmo\Timestampable\TimestampableListener',
                     'Gedmo\Sluggable\SluggableListener',
-                )
-            ),
-        ),
-    )
-);
-
-$configFiles = array(
+                ]
+            ],
+        ],
+    ]
+];
+$configFiles = [
     __DIR__ . '/module.config.routes.php',
     __DIR__ . '/module.config.navigation.php',
     __DIR__ . '/module.config.authorize.php',
-);
-
+    __DIR__ . '/module.option.affiliation.php',
+];
 foreach ($configFiles as $configFile) {
     $config = Zend\Stdlib\ArrayUtils::merge($config, include $configFile);
 }
-
 return $config;
