@@ -53,8 +53,8 @@ class Affiliation extends AssertionAbstract
                     return true;
                 }
                 break;
-            //return $this->getProjectAssert()->assert($acl, $role, $resource->getProject(), 'view-community');
-            case 'edit-community':
+            case 'edit-affiliation':
+            case 'edit-description':
                 $this->getProjectService()->setProject($resource->getProject());
                 if ($this->getProjectService()->isStopped()) {
                     return false;
@@ -63,7 +63,6 @@ class Affiliation extends AssertionAbstract
                     return true;
                 }
                 break;
-            //return $this->getProjectAssert()->assert($acl, $role, $resource->getProject(), 'edit-community');
             case 'edit-financial':
                 if ($this->getContactService()->hasPermit('financial', $resource)) {
                     return true;

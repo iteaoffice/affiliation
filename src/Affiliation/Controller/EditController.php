@@ -9,9 +9,10 @@
  */
 namespace Affiliation\Controller;
 
-use Affiliation\Entity;
-use Affiliation\Form\Affiliation;
-use Affiliation\Form\Financial;
+use Affiliation\Entity\Description;
+use Affiliation\Entity\Financial;
+use Affiliation\Form\Affiliation as AffiliationForm;
+use Affiliation\Form\Financial as FinancialForm;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Service\ContactServiceAwareInterface;
@@ -26,46 +27,30 @@ use Zend\View\Model\ViewModel;
  * @category    Affiliation
  * @package     Controller
  */
-class CommunityController extends AffiliationAbstractController implements
+class EditController extends AffiliationAbstractController implements
     ProjectServiceAwareInterface,
     OrganisationServiceAwareInterface,
     ContactServiceAwareInterface
 {
     /**
-     * Show the details of 1 affiliation
+     * Edit a affiliation
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function affiliationAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-        $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
-
-        return new ViewModel(
-            array(
-                'affiliationService' => $affiliationService,
-                'projectService'     => $this->getProjectService(),
-                'latestVersion'      => $this->getProjectService()->getLatestProjectVersion(),
-                'versionType'        => $this->getProjectService()->getNextMode()->versionType
-            )
-        );
-    }
-
-    /**
-     * Edit a affiliation
-     *
-     * @return ViewModel
-     */
-    public function editAction()
-    {
-        $affiliationService      = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
-        );
-        $projectService          = $this->getProjectService()->setProject(
+        if ($affiliationService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        $projectService = $this->getProjectService()->setProject(
             $affiliationService->getAffiliation()->getProject()
         );
+        if ($projectService->isEmpty()) {
+            return $this->notFoundAction();
+        }
         $formData                = [];
         $formData['affiliation'] = sprintf(
             "%s|%s",
@@ -87,7 +72,7 @@ class CommunityController extends AffiliationAbstractController implements
         if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
             $formData['financial'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getId();
         }
-        $form = new Affiliation($affiliationService);
+        $form = new AffiliationForm($affiliationService);
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
             $formData    = $form->getData();
@@ -143,7 +128,7 @@ class CommunityController extends AffiliationAbstractController implements
              * Handle the financial organisation
              */
             if (is_null($financial = $affiliation->getFinancial())) {
-                $financial = new Entity\Financial();
+                $financial = new Financial();
             }
             $financial->setOrganisation($organisation);
             $financial->setAffiliation($affiliation);
@@ -184,17 +169,26 @@ class CommunityController extends AffiliationAbstractController implements
      * @return \Zend\Http\Response|ViewModel
      * @throws \Doctrine\ORM\ORMException
      */
-    public function editFinancialAction()
+    public function financialAction()
     {
-        $affiliationService    = $this->getAffiliationService()->setAffiliationId(
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-        $projectService        = $this->getProjectService()->setProject(
+        if ($affiliationService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        $projectService = $this->getProjectService()->setProject(
             $affiliationService->getAffiliation()->getProject()
         );
-        $organisationService   = $this->getOrganisationService()->setOrganisation(
+        if ($projectService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        $organisationService = $this->getOrganisationService()->setOrganisation(
             $affiliationService->getAffiliation()->getOrganisation()
         );
+        if ($organisationService->isEmpty()) {
+            return $this->notFoundAction();
+        }
         $formData              = [];
         $branch                = null;
         $branch                = $affiliationService->getAffiliation()->getFinancial()->getBranch();
@@ -219,7 +213,7 @@ class CommunityController extends AffiliationAbstractController implements
             $formData['vat']               = $organisationFinancial->getVat();
             $formData['omitContact']       = $organisationFinancial->getOmitContact();
         }
-        $form = new Financial($affiliationService, $this->getGeneralService());
+        $form = new FinancialForm($affiliationService, $this->getGeneralService());
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
             $formData = $form->getData();
@@ -334,11 +328,53 @@ class CommunityController extends AffiliationAbstractController implements
     /**
      * @return ViewModel
      */
-    public function editDescriptionAction()
+    public function descriptionAction()
     {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+        if ($affiliationService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        $projectService = $this->getProjectService()->setProject(
+            $affiliationService->getAffiliation()->getProject()
+        );
+        if ($projectService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        if (!$affiliationService->getAffiliation()->getDescription()->isEmpty()) {
+            /**
+             * @var $description Description
+             */
+            $description = $affiliationService->getAffiliation()->getDescription()->first();
+        } else {
+            $description = new Description();
+        }
+        $data = $this->getRequest()->getPost()->toArray();
+        $form = $this->getFormService()->prepare('description', $description, $data);
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            if (array_key_exists('submit', $data)) {
+                $description = $form->getData();
+                $description->setAffiliation(
+                    [
+                        $affiliationService->getAffiliation()
+                    ]
+                );
+                $description->setContact($this->zfcUserAuthentication()->getIdentity());
+                $this->getAffiliationService()->updateEntity($description);
+            }
+            $this->redirect()->toRoute(
+                'community/affiliation/affiliation',
+                ['id' => $affiliationService->getAffiliation()->getId()],
+                ['fragment' => 'description']
+            );
+        }
+
         return new ViewModel(
             [
-
+                'affiliationService' => $affiliationService,
+                'projectService'     => $projectService,
+                'form'               => $form
             ]
         );
     }

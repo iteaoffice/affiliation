@@ -1,4 +1,4 @@
-<h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
+<h1>{{ translate("txt-edit-affiliation-description-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
     projectService.parseFullName()
     ) }}</h1>
@@ -24,7 +24,7 @@ affiliationService.affiliation.organisation
     <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ organisationService.parseOrganisationWithBranch(affiliationService.affiliation.branch) }}</p>
+        <p class="form-control-static">{{ affiliationLink(affiliationService.affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -36,23 +36,15 @@ affiliationService.affiliation.organisation
     </div>
 </div>
 
-{{ ztbformelement(form.get('affiliation')) }}
-{{ ztbformelement(form.get('technical')) }}
-{{ ztbformelement(form.get('financial')) }}
-{{ ztbformelement(form.get('valueChain')) }}
-{{ ztbformelement(form.get('preferredDelivery')) }}
 
-<hr>
+{{ ztbformelement(form.get('description').get('description')) }}
+
 
 <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
+        {{ ztbformelement(form.get('csrf')) }}
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
-        {% if affiliationService.isActive() %}
-            {{ ztbformelement(form.get('deactivate')) }}
-        {% else %}
-            {{ ztbformelement(form.get('reactivate')) }}
-        {% endif %}
     </div>
 </div>
 

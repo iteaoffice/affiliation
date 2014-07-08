@@ -27,6 +27,7 @@ $config      = [
             'affiliation-manager'   => 'Affiliation\Controller\AffiliationManagerController',
             'affiliation-doa'       => 'Affiliation\Controller\DoaController',
             'affiliation-loi'       => 'Affiliation\Controller\LoiController',
+            'affiliation-edit'      => 'Affiliation\Controller\EditController',
         ],
     ],
     'service_manager' => [
@@ -40,6 +41,7 @@ $config      = [
             DoaAssertion::class                   => DoaAssertion::class,
             LoiAssertion::class                   => LoiAssertion::class,
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
+            'affiliation_description_form_filter' => 'Affiliation\Form\FilterCreateObject',
         ],
         'factories'    => [
             'affiliation_module_options'        => 'Affiliation\Service\OptionServiceFactory',

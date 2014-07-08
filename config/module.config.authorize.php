@@ -33,12 +33,17 @@ return [
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
-                    'route'     => 'community/affiliation/edit',
+                    'route'     => 'community/affiliation/edit/affiliation',
                     'roles'     => [],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
-                    'route'     => 'community/affiliation/edit-financial',
+                    'route'     => 'community/affiliation/edit/financial',
+                    'roles'     => [],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/description',
                     'roles'     => [],
                     'assertion' => AffiliationAssertion::class
                 ],

@@ -12,6 +12,7 @@ namespace Affiliation\Controller;
 use Affiliation\Entity;
 use Affiliation\Entity\Loi;
 use Affiliation\Form\UploadLoi;
+use General\Service\GeneralServiceAwareInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\View\Model\ViewModel;
 
@@ -19,7 +20,7 @@ use Zend\View\Model\ViewModel;
  * @category    Affiliation
  * @package     Controller
  */
-class LoiController extends AffiliationAbstractController
+class LoiController extends AffiliationAbstractController implements GeneralServiceAwareInterface
 {
     /**
      * Upload the LOI for a project (based on the affiliation)
@@ -31,11 +32,11 @@ class LoiController extends AffiliationAbstractController
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
         );
-        $data = array_merge_recursive(
+        $data               = array_merge_recursive(
             $this->getRequest()->getPost()->toArray(),
             $this->getRequest()->getFiles()->toArray()
         );
-        $form = new UploadLoi();
+        $form               = new UploadLoi();
         $form->setData($data);
         if ($this->getRequest()->isPost() && $form->isValid()) {
             if (!isset($data['cancel'])) {
@@ -47,6 +48,7 @@ class LoiController extends AffiliationAbstractController
                 $fileSizeValidator->isValid($fileData['file']);
                 $loi = new Entity\Loi();
                 $loi->setSize($fileSizeValidator->size);
+                $loi->setDateSigned(new \DateTime());
                 $loi->setContentType(
                     $this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type'])
                 );
@@ -101,6 +103,7 @@ class LoiController extends AffiliationAbstractController
             $this->getRequest()->getFiles()->toArray()
         );
         $form = new UploadLoi();
+        $form->get('submit')->setValue(_("txt-replace-loi"));
         $form->setData($data);
         if ($this->getRequest()->isPost() && $form->isValid()) {
             if (!isset($data['cancel'])) {
@@ -118,6 +121,7 @@ class LoiController extends AffiliationAbstractController
                 $fileSizeValidator->isValid($fileData['file']);
                 $loi->setSize($fileSizeValidator->size);
                 $loi->setContact($this->zfcUserAuthentication()->getIdentity());
+                $loi->setDateSigned(new \DateTime());
                 $loi->setContentType(
                     $this->getGeneralService()->findContentTypeByContentTypeName($fileData['file']['type'])
                 );
@@ -159,7 +163,7 @@ class LoiController extends AffiliationAbstractController
         $programLoi->setContact($this->zfcUserAuthentication()->getIdentity());
         $programLoi->setAffiliation($affiliationService->getAffiliation());
         $renderProjectLoi = $this->renderLoi()->renderProjectLoi($programLoi);
-        $response = $this->getResponse();
+        $response         = $this->getResponse();
         $response->getHeaders()
                  ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
                  ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
@@ -191,7 +195,7 @@ class LoiController extends AffiliationAbstractController
         /**
          * Due to the BLOB issue, we treat this as an array and we need to capture the first element
          */
-        $object = $loi->getObject()->first()->getObject();
+        $object   = $loi->getObject()->first()->getObject();
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()

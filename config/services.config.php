@@ -15,5 +15,8 @@ return [
         'affiliation_affiliation_form' => function ($sm) {
             return new Form\CreateObject($sm, new Entity\Affiliation());
         },
+        'affiliation_description_form' => function ($sm) {
+            return new Form\CreateObject($sm, new Entity\Description());
+        },
     ],
 ];

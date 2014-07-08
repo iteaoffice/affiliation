@@ -55,6 +55,14 @@ class AffiliationService extends ServiceAbstract
     /**
      * @return bool
      */
+    public function isEmpty()
+    {
+        return is_null($this->affiliation) || is_null($this->affiliation->getId());
+    }
+
+    /**
+     * @return bool
+     */
     public function isActive()
     {
         return is_null($this->affiliation->getDateEnd());
@@ -64,7 +72,7 @@ class AffiliationService extends ServiceAbstract
      * @param Project $project
      * @param int     $which
      *
-     * @return AffiliationService[]
+     * @return \Generator
      */
     public function findAffiliationByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {

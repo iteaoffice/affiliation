@@ -167,13 +167,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *      }
      * )
      * @Annotation\Attributes({"label":"txt-ict-organisation"})
-     * @var \Organisation\Entity\IctOrganisation[]
+     * @var \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
      */
     private $ictOrganisation;
     /**
      * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Description[]
+     * @var \Affiliation\Entity\Description[]|Collections\ArrayCollection()
      */
     private $description;
     /**
@@ -185,31 +185,31 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Invoice", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Invoice[]
+     * @var \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
      */
     private $invoice;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\InvoiceCmShare", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\InvoiceCmShare[]
+     * @var \Affiliation\Entity\InvoiceCmShare[]|Collections\ArrayCollection()
      */
     private $invoiceCmShare;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\InvoicePostCalc", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Invoice[]
+     * @var \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
      */
     private $invoicePostCalc;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Log[]
+     * @var \Affiliation\Entity\Log[]|Collections\ArrayCollection()
      */
     private $log;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Version", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Version[]
+     * @var \Affiliation\Entity\Version[]|Collections\ArrayCollection()
      */
     private $version;
     /**
@@ -233,31 +233,31 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *      }
      * )
      * @Annotation\Attributes({"label":"txt-associates"})
-     * @var \Contact\Entity\Contact[]
+     * @var \Contact\Entity\Contact[]|Collections\ArrayCollection()
      */
     private $associate;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Project\Entity\Cost\Cost[]
+     * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
      */
     private $cost;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Project\Entity\Funding\Funding[]
+     * @var \Project\Entity\Funding\Funding[]|Collections\ArrayCollection()
      */
     private $funding;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Project\Entity\Effort\Effort[]
+     * @var \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
      */
     private $effort;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Spent", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Project\Entity\Effort\Spent[]
+     * @var \Project\Entity\Effort\Spent[]|Collections\ArrayCollection()
      */
     private $spent;
     /**
@@ -561,7 +561,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Description[] $description
+     * @param \Affiliation\Entity\Description[]|Collections\ArrayCollection() $description
      */
     public function setDescription($description)
     {
@@ -569,7 +569,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Description[]
+     * @return \Affiliation\Entity\Description[]|Collections\ArrayCollection()
      */
     public function getDescription()
     {
@@ -593,7 +593,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Organisation\Entity\IctOrganisation[] $ictOrganisation
+     * @param \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection() $ictOrganisation
      */
     public function setIctOrganisation($ictOrganisation)
     {
@@ -601,7 +601,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Organisation\Entity\IctOrganisation[]
+     * @return \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
      */
     public function getIctOrganisation()
     {
@@ -625,7 +625,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Invoice[] $invoice
+     * @param \Affiliation\Entity\Invoice[]|Collections\ArrayCollection() $invoice
      */
     public function setInvoice($invoice)
     {
@@ -633,7 +633,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Invoice[]
+     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
      */
     public function getInvoice()
     {
@@ -641,7 +641,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\InvoiceCmShare[] $invoiceCmShare
+     * @param \Affiliation\Entity\InvoiceCmShare[]|Collections\ArrayCollection() $invoiceCmShare
      */
     public function setInvoiceCmShare($invoiceCmShare)
     {
@@ -649,7 +649,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\InvoiceCmShare[]
+     * @return \Affiliation\Entity\InvoiceCmShare[]|Collections\ArrayCollection()
      */
     public function getInvoiceCmShare()
     {
@@ -657,7 +657,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Invoice[] $invoicePostCalc
+     * @param \Affiliation\Entity\Invoice[]|Collections\ArrayCollection() $invoicePostCalc
      */
     public function setInvoicePostCalc($invoicePostCalc)
     {
@@ -665,7 +665,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Invoice[]
+     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
      */
     public function getInvoicePostCalc()
     {
@@ -673,7 +673,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Log[] $log
+     * @param \Affiliation\Entity\Log[]|Collections\ArrayCollection() $log
      */
     public function setLog($log)
     {
@@ -681,7 +681,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Log[]
+     * @return \Affiliation\Entity\Log[]|Collections\ArrayCollection()
      */
     public function getLog()
     {
@@ -769,7 +769,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Version[] $version
+     * @param \Affiliation\Entity\Version[]|Collections\ArrayCollection() $version
      */
     public function setVersion($version)
     {
@@ -777,7 +777,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Version[]
+     * @return \Affiliation\Entity\Version[]|Collections\ArrayCollection()
      */
     public function getVersion()
     {
@@ -785,7 +785,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Contact\Entity\Contact[] $associate
+     * @param \Contact\Entity\Contact[]|Collections\ArrayCollection() $associate
      */
     public function setAssociate($associate)
     {
@@ -793,7 +793,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Contact\Entity\Contact[]
+     * @return \Contact\Entity\Contact[]|Collections\ArrayCollection()
      */
     public function getAssociate()
     {
@@ -801,7 +801,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Cost\Cost[] $cost
+     * @param \Project\Entity\Cost\Cost[]|Collections\ArrayCollection() $cost
      */
     public function setCost($cost)
     {
@@ -809,7 +809,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Project\Entity\Cost\Cost[]
+     * @return \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
      */
     public function getCost()
     {
@@ -817,7 +817,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Funding\Funding[] $funding
+     * @param \Project\Entity\Funding\Funding[]|Collections\ArrayCollection() $funding
      */
     public function setFunding($funding)
     {
@@ -825,7 +825,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Project\Entity\Funding\Funding[]
+     * @return \Project\Entity\Funding\Funding[]|Collections\ArrayCollection()
      */
     public function getFunding()
     {
@@ -833,7 +833,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Effort\Spent[] $spent
+     * @param \Project\Entity\Effort\Spent[]|Collections\ArrayCollection() $spent
      */
     public function setSpent($spent)
     {
@@ -841,7 +841,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Project\Entity\Effort\Spent[]
+     * @return \Project\Entity\Effort\Spent[]|Collections\ArrayCollection()
      */
     public function getSpent()
     {
@@ -849,7 +849,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Effort\Effort[] $effort
+     * @param \Project\Entity\Effort\Effort[]|Collections\ArrayCollection() $effort
      */
     public function setEffort($effort)
     {
@@ -857,7 +857,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Project\Entity\Effort\Effort[]
+     * @return \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
      */
     public function getEffort()
     {

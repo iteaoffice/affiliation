@@ -36,7 +36,7 @@ class FormService implements ServiceLocatorAwareInterface
      *
      * @return array|object
      */
-    public function getForm($className = null, $entity = null, $bind = true)
+    private function getForm($className = null, $entity = null, $bind = true)
     {
         if (!$entity) {
             $entity = $this->getAffiliationService()->getEntity($className);

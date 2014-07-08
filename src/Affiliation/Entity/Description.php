@@ -9,8 +9,12 @@
  */
 namespace Affiliation\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
+use Zend\InputFilter\Factory as InputFactory;
+use Zend\InputFilter\InputFilter;
+use Zend\InputFilter\InputFilterInterface;
 
 /**
  * Entity for the Affiliation
@@ -23,12 +27,13 @@ use Zend\Form\Annotation;
  * @category    Affiliation
  * @package     Entity
  */
-class Description //extends EntityAbstract
+class Description extends EntityAbstract
 {
     /**
      * @ORM\Column(name="description_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Annotation\Exclude()
      * @var integer
      */
     private $id;
@@ -39,25 +44,15 @@ class Description //extends EntityAbstract
      *    joinColumns={@ORM\JoinColumn(name="description_id", referencedColumnName="description_id")},
      *    inverseJoinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")}
      * )
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntityMultiSelect")
-     * @Annotation\Options({
-     *      "target_class":"Project\Entity\Affiliation",
-     *      "find_method":{
-     *          "name":"findBy",
-     *          "params": {
-     *              "criteria":{},
-     *              "orderBy":{
-     *                  "affiliation":"ASC"}
-     *              }
-     *          }
-     *      }
-     * )
-     * @Annotation\Attributes({"label":"txt-affiliation"})
-     * @var \Affiliation\Entity\Affiliation[]
+     * @Annotation\Exclude()
+     * @var \Affiliation\Entity\Affiliation[]|ArrayCollection()
      */
     private $affiliation;
     /**
      * @ORM\Column(name="description", type="text", nullable=false)
+     * @Annotation\Type("\Zend\Form\Element\Textarea")
+     * @Annotation\Options({"label":"txt-affiliation-description","help-block": "txt-affiliation-description-explanation"})
+     * @Annotation\Required(true)
      * @var string
      */
     private $description;
@@ -66,12 +61,84 @@ class Description //extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=true)
      * })
+     * @Annotation\Exclude()
      * @var \Contact\Entity\Contact
      */
     private $contact;
 
     /**
-     * @param \Affiliation\Entity\Affiliation[] $affiliation
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->affiliation = new ArrayCollection();
+    }
+
+    /**
+     * @param $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $this->$property;
+    }
+
+    /**
+     * @param $property
+     * @param $value
+     *
+     * @return void
+     */
+    public function __set($property, $value)
+    {
+        $this->$property = $value;
+    }
+
+    /**
+     * ToString
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getDescription();
+    }
+
+    /**
+     * @param InputFilterInterface $inputFilter
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function setInputFilter(InputFilterInterface $inputFilter)
+    {
+        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
+    }
+
+    /**
+     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
+     */
+    public function getInputFilter()
+    {
+        if (!$this->inputFilter) {
+            $inputFilter = new InputFilter();
+            $factory     = new InputFactory();
+            $inputFilter->add(
+                $factory->createInput(
+                    array(
+                        'name'     => 'description',
+                        'required' => true,
+                    )
+                )
+            );
+            $this->inputFilter = $inputFilter;
+        }
+
+        return $this->inputFilter;
+    }
+
+    /**
+     * @param \Affiliation\Entity\Affiliation[]|ArrayCollection() $affiliation
      */
     public function setAffiliation($affiliation)
     {
@@ -79,7 +146,7 @@ class Description //extends EntityAbstract
     }
 
     /**
-     * @return \Affiliation\Entity\Affiliation[]
+     * @return \Affiliation\Entity\Affiliation[]|ArrayCollection()
      */
     public function getAffiliation()
     {

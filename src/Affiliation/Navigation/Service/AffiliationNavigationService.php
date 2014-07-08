@@ -77,7 +77,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                     ]
                 );
                 break;
-            case 'community/affiliation/affiliation/edit':
+            case 'community/affiliation/edit/affiliation':
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('id'));
                 $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage(
@@ -108,6 +108,53 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                     'edit' => [
                                         'label'  => sprintf(
                                             $this->translate("txt-edit-affiliation-%s-in-%s"),
+                                            $this->getAffiliationService()->getAffiliation()->getOrganisation(),
+                                            $this->getProjectService()->parseFullName()
+                                        ),
+                                        'active' => true,
+                                        'route'  => $this->getRouteMatch()->getMatchedRouteName(),
+                                        'router' => $this->getRouter(),
+                                        'params' => [
+                                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                        ],
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                );
+                break;
+            case 'community/affiliation/edit/description':
+                $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('id'));
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
+                $communityNavigation->addPage(
+                    [
+                        'label'  => sprintf(
+                            $this->translate("txt-project-details-of-%s"),
+                            $this->getProjectService()->parseFullName()
+                        ),
+                        'route'  => 'community/project/project',
+                        'router' => $this->getRouter(),
+                        'params' => [
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef()
+                        ],
+                        'pages'  => [
+                            'affiliation' => [
+                                'label'  => sprintf(
+                                    $this->translate("txt-affiliation-%s-in-%s"),
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation(),
+                                    $this->getProjectService()->parseFullName()
+                                ),
+                                'active' => true,
+                                'route'  => 'community/affiliation/affiliation',
+                                'router' => $this->getRouter(),
+                                'params' => [
+                                    'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                ],
+                                'pages'  => [
+                                    'edit' => [
+                                        'label'  => sprintf(
+                                            $this->translate("txt-edit-description-of-affiliation-%s-in-%s"),
                                             $this->getAffiliationService()->getAffiliation()->getOrganisation(),
                                             $this->getProjectService()->parseFullName()
                                         ),

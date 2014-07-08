@@ -46,10 +46,10 @@ class AffiliationLink extends LinkAbstract
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
-            array(
+            [
                 'name'         => $this->getAffiliation(),
                 'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation(),
-            )
+            ]
         );
         if (!$this->hasAccess(
             $this->getAffiliation(),
@@ -78,12 +78,18 @@ class AffiliationLink extends LinkAbstract
                 $this->setText(sprintf($this->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
                 break;
             case 'edit-community':
-                $this->setRouter('community/affiliation/edit');
+                $this->setRouter('community/affiliation/edit/affiliation');
                 $this->setText(sprintf($this->translate("txt-edit-affiliation-%s"), $this->getAffiliation()));
                 break;
             case 'edit-financial':
-                $this->setRouter('community/affiliation/edit-financial');
+                $this->setRouter('community/affiliation/edit/financial');
                 $this->setText(sprintf($this->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()));
+                break;
+            case 'edit-description':
+                $this->setRouter('community/affiliation/edit/description');
+                $this->setText(
+                    sprintf($this->translate("txt-edit-description-affiliation-%s"), $this->getAffiliation())
+                );
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));

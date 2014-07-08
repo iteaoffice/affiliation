@@ -29,9 +29,9 @@ class CreateObject extends Form
     public function __construct(ServiceManager $serviceManager, EntityAbstract $object)
     {
         parent::__construct($object->get('underscore_entity_name'));
-        $this->serviceManager = $serviceManager;
-        $entityManager = $this->serviceManager->get('doctrine.entitymanager.orm_default');
-        $objectSpecificFieldset = '\Content\Form\\' . ucfirst($object->get('entity_name')) . 'Fieldset';
+        $this->serviceManager   = $serviceManager;
+        $entityManager          = $this->serviceManager->get('doctrine.entitymanager.orm_default');
+        $objectSpecificFieldset = '\Affiliation\Form\\' . ucfirst($object->get('entity_name')) . 'Fieldset';
         /**
          * Load a specific fieldSet when present
          */
@@ -56,6 +56,16 @@ class CreateObject extends Form
                 'attributes' => array(
                     'class' => "btn btn-primary",
                     'value' => _("txt-submit")
+                )
+            )
+        );
+        $this->add(
+            array(
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'cancel',
+                'attributes' => array(
+                    'class' => "btn btn-warning",
+                    'value' => _("txt-cancel")
                 )
             )
         );

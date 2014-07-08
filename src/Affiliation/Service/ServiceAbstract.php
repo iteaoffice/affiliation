@@ -18,6 +18,8 @@ use Affiliation\Entity\Loi;
 use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use BjyAuthorize\Service\Authorize;
+use Affiliation\Acl\Assertion\AssertionAbstract;
 
 /**
  * ServiceAbstract
@@ -153,6 +155,36 @@ abstract class ServiceAbstract implements
         return ucfirst(join('', array_slice(explode('\\', __NAMESPACE__), 0, 1))) . '\\' . 'Entity' . '\\' . ucfirst(
             $entity
         );
+    }
+
+    /**
+     * @return Authorize
+     */
+    public function getAuthorizeService()
+    {
+        return $this->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
+    }
+
+    /**
+     * @param EntityAbstract $entity
+     * @param                $assertion
+     */
+    public function addResource(EntityAbstract $entity, $assertion)
+    {
+        /**
+         * @var $assertion AssertionAbstract
+         */
+        $assertion = $this->getServiceLocator()->get($assertion);
+        if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)
+        ) {
+            $this->getAuthorizeService()->getAcl()->addResource($entity);
+            $this->getAuthorizeService()->getAcl()->allow(
+                [],
+                $entity,
+                [],
+                $assertion
+            );
+        }
     }
 
     /**

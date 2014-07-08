@@ -25,7 +25,7 @@ return array(
                         ),
                         'may_terminate' => true,
                         'child_routes'  => array(
-                            'affiliation'    => array(
+                            'affiliation' => array(
                                 'type'    => 'Segment',
                                 'options' => array(
                                     'route'    => '/details/[:id].html',
@@ -35,27 +35,50 @@ return array(
                                     ),
                                 ),
                             ),
-                            'edit'           => array(
-                                'type'    => 'Segment',
-                                'options' => array(
-                                    'route'    => '/edit/[:id].html',
+                            'edit'        => array(
+                                'type'          => 'Segment',
+                                'options'       => array(
+                                    'route'    => '/edit',
                                     'defaults' => array(
-                                        'action'    => 'edit',
-                                        'privilege' => 'edit-community'
+                                        'controller' => 'affiliation-edit',
+                                        'action'     => 'edit',
                                     ),
                                 ),
-                            ),
-                            'edit-financial' => array(
-                                'type'    => 'Segment',
-                                'options' => array(
-                                    'route'    => '/edit-financial/[:id].html',
-                                    'defaults' => array(
-                                        'action'    => 'edit-financial',
-                                        'privilege' => 'edit-financial'
+                                'may_terminate' => true,
+                                'child_routes'  => [
+                                    'affiliation' => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/affiliation/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'affiliation',
+                                                'privilege' => 'edit-affiliation'
+                                            ),
+                                        ),
                                     ),
-                                ),
+                                    'financial'   => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/financial/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'financial',
+                                                'privilege' => 'edit-financial'
+                                            ),
+                                        ),
+                                    ),
+                                    'description' => array(
+                                        'type'    => 'Segment',
+                                        'options' => array(
+                                            'route'    => '/description/[:id].html',
+                                            'defaults' => array(
+                                                'action'    => 'description',
+                                                'privilege' => 'edit-description'
+                                            ),
+                                        ),
+                                    ),
+                                ]
                             ),
-                            'doa'            => array(
+                            'doa'         => array(
                                 'type'         => 'Segment',
                                 'options'      => array(
                                     'route'    => '/doa',
@@ -107,7 +130,7 @@ return array(
                                     ),
                                 )
                             ),
-                            'loi'            => array(
+                            'loi'         => array(
                                 'type'         => 'Segment',
                                 'options'      => array(
                                     'route'    => '/loi',
@@ -154,15 +177,15 @@ return array(
                                             'defaults' => array(
                                                 'action'    => 'download',
                                                 'privilege' => 'download'
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         )
     )
 );

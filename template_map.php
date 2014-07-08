@@ -3,6 +3,9 @@
 return array(
     'affiliation/doa/replace'              => __DIR__ . '//view/affiliation/doa/replace.twig',
     'affiliation/doa/upload'               => __DIR__ . '//view/affiliation/doa/upload.twig',
+    'affiliation/edit/affiliation'         => __DIR__ . '//view/affiliation/edit/affiliation.twig',
+    'affiliation/edit/description'         => __DIR__ . '//view/affiliation/edit/description.twig',
+    'affiliation/edit/financial'           => __DIR__ . '//view/affiliation/edit/financial.twig',
     'affiliation/pdf/doa-project'          => __DIR__ . '//view/affiliation/pdf/doa-project.twig',
     'affiliation/pdf/loi-project'          => __DIR__ . '//view/affiliation/pdf/loi-project.twig',
     'affiliation/loi/replace'              => __DIR__ . '//view/affiliation/loi/replace.twig',

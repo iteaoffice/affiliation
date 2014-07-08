@@ -97,12 +97,18 @@
 <div class="tab-pane" id="description">
     <h3>{{ translate("txt-partner-description") }}</h3>
 
-    <dl class="dl-horizontal">
-        <dt>{{ translate("txt-description") }}</dt>
-        {% for description in affiliationService.affiliation.description %}
+    {% for description in affiliationService.affiliation.description %}
+        <dl class="dl-horizontal">
+            <dt>{{ translate("txt-description") }}</dt>
             <dd>{{ description.description|raw }}</dd>
-        {% endfor %}
-    </dl>
+        </dl>
+    {% else %}
+        {{ ztbalert().info(translate("txt-no-description-found-for-%s")|format(
+        affiliationService.affiliation.organisation.organisation
+        ))|raw }}
+    {% endfor %}
+
+    {{ affiliationLink(affiliationService.affiliation, 'edit-description','button') }}
 </div>
 <div class="tab-pane" id="cost-and-effort">
 

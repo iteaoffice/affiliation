@@ -9,7 +9,7 @@
  */
 namespace Affiliation\Form;
 
-use Affiliation\Entity;
+use Affiliation\Entity\EntityAbstract;
 use Doctrine\ORM\EntityManager;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use DoctrineORMModule\Form\Element\EntityMultiCheckbox;
@@ -20,10 +20,10 @@ use Zend\Form\Fieldset;
 class ObjectFieldset extends Fieldset
 {
     /**
-     * @param EntityManager         $entityManager
-     * @param Entity\EntityAbstract $object
+     * @param EntityManager  $entityManager
+     * @param EntityAbstract $object
      */
-    public function __construct(EntityManager $entityManager, Entity\EntityAbstract $object)
+    public function __construct(EntityManager $entityManager, EntityAbstract $object)
     {
         parent::__construct($object->get('underscore_entity_name'));
         $doctrineHydrator = new DoctrineHydrator($entityManager);
