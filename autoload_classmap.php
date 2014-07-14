@@ -30,6 +30,7 @@ return array(
   'Affiliation\Service\ServiceInterface'                               => __DIR__ . '/src/Affiliation/Service/ServiceInterface.php',
   'Affiliation\Service\FormService'                                    => __DIR__ . '/src/Affiliation/Service/FormService.php',
   'Affiliation\Service\FormServiceAwareInterface'                      => __DIR__ . '/src/Affiliation/Service/FormServiceAwareInterface.php',
+  'Affiliation\Controller\EditController'                              => __DIR__ . '/src/Affiliation/Controller/EditController.php',
   'Affiliation\Controller\AffiliationManagerController'                => __DIR__ . '/src/Affiliation/Controller/AffiliationManagerController.php',
   'Affiliation\Controller\LoiController'                               => __DIR__ . '/src/Affiliation/Controller/LoiController.php',
   'Affiliation\Controller\DoaController'                               => __DIR__ . '/src/Affiliation/Controller/DoaController.php',

@@ -11,7 +11,5 @@ return array(
     'affiliation/loi/replace'              => __DIR__ . '//view/affiliation/loi/replace.twig',
     'affiliation/loi/upload'               => __DIR__ . '//view/affiliation/loi/upload.twig',
     'affiliation/community/affiliation'    => __DIR__ . '//view/affiliation/community/affiliation.twig',
-    'affiliation/community/edit'           => __DIR__ . '//view/affiliation/community/edit.twig',
-    'affiliation/community/edit-financial' => __DIR__ . '//view/affiliation/community/edit-financial.twig',
     'affiliation/partial/form/affiliation' => __DIR__ . '//view/affiliation/partial/form/affiliation.twig',
 );
