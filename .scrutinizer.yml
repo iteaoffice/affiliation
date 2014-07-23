@@ -1,6 +1,6 @@
 imports:
     - php
-    
+
 tools:
     php_changetracking: true
     php_sim: true
