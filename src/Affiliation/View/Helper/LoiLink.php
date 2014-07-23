@@ -51,9 +51,9 @@ class LoiLink extends LinkAbstract
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
-            array(
+            [
                 'name' => $this->getLoi(),
-            )
+            ]
         );
         if (!$this->hasAccess(
             $this->getLoi(),
@@ -61,7 +61,7 @@ class LoiLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return 'Access denied';
+            return '';
         }
         $this->addRouterParam('entity', 'Loi');
         $this->addRouterParam('id', $this->getLoi()->getId());

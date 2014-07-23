@@ -47,7 +47,7 @@ class CommunityController extends AffiliationAbstractController implements
             array(
                 'affiliationService' => $affiliationService,
                 'projectService'     => $this->getProjectService(),
-                'latestVersion'      => $this->getProjectService()->getLatestProjectVersion(),
+                'latestVersion'      => $this->getProjectService()->getLatestProjectVersion(null, null, true),
                 'versionType'        => $this->getProjectService()->getNextMode()->versionType
             )
         );

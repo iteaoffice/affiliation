@@ -113,7 +113,8 @@
 <div class="tab-pane" id="cost-and-effort">
 
     {% if latestVersion %}
-        <h3>{{ translate("txt-latest-submitted-version-of-type-%s")|format(latestVersion.versionType) }}</h3>
+        {% set versionService = versionServiceProxy(latestVersion) %}
+        <h3>{{ translate("txt-latest-%s-version-of-type-%s")|format(versionService.parseStatus(), latestVersion.versionType) }}</h3>
 
         <p>{{ translate("txt-latest-submitted-version-of-type-%s-explanation")|format(latestVersion.versionType) }}</p>
 
@@ -122,9 +123,9 @@
             <tr>
                 <th colspan="2">{{ translate("txt-cost-and-effort") }}</th>
                 {% for year in years %}
-                    <th>{{ year }} [&euro;]</th>
+                    <th>{{ year }} [k&euro;]</th>
                 {% endfor %}
-                <th>{{ translate("txt-total-costs") }} [&euro;]</th>
+                <th>{{ translate("txt-total-costs") }} [k&euro;]</th>
             </tr>
             </thead>
             <tbody>
@@ -136,10 +137,10 @@
             <tr>
                 <td colspan="2"></td>
                 {% for year in years %}
-                    <td>{{ costPerYear[year]|number_format(0, '.', ',') }}</td>
+                    <td>{{ costPerYear[year]|parse_cost }}</td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
-                <th>{{ totalPerYear|number_format(0, '.', ',') }}</th>
+                <th>{{ totalPerYear|parse_cost }}</th>
             </tr>
             </tbody>
             <thead>
@@ -172,23 +173,21 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <hr>
     {% endif %}
 
     {% if projectService.isPrepareMode() %}
-        <hr>
-
         <h3>{{ translate("txt-latest-unsubmitted-version") }}</h3>
-
-        <p>{{ translate("txt-latest-unsubmitted-version") }}</p>
 
         <table class="table table-hover table-striped table-condensed">
             <thead>
             <tr>
                 <th colspan="2">{{ translate("txt-costs") }}</th>
                 {% for year in years %}
-                    <th>{{ year }} [&euro;]</th>
+                    <th>{{ year }} [k&euro;]</th>
                 {% endfor %}
-                <th>{{ translate("txt-total-costs") }} [&euro;]</th>
+                <th>{{ translate("txt-total-costs") }} [k&euro;]</th>
             </tr>
             </thead>
             <tbody>
@@ -207,16 +206,20 @@
             <tr>
                 <td colspan="2">{{ translate("txt-new") }}</td>
                 {% for year in years %}
-                    <td>{{ costPerYear[year]|number_format(0, '.', ',') }}
-                        {% if costPerYear[year] > costPerYearInVersion[year] %}
-                            <span class="glyphicon glyphicon-export increase pull-right"></span>
-                        {% elseif costPerYear[year] < costPerYearInVersion[year] %}
-                            <span class="glyphicon glyphicon-import decrease pull-right"></span>
+                    <td>
+                        {% if costPerYear[year] - costPerYearInVersion[year] > 0.001 %}
+                            <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
+                            <i class="fa fa-angle-double-up increase pull-right"></i>
+                        {% elseif costPerYear[year] - costPerYearInVersion[year] < -0.001 %}
+                            <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
+                            <i class="fa fa-angle-double-down decrease pull-right"></i>
+                        {% else %}
+                            {{ costPerYear[year]|parse_cost }}
                         {% endif %}
                     </td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
-                <th>{{ totalPerYear|number_format(0, '.', ',') }}</th>
+                <th>{{ totalPerYear|parse_cost }}</th>
             </tr>
             </tbody>
             <thead>
@@ -251,12 +254,16 @@
                     <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                     {% for year in years %}
                         <td>
-                            {{ effortPerYear[year] }}
+
 
                             {% if effortPerYear[year] > effortPerYearInVersion[year] %}
-                                <span class="glyphicon glyphicon-export increase pull-right"></span>
+                                <span class="changed">{{ effortPerYear[year] }}</span>
+                                <i class="fa fa-angle-double-up increase pull-right"></i>
                             {% elseif effortPerYear[year] < effortPerYearInVersion[year] %}
-                                <span class="glyphicon glyphicon-import decrease pull-right"></span>
+                                <span class="changed">{{ effortPerYear[year] }}</span>
+                                <i class="fa fa-angle-double-down decrease pull-right"></i>
+                            {% else %}
+                                {{ effortPerYear[year] }}
                             {% endif %}
                         </td>
                         {% set totalPerWP = totalPerWP + effortPerYear[year] %}

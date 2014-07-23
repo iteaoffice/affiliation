@@ -61,7 +61,7 @@ class DoaLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return 'Access denied';
+            return '';
         }
         $this->addRouterParam('entity', 'Doa');
         $this->addRouterParam('id', $this->getDoa()->getId());

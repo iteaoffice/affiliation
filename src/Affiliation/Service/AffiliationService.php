@@ -341,10 +341,14 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param \Affiliation\Entity\Affiliation $affiliation
+     *
+     * @return $this;
      */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
+
+        return $this;
     }
 
     /**
