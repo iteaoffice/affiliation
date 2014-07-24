@@ -207,10 +207,10 @@
                 <td colspan="2">{{ translate("txt-new") }}</td>
                 {% for year in years %}
                     <td>
-                        {% if costPerYear[year] - costPerYearInVersion[year] > 0.001 %}
+                        {% if costPerYear[year] - costPerYearInVersion[year] > 0.001 and projectService.hasVersions() %}
                             <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
                             <i class="fa fa-angle-double-up increase pull-right"></i>
-                        {% elseif costPerYear[year] - costPerYearInVersion[year] < -0.001 %}
+                        {% elseif costPerYear[year] - costPerYearInVersion[year] < -0.001 and projectService.hasVersions() %}
                             <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
                             <i class="fa fa-angle-double-down decrease pull-right"></i>
                         {% else %}
@@ -256,10 +256,10 @@
                         <td>
 
 
-                            {% if effortPerYear[year] > effortPerYearInVersion[year] %}
+                            {% if effortPerYear[year] > effortPerYearInVersion[year] and projectService.hasVersions() %}
                                 <span class="changed">{{ effortPerYear[year] }}</span>
                                 <i class="fa fa-angle-double-up increase pull-right"></i>
-                            {% elseif effortPerYear[year] < effortPerYearInVersion[year] %}
+                            {% elseif effortPerYear[year] < effortPerYearInVersion[year] and projectService.hasVersions() %}
                                 <span class="changed">{{ effortPerYear[year] }}</span>
                                 <i class="fa fa-angle-double-down decrease pull-right"></i>
                             {% else %}
