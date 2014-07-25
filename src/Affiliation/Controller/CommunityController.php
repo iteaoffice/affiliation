@@ -44,12 +44,15 @@ class CommunityController extends AffiliationAbstractController implements
         $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
         return new ViewModel(
-            array(
+            [
                 'affiliationService' => $affiliationService,
-                'projectService'     => $this->getProjectService(),
-                'latestVersion'      => $this->getProjectService()->getLatestProjectVersion(null, null, true),
-                'versionType'        => $this->getProjectService()->getNextMode()->versionType
-            )
+                'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation(
+                    $affiliationService->getAffiliation()
+                ),
+                'projectService' => $this->getProjectService(),
+                'latestVersion' => $this->getProjectService()->getLatestProjectVersion(null, null, true),
+                'versionType' => $this->getProjectService()->getNextMode()->versionType
+            ]
         );
     }
 
@@ -60,26 +63,26 @@ class CommunityController extends AffiliationAbstractController implements
      */
     public function editAction()
     {
-        $affiliationService      = $this->getAffiliationService()->setAffiliationId(
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-        $projectService          = $this->getProjectService()->setProject(
+        $projectService = $this->getProjectService()->setProject(
             $affiliationService->getAffiliation()->getProject()
         );
-        $formData                = [];
+        $formData = [];
         $formData['affiliation'] = sprintf(
             "%s|%s",
             $affiliationService->getAffiliation()->getOrganisation()->getId(),
             $affiliationService->getAffiliation()->getBranch()
         );
-        $formData['technical']   = $affiliationService->getAffiliation()->getContact()->getId();
-        $formData['valueChain']  = $affiliationService->getAffiliation()->getValueChain();
+        $formData['technical'] = $affiliationService->getAffiliation()->getContact()->getId();
+        $formData['valueChain'] = $affiliationService->getAffiliation()->getValueChain();
         /**
          * Check if the organisation has a financial contact
          */
         if (!is_null($affiliationService->getAffiliation()->getOrganisation()->getFinancial())) {
             $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
-                                                                ->getEmail();
+                ->getEmail();
         }
         /**
          * Check if the organisation has a financial contact
@@ -90,7 +93,7 @@ class CommunityController extends AffiliationAbstractController implements
         $form = new Affiliation($affiliationService);
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
-            $formData    = $form->getData();
+            $formData = $form->getData();
             $affiliation = $affiliationService->getAffiliation();
             /**
              * When the deactivate button is pressed, handle this in the service layer
@@ -106,8 +109,8 @@ class CommunityController extends AffiliationAbstractController implements
 
                 return $this->redirect()->toRoute(
                     'community/project/project',
-                    array('docRef' => $projectService->getProject()->getDocRef()),
-                    array('fragment' => 'partners')
+                    ['docRef' => $projectService->getProject()->getDocRef()],
+                    ['fragment' => 'partners']
                 );
             }
             /**
@@ -124,9 +127,9 @@ class CommunityController extends AffiliationAbstractController implements
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
-                    array(
+                    [
                         'id' => $affiliationService->getAffiliation()->getId()
-                    )
+                    ]
                 );
             }
             /**
@@ -157,7 +160,7 @@ class CommunityController extends AffiliationAbstractController implements
                 $organisationFinancial = new \Organisation\Entity\Financial();
                 $organisationFinancial->setOrganisation($affiliation->getOrganisation());
             }
-            $organisationFinancial->setEmail((bool) $formData['preferredDelivery']);
+            $organisationFinancial->setEmail((bool)$formData['preferredDelivery']);
             $this->getOrganisationService()->updateEntity($organisationFinancial);
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
@@ -165,18 +168,18 @@ class CommunityController extends AffiliationAbstractController implements
 
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
-                array(
+                [
                     'id' => $affiliationService->getAffiliation()->getId()
-                )
+                ]
             );
         }
 
         return new ViewModel(
-            array(
+            [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
                 'form'               => $form
-            )
+            ]
         );
     }
 
@@ -186,38 +189,38 @@ class CommunityController extends AffiliationAbstractController implements
      */
     public function editFinancialAction()
     {
-        $affiliationService    = $this->getAffiliationService()->setAffiliationId(
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-        $projectService        = $this->getProjectService()->setProject(
+        $projectService = $this->getProjectService()->setProject(
             $affiliationService->getAffiliation()->getProject()
         );
-        $organisationService   = $this->getOrganisationService()->setOrganisation(
+        $organisationService = $this->getOrganisationService()->setOrganisation(
             $affiliationService->getAffiliation()->getOrganisation()
         );
-        $formData              = [];
-        $branch                = null;
-        $branch                = $affiliationService->getAffiliation()->getFinancial()->getBranch();
+        $formData = [];
+        $branch = null;
+        $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
         $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getDisplayName();
-        $contactService        = $this->getContactService()->setContact(
+        $contactService = $this->getContactService()->setContact(
             $affiliationService->getAffiliation()->getFinancial()->getContact()
         );
         if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
-            $financialAddress    = $contactService->getFinancialAddress()->getAddress();
+            $financialAddress = $contactService->getFinancialAddress()->getAddress();
             $formData['address'] = $financialAddress->getAddress();
             $formData['zipCode'] = $financialAddress->getZipCode();
-            $formData['city']    = $financialAddress->getCity();
+            $formData['city'] = $financialAddress->getCity();
             $formData['country'] = $financialAddress->getCountry()->getId();
         }
-        $formData['organisation']      = $organisationService->parseOrganisationWithBranch($branch);
+        $formData['organisation'] = $organisationService->parseOrganisationWithBranch($branch);
         $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
         if (!is_null(
             $organisationFinancial = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
         )
         ) {
             $formData['preferredDelivery'] = $organisationFinancial->getEmail();
-            $formData['vat']               = $organisationFinancial->getVat();
-            $formData['omitContact']       = $organisationFinancial->getOmitContact();
+            $formData['vat'] = $organisationFinancial->getVat();
+            $formData['omitContact'] = $organisationFinancial->getOmitContact();
         }
         $form = new Financial($affiliationService, $this->getGeneralService());
         $form->setData($formData);
@@ -316,9 +319,9 @@ class CommunityController extends AffiliationAbstractController implements
 
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
-                array(
+                [
                     'id' => $affiliationService->getAffiliation()->getId()
-                )
+                ]
             );
         }
 

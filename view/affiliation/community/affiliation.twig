@@ -1,5 +1,8 @@
 {% set years = range(projectService.parseStartYear, projectService.parseEndYear) %}
 
+{# Produce the link first to have the resource :) #}
+{% set affiliationLink = affiliationLink(affiliationService.affiliation, 'edit-community','button') %}
+
 <h1>{{ translate("txt-affiliation-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
     projectService.parseFullName()
@@ -17,7 +20,7 @@
     <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
     <li><a href="#cost-and-effort" data-toggle="tab">{{ translate("txt-cost-and-effort") }}</a></li>
     <li><a href="#contact" data-toggle="tab">{{ translate("txt-contacts") }}</a></li>
-    {% if isAllowed('affiliation','edit-community') %}
+    {% if isAllowed(affiliationService.affiliation,'edit-affiliation') %}
         <li><a href="#invoicing" data-toggle="tab">{{ translate("txt-invoicing") }}</a></li>
     {% endif %}
 </ul>
@@ -92,7 +95,7 @@
         {% endif %}
     </dl>
 
-    {{ affiliationLink(affiliationService.affiliation, 'edit-community','button') }}
+    {{ affiliationLink|raw }}
 </div>
 <div class="tab-pane" id="description">
     <h3>{{ translate("txt-partner-description") }}</h3>
@@ -165,10 +168,10 @@
                     <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
                     <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                     {% for year in years %}
-                        <td>{{ effortPerYear[year] }}</td>
+                        <td>{{ effortPerYear[year]|default(0)|parse_effort }}</td>
                         {% set totalPerWP = totalPerWP + effortPerYear[year] %}
                     {% endfor %}
-                    <th>{{ totalPerWP }}</th>
+                    <th>{{ totalPerWP|parse_effort }}</th>
                 </tr>
             {% endfor %}
             </tbody>
@@ -263,7 +266,7 @@
                                 <span class="changed">{{ effortPerYear[year] }}</span>
                                 <i class="fa fa-angle-double-down decrease pull-right"></i>
                             {% else %}
-                                {{ effortPerYear[year] }}
+                                {{ effortPerYear[year]|default(0)|parse_effort }}
                             {% endif %}
                         </td>
                         {% set totalPerWP = totalPerWP + effortPerYear[year] %}
@@ -280,9 +283,10 @@
 </div>
 <div class="tab-pane" id="contact">
 
+
     <h3>{{ translate("txt-associate-details") }}</h3>
 
-    {% if affiliationService.affiliation.associate.count > 0 %}
+    {% if contactsInAffiliation.contacts.count() > 0 %}
         <table class="table table-striped table-hover table-condensed">
             <thead>
             <tr>
@@ -291,25 +295,11 @@
             </tr>
             </thead>
             <tbody>
-            {% for associate in affiliationService.affiliation.associate %}
+            {% for contact in contactsInAffiliation.contacts %}
                 <tr>
-                    <td>{{ associate.displayName }}</td>
+                    <td>{{ contact.displayName }}</td>
                     <td>
-                        {% if associate.id == projectService.project.contact.id %}
-                            {{ translate("txt-project-leader") }};
-                        {% endif %}
-
-                        {% set workpackaLeaderFound = false %}
-                        {% for workpackage in projectService.project.workpackage if not workpackaLeaderFound %}
-                            {% if associate.id == workpackage.contact.id %}
-                                {{ translate("txt-workpackage-leader") }};
-                                {% set workpackaLeaderFound = true %}
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if associate.id == affiliationService.affiliation.contact.id %}
-                            {{ translate("txt-technical-contact") }};
-                        {% endif %}
+                       {{ contactsInAffiliation['contactRole'][contact.id]|join(', ')  }}
                     </td>
                 </tr>
             {% endfor %}
@@ -320,7 +310,7 @@
     {% endif %}
 </div>
 
-{% if isAllowed('affiliation','edit-community') %}
+{% if isAllowed(affiliationService.affiliation,'edit-affiliation') %}
     <div class="tab-pane" id="invoicing">
         <h3>{{ translate("txt-invoicing-details") }}</h3>
 

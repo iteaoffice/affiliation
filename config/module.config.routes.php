@@ -7,185 +7,185 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
-return array(
-    'router' => array(
-        'routes' => array(
-            'community' => array(
-                'child_routes' => array(
-                    'affiliation' => array(
+return [
+    'router' => [
+        'routes' => [
+            'community' => [
+                'child_routes' => [
+                    'affiliation' => [
                         'type'          => 'Segment',
                         'priority'      => 1000,
-                        'options'       => array(
+                        'options'       => [
                             'route'    => '/affiliation',
-                            'defaults' => array(
+                            'defaults' => [
                                 'namespace'  => 'affiliation',
                                 'controller' => 'affiliation-community',
                                 'action'     => 'index',
-                            ),
-                        ),
+                            ],
+                        ],
                         'may_terminate' => true,
-                        'child_routes'  => array(
-                            'affiliation' => array(
+                        'child_routes'  => [
+                            'affiliation' => [
                                 'type'    => 'Segment',
-                                'options' => array(
+                                'options' => [
                                     'route'    => '/details/[:id].html',
-                                    'defaults' => array(
+                                    'defaults' => [
                                         'action'    => 'affiliation',
                                         'privilege' => 'view-community'
-                                    ),
-                                ),
-                            ),
-                            'edit'        => array(
+                                    ],
+                                ],
+                            ],
+                            'edit'        => [
                                 'type'          => 'Segment',
-                                'options'       => array(
+                                'options'       => [
                                     'route'    => '/edit',
-                                    'defaults' => array(
+                                    'defaults' => [
                                         'controller' => 'affiliation-edit',
                                         'action'     => 'edit',
-                                    ),
-                                ),
+                                    ],
+                                ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'affiliation' => array(
+                                    'affiliation' => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/affiliation/[:id].html',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'affiliation',
                                                 'privilege' => 'edit-affiliation'
-                                            ),
-                                        ),
-                                    ),
-                                    'financial'   => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'financial'   => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/financial/[:id].html',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'financial',
                                                 'privilege' => 'edit-financial'
-                                            ),
-                                        ),
-                                    ),
-                                    'description' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'description' => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/description/[:id].html',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'description',
                                                 'privilege' => 'edit-description'
-                                            ),
-                                        ),
-                                    ),
+                                            ],
+                                        ],
+                                    ],
                                 ]
-                            ),
-                            'doa'         => array(
+                            ],
+                            'doa'         => [
                                 'type'         => 'Segment',
-                                'options'      => array(
+                                'options'      => [
                                     'route'    => '/doa',
-                                    'defaults' => array(
+                                    'defaults' => [
                                         'controller' => 'affiliation-doa',
                                         'action'     => 'index',
-                                    ),
-                                ),
-                                'child_routes' => array(
-                                    'render'   => array(
+                                    ],
+                                ],
+                                'child_routes' => [
+                                    'render'   => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/render/affiliation-[:affiliation-id].pdf',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'render',
                                                 'privilege' => 'render'
-                                            ),
-                                        ),
-                                    ),
-                                    'upload'   => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'upload'   => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/upload/affiliation-[:affiliation-id].html',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'upload',
                                                 'privilege' => 'upload'
-                                            ),
-                                        ),
-                                    ),
-                                    'replace'  => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'replace'  => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/replace/[:id].html',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'replace',
                                                 'privilege' => 'replace'
-                                            ),
-                                        ),
-                                    ),
-                                    'download' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'download' => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/download/[:id].pdf',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download'
-                                            ),
-                                        ),
-                                    ),
-                                )
-                            ),
-                            'loi'         => array(
+                                            ],
+                                        ],
+                                    ],
+                                ]
+                            ],
+                            'loi'         => [
                                 'type'         => 'Segment',
-                                'options'      => array(
+                                'options'      => [
                                     'route'    => '/loi',
-                                    'defaults' => array(
+                                    'defaults' => [
                                         'controller' => 'affiliation-loi',
                                         'action'     => 'index',
-                                    ),
-                                ),
-                                'child_routes' => array(
-                                    'render'   => array(
+                                    ],
+                                ],
+                                'child_routes' => [
+                                    'render'   => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/render/affiliation-[:affiliation-id].pdf',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'render',
                                                 'privilege' => 'render'
-                                            ),
-                                        ),
-                                    ),
-                                    'upload'   => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'upload'   => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/upload/affiliation-[:affiliation-id].html',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'upload',
                                                 'privilege' => 'upload'
-                                            ),
-                                        ),
-                                    ),
-                                    'replace'  => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'replace'  => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/replace/[:id].html',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'replace',
                                                 'privilege' => 'replace'
-                                            ),
-                                        ),
-                                    ),
-                                    'download' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    'download' => [
                                         'type'    => 'Segment',
-                                        'options' => array(
+                                        'options' => [
                                             'route'    => '/download/[:id].pdf',
-                                            'defaults' => array(
+                                            'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download'
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    )
-);
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+];

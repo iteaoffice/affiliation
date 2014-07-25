@@ -87,9 +87,9 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
         /**
          * @var $serverUrl ServerUrl
          */
-        $serverUrl         = $this->serviceLocator->get('serverUrl');
+        $serverUrl = $this->serviceLocator->get('serverUrl');
         $this->linkContent = [];
-        $this->classes     = [];
+        $this->classes = [];
         $this->parseAction();
         $this->parseShow();
         if ('social' === $this->getShow()) {
@@ -121,8 +121,12 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     {
         switch ($this->getShow()) {
             case 'icon':
+            case 'button':
                 switch ($this->getAction()) {
                     case 'edit':
+                    case 'edit-description':
+                    case 'edit-community':
+                    case 'edit-financial':
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
                         break;
                     case 'download':
@@ -135,11 +139,12 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                         $this->addLinkContent('<i class="fa fa-link"></i>');
                         break;
                 }
+                if ($this->getShow() === 'button') {
+                    $this->addLinkContent(' ' . $this->getText());
+                    $this->addClasses("btn btn-primary");
+                }
                 break;
-            case 'button':
-                $this->addLinkContent('<span class="glyphicon glyphicon-info"></span> ' . $this->getText());
-                $this->addClasses("btn btn-primary");
-                break;
+
             case 'text':
                 $this->addLinkContent($this->getText());
                 break;
@@ -213,7 +218,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     public function addLinkContent($linkContent)
     {
         if (!is_array($linkContent)) {
-            $linkContent = array($linkContent);
+            $linkContent = [$linkContent];
         }
         foreach ($linkContent as $content) {
             $this->linkContent[] = $content;
@@ -246,7 +251,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     public function addClasses($classes)
     {
         if (!is_array($classes)) {
-            $classes = array($classes);
+            $classes = [$classes];
         }
         foreach ($classes as $class) {
             $this->classes[] = $class;
@@ -281,8 +286,8 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param EntityAbstract $entity
-     * @param string         $assertion
-     * @param string         $action
+     * @param string $assertion
+     * @param string $action
      *
      * @return bool
      */
@@ -344,7 +349,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param null|EntityAbstract $resource
-     * @param string              $privilege
+     * @param string $privilege
      *
      * @return bool
      */
@@ -363,7 +368,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      *
      * @param string $key
      * @param        $value
-     * @param bool   $allowNull
+     * @param bool $allowNull
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {
