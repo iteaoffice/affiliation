@@ -19,7 +19,7 @@ use Zend\Form\Form;
 class Affiliation extends Form
 {
     /**
-     * Class constructor
+     * @param AffiliationService $affiliationService
      */
     public function __construct(AffiliationService $affiliationService)
     {
@@ -35,10 +35,10 @@ class Affiliation extends Form
                     $groupOptions[sprintf("%s|%s", $organisationId, $branch)] = $organisationWithBranch;
                 }
             }
-            $affiliationValueOptions[$country] = array(
+            $affiliationValueOptions[$country] = [
                 'label'   => $country,
                 'options' => $groupOptions
-            );
+            ];
         }
         /**
          * Collect the technical contacts
@@ -61,120 +61,120 @@ class Affiliation extends Form
             }
         }
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'affiliation',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $affiliationValueOptions,
                     'label'         => _("txt-change-affiliation"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'technical',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $technicalContactValueOptions,
                     'label'         => _("txt-technical-contact"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'financial',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $financialContactValueOptions,
                     'label'         => _("txt-financial-contact"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ]
+            ]
         );
         $organisationFinancial = new Financial();
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Radio',
                 'name'       => 'preferredDelivery',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $organisationFinancial->getEmailTemplates(),
                     'label'         => _("txt-preferred-delivery"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'valueChain',
-                'options'    => array(
+                'options'    => [
                     'label' => _("txt-position-on-value-chain"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-primary",
                     'value' => _("txt-update")
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'cancel',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-warning",
                     'value' => _("txt-cancel")
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'deactivate',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-danger",
                     'value' => sprintf(
                         _("txt-deactivate-partner-%s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
                     )
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'reactivate',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-warning",
                     'value' => sprintf(
                         _("txt-reactivate-partner-%s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
                     )
-                )
-            )
+                ]
+            ]
         );
     }
 }

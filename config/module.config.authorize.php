@@ -38,6 +38,11 @@ return [
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
+                    'route'     => 'community/affiliation/edit/add-associate',
+                    'roles'     => [],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
                     'route'     => 'community/affiliation/edit/financial',
                     'roles'     => [],
                     'assertion' => AffiliationAssertion::class

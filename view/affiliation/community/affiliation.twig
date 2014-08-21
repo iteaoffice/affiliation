@@ -186,7 +186,7 @@
         <table class="table table-hover table-striped table-condensed">
             <thead>
             <tr>
-                <th colspan="2">{{ translate("txt-costs") }}</th>
+                <th colspan="2">{{ translate("txt-cost-and-effort") }}</th>
                 {% for year in years %}
                     <th>{{ year }} [k&euro;]</th>
                 {% endfor %}
@@ -260,10 +260,10 @@
 
 
                             {% if effortPerYear[year] > effortPerYearInVersion[year] and projectService.hasVersions() %}
-                                <span class="changed">{{ effortPerYear[year] }}</span>
+                                <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
                                 <i class="fa fa-angle-double-up increase pull-right"></i>
                             {% elseif effortPerYear[year] < effortPerYearInVersion[year] and projectService.hasVersions() %}
-                                <span class="changed">{{ effortPerYear[year] }}</span>
+                                <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
                                 <i class="fa fa-angle-double-down decrease pull-right"></i>
                             {% else %}
                                 {{ effortPerYear[year]|default(0)|parse_effort }}
@@ -271,7 +271,7 @@
                         </td>
                         {% set totalPerWP = totalPerWP + effortPerYear[year] %}
                     {% endfor %}
-                    <th>{{ totalPerWP }}</th>
+                    <th>{{ totalPerWP|parse_effort }}</th>
                 </tr>
             {% endfor %}
             </tbody>
@@ -299,7 +299,7 @@
                 <tr>
                     <td>{{ contact.displayName }}</td>
                     <td>
-                       {{ contactsInAffiliation['contactRole'][contact.id]|join(', ')  }}
+                        {{ contactsInAffiliation['contactRole'][contact.id]|join(', ') }}
                     </td>
                 </tr>
             {% endfor %}
@@ -308,6 +308,8 @@
     {% else %}
         {{ ztbalert().info(translate("txt-no-associates-in-this-affiliation"))|raw }}
     {% endif %}
+
+    {{ affiliationLink(affiliationService.affiliation,'add-associate','button') }}
 </div>
 
 {% if isAllowed(affiliationService.affiliation,'edit-affiliation') %}

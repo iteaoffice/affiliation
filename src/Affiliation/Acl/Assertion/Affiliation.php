@@ -28,10 +28,10 @@ class Affiliation extends AssertionAbstract
      * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl $acl
-     * @param RoleInterface $role
+     * @param Acl               $acl
+     * @param RoleInterface     $role
      * @param ResourceInterface $resource
-     * @param string $privilege
+     * @param string            $privilege
      *
      * @return bool
      */
@@ -52,7 +52,10 @@ class Affiliation extends AssertionAbstract
                 if ($this->getContactService()->hasPermit('view', $resource)) {
                     return true;
                 }
-                break;
+
+                //whe the persion has view rights on the project, the affiliation can also be viewed
+                return $this->getProjectAssert()->assert($acl, $role, $resource->getProject(), 'view-community');
+            case 'add-associate':
             case 'edit-affiliation':
             case 'edit-description':
             case 'edit-community':

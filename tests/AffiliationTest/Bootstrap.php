@@ -69,7 +69,7 @@ class Bootstrap
             $tool->dropDatabase();
             $tool->createSchema($mdFactory->getAllMetadata());
             $loader = new Loader();
-            
+
             $purger   = new ORMPurger();
             $executor = new ORMExecutor($entityManager, $purger);
             $executor->execute($loader->getFixtures());

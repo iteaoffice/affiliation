@@ -46,7 +46,7 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'affiliation' => [
+                                    'affiliation'   => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/affiliation/[:id].html',
@@ -56,7 +56,17 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'financial'   => [
+                                    'add-associate' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/add-associate/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'add-associate',
+                                                'privilege' => 'add-associate'
+                                            ],
+                                        ],
+                                    ],
+                                    'financial'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/financial/[:id].html',
@@ -66,7 +76,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'description' => [
+                                    'description'   => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/description/[:id].html',

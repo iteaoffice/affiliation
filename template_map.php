@@ -6,6 +6,7 @@ return array(
     'affiliation/edit/affiliation'         => __DIR__ . '//view/affiliation/edit/affiliation.twig',
     'affiliation/edit/description'         => __DIR__ . '//view/affiliation/edit/description.twig',
     'affiliation/edit/financial'           => __DIR__ . '//view/affiliation/edit/financial.twig',
+    'affiliation/edit/add-associate'       => __DIR__ . '//view/affiliation/edit/add-associate.twig',
     'affiliation/pdf/doa-project'          => __DIR__ . '//view/affiliation/pdf/doa-project.twig',
     'affiliation/pdf/loi-project'          => __DIR__ . '//view/affiliation/pdf/loi-project.twig',
     'affiliation/loi/replace'              => __DIR__ . '//view/affiliation/loi/replace.twig',

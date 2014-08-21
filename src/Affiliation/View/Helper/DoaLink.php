@@ -34,9 +34,9 @@ class DoaLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Doa $doa
-     * @param string $action
-     * @param string $show
+     * @param Doa         $doa
+     * @param string      $action
+     * @param string      $show
      * @param Affiliation $affiliation
      *
      * @return string
@@ -59,8 +59,7 @@ class DoaLink extends LinkAbstract
             $this->getDoa(),
             DoaAssertion::class,
             $this->getAction()
-        )
-        ) {
+        )) {
             return '';
         }
         $this->addRouterParam('entity', 'Doa');

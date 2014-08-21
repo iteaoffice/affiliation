@@ -75,6 +75,7 @@ class Affiliation extends EntityRepository
         $qb->from('Affiliation\Entity\Affiliation', 'a');
         $qb->join('a.organisation', 'o');
         $qb->where('a.project = ?1');
+        $qb->addOrderBy('o.organisation', 'ASC');
         $qb->andWhere('o.country = ?2');
         $qb->setParameter(1, $project);
         $qb->setParameter(2, $country);

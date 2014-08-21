@@ -286,8 +286,8 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param EntityAbstract $entity
-     * @param string $assertion
-     * @param string $action
+     * @param string         $assertion
+     * @param string         $action
      *
      * @return bool
      */
@@ -349,7 +349,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param null|EntityAbstract $resource
-     * @param string $privilege
+     * @param string              $privilege
      *
      * @return bool
      */
@@ -368,7 +368,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      *
      * @param string $key
      * @param        $value
-     * @param bool $allowNull
+     * @param bool   $allowNull
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {

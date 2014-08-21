@@ -11,6 +11,7 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity\Description;
 use Affiliation\Entity\Financial;
+use Affiliation\Form\AddAssociate;
 use Affiliation\Form\Affiliation as AffiliationForm;
 use Affiliation\Form\Financial as FinancialForm;
 use Contact\Entity\Address;
@@ -144,7 +145,7 @@ class EditController extends AffiliationAbstractController implements
                 $organisationFinancial = new \Organisation\Entity\Financial();
                 $organisationFinancial->setOrganisation($affiliation->getOrganisation());
             }
-            $organisationFinancial->setEmail((bool)$formData['preferredDelivery']);
+            $organisationFinancial->setEmail((bool) $formData['preferredDelivery']);
             $this->getOrganisationService()->updateEntity($organisationFinancial);
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
@@ -328,6 +329,56 @@ class EditController extends AffiliationAbstractController implements
     }
 
     /**
+     * @return array|ViewModel
+     */
+    public function addAssociateAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+        if ($affiliationService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        $projectService = $this->getProjectService()->setProject(
+            $affiliationService->getAffiliation()->getProject()
+        );
+        if ($projectService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray()
+        );
+
+        $form = new AddAssociate($affiliationService, $this->getContactService());
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            if (empty($form->getData()['cancel'])) {
+                $affiliation = $affiliationService->getAffiliation();
+                $affiliation->addAssociate(
+                    $this->getContactService()->setContactId($form->getData()['contact'])->getContact()
+                );
+                $this->getAffiliationService()->updateEntity($affiliation);
+            }
+
+            return $this->redirect()->toRoute(
+                'community/affiliation/affiliation',
+                ['id' => $affiliationService->getAffiliation()->getId()],
+                ['fragment' => 'contact']
+            );
+        }
+
+        return new ViewModel(
+            [
+                'affiliationService' => $affiliationService,
+                'projectService'     => $projectService,
+                'form'               => $form
+            ]
+        );
+    }
+
+    /**
      * @return ViewModel
      */
     public function descriptionAction()
@@ -365,7 +416,8 @@ class EditController extends AffiliationAbstractController implements
                 $description->setContact($this->zfcUserAuthentication()->getIdentity());
                 $this->getAffiliationService()->updateEntity($description);
             }
-            $this->redirect()->toRoute(
+
+            return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
                 ['id' => $affiliationService->getAffiliation()->getId()],
                 ['fragment' => 'description']

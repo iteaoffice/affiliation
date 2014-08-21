@@ -9,6 +9,7 @@
  */
 namespace Affiliation\Entity;
 
+use Contact\Entity\Contact;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -43,10 +44,10 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * Templates for the self funded parameter
      * @var array
      */
-    protected $selfFundedTemplates = array(
+    protected $selfFundedTemplates = [
         self::NOT_SELF_FUNDED => 'txt-not-self-funded',
         self::SELF_FUNDED     => 'txt-self-funded',
-    );
+    ];
     /**
      * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
      * @ORM\Id
@@ -279,17 +280,17 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function __construct()
     {
         $this->ictOrganisation = new Collections\ArrayCollection();
-        $this->description     = new Collections\ArrayCollection();
-        $this->invoice         = new Collections\ArrayCollection();
-        $this->invoiceCmShare  = new Collections\ArrayCollection();
+        $this->description = new Collections\ArrayCollection();
+        $this->invoice = new Collections\ArrayCollection();
+        $this->invoiceCmShare = new Collections\ArrayCollection();
         $this->invoicePostCalc = new Collections\ArrayCollection();
-        $this->log             = new Collections\ArrayCollection();
-        $this->version         = new Collections\ArrayCollection();
-        $this->associate       = new Collections\ArrayCollection();
-        $this->cost            = new Collections\ArrayCollection();
-        $this->funding         = new Collections\ArrayCollection();
-        $this->effort          = new Collections\ArrayCollection();
-        $this->spent           = new Collections\ArrayCollection();
+        $this->log = new Collections\ArrayCollection();
+        $this->version = new Collections\ArrayCollection();
+        $this->associate = new Collections\ArrayCollection();
+        $this->cost = new Collections\ArrayCollection();
+        $this->funding = new Collections\ArrayCollection();
+        $this->effort = new Collections\ArrayCollection();
+        $this->spent = new Collections\ArrayCollection();
         /**
          * Self-funded is default NOT
          */
@@ -362,91 +363,91 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
-            $factory     = new InputFactory();
+            $factory = new InputFactory();
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'       => 'branch',
                         'required'   => false,
-                        'filters'    => array(
-                            array('name' => 'StripTags'),
-                            array('name' => 'StringTrim'),
-                        ),
-                        'validators' => array(
-                            array(
+                        'filters'    => [
+                            ['name' => 'StripTags'],
+                            ['name' => 'StringTrim'],
+                        ],
+                        'validators' => [
+                            [
                                 'name'    => 'StringLength',
-                                'options' => array(
+                                'options' => [
                                     'encoding' => 'UTF-8',
                                     'min'      => 1,
                                     'max'      => 40,
-                                ),
-                            ),
-                        ),
-                    )
+                                ],
+                            ],
+                        ],
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'note',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'valueChain',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'dateEnd',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'dateEnd',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'dateSelfFunded',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'contact',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'       => 'selfFunded',
                         'required'   => true,
-                        'validators' => array(
-                            array(
+                        'validators' => [
+                            [
                                 'name'    => 'InArray',
-                                'options' => array(
+                                'options' => [
                                     'haystack' => array_keys($this->getSelfFundedTemplates())
-                                )
-                            )
-                        )
-                    )
+                                ]
+                            ]
+                        ]
+                    ]
                 )
             );
             $this->inputFilter = $inputFilter;
@@ -461,7 +462,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function getArrayCopy()
     {
-        return array(
+        return [
             'branch'         => $this->branch,
             'note'           => $this->note,
             'valueChain'     => $this->valueChain,
@@ -469,7 +470,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
             'dateEnd'        => $this->dateEnd,
             'dateSelfFunded' => $this->dateSelfFunded,
             'contact'        => $this->contact,
-        );
+        ];
     }
 
     /**
@@ -478,6 +479,16 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function populate()
     {
         return $this->getArrayCopy();
+    }
+
+    /**
+     * @param Contact $contact
+     */
+    public function addAssociate(Contact $contact)
+    {
+        if (!$this->associate->contains($contact)) {
+            $this->associate->add($contact);
+        }
     }
 
     /**
