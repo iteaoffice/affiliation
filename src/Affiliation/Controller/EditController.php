@@ -145,7 +145,7 @@ class EditController extends AffiliationAbstractController implements
                 $organisationFinancial = new \Organisation\Entity\Financial();
                 $organisationFinancial->setOrganisation($affiliation->getOrganisation());
             }
-            $organisationFinancial->setEmail((bool) $formData['preferredDelivery']);
+            $organisationFinancial->setEmail((bool)$formData['preferredDelivery']);
             $this->getOrganisationService()->updateEntity($organisationFinancial);
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
@@ -194,11 +194,15 @@ class EditController extends AffiliationAbstractController implements
         }
         $formData = [];
         $branch = null;
-        $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
-        $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getDisplayName();
-        $contactService = $this->getContactService()->setContact(
-            $affiliationService->getAffiliation()->getFinancial()->getContact()
-        );
+        if (is_null($affiliationService->getAffiliation()->getFinancial())) {
+            $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
+            $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact(
+            )->getDisplayName();
+
+            $contactService = $this->getContactService()->setContact(
+                $affiliationService->getAffiliation()->getFinancial()->getContact()
+            );
+        }
         if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
             $financialAddress = $contactService->getFinancialAddress()->getAddress();
             $formData['address'] = $financialAddress->getAddress();
