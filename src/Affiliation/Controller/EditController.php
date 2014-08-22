@@ -199,19 +199,20 @@ class EditController extends AffiliationAbstractController implements
             $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact(
             )->getDisplayName();
 
-            $contactService = $this->getContactService()->setContact(
+            $contactService = clone $this->getContactService()->setContact(
                 $affiliationService->getAffiliation()->getFinancial()->getContact()
             );
+
+            if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
+                $financialAddress = $contactService->getFinancialAddress()->getAddress();
+                $formData['address'] = $financialAddress->getAddress();
+                $formData['zipCode'] = $financialAddress->getZipCode();
+                $formData['city'] = $financialAddress->getCity();
+                $formData['country'] = $financialAddress->getCountry()->getId();
+            }
+            $formData['organisation'] = $organisationService->parseOrganisationWithBranch($branch);
+            $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
         }
-        if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
-            $financialAddress = $contactService->getFinancialAddress()->getAddress();
-            $formData['address'] = $financialAddress->getAddress();
-            $formData['zipCode'] = $financialAddress->getZipCode();
-            $formData['city'] = $financialAddress->getCity();
-            $formData['country'] = $financialAddress->getCountry()->getId();
-        }
-        $formData['organisation'] = $organisationService->parseOrganisationWithBranch($branch);
-        $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
         if (!is_null(
             $organisationFinancial = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
         )
@@ -220,6 +221,7 @@ class EditController extends AffiliationAbstractController implements
             $formData['vat'] = $organisationFinancial->getVat();
             $formData['omitContact'] = $organisationFinancial->getOmitContact();
         }
+
         $form = new FinancialForm($affiliationService, $this->getGeneralService());
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
