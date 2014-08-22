@@ -210,9 +210,10 @@ class EditController extends AffiliationAbstractController implements
                 $formData['city'] = $financialAddress->getCity();
                 $formData['country'] = $financialAddress->getCountry()->getId();
             }
-            $formData['organisation'] = $organisationService->parseOrganisationWithBranch($branch);
-            $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
+            
         }
+        $formData['organisation'] = $organisationService->parseOrganisationWithBranch($branch);
+        $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
         if (!is_null(
             $organisationFinancial = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
         )
