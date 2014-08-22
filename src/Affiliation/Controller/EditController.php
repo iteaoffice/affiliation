@@ -194,7 +194,7 @@ class EditController extends AffiliationAbstractController implements
         }
         $formData = [];
         $branch = null;
-        if (is_null($affiliationService->getAffiliation()->getFinancial())) {
+        if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
             $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
             $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact(
             )->getDisplayName();
