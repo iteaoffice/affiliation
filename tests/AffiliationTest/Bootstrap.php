@@ -8,7 +8,7 @@
  * @license     http://debranova.org/license.txt proprietary
  * @link        http://debranova.org
  */
-namespace ProjectTest;
+namespace AffiliationTest;
 
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
@@ -33,7 +33,7 @@ class Bootstrap
 
     public static function init()
     {
-        $zf2ModulePaths = array(dirname(dirname(__DIR__)));
+        $zf2ModulePaths = [dirname(dirname(__DIR__))];
         if (($path = static::findParentPath('vendor'))) {
             $zf2ModulePaths[] = $path;
         }
@@ -44,7 +44,7 @@ class Bootstrap
             $zf2ModulePaths[] = $path;
         }
         static::initAutoloader();
-        $config         = include __DIR__ . '/../config/application.config.php';
+        $config = include __DIR__ . '/../config/application.config.php';
         $serviceManager = new ServiceManager(new ServiceManagerConfig());
         $serviceManager->setService('ApplicationConfig', $config);
         $serviceManager->get('ModuleManager')->loadModules();
@@ -53,7 +53,7 @@ class Bootstrap
             $entityManager = $serviceManager->get('doctrine.entitymanager.orm_default');
             //Validate the schema;
             $validator = new \Doctrine\ORM\Tools\SchemaValidator($entityManager);
-            $errors    = $validator->validateMapping();
+            $errors = $validator->validateMapping();
             if (count($errors) > 0) {
                 foreach ($errors AS $entity => $errors) {
                     echo "Error in Entity: '" . $entity . "':\n";
@@ -63,14 +63,14 @@ class Bootstrap
                 die();
             }
             //Create the schema
-            $tool      = new \Doctrine\ORM\Tools\SchemaTool($entityManager);
+            $tool = new \Doctrine\ORM\Tools\SchemaTool($entityManager);
             $mdFactory = $entityManager->getMetadataFactory();
             $mdFactory->getAllMetadata();
             $tool->dropDatabase();
             $tool->createSchema($mdFactory->getAllMetadata());
             $loader = new Loader();
 
-            $purger   = new ORMPurger();
+            $purger = new ORMPurger();
             $executor = new ORMExecutor($entityManager, $purger);
             $executor->execute($loader->getFixtures());
         }
@@ -78,7 +78,7 @@ class Bootstrap
 
     protected static function findParentPath($path)
     {
-        $dir         = __DIR__;
+        $dir = __DIR__;
         $previousDir = '.';
         while (!is_dir($dir . '/' . $path)) {
             $dir = dirname($dir);
@@ -94,7 +94,7 @@ class Bootstrap
     protected static function initAutoloader()
     {
         $vendorPath = static::findParentPath('vendor');
-        $zf2Path    = getenv('ZF2_PATH');
+        $zf2Path = getenv('ZF2_PATH');
         if (!$zf2Path) {
             if (defined('ZF2_PATH')) {
                 $zf2Path = ZF2_PATH;
@@ -114,15 +114,15 @@ class Bootstrap
         }
         include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
         AutoloaderFactory::factory(
-            array(
-                'Zend\Loader\StandardAutoloader' => array(
+            [
+                'Zend\Loader\StandardAutoloader' => [
                     'autoregister_zf' => true,
-                    'namespaces'      => array(
+                    'namespaces'      => [
                         __NAMESPACE__ => __DIR__ . '/' . __NAMESPACE__,
                         'Zend'        => __DIR__ . '/' . __NAMESPACE__,
-                    ),
-                ),
-            )
+                    ],
+                ],
+            ]
         );
     }
 

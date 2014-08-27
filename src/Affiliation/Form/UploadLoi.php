@@ -30,40 +30,34 @@ class UploadLoi extends Form implements InputFilterProviderInterface
         $this->setAttribute('class', 'form-horizontal');
         $this->setAttribute('enctype', 'multipart/form-data');
         $this->add(
-            array(
+            [
                 'type'    => '\Zend\Form\Element\File',
                 'name'    => 'file',
-                'options' => array(
+                'options' => [
                     "label"      => "txt-file",
                     "help-block" => _("txt-a-loi-in-pdf-format-is-required")
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
-                'type' => 'Zend\Form\Element\Csrf',
-                'name' => 'csrf',
-            )
-        );
-        $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-primary",
                     'value' => _("txt-upload-loi")
-                )
-            )
+                ]
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'cancel',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-warning",
                     'value' => _("txt-cancel")
-                )
-            )
+                ]
+            ]
         );
     }
 
@@ -75,28 +69,28 @@ class UploadLoi extends Form implements InputFilterProviderInterface
      */
     public function getInputFilterSpecification()
     {
-        return array(
-            'file' => array(
+        return [
+            'file' => [
                 'required'   => true,
-                'validators' => array(
+                'validators' => [
                     new Size(
-                        array(
+                        [
                             'min' => '5kB',
                             'max' => '8MB',
-                        )
+                        ]
                     ),
                     new Extension(
-                        array(
-                            'extension' => array('pdf')
-                        )
+                        [
+                            'extension' => ['pdf']
+                        ]
                     ),
                     new MimeType(
-                        array(
-                            'mimeType' => array('application/pdf')
-                        )
+                        [
+                            'mimeType' => ['application/pdf']
+                        ]
                     )
-                )
-            )
-        );
+                ]
+            ]
+        ];
     }
 }

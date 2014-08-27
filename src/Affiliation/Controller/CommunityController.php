@@ -20,6 +20,7 @@ use Organisation\Entity\Organisation;
 use Organisation\Entity\Type as OrganisationType;
 use Organisation\Service\OrganisationServiceAwareInterface;
 use Project\Service\ProjectServiceAwareInterface;
+use Project\Service\WorkpackageServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -28,6 +29,7 @@ use Zend\View\Model\ViewModel;
  */
 class CommunityController extends AffiliationAbstractController implements
     ProjectServiceAwareInterface,
+    WorkpackageServiceAwareInterface,
     OrganisationServiceAwareInterface,
     ContactServiceAwareInterface
 {
@@ -45,13 +47,14 @@ class CommunityController extends AffiliationAbstractController implements
 
         return new ViewModel(
             [
-                'affiliationService' => $affiliationService,
+                'affiliationService'    => $affiliationService,
                 'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation(
                     $affiliationService->getAffiliation()
                 ),
-                'projectService' => $this->getProjectService(),
-                'latestVersion' => $this->getProjectService()->getLatestProjectVersion(null, null, true),
-                'versionType' => $this->getProjectService()->getNextMode()->versionType
+                'projectService'        => $this->getProjectService(),
+                'workpackageService'    => $this->getWorkpackageService(),
+                'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(null, null, true),
+                'versionType'           => $this->getProjectService()->getNextMode()->versionType
             ]
         );
     }

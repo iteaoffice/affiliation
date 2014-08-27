@@ -157,7 +157,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for workpackage in projectService.project.workpackage %}
+            {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(projectService.project) %}
                 {% set effortPerYear = projectService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                 workpackage,
                 affiliationService.affiliation,
@@ -236,7 +236,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for workpackage in projectService.project.workpackage %}
+            {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(projectService.project) %}
                 {% set effortPerYear = projectService.findTotalEffortByWorkpackageAndAffiliationPerYear(
                 workpackage,
                 affiliationService.affiliation) %}

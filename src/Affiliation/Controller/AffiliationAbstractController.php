@@ -19,6 +19,7 @@ use General\Service\GeneralService;
 use Organisation\Service\OrganisationService;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
+use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
@@ -51,6 +52,10 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      * @var ProjectService
      */
     protected $projectService;
+    /**
+     * @var WorkpackageService
+     */
+    protected $workpackageService;
     /**
      * @var ContactService
      */
@@ -224,6 +229,26 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     public function setProjectService(ProjectService $projectService)
     {
         $this->projectService = $projectService;
+
+        return $this;
+    }
+
+    /**
+     * @return WorkpackageService
+     */
+    public function getWorkpackageService()
+    {
+        return $this->workpackageService;
+    }
+
+    /**
+     * @param WorkpackageService $workpackageService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setWorkpackageService(WorkpackageService $workpackageService)
+    {
+        $this->workpackageService = $workpackageService;
 
         return $this;
     }
