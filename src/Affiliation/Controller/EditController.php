@@ -194,6 +194,8 @@ class EditController extends AffiliationAbstractController implements
         }
         $formData = [];
         $branch = null;
+        $financialAddress = null;
+
         if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
             $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
             $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact(
@@ -231,9 +233,10 @@ class EditController extends AffiliationAbstractController implements
              * This form is a aggregation of multiple form elements, so we treat it step by step
              */
             /**
-             * If the organisation or country has changed, find the new
+             * If the organisation or country has changed or is not set, find the new
              */
             if ($formData['organisation'] !== $organisationService->parseOrganisationWithBranch($branch) ||
+                is_null($financialAddress) ||
                 intval($formData['country']) !== $financialAddress->getCountry()->getId()
             ) {
                 /**
