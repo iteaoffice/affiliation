@@ -40,7 +40,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
      */
     public function updateCommunityNavigation()
     {
-        $communityNavigation = $this->getNavigation()->findOneBy('route', 'community');
+        $communityNavigation = $this->getNavigation()->findOneBy('route', 'community/project/list');
         /**
          * Go over the routes to see if we need to extend the $this->pages array
          */
@@ -51,7 +51,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
-                            $this->translate("txt-project-details-of-%s"),
+                            $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
                         'route'  => 'community/project/project',
@@ -83,7 +83,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
-                            $this->translate("txt-project-details-of-%s"),
+                            $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
                         'route'  => 'community/project/project',
@@ -130,7 +130,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
-                            $this->translate("txt-project-details-of-%s"),
+                            $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
                         'route'  => 'community/project/project',

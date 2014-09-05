@@ -10,7 +10,6 @@
 namespace Affiliation\Form;
 
 use Affiliation\Service\AffiliationService;
-use Organisation\Entity\Financial;
 use Zend\Form\Form;
 
 /**
@@ -27,7 +26,7 @@ class Affiliation extends Form
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
         $technicalContactValueOptions = [];
-        $affiliationValueOptions      = [];
+        $affiliationValueOptions = [];
         foreach ($affiliationService->parseRenameOptions() as $country => $options) {
             $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
@@ -53,7 +52,7 @@ class Affiliation extends Form
          * This array starts from the technical contacts
          */
         $financialContactValueOptions = $technicalContactValueOptions;
-        $organisation                 = $affiliationService->getAffiliation()->getOrganisation();
+        $organisation = $affiliationService->getAffiliation()->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
             if (!is_null($affiliation->getFinancial())) {
                 $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()] =
@@ -102,21 +101,6 @@ class Affiliation extends Form
                 ]
             ]
         );
-        $organisationFinancial = new Financial();
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Radio',
-                'name'       => 'preferredDelivery',
-                'options'    => [
-                    'value_options' => $organisationFinancial->getEmailTemplates(),
-                    'label'         => _("txt-preferred-delivery"),
-                ],
-                'attributes' => [
-                    'class'    => 'form-control',
-                    'required' => true,
-                ]
-            ]
-        );
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Text',
@@ -125,8 +109,33 @@ class Affiliation extends Form
                     'label' => _("txt-position-on-value-chain"),
                 ],
                 'attributes' => [
-                    'class'    => 'form-control',
-                    'required' => true,
+                    'class' => 'form-control',
+                ]
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'mainContribution',
+                'options'    => [
+                    'label'      => _("txt-main-contribution-for-the-project"),
+                    'help-block' => _("txt--main-contribution-for-the-project-inline-help")
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ]
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'marketAccess',
+                'options'    => [
+                    'label'      => _("txt-market-access"),
+                    'help-block' => _("txt-market-access-inline-help"),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
                 ]
             ]
         );
@@ -157,7 +166,7 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => "btn btn-danger",
                     'value' => sprintf(
-                        _("txt-deactivate-partner-%s"),
+                        _('txt-deactivate-partner-%s'),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
                     )
                 ]

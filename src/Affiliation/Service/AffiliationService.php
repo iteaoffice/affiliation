@@ -121,6 +121,7 @@ class AffiliationService extends ServiceAbstract
         $which = self::WHICH_ONLY_ACTIVE
     ) {
         $countries = $this->findAffiliationCountriesByProjectAndWhich($project, $which);
+
         $result    = new ArrayCollection();
         foreach ($countries as $country) {
             /**
@@ -158,6 +159,7 @@ class AffiliationService extends ServiceAbstract
             $result[$affiliation->getOrganisation()->getCountry()->getCountry()] =
                 $affiliation->getOrganisation()->getCountry();
         }
+
         ksort($result);
 
         return $result;

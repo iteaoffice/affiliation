@@ -78,6 +78,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $valueChain;
     /**
+     * @ORM\Column(name="market_access", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-market-access"})
+     * @var string
+     */
+    private $marketAccess;
+    /**
+     * @ORM\Column(name="main_contribution", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-main-contribution"})
+     * @var string
+     */
+    private $mainContribution;
+    /**
      * @ORM\Column(name="self_funded", type="smallint", nullable=false)
      * @Annotation\Type("Zend\Form\Element\Radio")
      * @Annotation\Attributes({"array":"selfFundedTemplates"})
@@ -405,6 +419,22 @@ class Affiliation extends EntityAbstract implements ResourceInterface
             $inputFilter->add(
                 $factory->createInput(
                     [
+                        'name'     => 'mainContribution',
+                        'required' => false,
+                    ]
+                )
+            );
+            $inputFilter->add(
+                $factory->createInput(
+                    [
+                        'name'     => 'marketAccess',
+                        'required' => false,
+                    ]
+                )
+            );
+            $inputFilter->add(
+                $factory->createInput(
+                    [
                         'name'     => 'dateEnd',
                         'required' => false,
                     ]
@@ -463,13 +493,15 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function getArrayCopy()
     {
         return [
-            'branch'         => $this->branch,
-            'note'           => $this->note,
-            'valueChain'     => $this->valueChain,
-            'selfFunded'     => $this->selfFunded,
-            'dateEnd'        => $this->dateEnd,
-            'dateSelfFunded' => $this->dateSelfFunded,
-            'contact'        => $this->contact,
+            'branch'           => $this->branch,
+            'note'             => $this->note,
+            'valueChain'       => $this->valueChain,
+            'selfFunded'       => $this->selfFunded,
+            'dateEnd'          => $this->dateEnd,
+            'dateSelfFunded'   => $this->dateSelfFunded,
+            'contact'          => $this->contact,
+            'marketAccess'     => $this->marketAccess,
+            'mainContribution' => $this->mainContribution,
         ];
     }
 
@@ -905,5 +937,37 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setDoa($doa)
     {
         $this->doa = $doa;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainContribution()
+    {
+        return $this->mainContribution;
+    }
+
+    /**
+     * @param string $mainContribution
+     */
+    public function setMainContribution($mainContribution)
+    {
+        $this->mainContribution = $mainContribution;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMarketAccess()
+    {
+        return $this->marketAccess;
+    }
+
+    /**
+     * @param string $marketAccess
+     */
+    public function setMarketAccess($marketAccess)
+    {
+        $this->marketAccess = $marketAccess;
     }
 }

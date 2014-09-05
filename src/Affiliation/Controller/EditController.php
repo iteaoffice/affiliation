@@ -22,6 +22,7 @@ use General\Service\GeneralServiceAwareInterface;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type as OrganisationType;
 use Organisation\Service\OrganisationServiceAwareInterface;
+use Project\Service\ProjectService;
 use Project\Service\ProjectServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
@@ -62,13 +63,7 @@ class EditController extends AffiliationAbstractController implements
         );
         $formData['technical'] = $affiliationService->getAffiliation()->getContact()->getId();
         $formData['valueChain'] = $affiliationService->getAffiliation()->getValueChain();
-        /**
-         * Check if the organisation has a financial contact
-         */
-        if (!is_null($affiliationService->getAffiliation()->getOrganisation()->getFinancial())) {
-            $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
-                ->getEmail();
-        }
+
         /**
          * Check if the organisation has a financial contact
          */
@@ -85,6 +80,13 @@ class EditController extends AffiliationAbstractController implements
              */
             if (!is_null($formData['deactivate'])) {
                 $this->getAffiliationService()->deactivateAffiliation($affiliation);
+
+                //Update the rationale for public funding
+                $this->getProjectService()->updateCountryRationaleByAffiliation(
+                    $affiliation,
+                    ProjectService::AFFILIATION_DEACTIVATE
+                );
+
                 $this->flashMessenger()->setNamespace('success')->addMessage(
                     sprintf(
                         _("txt-affiliation-%s-has-successfully-been-deactivated"),
@@ -103,6 +105,13 @@ class EditController extends AffiliationAbstractController implements
              */
             if (!is_null($formData['reactivate'])) {
                 $this->getAffiliationService()->reactivateAffiliation($affiliation);
+
+                //Update the rationale for public funding
+                $this->getProjectService()->updateCountryRationaleByAffiliation(
+                    $affiliation,
+                    ProjectService::AFFILIATION_DEACTIVATE
+                );
+
                 $this->flashMessenger()->setNamespace('success')->addMessage(
                     sprintf(
                         _("txt-affiliation-%s-has-successfully-been-reactivated"),
@@ -138,15 +147,7 @@ class EditController extends AffiliationAbstractController implements
             $financial->setBranch($branch);
             $financial->setContact($this->getContactService()->setContactId($formData['financial'])->getContact());
             $this->getAffiliationService()->updateEntity($financial);
-            /**
-             * Handle the preferred delivery for the organisation (OrganisationFinancial)
-             */
-            if (is_null($organisationFinancial = $affiliation->getOrganisation()->getFinancial())) {
-                $organisationFinancial = new \Organisation\Entity\Financial();
-                $organisationFinancial->setOrganisation($affiliation->getOrganisation());
-            }
-            $organisationFinancial->setEmail((bool) $formData['preferredDelivery']);
-            $this->getOrganisationService()->updateEntity($organisationFinancial);
+
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
             );
@@ -272,9 +273,9 @@ class EditController extends AffiliationAbstractController implements
                 $this->getAffiliationService()->updateEntity($affiliationFinancial);
             }
             /**
-             * The presence of a VAT number triggers the creation of a financial organiation
+             * The presence of a VAT number triggers the creation of a financial organisation
              */
-            if (empty($formData['vat'])) {
+            if (!empty($formData['vat'])) {
                 if (is_null($affiliationService->getAffiliation()->getOrganisation()->getFinancial())) {
                     $organisationFinancial = new \Organisation\Entity\Financial();
                 } else {

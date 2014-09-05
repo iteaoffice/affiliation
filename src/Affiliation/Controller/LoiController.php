@@ -38,8 +38,16 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         );
         $form = new UploadLoi();
         $form->setData($data);
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (!isset($data['cancel'])) {
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
+            }
+
+            if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
                 //Create a article object element
                 $loiObject = new Entity\LoiObject();
@@ -63,13 +71,14 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
                         $affiliationService->getAffiliation()->getProject()
                     )
                 );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
             }
 
-            return $this->redirect()->toRoute(
-                'community/affiliation/affiliation',
-                ['id' => $affiliationService->getAffiliation()->getId()],
-                ['fragment' => 'details']
-            );
         }
 
         return new ViewModel(
@@ -106,8 +115,16 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         $form = new UploadLoi();
         $form->get('submit')->setValue(_("txt-replace-loi"));
         $form->setData($data);
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (!isset($data['cancel'])) {
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $loi->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
+            }
+
+            if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
                 /**
                  * Remove the current entity
@@ -135,13 +152,14 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
                         $loi->getAffiliation()->getProject()
                     )
                 );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $loi->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
             }
 
-            return $this->redirect()->toRoute(
-                'community/affiliation/affiliation',
-                ['id' => $loi->getAffiliation()->getId()],
-                ['fragment' => 'details']
-            );
         }
 
         return new ViewModel(

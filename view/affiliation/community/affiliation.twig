@@ -3,10 +3,11 @@
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliationService.affiliation, 'edit-community','button') %}
 
-<h1>{{ translate("txt-affiliation-%s-in-%s")|format(
-    affiliationService.affiliation.organisation.organisation,
+<h1>{{ affiliationService.affiliation.organisation.organisation }}</h1>
+
+<p class="lead">{{ translate("txt-partner-in-%s")|format(
     projectService.parseFullName()
-    ) }}</h1>
+    ) }}</p>
 
 {% if affiliationService.affiliation.dateEnd %}
     {{ ztbalert().danger("txt-affiliation-%s-has-been-deactiveated-on-%s")|format(
@@ -45,6 +46,10 @@
         <dd>{{ projectService.project.contact.contactOrganisation.organisation.country }}</dd>
         <dt>{{ translate("txt-position-on-value-chain") }}</dt>
         <dd>{{ affiliationService.affiliation.valueChain }}</dd>
+        <dt>{{ translate("txt-txt-main-contribution-for-the-project") }}</dt>
+        <dd>{{ affiliationService.affiliation.mainContribution }}</dd>
+        <dt>{{ translate("txt-txt-market-access") }}</dt>
+        <dd>{{ affiliationService.affiliation.marketAccess }}</dd>
         <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
         <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
                 {% if programDoa.dateApproved is null %}
@@ -207,15 +212,16 @@
 
             {% set totalPerYear = 0 %}
             <tr>
-                <td colspan="2">{{ translate("txt-new") }}</td>
+                <td colspan="2">{{ translate("txt-cost") }}</td>
                 {% for year in years %}
                     <td>
                         {% if costPerYear[year] - costPerYearInVersion[year] > 0.001 and projectService.hasVersions() %}
+                            <i class="fa fa-angle-double-up increase pull-left"></i>
                             <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
-                            <i class="fa fa-angle-double-up increase pull-right"></i>
+
                         {% elseif costPerYear[year] - costPerYearInVersion[year] < -0.001 and projectService.hasVersions() %}
+                            <i class="fa fa-angle-double-down decrease pull-left"></i>
                             <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
-                            <i class="fa fa-angle-double-down decrease pull-right"></i>
                         {% else %}
                             {{ costPerYear[year]|parse_cost }}
                         {% endif %}
@@ -260,11 +266,11 @@
 
 
                             {% if effortPerYear[year] > effortPerYearInVersion[year] and projectService.hasVersions() %}
+                                <i class="fa fa-angle-double-up increase pull-left"></i>
                                 <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
-                                <i class="fa fa-angle-double-up increase pull-right"></i>
                             {% elseif effortPerYear[year] < effortPerYearInVersion[year] and projectService.hasVersions() %}
+                                <i class="fa fa-angle-double-down decrease pull-left"></i>
                                 <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
-                                <i class="fa fa-angle-double-down decrease pull-right"></i>
                             {% else %}
                                 {{ effortPerYear[year]|default(0)|parse_effort }}
                             {% endif %}

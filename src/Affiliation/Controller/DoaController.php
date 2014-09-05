@@ -12,6 +12,7 @@ namespace Affiliation\Controller;
 use Affiliation\Entity;
 use Affiliation\Entity\Doa;
 use Affiliation\Form\UploadDoa;
+use General\Service\GeneralServiceAwareInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\View\Model\ViewModel;
 
@@ -19,7 +20,7 @@ use Zend\View\Model\ViewModel;
  * @category    Affiliation
  * @package     Controller
  */
-class DoaController extends AffiliationAbstractController
+class DoaController extends AffiliationAbstractController implements GeneralServiceAwareInterface
 {
     /**
      * Upload a DOA for a project (based on the affiliation)
@@ -37,8 +38,16 @@ class DoaController extends AffiliationAbstractController
         );
         $form = new UploadDoa();
         $form->setData($data);
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (!isset($data['cancel'])) {
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
+            }
+
+            if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
                 //Create a article object element
                 $affiliationDoaObject = new Entity\DoaObject();
@@ -61,13 +70,14 @@ class DoaController extends AffiliationAbstractController
                         $affiliationService->getAffiliation()->getProject()
                     )
                 );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
             }
 
-            return $this->redirect()->toRoute(
-                'community/affiliation/affiliation',
-                ['id' => $affiliationService->getAffiliation()->getId()],
-                ['fragment' => 'details']
-            );
         }
 
         return new ViewModel(
@@ -103,8 +113,16 @@ class DoaController extends AffiliationAbstractController
         );
         $form = new UploadDoa();
         $form->setData($data);
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (!isset($data['cancel'])) {
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $doa->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
+            }
+
+            if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
                 /**
                  * Remove the current entity
@@ -131,13 +149,14 @@ class DoaController extends AffiliationAbstractController
                         $doa->getAffiliation()->getProject()
                     )
                 );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $doa->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
             }
 
-            return $this->redirect()->toRoute(
-                'community/affiliation/affiliation',
-                ['id' => $doa->getAffiliation()->getId()],
-                ['fragment' => 'details']
-            );
         }
 
         return new ViewModel(
