@@ -63,6 +63,8 @@ class EditController extends AffiliationAbstractController implements
         );
         $formData['technical'] = $affiliationService->getAffiliation()->getContact()->getId();
         $formData['valueChain'] = $affiliationService->getAffiliation()->getValueChain();
+        $formData['marketAccess'] = $affiliationService->getAffiliation()->getMarketAccess();
+        $formData['mainContribution'] = $affiliationService->getAffiliation()->getMainContribution();
 
         /**
          * Check if the organisation has a financial contact
@@ -136,6 +138,8 @@ class EditController extends AffiliationAbstractController implements
             $affiliation->setBranch($branch);
             $this->getAffiliationService()->updateEntity($affiliation);
             $affiliation->setValueChain($formData['valueChain']);
+            $affiliation->setMainContribution($formData['mainContribution']);
+            $affiliation->setMarketAccess($formData['marketAccess']);
             /**
              * Handle the financial organisation
              */

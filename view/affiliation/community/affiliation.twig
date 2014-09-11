@@ -10,7 +10,7 @@
     ) }}</p>
 
 {% if affiliationService.affiliation.dateEnd %}
-    {{ ztbalert().danger("txt-affiliation-%s-has-been-deactiveated-on-%s")|format(
+    {{ ztbalert().danger("txt-affiliation-%s-has-been-deactiveated-on-%s-date")|format(
     affiliationService.affiliation,
     affiliationService.affiliation.dateEnd|string_date
     )|raw }}
@@ -46,9 +46,9 @@
         <dd>{{ projectService.project.contact.contactOrganisation.organisation.country }}</dd>
         <dt>{{ translate("txt-position-on-value-chain") }}</dt>
         <dd>{{ affiliationService.affiliation.valueChain }}</dd>
-        <dt>{{ translate("txt-txt-main-contribution-for-the-project") }}</dt>
+        <dt>{{ translate("txt-main-contribution-for-the-project") }}</dt>
         <dd>{{ affiliationService.affiliation.mainContribution }}</dd>
-        <dt>{{ translate("txt-txt-market-access") }}</dt>
+        <dt>{{ translate("txt-market-access") }}</dt>
         <dd>{{ affiliationService.affiliation.marketAccess }}</dd>
         <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
         <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
@@ -137,13 +137,13 @@
             </tr>
             </thead>
             <tbody>
-            {% set costPerYear = projectService.findTotalCostVersionByAffiliationAndVersionPerYear(
+            {% set costPerYear = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(
             affiliationService.affiliation,
             latestVersion
             ) %}
             {% set totalPerYear = 0 %}
             <tr>
-                <td colspan="2"></td>
+                <td colspan="2">{{ translate("txt-costs") }}</td>
                 {% for year in years %}
                     <td>{{ costPerYear[year]|parse_cost }}</td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
@@ -163,7 +163,7 @@
             </thead>
             <tbody>
             {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(projectService.project) %}
-                {% set effortPerYear = projectService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
+                {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                 workpackage,
                 affiliationService.affiliation,
                 latestVersion
@@ -203,7 +203,7 @@
 
             {# do a second iteration over the previous version to highlight the difference#}
             {% if latestVersion %}
-                {% set costPerYearInVersion = projectService.findTotalCostVersionByAffiliationAndVersionPerYear(
+                {% set costPerYearInVersion = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(
                 affiliationService.affiliation,
                 latestVersion
                 ) %}
@@ -212,7 +212,7 @@
 
             {% set totalPerYear = 0 %}
             <tr>
-                <td colspan="2">{{ translate("txt-cost") }}</td>
+                <td colspan="2">{{ translate("txt-costs") }}</td>
                 {% for year in years %}
                     <td>
                         {% if costPerYear[year] - costPerYearInVersion[year] > 0.001 and projectService.hasVersions() %}

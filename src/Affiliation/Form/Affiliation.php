@@ -166,7 +166,7 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => "btn btn-danger",
                     'value' => sprintf(
-                        _('txt-deactivate-partner-%s'),
+                        _("Deactivate %s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
                     )
                 ]
@@ -179,7 +179,7 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => "btn btn-warning",
                     'value' => sprintf(
-                        _("txt-reactivate-partner-%s"),
+                        _("Reactivate %s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
                     )
                 ]
