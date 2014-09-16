@@ -105,7 +105,6 @@ class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-
     /**
      * Returns the affiliations based on the which and country
      *
