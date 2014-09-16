@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use General\Entity\Country;
 use Organisation\Service\OrganisationService;
 use Project\Entity\Project;
+use Project\Entity\Version\Version;
 use Project\Service\ProjectService;
 
 /**
@@ -100,6 +101,27 @@ class AffiliationService extends ServiceAbstract
         foreach ($affiliations as $affiliation) {
             yield $this->createServiceElement($affiliation);
         }
+    }
+
+    /**
+     * @param Version $version
+     * @param int     $which
+     *
+     * @return ArrayCollection
+     */
+    public function findAffiliationByProjectVersionAndWhich(Version $version, $which = self::WHICH_ALL)
+    {
+        $affiliations = $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->findAffiliationByProjectVersionAndWhich($version, $which);
+
+        $result = new ArrayCollection();
+
+        foreach ($affiliations as $affiliation) {
+            $result->add($affiliation);
+        }
+
+        return $result;
     }
 
     /**
