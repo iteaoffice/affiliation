@@ -278,13 +278,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Loi
+     * @var \Affiliation\Entity\Loi|Collections\ArrayCollection()
      */
     private $loi;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
-     * @var \Affiliation\Entity\Doa
+     * @var \Affiliation\Entity\Doa|Collections\ArrayCollection()
      */
     private $doa;
 
@@ -305,6 +305,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->funding = new Collections\ArrayCollection();
         $this->effort = new Collections\ArrayCollection();
         $this->spent = new Collections\ArrayCollection();
+        $this->doa = new Collections\ArrayCollection();
+        $this->loi = new Collections\ArrayCollection();
         /**
          * Self-funded is default NOT
          */
@@ -916,7 +918,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Loi
+     * @return \Affiliation\Entity\Loi|Collections\ArrayCollection()
      */
     public function getLoi()
     {
@@ -924,7 +926,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return Doa
+     * @return Doa|Collections\ArrayCollection()
      */
     public function getDoa()
     {

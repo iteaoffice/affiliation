@@ -12,7 +12,6 @@ namespace Affiliation\Form;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Validator\File\Extension;
-use Zend\Validator\File\MimeType;
 use Zend\Validator\File\Size;
 
 /**
@@ -35,7 +34,7 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                 'name'    => 'file',
                 'options' => [
                     "label"      => "txt-file",
-                    "help-block" => _("txt-a-loi-in-pdf-format-is-required")
+                    "help-block" => _("txt-a-signed-loi-is-required")
                 ]
             ]
         );
@@ -81,14 +80,9 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                     ),
                     new Extension(
                         [
-                            'extension' => ['pdf']
+                            'extension' => ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
                         ]
                     ),
-                    new MimeType(
-                        [
-                            'mimeType' => ['application/pdf']
-                        ]
-                    )
                 ]
             ]
         ];

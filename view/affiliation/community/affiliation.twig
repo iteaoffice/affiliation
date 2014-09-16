@@ -50,23 +50,23 @@
         <dd>{{ affiliationService.affiliation.mainContribution }}</dd>
         <dt>{{ translate("txt-market-access") }}</dt>
         <dd>{{ affiliationService.affiliation.marketAccess }}</dd>
-        <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
-        <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
-                {% if programDoa.dateApproved is null %}
-                    {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
-                    {{ programDoaLink(programDoa,'replace','icon') }}
-                    {{ programDoaLink(programDoa,'download','icon') }}
-                {% else %}
-                    {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}
-                    {{ programDoaLink(programDoa,'download','icon') }}
-                {% endif %}
-            {% else %}
-                {{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}
-            {% endfor %}
-        </dd>
+        {#<dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>#}
+        {#<dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}#}
+                {#{% if programDoa.dateApproved is null %}#}
+                    {#{{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}#}
+                    {#{{ programDoaLink(programDoa,'replace','icon') }}#}
+                    {#{{ programDoaLink(programDoa,'download','icon') }}#}
+                {#{% else %}#}
+                    {#{{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}#}
+                    {#{{ programDoaLink(programDoa,'download','icon') }}#}
+                {#{% endif %}#}
+            {#{% else %}#}
+                {#{{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}#}
+            {#{% endfor %}#}
+        {#</dd>#}
         <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
         <dd>
-            {% if not affiliationService.affiliation.doa %}
+            {% if not affiliationService.hasDoa() %}
                 {{ doaLink(null,'upload','text', affiliationService.affiliation) }}
             {% elseif affiliationService.affiliation.doa.dateApproved is null %}
                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
@@ -80,7 +80,7 @@
         </dd>
         <dt>{{ translate("txt-letter-of-intent") }}</dt>
         <dd>
-            {% if not affiliationService.affiliation.loi %}
+            {% if not affiliationService.hasLoi() %}
                 {{ loiLink(null,'upload','text', affiliationService.affiliation) }}
             {% elseif affiliationService.affiliation.loi.dateApproved is null %}
                 {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|

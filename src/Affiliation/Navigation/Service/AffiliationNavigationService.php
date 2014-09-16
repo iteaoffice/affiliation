@@ -173,6 +173,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 break;
             case 'community/affiliation/doa/upload':
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('affiliation-id'));
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
@@ -238,6 +239,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 break;
             case 'community/affiliation/loi/upload':
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('affiliation-id'));
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
@@ -272,6 +274,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
             case 'community/affiliation/loi/replace':
                 $loi = $this->getAffiliationService()->findEntityById('Loi', $this->getRouteMatch()->getParam('id'));
                 $this->getAffiliationService()->setAffiliation($loi->getAffiliation());
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
