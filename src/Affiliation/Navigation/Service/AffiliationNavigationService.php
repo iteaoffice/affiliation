@@ -208,6 +208,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
             case 'community/affiliation/doa/replace':
                 $doa = $this->getAffiliationService()->findEntityById('Doa', $this->getRouteMatch()->getParam('id'));
                 $this->getAffiliationService()->setAffiliation($doa->getAffiliation());
+                $this->getProjectService()->setProject($doa->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
