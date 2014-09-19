@@ -111,7 +111,7 @@ class EditController extends AffiliationAbstractController implements
                 //Update the rationale for public funding
                 $this->getProjectService()->updateCountryRationaleByAffiliation(
                     $affiliation,
-                    ProjectService::AFFILIATION_DEACTIVATE
+                    ProjectService::AFFILIATION_REACTIVATE
                 );
 
                 $this->flashMessenger()->setNamespace('success')->addMessage(
