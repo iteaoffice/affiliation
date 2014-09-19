@@ -37,7 +37,6 @@ class Affiliation extends AssertionAbstract
      */
     public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $resource = null, $privilege = null)
     {
-        return true;
         $id = $this->getRouteMatch()->getParam('id');
         /**
          * When the privilege is_null (not given by the isAllowed helper), get it from the routeMatch
@@ -54,7 +53,7 @@ class Affiliation extends AssertionAbstract
                     return true;
                 }
 
-                //whe the persion has view rights on the project, the affiliation can also be viewed
+                //whe the person has view rights on the project, the affiliation can also be viewed
                 return $this->getProjectAssert()->assert($acl, $role, $resource->getProject(), 'view-community');
             case 'add-associate':
             case 'edit-affiliation':
