@@ -52,17 +52,17 @@
         <dd>{{ affiliationService.affiliation.marketAccess }}</dd>
         {#<dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>#}
         {#<dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}#}
-                {#{% if programDoa.dateApproved is null %}#}
-                    {#{{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}#}
-                    {#{{ programDoaLink(programDoa,'replace','icon') }}#}
-                    {#{{ programDoaLink(programDoa,'download','icon') }}#}
-                {#{% else %}#}
-                    {#{{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}#}
-                    {#{{ programDoaLink(programDoa,'download','icon') }}#}
-                {#{% endif %}#}
-            {#{% else %}#}
-                {#{{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}#}
-            {#{% endfor %}#}
+        {#{% if programDoa.dateApproved is null %}#}
+        {#{{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}#}
+        {#{{ programDoaLink(programDoa,'replace','icon') }}#}
+        {#{{ programDoaLink(programDoa,'download','icon') }}#}
+        {#{% else %}#}
+        {#{{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}#}
+        {#{{ programDoaLink(programDoa,'download','icon') }}#}
+        {#{% endif %}#}
+        {#{% else %}#}
+        {#{{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}#}
+        {#{% endfor %}#}
         {#</dd>#}
         <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
         <dd>
@@ -251,24 +251,23 @@
                 {# do a second iteration over the previous version to highlight the difference#}
                 {% if latestVersion %}
                     {% set effortPerYearInVersion =
-                    projectService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
+                    versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                     workpackage,
                     affiliationService.affiliation,
                     latestVersion
                     ) %}
                 {% endif %}
 
+
                 <tr>
                     <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
                     <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                     {% for year in years %}
                         <td>
-
-
-                            {% if effortPerYear[year] > effortPerYearInVersion[year] and projectService.hasVersions() %}
+                            {% if effortPerYear[year] - effortPerYearInVersion[year] > 0.001 and projectService.hasVersions() %}
                                 <i class="fa fa-angle-double-up increase pull-left"></i>
                                 <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
-                            {% elseif effortPerYear[year] < effortPerYearInVersion[year] and projectService.hasVersions() %}
+                            {% elseif effortPerYearInVersion[year] - effortPerYear[year] > 0.001 and projectService.hasVersions() %}
                                 <i class="fa fa-angle-double-down decrease pull-left"></i>
                                 <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
                             {% else %}
