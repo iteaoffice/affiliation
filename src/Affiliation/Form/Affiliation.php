@@ -43,10 +43,11 @@ class Affiliation extends Form
          * Collect the technical contacts
          */
         $technicalContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()] =
-            $affiliationService->getAffiliation()->getContact()->getDisplayName();
+            $affiliationService->getAffiliation()->getContact()->getFormName();
         foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
-            $technicalContactValueOptions[$contact->getId()] = $contact->getDisplayName();
+            $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
+        asort($technicalContactValueOptions);
         /**
          * Collect the financial contacts
          * This array starts from the technical contacts
@@ -56,9 +57,12 @@ class Affiliation extends Form
         foreach ($organisation->getAffiliation() as $affiliation) {
             if (!is_null($affiliation->getFinancial())) {
                 $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()] =
-                    $affiliation->getFinancial()->getContact()->getDisplayName();
+                    $affiliation->getFinancial()->getContact()->getFormName();
             }
         }
+
+        asort($financialContactValueOptions);
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Select',

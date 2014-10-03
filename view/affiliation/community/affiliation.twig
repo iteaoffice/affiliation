@@ -21,7 +21,7 @@
     <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
     <li><a href="#cost-and-effort" data-toggle="tab">{{ translate("txt-cost-and-effort") }}</a></li>
     <li><a href="#contact" data-toggle="tab">{{ translate("txt-contacts") }}</a></li>
-    {% if isAllowed(affiliationService.affiliation,'edit-affiliation') %}
+    {% if isAllowed(affiliationService.affiliation,'edit-affiliation') or isAllowed(affiliationService.affiliation,'edit-financial') %}
         <li><a href="#invoicing" data-toggle="tab">{{ translate("txt-invoicing") }}</a></li>
     {% endif %}
 </ul>
@@ -317,7 +317,7 @@
     {{ affiliationLink(affiliationService.affiliation,'add-associate','button') }}
 </div>
 
-{% if isAllowed(affiliationService.affiliation,'edit-affiliation') %}
+{% if isAllowed(affiliationService.affiliation,'edit-affiliation') or isAllowed(affiliationService.affiliation,'edit-financial') %}
     <div class="tab-pane" id="invoicing">
         <h3>{{ translate("txt-invoicing-details") }}</h3>
 

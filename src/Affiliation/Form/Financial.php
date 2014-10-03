@@ -87,6 +87,40 @@ class Financial extends Form
                 ]
             ]
         );
+        /**
+         * Collect the financial contacts
+         */
+        $financialContactValueOptions = [];
+
+        $financialContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()] =
+            $affiliationService->getAffiliation()->getContact()->getFormName();
+        foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
+            $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
+        }
+        $organisation = $affiliationService->getAffiliation()->getOrganisation();
+        foreach ($organisation->getAffiliation() as $affiliation) {
+            if (!is_null($affiliation->getFinancial())) {
+                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()] =
+                    $affiliation->getFinancial()->getContact()->getFormName();
+            }
+        }
+
+        asort($financialContactValueOptions);
+
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Select',
+                'name'       => 'contact',
+                'options'    => [
+                    'value_options' => $financialContactValueOptions,
+                    'label'         => _("txt-financial-contact"),
+                ],
+                'attributes' => [
+                    'class'    => 'form-control',
+                    'required' => true,
+                ]
+            ]
+        );
         $organisationFinancial = new FinancialOrganisation();
         $this->add(
             [

@@ -149,6 +149,30 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * @param Version $version
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return \Generator
+     */
+    public function findAffiliationByProjectVersionAndCountryAndWhich(
+        Version $version,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        $affiliations = $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->findAffiliationByProjectVersionAndCountryAndWhich(
+                $version,
+                $country,
+                $which
+            );
+        foreach ($affiliations as $affiliation) {
+            yield $this->createServiceElement($affiliation);
+        }
+    }
+
+    /**
      * Produce a list of affiliations grouped per country
      *
      * @param Project $project

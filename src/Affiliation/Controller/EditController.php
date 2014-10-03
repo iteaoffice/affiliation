@@ -209,6 +209,7 @@ class EditController extends AffiliationAbstractController implements
             $contactService = clone $this->getContactService()->setContact(
                 $affiliationService->getAffiliation()->getFinancial()->getContact()
             );
+            $formData['contact'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getId();
 
             if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
                 $financialAddress = $contactService->getFinancialAddress()->getAddress();
@@ -270,6 +271,13 @@ class EditController extends AffiliationAbstractController implements
                     $organisation->setType($organisationType);
                 }
                 $affiliationFinancial = $this->getAffiliationService()->getAffiliation()->getFinancial();
+                if (is_null($affiliationFinancial)) {
+                    $affiliationFinancial = new Financial();
+                    $affiliationFinancial->setAffiliation($this->getAffiliationService()->getAffiliation());
+                }
+                $affiliationFinancial->setContact(
+                    $this->getContactService()->setContactId($formData['contact'])->getContact()
+                );
                 $affiliationFinancial->setOrganisation($organisation);
                 $affiliationFinancial->setBranch(
                     trim(substr($formData['organisation'], strlen($organisation->getOrganisation())))

@@ -47,6 +47,7 @@ class Affiliation extends AssertionAbstract
         if (!$resource instanceof AffiliationEntity && !is_null($id)) {
             $resource = $this->getAffiliationService()->setAffiliationId($id)->getAffiliation();
         }
+
         switch ($privilege) {
             case 'view-community':
                 if ($this->getContactService()->hasPermit('view', $resource)) {
