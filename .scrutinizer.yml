@@ -3,7 +3,7 @@ imports:
 
 tools:
     php_changetracking: true
-    php_sim: true:
+    php_sim:
         min_mass: 30
     php_pdepend: true
     php_mess_detector: true
