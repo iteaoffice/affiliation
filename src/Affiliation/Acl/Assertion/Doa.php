@@ -46,6 +46,9 @@ class Doa extends AssertionAbstract
             $privilege = $this->getRouteMatch()->getParam('privilege');
         }
         if (!$resource instanceof DoaEntity && !is_null($id)) {
+            /**
+             * @var $resource DoaEntity
+             */
             $resource = $this->getAffiliationService()->findEntityById('Doa', $id);
         }
         switch ($privilege) {

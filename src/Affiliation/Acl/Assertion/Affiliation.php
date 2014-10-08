@@ -45,6 +45,9 @@ class Affiliation extends AssertionAbstract
             $privilege = $this->getRouteMatch()->getParam('privilege');
         }
         if (!$resource instanceof AffiliationEntity && !is_null($id)) {
+            /**
+             * @var $resource AffiliationEntity
+             */
             $resource = $this->getAffiliationService()->setAffiliationId($id)->getAffiliation();
         }
 

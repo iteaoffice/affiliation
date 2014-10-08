@@ -100,6 +100,9 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
      */
     public function replaceAction()
     {
+        /**
+         * @var $loi Loi
+         */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
             $this->getEvent()->getRouteMatch()->getParam('id')
@@ -205,6 +208,9 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
     public function downloadAction()
     {
         set_time_limit(0);
+        /**
+         * @var $loi Loi
+         */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
             $this->getEvent()->getRouteMatch()->getParam('id')

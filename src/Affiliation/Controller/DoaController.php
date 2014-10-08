@@ -99,6 +99,9 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
      */
     public function replaceAction()
     {
+        /**
+         * @var $doa Doa
+         */
         $doa = $this->getAffiliationService()->findEntityById(
             'Doa',
             $this->getEvent()->getRouteMatch()->getParam('id')
@@ -202,6 +205,9 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
     public function downloadAction()
     {
         set_time_limit(0);
+        /**
+         * @var $doa Doa
+         */
         $doa = $this->getAffiliationService()->findEntityById(
             'Doa',
             $this->getEvent()->getRouteMatch()->getParam('id')

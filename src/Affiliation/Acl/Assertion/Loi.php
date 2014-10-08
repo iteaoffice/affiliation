@@ -45,6 +45,9 @@ class Loi extends AssertionAbstract
             $privilege = $this->getRouteMatch()->getParam('privilege');
         }
         if (!$resource instanceof LoiEntity && !is_null($id)) {
+            /**
+             * @var $resource LoiEntity
+             */
             $resource = $this->getAffiliationService()->findEntityById('Loi', $id);
         }
         switch ($privilege) {

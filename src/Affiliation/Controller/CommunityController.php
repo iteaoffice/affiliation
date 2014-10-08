@@ -202,7 +202,6 @@ class CommunityController extends AffiliationAbstractController implements
             $affiliationService->getAffiliation()->getOrganisation()
         );
         $formData = [];
-        $branch = null;
         $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
         $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getDisplayName();
         $contactService = $this->getContactService()->setContact(
