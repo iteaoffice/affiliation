@@ -428,7 +428,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
      * @return string
      */

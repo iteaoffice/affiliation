@@ -14,14 +14,15 @@ interface FormServiceAwareInterface
     /**
      * Get formService.
      *
-     * @return FormService.
+     * @return FormService
      */
     public function getFormService();
 
     /**
      * Set formService.
      *
-     * @param FormService $formService
+     * @param  FormService                                           $formService
+     * @return \Affiliation\Controller\AffiliationAbstractController
      */
     public function setFormService($formService);
 }

@@ -110,7 +110,8 @@ class Affiliation extends Form
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'valueChain',
                 'options'    => [
-                    'label' => _("txt-position-on-value-chain"),
+                    'label'      => _("txt-position-on-value-chain"),
+                    'help-block' => _("txt-position-on-value-chain-inline-help"),
                 ],
                 'attributes' => [
                     'class' => 'form-control',

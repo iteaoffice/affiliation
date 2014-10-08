@@ -13,12 +13,24 @@ use Affiliation\Entity\EntityAbstract;
 
 interface ServiceInterface
 {
+    /**
+     * @return string
+     */
     public function getFullEntityName($entity);
 
+    /**
+     * @return EntityAbstract
+     */
     public function updateEntity(EntityAbstract $entity);
 
+    /**
+     * @return EntityAbstract
+     */
     public function newEntity(EntityAbstract $entity);
 
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
     public function getEntityManager();
 
     public function findAll($entity);

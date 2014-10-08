@@ -25,7 +25,7 @@ abstract class EntityAbstract implements EntityInterface, InputFilterAwareInterf
     protected $inputFilter;
 
     /**
-     * @param $switch
+     * @param string $switch
      *
      * @return mixed|string
      */

@@ -62,15 +62,13 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'pages'  => [
                             'affiliation' => [
                                 'label'  => sprintf(
-                                    $this->translate("txt-affiliation-%s-in-%s"),
-                                    $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                    $this->getProjectService()->parseFullName()
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
                                 ),
                                 'active' => true,
                                 'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'id' => $this->getProjectService()->getProject()->getId()
+                                    'id' => $this->getRouteMatch()->getParam('id')
                                 ],
                             ]
                         ]
@@ -94,9 +92,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'pages'  => [
                             'affiliation' => [
                                 'label'  => sprintf(
-                                    $this->translate("txt-affiliation-%s-in-%s"),
-                                    $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                    $this->getProjectService()->parseFullName()
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
                                 ),
                                 'active' => true,
                                 'route'  => 'community/affiliation/affiliation',
@@ -141,9 +137,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'pages'  => [
                             'affiliation' => [
                                 'label'  => sprintf(
-                                    $this->translate("txt-affiliation-%s-in-%s"),
-                                    $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                    $this->getProjectService()->parseFullName()
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
                                 ),
                                 'active' => true,
                                 'route'  => 'community/affiliation/affiliation',

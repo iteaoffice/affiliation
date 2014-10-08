@@ -115,7 +115,7 @@ class NavigationServiceAbstract implements
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
      * @return string
      */

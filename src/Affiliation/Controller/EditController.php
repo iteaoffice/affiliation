@@ -295,13 +295,14 @@ class EditController extends AffiliationAbstractController implements
                 }
                 $organisationFinancial->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
                 $organisationFinancial->setVat($formData['vat']);
+                $organisationFinancial->setEmail($formData['preferredDelivery']);
                 $organisationFinancial->setOmitContact($formData['omitContact']);
                 $this->getOrganisationService()->updateEntity($organisationFinancial);
             }
             /**
              * save the financial address
              */
-            $contactService = $this->getContactService()->setContact(
+            $contactService = clone $this->getContactService()->setContact(
                 $affiliationService->getAffiliation()->getFinancial()->getContact()
             );
             if (!is_null($contactService->getFinancialAddress())) {

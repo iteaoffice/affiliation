@@ -26,6 +26,7 @@ interface ConfigAwareInterface
      * Set config.
      *
      * @param $config the value to set.
+     * @return \Affiliation\Controller\AffiliationAbstractController
      */
     public function setConfig($config);
 }

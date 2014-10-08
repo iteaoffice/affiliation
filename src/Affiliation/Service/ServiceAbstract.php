@@ -58,7 +58,7 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      * @param $id
      *
      * @return null|Affiliation|Doa|Loi

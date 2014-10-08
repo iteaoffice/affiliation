@@ -26,7 +26,7 @@ class AffiliationNavigationServiceFactory implements FactoryInterface
     /**
      * @param ServiceLocatorInterface $serviceLocator
      *
-     * @return array|mixed
+     * @return AffiliationNavigationService
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {

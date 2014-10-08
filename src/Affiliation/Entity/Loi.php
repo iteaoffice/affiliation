@@ -124,7 +124,7 @@ class Loi extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function __toString()
     {

@@ -54,9 +54,9 @@ class FormService implements ServiceLocatorAwareInterface
     }
 
     /**
-     * @param       $className
-     * @param null  $entity
-     * @param array $data
+     * @param string                          $className
+     * @param \Affiliation\Entity\Description $entity
+     * @param array                           $data
      *
      * @return array|object
      */
