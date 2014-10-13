@@ -31,6 +31,7 @@ return array(
   'class_implements'                                                   => __DIR__ . '/src/Affiliation/Service/ServiceInitializer.php',
   'Affiliation\Service\ServiceInterface'                               => __DIR__ . '/src/Affiliation/Service/ServiceInterface.php',
   'Affiliation\Service\FormService'                                    => __DIR__ . '/src/Affiliation/Service/FormService.php',
+  'affiliationService'                                                 => __DIR__ . '/src/Affiliation/Service/FormService.php',
   'Affiliation\Service\FormServiceAwareInterface'                      => __DIR__ . '/src/Affiliation/Service/FormServiceAwareInterface.php',
   'Affiliation\Controller\EditController'                              => __DIR__ . '/src/Affiliation/Controller/EditController.php',
   'Affiliation\Controller\AffiliationManagerController'                => __DIR__ . '/src/Affiliation/Controller/AffiliationManagerController.php',

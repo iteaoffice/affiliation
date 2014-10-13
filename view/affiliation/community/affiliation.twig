@@ -10,7 +10,7 @@
     ) }}</p>
 
 {% if affiliationService.affiliation.dateEnd %}
-    {{ ztbalert().danger("txt-affiliation-%s-has-been-deactivated-on-%s-date")|format(
+    {{ ztbalert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(
     affiliationService.affiliation,
     affiliationService.affiliation.dateEnd|string_date
     )|raw }}
