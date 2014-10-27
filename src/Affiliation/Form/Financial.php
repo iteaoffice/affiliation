@@ -131,14 +131,13 @@ class Financial extends Form
                     'label'         => _("txt-omit-contact"),
                 ],
                 'attributes' => [
-                    'class'    => 'form-control',
                     'required' => true,
                 ]
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'address',
                 'options'    => [
                     'label' => _("txt-address"),
@@ -201,7 +200,6 @@ class Financial extends Form
                     'label'         => _("txt-preferred-delivery"),
                 ],
                 'attributes' => [
-                    'class'    => 'form-control',
                     'required' => true,
                 ]
             ]

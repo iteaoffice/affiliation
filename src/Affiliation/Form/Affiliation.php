@@ -72,8 +72,7 @@ class Affiliation extends Form
                     'label'         => _("txt-change-affiliation"),
                 ],
                 'attributes' => [
-                    'class'    => 'form-control',
-                    'required' => true,
+                    'class' => 'form-control',
                 ]
             ]
         );
@@ -86,8 +85,7 @@ class Affiliation extends Form
                     'label'         => _("txt-technical-contact"),
                 ],
                 'attributes' => [
-                    'class'    => 'form-control',
-                    'required' => true,
+                    'class' => 'form-control',
                 ]
             ]
         );
@@ -100,8 +98,7 @@ class Affiliation extends Form
                     'label'         => _("txt-financial-contact"),
                 ],
                 'attributes' => [
-                    'class'    => 'form-control',
-                    'required' => true,
+                    'class' => 'form-control',
                 ]
             ]
         );

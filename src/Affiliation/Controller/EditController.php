@@ -283,6 +283,8 @@ class EditController extends AffiliationAbstractController implements
                     trim(substr($formData['organisation'], strlen($organisation->getOrganisation())))
                 );
                 $this->getAffiliationService()->updateEntity($affiliationFinancial);
+            } else {
+                $affiliationFinancial = $this->getAffiliationService()->getAffiliation()->getFinancial();
             }
             /**
              * The presence of a VAT number triggers the creation of a financial organisation
@@ -302,9 +304,7 @@ class EditController extends AffiliationAbstractController implements
             /**
              * save the financial address
              */
-            $contactService = clone $this->getContactService()->setContact(
-                $affiliationService->getAffiliation()->getFinancial()->getContact()
-            );
+            $contactService = clone $this->getContactService()->setContact($affiliationFinancial->getContact());
             if (!is_null($contactService->getFinancialAddress())) {
                 $financialAddress = $contactService->getFinancialAddress()->getAddress();
             } else {

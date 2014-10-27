@@ -68,3 +68,29 @@ affiliationService.affiliation.organisation
 </div>
 
 {{ form().closeTag()|raw }}
+
+<script type="text/javascript">
+    $('select[name="contact"]').change(function () {
+        $.ajax({
+            url: '{{ url('contact/get-address-by-type') }}',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                'id': $('select[name="contact"]').val(),
+                'typeId': {{ constant("Contact\\Entity\\AddressType::ADDRESS_TYPE_FINANCIAL") }}
+
+            },
+            success: function (response) {
+                $('textarea[name="address"]').val(response.address);
+                $('input[name="zipCode"]').val(response.zipCode);
+                $('input[name="city"]').val(response.city);
+                $('select[name="country"]').val(response.country);
+            },
+            error: function (xhr) {
+                alert('Error!  Status = ' + xhr.status);
+            }
+        });
+    });
+
+
+</script>
