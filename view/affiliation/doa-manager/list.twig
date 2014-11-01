@@ -1,0 +1,34 @@
+<h1>{{ translate("txt-unapproved-affiliation-doa") }}</h1>
+
+<table class="table table-hover table-consended table-striped">
+    <thead>
+    <tr>
+        <th>{{ translate("txt-organisation") }}</th>
+        <th>{{ translate("txt-country") }}</th>
+        <th>{{ translate("txt-project") }}</th>
+        <th>{{ translate("txt-operations") }}</th>
+        <th>{{ translate("txt-approve") }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for doa in doa %}
+        <tr>
+            <td>{{ doa.affiliation }}</td>
+            <td>{{ doa.affiliation.organisation.country }}</td>
+            <td>{{ doa.affiliation.project }}</td>
+            <td>{{ doaLink(doa,'view-admin','icon') }} {{ doaLink(doa,'download','icon') }}</td>
+            <td>
+                <button type="button" rel="{{ doa.id }}" data-complete-text="approved!"
+                        class="btn btn-info btn-sm approveButton"
+                        autocomplete="off">{{ translate("txt-approve") }}</button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    $('.approveButton').on('click', function () {
+        $(this).button('complete') // button text will be "finished!"
+    })
+</script>

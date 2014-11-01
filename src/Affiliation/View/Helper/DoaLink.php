@@ -59,8 +59,9 @@ class DoaLink extends LinkAbstract
             $this->getDoa(),
             DoaAssertion::class,
             $this->getAction()
-        )) {
-            return '';
+        )
+        ) {
+            return 'sadf';
         }
         $this->addRouterParam('entity', 'Doa');
         $this->addRouterParam('id', $this->getDoa()->getId());
@@ -114,6 +115,26 @@ class DoaLink extends LinkAbstract
                         $this->translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getDoa()->getAffiliation()->getOrganisation(),
                         $this->getDoa()->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'view-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/view');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-view-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getAffiliation()->getOrganisation(),
+                        $this->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'edit-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/edit');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-edit-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getAffiliation()->getOrganisation(),
+                        $this->getAffiliation()->getProject()
                     )
                 );
                 break;

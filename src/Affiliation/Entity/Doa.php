@@ -21,7 +21,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  * ProjectDoa
  *
  * @ORM\Table(name="project_doa")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Affiliation\Repository\Doa")
  */
 class Doa extends EntityAbstract implements ResourceInterface
 {

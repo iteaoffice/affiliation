@@ -13,6 +13,10 @@ namespace Affiliation\Controller;
 
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Affiliation\Service\AffiliationService;
+use Affiliation\Service\DoaServiceAwareInterface;
+use Affiliation\Service\DoaService;
+use Affiliation\Service\LoiServiceAwareInterface;
+use Affiliation\Service\LoiService;
 use Affiliation\Service\FormServiceAwareInterface;
 use Affiliation\Service\FormService;
 use Zend\Mvc\Controller\ControllerManager;
@@ -45,6 +49,8 @@ class ControllerInitializer implements InitializerInterface
         $arrayCheck = [
             FormServiceAwareInterface::class        => FormService::class,
             AffiliationServiceAwareInterface::class => AffiliationService::class,
+            DoaServiceAwareInterface::class         => DoaService::class,
+            LoiServiceAwareInterface::class         => LoiService::class,
         ];
         /**
          * @var $sm ServiceLocatorInterface

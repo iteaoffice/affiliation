@@ -10,6 +10,7 @@
  */
 namespace Affiliation\Acl\Assertion;
 
+use Admin\Entity\Access;
 use Affiliation\Entity\Doa as DoaEntity;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
@@ -101,6 +102,10 @@ class Doa extends AssertionAbstract
                     $resource->getAffiliation(),
                     'view-community'
                 );
+            case 'view-admin':
+            case 'edit-admin':
+            case 'list-admin':
+                return $this->rolesHaveAccess([strtolower(Access::ACCESS_OFFICE)]);
         }
 
         return false;

@@ -12,8 +12,10 @@ namespace Affiliation\Controller;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Affiliation\Service\ConfigAwareInterface;
+use Affiliation\Service\DoaService;
 use Affiliation\Service\FormService;
 use Affiliation\Service\FormServiceAwareInterface;
+use Affiliation\Service\LoiService;
 use Contact\Service\ContactService;
 use General\Service\GeneralService;
 use Organisation\Service\OrganisationService;
@@ -68,6 +70,14 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      * @var GeneralService
      */
     protected $generalService;
+    /**
+     * @var DoaService
+     */
+    protected $doaService;
+    /**
+     * @var LoiService
+     */
+    protected $loiService;
     /**
      * @var array
      */
@@ -249,6 +259,46 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     public function setWorkpackageService(WorkpackageService $workpackageService)
     {
         $this->workpackageService = $workpackageService;
+
+        return $this;
+    }
+
+    /**
+     * @return LoiService
+     */
+    public function getLoiService()
+    {
+        return $this->loiService;
+    }
+
+    /**
+     * @param LoiService $loiService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setLoiService(LoiService $loiService)
+    {
+        $this->loiService = $loiService;
+
+        return $this;
+    }
+
+    /**
+     * @return DoaService
+     */
+    public function getDoaService()
+    {
+        return $this->doaService;
+    }
+
+    /**
+     * @param DoaService $doaService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setDoaService(DoaService $doaService)
+    {
+        $this->doaService = $doaService;
 
         return $this;
     }

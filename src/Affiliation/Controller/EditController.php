@@ -243,7 +243,8 @@ class EditController extends AffiliationAbstractController implements
              */
             if ($formData['organisation'] !== $organisationService->parseOrganisationWithBranch($branch) ||
                 is_null($financialAddress) ||
-                intval($formData['country']) !== $financialAddress->getCountry()->getId()
+                intval($formData['country']) !== $financialAddress->getCountry()->getId() ||
+                intval($formData['contact']) !== $financialAddress->getContact()->getId()
             ) {
                 /**
                  * The organisation, or country has changed, so try to find this country in the database

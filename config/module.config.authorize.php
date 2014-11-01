@@ -13,20 +13,43 @@ use Affiliation\Acl\Assertion\Loi as LoiAssertion;
 
 return [
     'bjyauthorize' => [
-        // resource providers provide a list of resources that will be tracked
-        // in the ACL. like roles, they can be hierarchical
-        'resource_providers' => [
-            'BjyAuthorize\Provider\Resource\Config' => [
-                'affiliation' => [],
-            ],
-        ],
         /* Currently, only controller and route guards exist
          */
-        'guards'             => [
+        'guards' => [
             /* If this guard is specified here (i.e. it is enabled], it will block
              * access to all routes unless they are specified here.
              */
             'BjyAuthorize\Guard\Route' => [
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/doa/list',
+                    'roles'     => [],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/doa/view',
+                    'roles'     => [],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/doa/edit',
+                    'roles'     => [],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/loi/list',
+                    'roles'     => [],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/loi/view',
+                    'roles'     => [],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/loi/edit',
+                    'roles'     => [],
+                    'assertion' => DoaAssertion::class
+                ],
                 [
                     'route'     => 'community/affiliation/affiliation',
                     'roles'     => [],

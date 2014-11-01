@@ -195,6 +195,131 @@ return [
                         ]
                     ]
                 ]
+            ],
+            'zfcadmin'  => [
+                'child_routes' => [
+                    'affiliation-manager' => [
+                        'type'          => 'Segment',
+                        'priority'      => 1000,
+                        'options'       => [
+                            'route'    => '/affiliation',
+                            'defaults' => [
+                                'namespace'  => __NAMESPACE__,
+                                'controller' => 'affiliation-manager',
+                                'action'     => 'index',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes'  => [
+                            'loi' => [
+                                'type'          => 'Segment',
+                                'priority'      => 1000,
+                                'options'       => [
+                                    'route'    => '/loi',
+                                    'defaults' => [
+                                        'namespace'  => __NAMESPACE__,
+                                        'controller' => 'affiliation-loi-manager',
+                                        'action'     => 'index',
+                                    ],
+                                ],
+                                'may_terminate' => true,
+                                'child_routes'  => [
+                                    'list' => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/list.html',
+                                            'defaults' => [
+                                                'action'    => 'list',
+                                                'privilege' => 'list',
+                                            ],
+                                        ],
+                                    ],
+                                    'view' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'priority'    => 100,
+                                            'route'       => '/[:id].html',
+                                            'constraints' => [
+                                                'id' => '[0-9_-]+',
+                                            ],
+                                            'defaults'    => [
+                                                'action'    => 'view',
+                                                'privilege' => 'view',
+                                            ],
+                                        ],
+                                    ],
+                                    'edit' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/edit/[:id].html',
+                                            'defaults' => [
+                                                'constraints' => [
+                                                    'id' => '[0-9_-]+',
+                                                ],
+                                                'action'      => 'edit',
+                                                'privilege'   => 'edit',
+                                            ],
+                                        ],
+                                    ],
+                                ]
+                            ],
+                            'doa' => [
+                                'type'          => 'Segment',
+                                'priority'      => 1000,
+                                'options'       => [
+                                    'route'    => '/doa',
+                                    'defaults' => [
+                                        'namespace'  => __NAMESPACE__,
+                                        'controller' => 'affiliation-doa-manager',
+                                        'action'     => 'index',
+                                    ],
+                                ],
+                                'may_terminate' => true,
+                                'child_routes'  => [
+                                    'list' => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/list.html',
+                                            'defaults' => [
+                                                'action'    => 'list',
+                                                'privilege' => 'list',
+                                            ],
+                                        ],
+                                    ],
+                                    'view' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'priority'    => 100,
+                                            'route'       => '/[:id].html',
+                                            'constraints' => [
+                                                'id' => '[0-9_-]+',
+                                            ],
+                                            'defaults'    => [
+                                                'action'    => 'view',
+                                                'privilege' => 'view',
+                                            ],
+                                        ],
+                                    ],
+                                    'edit' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/edit/[:id].html',
+                                            'defaults' => [
+                                                'constraints' => [
+                                                    'id' => '[0-9_-]+',
+                                                ],
+                                                'action'      => 'edit',
+                                                'privilege'   => 'edit',
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ]
     ]

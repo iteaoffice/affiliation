@@ -111,7 +111,7 @@
             <dd>{{ description.description|raw }}</dd>
         </dl>
     {% else %}
-        {{ ztbalert().info(translate("txt-no-description-found-for-%s")|format(
+        {{ ztbalert().warning(translate("txt-no-description-found-for-%s")|format(
         affiliationService.affiliation.organisation.organisation
         ))|raw }}
     {% endfor %}

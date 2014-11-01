@@ -11,7 +11,6 @@
  */
 namespace Affiliation\Service;
 
-use Application\Service\EntityManagerAwareInterface;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -39,9 +38,10 @@ class ServiceInitializer implements InitializerInterface
             return;
         }
         $arrayCheck = [
-            EntityManagerAwareInterface::class      => 'doctrine.entitymanager.orm_default',
             FormServiceAwareInterface::class        => 'affiliation_form_service',
             AffiliationServiceAwareInterface::class => AffiliationService::class,
+            DoaServiceAwareInterface::class         => DoaService::class,
+            LoiServiceAwareInterface::class         => LoiService::class,
             ConfigAwareInterface::class             => 'affiliation_module_config'
         ];
         /**

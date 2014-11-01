@@ -9,8 +9,11 @@ return array(
     'affiliation/edit/add-associate'       => __DIR__ . '//view/affiliation/edit/add-associate.twig',
     'affiliation/pdf/doa-project'          => __DIR__ . '//view/affiliation/pdf/doa-project.twig',
     'affiliation/pdf/loi-project'          => __DIR__ . '//view/affiliation/pdf/loi-project.twig',
+    'affiliation/doa-manager/list'         => __DIR__ . '//view/affiliation/doa-manager/list.twig',
+    'affiliation/doa-manager/view'         => __DIR__ . '//view/affiliation/doa-manager/view.twig',
     'affiliation/loi/replace'              => __DIR__ . '//view/affiliation/loi/replace.twig',
     'affiliation/loi/upload'               => __DIR__ . '//view/affiliation/loi/upload.twig',
+    'affiliation/loi-manager/list'         => __DIR__ . '//view/affiliation/loi-manager/list.twig',
     'affiliation/community/affiliation'    => __DIR__ . '//view/affiliation/community/affiliation.twig',
     'affiliation/partial/form/affiliation' => __DIR__ . '//view/affiliation/partial/form/affiliation.twig',
 );
