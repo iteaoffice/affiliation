@@ -27,7 +27,7 @@ interface DoaServiceAwareInterface
     /**
      * The Doa service
      *
-     * @param  DoaService $DoaService
+     * @param  DoaService                                                 $DoaService
      * @return \Affiliation\Controller\AffiliationAbstractController|null
      */
     public function setDoaService(DoaService $DoaService);

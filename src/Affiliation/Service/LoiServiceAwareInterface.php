@@ -27,7 +27,7 @@ interface LoiServiceAwareInterface
     /**
      * The Loi service
      *
-     * @param  LoiService $LoiService
+     * @param  LoiService                                                 $LoiService
      * @return \Affiliation\Controller\AffiliationAbstractController|null
      */
     public function setLoiService(LoiService $LoiService);

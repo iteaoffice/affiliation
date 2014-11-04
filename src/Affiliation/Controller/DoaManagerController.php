@@ -12,6 +12,7 @@
  * @link        http://debranova.org
  */
 namespace Affiliation\Controller;
+
 use Affiliation\Service\DoaServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
@@ -75,5 +76,4 @@ class DoaManagerController extends AffiliationAbstractController implements DoaS
 
         return new ViewModel(['form' => $form, 'entity' => $entity]);
     }
-
 }
