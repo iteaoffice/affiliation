@@ -64,7 +64,10 @@ class LoiLink extends LinkAbstract
             return '';
         }
         $this->addRouterParam('entity', 'Loi');
-        $this->addRouterParam('id', $this->getLoi()->getId());
+        if (!is_null($loi)) {
+            $this->addRouterParam('id', $this->getLoi()->getId());
+            $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
+        }
         $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
 
         return $this->createLink();
@@ -113,6 +116,30 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'remind-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/remind');
+                $this->setText($this->translate("txt-send-reminder"));
+                break;
+            case 'view-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/view');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-view-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'edit-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/edit');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-edit-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getLoi()->getAffiliation()->getOrganisation(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )

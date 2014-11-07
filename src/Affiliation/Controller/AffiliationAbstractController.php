@@ -17,7 +17,9 @@ use Affiliation\Service\FormService;
 use Affiliation\Service\FormServiceAwareInterface;
 use Affiliation\Service\LoiService;
 use Contact\Service\ContactService;
+use General\Service\EmailService;
 use General\Service\GeneralService;
+use Mailing\Service\MailingService;
 use Organisation\Service\OrganisationService;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
@@ -70,6 +72,14 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      * @var GeneralService
      */
     protected $generalService;
+    /**
+     * @var MailingService
+     */
+    protected $mailingService;
+    /**
+     * @var EmailService
+     */
+    protected $emailService;
     /**
      * @var DoaService
      */
@@ -299,6 +309,46 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     public function setDoaService(DoaService $doaService)
     {
         $this->doaService = $doaService;
+
+        return $this;
+    }
+
+    /**
+     * @return MailingService
+     */
+    public function getMailingService()
+    {
+        return $this->mailingService;
+    }
+
+    /**
+     * @param MailingService $mailingService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setMailingService(MailingService $mailingService)
+    {
+        $this->mailingService = $mailingService;
+
+        return $this;
+    }
+
+    /**
+     * @return EmailService
+     */
+    public function getEmailService()
+    {
+        return $this->emailService;
+    }
+
+    /**
+     * @param EmailService $emailService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setEmailService(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
 
         return $this;
     }

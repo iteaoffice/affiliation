@@ -13,7 +13,18 @@
  */
 namespace Affiliation\Controller;
 
+use Affiliation\Entity\Doa;
+use Affiliation\Entity\DoaObject;
+use Affiliation\Form\DoaApproval;
+use Affiliation\Form\DoaReminder;
 use Affiliation\Service\DoaServiceAwareInterface;
+use Contact\Service\ContactServiceAwareInterface;
+use General\Service\EmailServiceAwareInterface;
+use General\Service\GeneralServiceAwareInterface;
+use Mailing\Service\MailingServiceAwareInterface;
+use Project\Service\ProjectServiceAwareInterface;
+use Zend\Validator\File\FilesSize;
+use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -26,7 +37,13 @@ use Zend\View\Model\ViewModel;
  * @license    http://debranova.org/license.txt proprietary
  * @link       http://debranova.org
  */
-class DoaManagerController extends AffiliationAbstractController implements DoaServiceAwareInterface
+class DoaManagerController extends AffiliationAbstractController implements
+    DoaServiceAwareInterface,
+    ProjectServiceAwareInterface,
+    EmailServiceAwareInterface,
+    GeneralServiceAwareInterface,
+    MailingServiceAwareInterface,
+    ContactServiceAwareInterface
 {
     /**
      * @return ViewModel
@@ -35,8 +52,110 @@ class DoaManagerController extends AffiliationAbstractController implements DoaS
     {
         $doa = $this->getDoaService()->findNotApprovedDoa();
 
-        return new ViewModel(['doa' => $doa]);
+
+        $form = new DoaApproval($doa, $this->getContactService());
+
+        return new ViewModel(
+            [
+                'doa'            => $doa,
+                'form'           => $form,
+                'projectService' => $this->getProjectService()
+            ]
+        );
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function approvalAction()
+    {
+        $doa = $this->getDoaService()->findNotApprovedDoa();
+
+
+        $form = new DoaApproval($doa, $this->getContactService());
+
+        return new ViewModel(
+            [
+                'doa'            => $doa,
+                'form'           => $form,
+                'projectService' => $this->getProjectService()
+            ]
+        );
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function missingAction()
+    {
+        $affiliation = $this->getAffiliationService()->findAffiliationWithMissingDoa();
+
+        return new ViewModel(
+            [
+                'affiliation' => $affiliation,
+            ]
+        );
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function remindAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+        );
+
+        $form = new DoaReminder($affiliationService->getAffiliation(), $this->getContactService());
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
+
+        //Get the corresponding template
+        $webInfo = $this->getGeneralService()->findWebInfoByInfo('/affiliation/doa:reminder');
+
+        $form->get('subject')->setValue($webInfo->getSubject());
+        $form->get('message')->setValue($webInfo->getContent());
+
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+
+            /**
+             * Send the email tot he office
+             */
+            $email = $this->getEmailService()->create();
+            $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
+            $email->addTo($this->zfcUserAuthentication()->getIdentity());
+            $email->setSubject(
+                str_replace(
+                    ['[project]'],
+                    [$affiliationService->getAffiliation()->getProject()],
+                    $form->getData()['subject']
+                )
+            );
+
+            $email->setHtmlLayoutName('signature_twig');
+            $email->setReceiver(
+                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()
+            );
+            $email->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
+            $email->setProject($affiliationService->getAffiliation()->getProject());
+            $email->setMessage($form->getData()['message']);
+
+            $this->getEmailService()->send();
+        }
+
+        return new ViewModel(
+            [
+                'affiliationService' => $affiliationService,
+                'form'               => $form
+            ]
+        );
+    }
+
 
     /**
      * @return \Zend\View\Model\ViewModel
@@ -50,30 +169,153 @@ class DoaManagerController extends AffiliationAbstractController implements DoaS
             return $this->notFoundAction();
         }
 
-        return new ViewModel(['doa' => $doa]);
+        return new ViewModel(['doa' => $doa->getDoa()]);
     }
 
     /**
-     * Create a new entity
      * @return \Zend\View\Model\ViewModel
      */
-    public function newAction()
+    public function editAction()
     {
-        $entity = $this->getEvent()->getRouteMatch()->getParam('entity');
-        $form = $this->getFormService()->prepare($entity, null, $_POST);
-        $form->setAttribute('class', 'form-horizontal');
+        $doaService = $this->getDoaService()->setDoaId(
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+
+
+        if (is_null($doaService)) {
+            return $this->notFoundAction();
+        }
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
+
+        $form = $this->getFormService()->prepare('doa', $doaService->getDoa(), $data);
+
+        //Get contacts in an organisation
+        $this->getContactService()->findContactsInAffiliation($doaService->getDoa()->getAffiliation());
+        $form->get('doa')->get('contact')->setValueOptions($this->getContactService()->toFormValueOptions());
+
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            $entity = $this->getNewsService()->newEntity($form->getData());
+            /**
+             * @var $doa Doa
+             */
+            $doa = $form->getData();
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation-manager/doa/view',
+                    ['id' => $doa->getId()]
+                );
+            }
+
+            if (isset($data['delete'])) {
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(
+                        _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
+                        $doa->getAffiliation()->getOrganisation(),
+                        $doa->getAffiliation()->getProject()
+                    )
+                );
+
+                $this->getDoaService()->removeEntity($doa);
+
+                return $this->redirect()->toRoute('zfcadmin/affiliation-manager/doa/list');
+            }
+
+            $fileData = $this->params()->fromFiles();
+
+            if ($fileData['doa']['file']['error'] === 0) {
+                /**
+                 * Replace the content of the object
+                 */
+                if (!$doa->getObject()->isEmpty()) {
+                    $doa->getObject()->first()->setObject(file_get_contents($fileData['doa']['file']['tmp_name']));
+                } else {
+                    $doaObject = new DoaObject();
+                    $doaObject->setObject(file_get_contents($fileData['doa']['file']['tmp_name']));
+                    $doaObject->setDoa($doa);
+                    $this->getDoaService()->newEntity($doaObject);
+                }
+
+                //Create a article object element
+                $fileSizeValidator = new FilesSize(PHP_INT_MAX);
+                $fileSizeValidator->isValid($fileData['doa']['file']);
+                $doa->setSize($fileSizeValidator->size);
+                $doa->setContentType(
+                    $this->getGeneralService()->findContentTypeByContentTypeName($fileData['doa']['file']['type'])
+                );
+
+            }
+
+            $this->getDoaService()->updateEntity($doa);
+
+            $this->flashMessenger()->setNamespace('success')->addMessage(
+                sprintf(
+                    _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated"),
+                    $doa->getAffiliation()->getOrganisation(),
+                    $doa->getAffiliation()->getProject()
+                )
+            );
 
             return $this->redirect()->toRoute(
-                'zfcadmin/news-manager/view',
+                'zfcadmin/affiliation-manager/doa/view',
+                ['id' => $doa->getId()]
+            );
+
+        }
+
+        return new ViewModel(
+            [
+                'doa'  => $doaService->getDoa(),
+                'form' => $form
+            ]
+        );
+    }
+
+
+    /**
+     * Dedicated action to approve DOAs via an AJAX call
+     *
+     * @return JsonModel
+     */
+    public function approveAction()
+    {
+        $doa = $this->getEvent()->getRequest()->getPost()->get('doa');
+        $contact = $this->getEvent()->getRequest()->getPost()->get('contact');
+        $dateSigned = $this->getEvent()->getRequest()->getPost()->get('dateSigned');
+
+        if (empty($contact) || empty($dateSigned)) {
+            return new JsonModel(
                 [
-                    'entity' => strtolower($entity->get('entity_name')),
-                    'id'     => $entity->getId()
+                    'result' => 'error',
+                    'error'  => _("txt-contact-or-date-signed-is-empty")
                 ]
             );
         }
 
-        return new ViewModel(['form' => $form, 'entity' => $entity]);
+        if (!\DateTime::createFromFormat('Y-h-d', $dateSigned)) {
+            return new JsonModel(
+                [
+                    'result' => 'error',
+                    'error'  => _("txt-incorrect-date-format-should-be-yyyy-mm-dd")
+                ]
+            );
+        }
+
+        /**
+         * @var $doa Doa
+         */
+        $doa = $this->getAffiliationService()->findEntityById('Doa', $doa);
+        $doa->setContact($this->getContactService()->setContactId($contact)->getContact());
+        $doa->setDateSigned(\DateTime::createFromFormat('Y-h-d', $dateSigned));
+        $this->getDoaService()->updateEntity($doa);
+
+        return new JsonModel(
+            [
+                'result' => 'success',
+            ]
+        );
+
     }
 }

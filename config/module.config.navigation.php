@@ -16,13 +16,21 @@ return [
                 'resource' => 'zfcadmin',
                 'route'    => 'zfcadmin/affiliation-manager/doa/list',
                 'pages'    => [
-                    'doa' => [
-                        'label' => _("txt-doa-administration"),
-                        'route' => 'zfcadmin/affiliation-manager/doa/list',
+                    'doa-approval' => [
+                        'label' => _("txt-doa-approval"),
+                        'route' => 'zfcadmin/affiliation-manager/doa/approval',
                     ],
-                    'loi' => [
-                        'label' => _("txt-loi-administration"),
-                        'route' => 'zfcadmin/affiliation-manager/loi/list',
+                    'doa-missing'  => [
+                        'label' => _("txt-missing-doa"),
+                        'route' => 'zfcadmin/affiliation-manager/doa/missing',
+                    ],
+                    'loi-approval' => [
+                        'label' => _("txt-loi-approval"),
+                        'route' => 'zfcadmin/affiliation-manager/loi/approval',
+                    ],
+                    'loi-missing'  => [
+                        'label' => _("txt-missing-loi"),
+                        'route' => 'zfcadmin/affiliation-manager/loi/missing',
                     ],
                 ],
             ],

@@ -10,6 +10,7 @@
  */
 namespace Affiliation\Acl\Assertion;
 
+use Admin\Entity\Access;
 use Affiliation\Entity\Loi as LoiEntity;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
@@ -50,6 +51,7 @@ class Loi extends AssertionAbstract
              */
             $resource = $this->getAffiliationService()->findEntityById('Loi', $id);
         }
+
         switch ($privilege) {
             case 'upload':
                 /**
@@ -103,6 +105,13 @@ class Loi extends AssertionAbstract
                     $resource->getAffiliation(),
                     'view-community'
                 );
+            case 'view-admin':
+            case 'edit-admin':
+            case 'list-admin':
+            case 'missing-admin':
+            case 'remind-admin':
+            case 'approval-admin':
+                return $this->rolesHaveAccess([strtolower(Access::ACCESS_OFFICE)]);
         }
 
         return false;

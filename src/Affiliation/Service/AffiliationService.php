@@ -266,6 +266,31 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * Give a list of all affiliations which do not have a doa
+     *
+     * @return Affiliation[]
+     */
+    public function findAffiliationWithMissingDoa()
+    {
+        return $this->getEntityManager()->getRepository(
+            $this->getFullEntityName('affiliation')
+        )->findAffiliationWithMissingDoa();
+    }
+
+    /**
+     * Give a list of all affiliations which do not have a doa
+     *
+     * @return Affiliation[]
+     */
+    public function findAffiliationWithMissingLoi()
+    {
+        return $this->getEntityManager()->getRepository(
+            $this->getFullEntityName('affiliation')
+        )->findAffiliationWithMissingLoi();
+    }
+
+
+    /**
      * Deactivate an affiliation
      *
      * @param Affiliation $affiliation

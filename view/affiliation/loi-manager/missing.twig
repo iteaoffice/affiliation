@@ -1,0 +1,22 @@
+<h1>{{ translate("txt-missing-affiliation-loi") }}</h1>
+
+<table class="table table-hover table-consended table-striped">
+    <thead>
+    <tr>
+        <th>{{ translate("txt-organisation") }}</th>
+        <th>{{ translate("txt-country") }}</th>
+        <th>{{ translate("txt-project") }}</th>
+        <th>{{ translate("txt-remind") }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for affiliation in affiliation %}
+        <tr id="affiliation-{{ affiliation.id }}">
+            <td>{{ affiliation }}</td>
+            <td>{{ affiliation.organisation.country }}</td>
+            <td>{{ affiliation.project }}</td>
+            <td>{{ loiLink(null, 'remind-admin', 'button', affiliation) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

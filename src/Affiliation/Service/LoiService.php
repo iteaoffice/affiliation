@@ -49,6 +49,17 @@ class LoiService extends ServiceAbstract
     }
 
     /**
+     * Get a list of not approved lois
+     *
+     * @return Loi[]
+     */
+    public function findNotApprovedLoi()
+    {
+        return $this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findNotApprovedLoi();
+    }
+
+
+    /**
      * @param \Affiliation\Entity\Loi $loi
      *
      * @return $this;

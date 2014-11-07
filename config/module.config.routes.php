@@ -131,7 +131,7 @@ return [
                                     'download' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/download/[:id].pdf',
+                                            'route'    => '/download/[:id].[:ext]',
                                             'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download'
@@ -183,7 +183,7 @@ return [
                                     'download' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/download/[:id].pdf',
+                                            'route'    => '/download/[:id].[:ext]',
                                             'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download'
@@ -224,18 +224,40 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'list' => [
+                                    'list'     => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
                                             'route'    => '/list.html',
                                             'defaults' => [
                                                 'action'    => 'list',
-                                                'privilege' => 'list',
+                                                'privilege' => 'list-admin',
                                             ],
                                         ],
                                     ],
-                                    'view' => [
+                                    'approval' => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/approval.html',
+                                            'defaults' => [
+                                                'action'    => 'approval',
+                                                'privilege' => 'approval-admin',
+                                            ],
+                                        ],
+                                    ],
+                                    'missing'  => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/missing.html',
+                                            'defaults' => [
+                                                'action'    => 'missing',
+                                                'privilege' => 'missing-admin',
+                                            ],
+                                        ],
+                                    ],
+                                    'view'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'priority'    => 100,
@@ -245,11 +267,24 @@ return [
                                             ],
                                             'defaults'    => [
                                                 'action'    => 'view',
-                                                'privilege' => 'view',
+                                                'privilege' => 'view-admin',
                                             ],
                                         ],
                                     ],
-                                    'edit' => [
+                                    'remind'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/remind/[:affiliation-id].html',
+                                            'defaults' => [
+                                                'constraints' => [
+                                                    'id' => '[0-9_-]+',
+                                                ],
+                                                'action'      => 'remind',
+                                                'privilege'   => 'remind-admin',
+                                            ]
+                                        ]
+                                    ],
+                                    'edit'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/edit/[:id].html',
@@ -258,7 +293,18 @@ return [
                                                     'id' => '[0-9_-]+',
                                                 ],
                                                 'action'      => 'edit',
-                                                'privilege'   => 'edit',
+                                                'privilege'   => 'edit-admin',
+                                            ],
+                                        ],
+                                    ],
+                                    'approve'  => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/approve.html',
+                                            'defaults' => [
+                                                'action'    => 'approve',
+                                                'privilege' => 'edit-admin',
                                             ],
                                         ],
                                     ],
@@ -277,18 +323,40 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'list' => [
+                                    'list'     => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
                                             'route'    => '/list.html',
                                             'defaults' => [
                                                 'action'    => 'list',
-                                                'privilege' => 'list',
+                                                'privilege' => 'list-admin',
                                             ],
                                         ],
                                     ],
-                                    'view' => [
+                                    'approval' => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/approval.html',
+                                            'defaults' => [
+                                                'action'    => 'approval',
+                                                'privilege' => 'approval-admin',
+                                            ],
+                                        ],
+                                    ],
+                                    'missing'  => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/missing.html',
+                                            'defaults' => [
+                                                'action'    => 'missing',
+                                                'privilege' => 'missing-admin',
+                                            ],
+                                        ],
+                                    ],
+                                    'view'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'priority'    => 100,
@@ -298,11 +366,11 @@ return [
                                             ],
                                             'defaults'    => [
                                                 'action'    => 'view',
-                                                'privilege' => 'view',
+                                                'privilege' => 'view-admin',
                                             ],
                                         ],
                                     ],
-                                    'edit' => [
+                                    'edit'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/edit/[:id].html',
@@ -311,10 +379,34 @@ return [
                                                     'id' => '[0-9_-]+',
                                                 ],
                                                 'action'      => 'edit',
-                                                'privilege'   => 'edit',
+                                                'privilege'   => 'edit-admin',
                                             ]
                                         ]
-                                    ]
+                                    ],
+                                    'remind'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/remind/[:affiliation-id].html',
+                                            'defaults' => [
+                                                'constraints' => [
+                                                    'id' => '[0-9_-]+',
+                                                ],
+                                                'action'      => 'remind',
+                                                'privilege'   => 'remind-admin',
+                                            ]
+                                        ]
+                                    ],
+                                    'approve'  => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/approve.html',
+                                            'defaults' => [
+                                                'action'    => 'approve',
+                                                'privilege' => 'edit-admin',
+                                            ],
+                                        ],
+                                    ],
                                 ]
                             ]
                         ]

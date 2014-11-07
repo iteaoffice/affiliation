@@ -48,6 +48,8 @@ $config = [
             LoiAssertion::class                   => LoiAssertion::class,
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
             'affiliation_description_form_filter' => 'Affiliation\Form\FilterCreateObject',
+            'affiliation_loi_form_filter'         => 'Affiliation\Form\FilterCreateObject',
+            'affiliation_doa_form_filter'         => 'Affiliation\Form\FilterCreateObject',
         ],
         'factories'    => [
             'affiliation_module_options'        => 'Affiliation\Service\OptionServiceFactory',

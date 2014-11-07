@@ -64,7 +64,10 @@ class DoaLink extends LinkAbstract
             return '';
         }
         $this->addRouterParam('entity', 'Doa');
-        $this->addRouterParam('id', $this->getDoa()->getId());
+        if (!is_null($doa)) {
+            $this->addRouterParam('id', $this->getDoa()->getId());
+            $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
+        }
         $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
 
         return $this->createLink();
@@ -118,13 +121,17 @@ class DoaLink extends LinkAbstract
                     )
                 );
                 break;
+            case 'remind-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/remind');
+                $this->setText($this->translate("txt-send-reminder"));
+                break;
             case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/doa/view');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-view-doa-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getAffiliation()->getOrganisation(),
-                        $this->getAffiliation()->getProject()
+                        $this->getDoa()->getAffiliation()->getOrganisation(),
+                        $this->getDoa()->getAffiliation()->getProject()
                     )
                 );
                 break;
@@ -133,8 +140,8 @@ class DoaLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-edit-doa-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getAffiliation()->getOrganisation(),
-                        $this->getAffiliation()->getProject()
+                        $this->getDoa()->getAffiliation()->getOrganisation(),
+                        $this->getDoa()->getAffiliation()->getProject()
                     )
                 );
                 break;

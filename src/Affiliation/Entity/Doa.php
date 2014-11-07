@@ -9,12 +9,10 @@
  */
 namespace Affiliation\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
-use Zend\InputFilter\Factory as InputFactory;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
@@ -29,16 +27,23 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="doa_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Annotation\Exclude()
      * @var integer
      */
     private $id;
     /**
      * @ORM\Column(name="date_signed", type="date", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Attributes({"step":"any"})
+     * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
      * @var \DateTime
      */
     private $dateSigned;
     /**
      * @ORM\Column(name="date_approved", type="datetime", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Attributes({"step":"any"})
+     * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
      * @var \DateTime
      */
     private $dateApproved;
@@ -51,11 +56,12 @@ class Doa extends EntityAbstract implements ResourceInterface
     private $contentType;
     /**
      * @ORM\Column(name="size", type="integer", nullable=false, nullable=true)
+     * @Annotation\Exclude()
      * @var integer
      */
     private $size;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist"}, mappedBy="doa")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist","remove"}, mappedBy="doa")
      * @Annotation\Exclude()
      * @var \Affiliation\Entity\DoaObject[]
      */
@@ -79,6 +85,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
      * })
+     * @Annotation\Exclude()
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
@@ -91,6 +98,20 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @var \Contact\Entity\Contact
      */
     private $contact;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist"}, mappedBy="doa")
+     * @Annotation\Exclude();
+     * @var \Affiliation\Entity\DoaReminder[]|ArrayCollection
+     */
+    private $reminder;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->reminder = new ArrayCollection();
+    }
 
     /**
      * @param $property
@@ -131,38 +152,6 @@ class Doa extends EntityAbstract implements ResourceInterface
         return sprintf("%s:%s", __CLASS__, $this->id);
     }
 
-    /**
-     * @param InputFilterInterface $inputFilter
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function setInputFilter(InputFilterInterface $inputFilter)
-    {
-        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $factory     = new InputFactory();
-            $inputFilter->add(
-                $factory->createInput(
-                    array(
-                        'name'     => 'contact',
-                        'required' => false,
-                    )
-                )
-            );
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
-    }
 
     /**
      * Needed for the hydration of form elements
@@ -349,5 +338,21 @@ class Doa extends EntityAbstract implements ResourceInterface
     public function getSize()
     {
         return $this->size;
+    }
+
+    /**
+     * @return DoaReminder[]|ArrayCollection
+     */
+    public function getReminder()
+    {
+        return $this->reminder;
+    }
+
+    /**
+     * @param DoaReminder[]|ArrayCollection $reminder
+     */
+    public function setReminder($reminder)
+    {
+        $this->reminder = $reminder;
     }
 }

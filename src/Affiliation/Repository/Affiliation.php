@@ -14,6 +14,7 @@ use Affiliation\Service\AffiliationService;
 use Doctrine\ORM\EntityRepository;
 use General\Entity\Country;
 use InvalidArgumentException;
+use Program\Entity\Call\Call;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
 
@@ -57,6 +58,79 @@ class Affiliation extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Returns a list of affiliations which do not have an DOA
+     * @throws InvalidArgumentException
+     *
+     * @return Entity\Affiliation[]
+     */
+    public function findAffiliationWithMissingDoa()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('a');
+        $qb->from('Affiliation\Entity\Affiliation', 'a');
+        $qb->join('a.organisation', 'o');
+
+        /**
+         * Fetch the corresponding projects
+         */
+        $subSelect = $this->_em->createQueryBuilder();
+        $subSelect->select('project');
+        $subSelect->from('Project\Entity\Project', 'project');
+        $subSelect->join('project.call', 'call');
+        $subSelect->andWhere('call.doaRequirement = :doaRequirement');
+        $qb->andWhere($qb->expr()->in('a.project', $subSelect->getDQL()));
+
+
+        /**
+         * Exclude the found DOAs the corresponding projects
+         */
+        $subSelect2 = $this->_em->createQueryBuilder();
+        $subSelect2->select('affiliation');
+        $subSelect2->from('Affiliation\Entity\Doa', 'doa');
+        $subSelect2->join('doa.affiliation', 'affiliation');
+        $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
+
+        $qb->setParameter('doaRequirement', Call::DOA_REQUIREMENT_PER_PROJECT);
+
+        $qb->addOrderBy('o.organisation', 'ASC');
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Returns a list of affiliations which do not have an Loi
+     * @throws InvalidArgumentException
+     *
+     * @return Entity\Affiliation[]
+     */
+    public function findAffiliationWithMissingLoi()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('a');
+        $qb->from('Affiliation\Entity\Affiliation', 'a');
+        $qb->join('a.organisation', 'o');
+        $qb->join('a.project', 'p');
+
+        $projectRepository = $this->getEntityManager()->getRepository('Project\Entity\Project');
+        $qb = $projectRepository->onlyActiveProject($qb);
+
+        /**
+         * Exclude the found LOIs the corresponding projects
+         */
+        $subSelect2 = $this->_em->createQueryBuilder();
+        $subSelect2->select('affiliation');
+        $subSelect2->from('Affiliation\Entity\Loi', 'loi');
+        $subSelect2->join('loi.affiliation', 'affiliation');
+        $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
+
+
+        $qb->addOrderBy('o.organisation', 'ASC');
+
+
+        return $qb->getQuery()->getResult();
+    }
+
 
     /**
      * Returns the affiliations based on the which

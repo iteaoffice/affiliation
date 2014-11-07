@@ -52,6 +52,7 @@ class Doa extends AssertionAbstract
              */
             $resource = $this->getAffiliationService()->findEntityById('Doa', $id);
         }
+
         switch ($privilege) {
             case 'upload':
                 /**
@@ -105,6 +106,9 @@ class Doa extends AssertionAbstract
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':
+            case 'missing-admin':
+            case 'remind-admin':
+            case 'approval-admin':
                 return $this->rolesHaveAccess([strtolower(Access::ACCESS_OFFICE)]);
         }
 
