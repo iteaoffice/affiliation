@@ -125,6 +125,23 @@ class LoiLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation-manager/loi/remind');
                 $this->setText($this->translate("txt-send-reminder"));
                 break;
+            case 'approval-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/approval');
+                $this->setText($this->translate("txt-approval-loi"));
+                break;
+            case 'missing-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/missing');
+                $this->setText($this->translate("txt-missing-loi"));
+                break;
+            case 'reminders-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/reminders');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-see-reminders-%s-sent"),
+                        $this->getAffiliation()->getLoiReminder()->count()
+                    )
+                );
+                break;
             case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/loi/view');
                 $this->setText(

@@ -17,6 +17,7 @@ use Organisation\Service\OrganisationService;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
 use Project\Service\ProjectService;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * AffiliationService
@@ -280,7 +281,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * Give a list of all affiliations which do not have a doa
      *
-     * @return Affiliation[]
+     * @return QueryBuilder
      */
     public function findAffiliationWithMissingLoi()
     {

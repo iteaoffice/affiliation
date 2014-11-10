@@ -9,7 +9,6 @@
  */
 namespace Affiliation\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
@@ -95,20 +94,7 @@ class Loi extends EntityAbstract implements ResourceInterface
      * @var \Contact\Entity\Contact
      */
     private $contact;
-    /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist"}, mappedBy="loi")
-     * @Annotation\Exclude();
-     * @var \Affiliation\Entity\LoiReminder[]|ArrayCollection
-     */
-    private $reminder;
 
-    /**
-     * Class constructor
-     */
-    public function __construct()
-    {
-        $this->reminder = new ArrayCollection();
-    }
 
     /**
      * @param $property
@@ -335,22 +321,5 @@ class Loi extends EntityAbstract implements ResourceInterface
     {
         return $this->size;
     }
-
-    /**
-     * @return LoiReminder[]|ArrayCollection
-     */
-    public function getReminder()
-    {
-        return $this->reminder;
-    }
-
-    /**
-     * @param LoiReminder[]|ArrayCollection $reminder
-     */
-    public function setReminder($reminder)
-    {
-        $this->reminder = $reminder;
-    }
-
-
 }
+

@@ -26,7 +26,9 @@ class Doa extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('d');
         $qb->from('Affiliation\Entity\Doa', 'd');
+        $qb->join('d.affiliation', 'a');
         $qb->andWhere($qb->expr()->isNull('d.dateApproved'));
+        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
 
         $qb->addOrderBy('d.dateCreated', 'ASC');
 

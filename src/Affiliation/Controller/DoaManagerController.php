@@ -15,6 +15,7 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\DoaObject;
+use Affiliation\Entity\DoaReminder as DoaReminderEntity;
 use Affiliation\Form\DoaApproval;
 use Affiliation\Form\DoaReminder;
 use Affiliation\Service\DoaServiceAwareInterface;
@@ -70,8 +71,6 @@ class DoaManagerController extends AffiliationAbstractController implements
     public function approvalAction()
     {
         $doa = $this->getDoaService()->findNotApprovedDoa();
-
-
         $form = new DoaApproval($doa, $this->getContactService());
 
         return new ViewModel(
@@ -139,19 +138,56 @@ class DoaManagerController extends AffiliationAbstractController implements
 
             $email->setHtmlLayoutName('signature_twig');
             $email->setReceiver(
-                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()
+                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getDisplayName()
             );
             $email->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
             $email->setProject($affiliationService->getAffiliation()->getProject());
             $email->setMessage($form->getData()['message']);
 
             $this->getEmailService()->send();
+
+            //Store the reminder in the database
+            $doaReminder = new DoaReminderEntity();
+            $doaReminder->setAffiliation($affiliationService->getAffiliation());
+            $doaReminder->setEmail($form->getData()['message']);
+            $doaReminder->setReceiver(
+                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])
+            );
+            $doaReminder->setSender($this->zfcUserAuthentication()->getIdentity());
+            $this->getDoaService()->newEntity($doaReminder);
+
+            $this->flashMessenger()->setNamespace('success')->addMessage(
+                sprintf(
+                    _("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                    $affiliationService->getAffiliation()->getOrganisation(),
+                    $affiliationService->getAffiliation()->getProject(),
+                    $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()
+                )
+            );
+
+            return $this->redirect()->toRoute('zfcadmin/affiliation-manager/doa/missing');
         }
 
         return new ViewModel(
             [
                 'affiliationService' => $affiliationService,
                 'form'               => $form
+            ]
+        );
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function remindersAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+        );
+
+        return new ViewModel(
+            [
+                'affiliationService' => $affiliationService
             ]
         );
     }

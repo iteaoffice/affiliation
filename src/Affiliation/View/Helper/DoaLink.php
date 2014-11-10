@@ -121,9 +121,26 @@ class DoaLink extends LinkAbstract
                     )
                 );
                 break;
+            case 'approval-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/approval');
+                $this->setText($this->translate("txt-approval-doa"));
+                break;
+            case 'missing-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/missing');
+                $this->setText($this->translate("txt-missing-doa"));
+                break;
             case 'remind-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/doa/remind');
                 $this->setText($this->translate("txt-send-reminder"));
+                break;
+            case 'reminders-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/reminders');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-see-reminders-%s-sent"),
+                        $this->getAffiliation()->getDoaReminder()->count()
+                    )
+                );
                 break;
             case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/doa/view');

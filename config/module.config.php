@@ -59,6 +59,7 @@ $config = [
     'view_helpers'    => [
         'invokables' => [
             'affiliationLink' => 'Affiliation\View\Helper\AffiliationLink',
+            'paginationLink'  => 'Affiliation\View\Helper\PaginationLink',
             'doaLink'         => 'Affiliation\View\Helper\DoaLink',
             'loiLink'         => 'Affiliation\View\Helper\LoiLink',
         ]

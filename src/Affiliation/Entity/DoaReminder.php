@@ -16,7 +16,7 @@ use Zend\Form\Annotation;
 /**
  * Entity for the Affiliation
  *
- * @ORM\Table(name="affiliation_doa_reminder")
+ * @ORM\Table(name="project_doa_reminder")
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Stdlib\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_doa_reminder")
@@ -45,13 +45,13 @@ class DoaReminder extends EntityAbstract
      */
     private $dateCreated;
     /**
-     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Doa", inversedBy="reminder")
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="doaReminder")
      * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="doa_id", referencedColumnName="doa_id", nullable=false)
+     * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
-     * @var \Affiliation\Entity\Doa
+     * @var \Affiliation\Entity\Affiliation
      */
-    private $doa;
+    private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="doaReminderReceiver")
      * @ORM\JoinColumns({
@@ -68,6 +68,7 @@ class DoaReminder extends EntityAbstract
      * @var \Contact\Entity\Contact
      */
     private $sender;
+
     /**
      * @param $property
      *
@@ -87,5 +88,101 @@ class DoaReminder extends EntityAbstract
     public function __set($property, $value)
     {
         $this->$property = $value;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateCreated()
+    {
+        return $this->dateCreated;
+    }
+
+    /**
+     * @param \DateTime $dateCreated
+     */
+    public function setDateCreated($dateCreated)
+    {
+        $this->dateCreated = $dateCreated;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getReceiver()
+    {
+        return $this->receiver;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $receiver
+     */
+    public function setReceiver($receiver)
+    {
+        $this->receiver = $receiver;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $sender
+     */
+    public function setSender($sender)
+    {
+        $this->sender = $sender;
     }
 }

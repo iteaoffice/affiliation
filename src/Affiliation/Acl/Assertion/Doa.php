@@ -108,6 +108,7 @@ class Doa extends AssertionAbstract
             case 'list-admin':
             case 'missing-admin':
             case 'remind-admin':
+            case 'reminders-admin':
             case 'approval-admin':
                 return $this->rolesHaveAccess([strtolower(Access::ACCESS_OFFICE)]);
         }

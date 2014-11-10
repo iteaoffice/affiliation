@@ -287,6 +287,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var \Affiliation\Entity\Doa
      */
     private $doa;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OrderBy=({"DateCreated"="DESC"})
+     * @Annotation\Exclude();
+     * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
+     */
+    private $doaReminder;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OrderBy=({"DateCreated"="DESC"})
+     * @Annotation\Exclude();
+     * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
+     */
+    private $loiReminder;
 
     /**
      * Class constructor
@@ -305,6 +319,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->funding = new Collections\ArrayCollection();
         $this->effort = new Collections\ArrayCollection();
         $this->spent = new Collections\ArrayCollection();
+        $this->doaReminder = new Collections\ArrayCollection();
+        $this->loiReminder = new Collections\ArrayCollection();
         /**
          * Self-funded is default NOT
          */
@@ -969,5 +985,37 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setMarketAccess($marketAccess)
     {
         $this->marketAccess = $marketAccess;
+    }
+
+    /**
+     * @return DoaReminder[]|Collections\ArrayCollection
+     */
+    public function getDoaReminder()
+    {
+        return $this->doaReminder;
+    }
+
+    /**
+     * @param DoaReminder[]|Collections\ArrayCollection $doaReminder
+     */
+    public function setDoaReminder($doaReminder)
+    {
+        $this->doaReminder = $doaReminder;
+    }
+
+    /**
+     * @return DoaReminder[]|Collections\ArrayCollection
+     */
+    public function getLoiReminder()
+    {
+        return $this->loiReminder;
+    }
+
+    /**
+     * @param DoaReminder[]|Collections\ArrayCollection $loiReminder
+     */
+    public function setLoiReminder($loiReminder)
+    {
+        $this->loiReminder = $loiReminder;
     }
 }

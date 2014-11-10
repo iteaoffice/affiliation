@@ -12,6 +12,7 @@ namespace Affiliation\Repository;
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
 use InvalidArgumentException;
 use Program\Entity\Call\Call;
@@ -90,6 +91,7 @@ class Affiliation extends EntityRepository
         $subSelect2->select('affiliation');
         $subSelect2->from('Affiliation\Entity\Doa', 'doa');
         $subSelect2->join('doa.affiliation', 'affiliation');
+        $subSelect2->andWhere($qb->expr()->isNull('affiliation.dateEnd'));
         $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
 
         $qb->setParameter('doaRequirement', Call::DOA_REQUIREMENT_PER_PROJECT);
@@ -102,7 +104,7 @@ class Affiliation extends EntityRepository
      * Returns a list of affiliations which do not have an Loi
      * @throws InvalidArgumentException
      *
-     * @return Entity\Affiliation[]
+     * @return QueryBuilder
      */
     public function findAffiliationWithMissingLoi()
     {
@@ -112,6 +114,9 @@ class Affiliation extends EntityRepository
         $qb->join('a.organisation', 'o');
         $qb->join('a.project', 'p');
 
+        /**
+         * @var $projectRepository \Project\Repository\Project
+         */
         $projectRepository = $this->getEntityManager()->getRepository('Project\Entity\Project');
         $qb = $projectRepository->onlyActiveProject($qb);
 
@@ -122,13 +127,14 @@ class Affiliation extends EntityRepository
         $subSelect2->select('affiliation');
         $subSelect2->from('Affiliation\Entity\Loi', 'loi');
         $subSelect2->join('loi.affiliation', 'affiliation');
+        $subSelect2->andWhere($qb->expr()->isNull('affiliation.dateEnd'));
         $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
 
 
         $qb->addOrderBy('o.organisation', 'ASC');
 
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
 

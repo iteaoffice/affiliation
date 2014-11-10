@@ -16,7 +16,7 @@ use Zend\Form\Annotation;
 /**
  * Entity for the Affiliation
  *
- * @ORM\Table(name="affiliation_loi_reminder")
+ * @ORM\Table(name="project_loi_reminder")
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Stdlib\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_loi_reminder")
@@ -45,13 +45,13 @@ class LoiReminder extends EntityAbstract
      */
     private $dateCreated;
     /**
-     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Loi", inversedBy="reminder")
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="loiReminder")
      * @ORM\JoinColumns({
-     * @ORM\JoinColumn(name="loi_id", referencedColumnName="loi_id", nullable=false)
+     * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
-     * @var \Affiliation\Entity\Loi
+     * @var \Affiliation\Entity\Affiliation
      */
-    private $loi;
+    private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="loiReminderReceiver")
      * @ORM\JoinColumns({
@@ -89,4 +89,103 @@ class LoiReminder extends EntityAbstract
     {
         $this->$property = $value;
     }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateCreated()
+    {
+        return $this->dateCreated;
+    }
+
+    /**
+     * @param \DateTime $dateCreated
+     */
+    public function setDateCreated($dateCreated)
+    {
+        $this->dateCreated = $dateCreated;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
+
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getReceiver()
+    {
+        return $this->receiver;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $receiver
+     */
+    public function setReceiver($receiver)
+    {
+        $this->receiver = $receiver;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $sender
+     */
+    public function setSender($sender)
+    {
+        $this->sender = $sender;
+    }
+
+
 }

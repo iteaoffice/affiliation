@@ -9,7 +9,6 @@
  */
 namespace Affiliation\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
@@ -98,20 +97,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @var \Contact\Entity\Contact
      */
     private $contact;
-    /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist"}, mappedBy="doa")
-     * @Annotation\Exclude();
-     * @var \Affiliation\Entity\DoaReminder[]|ArrayCollection
-     */
-    private $reminder;
 
-    /**
-     * Class constructor
-     */
-    public function __construct()
-    {
-        $this->reminder = new ArrayCollection();
-    }
 
     /**
      * @param $property
@@ -338,21 +324,5 @@ class Doa extends EntityAbstract implements ResourceInterface
     public function getSize()
     {
         return $this->size;
-    }
-
-    /**
-     * @return DoaReminder[]|ArrayCollection
-     */
-    public function getReminder()
-    {
-        return $this->reminder;
-    }
-
-    /**
-     * @param DoaReminder[]|ArrayCollection $reminder
-     */
-    public function setReminder($reminder)
-    {
-        $this->reminder = $reminder;
     }
 }

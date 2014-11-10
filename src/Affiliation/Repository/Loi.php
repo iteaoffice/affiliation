@@ -26,7 +26,9 @@ class Loi extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('l');
         $qb->from('Affiliation\Entity\Loi', 'l');
+        $qb->join('l.affiliation', 'a');
         $qb->andWhere($qb->expr()->isNull('l.dateApproved'));
+        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
 
         $qb->addOrderBy('l.dateCreated', 'ASC');
 

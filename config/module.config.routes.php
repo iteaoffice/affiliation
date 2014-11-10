@@ -224,7 +224,7 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'list'     => [
+                                    'list'      => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
@@ -235,7 +235,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'approval' => [
+                                    'approval'  => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
@@ -246,18 +246,18 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'missing'  => [
+                                    'missing'   => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
-                                            'route'    => '/missing.html',
+                                            'route'    => '/missing[/page-:page].html',
                                             'defaults' => [
                                                 'action'    => 'missing',
                                                 'privilege' => 'missing-admin',
                                             ],
                                         ],
                                     ],
-                                    'view'     => [
+                                    'view'      => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'priority'    => 100,
@@ -271,7 +271,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'remind'   => [
+                                    'remind'    => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/remind/[:affiliation-id].html',
@@ -284,7 +284,20 @@ return [
                                             ]
                                         ]
                                     ],
-                                    'edit'     => [
+                                    'reminders' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/reminders/[:affiliation-id].html',
+                                            'defaults' => [
+                                                'constraints' => [
+                                                    'id' => '[0-9_-]+',
+                                                ],
+                                                'action'      => 'reminders',
+                                                'privilege'   => 'reminders-admin',
+                                            ]
+                                        ]
+                                    ],
+                                    'edit'      => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/edit/[:id].html',
@@ -297,7 +310,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'approve'  => [
+                                    'approve'   => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
@@ -323,7 +336,7 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'list'     => [
+                                    'list'      => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
@@ -334,7 +347,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'approval' => [
+                                    'approval'  => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
@@ -345,18 +358,18 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'missing'  => [
+                                    'missing'   => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
-                                            'route'    => '/missing.html',
+                                            'route'    => '/missing[/page-:page].html',
                                             'defaults' => [
                                                 'action'    => 'missing',
                                                 'privilege' => 'missing-admin',
                                             ],
                                         ],
                                     ],
-                                    'view'     => [
+                                    'view'      => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'priority'    => 100,
@@ -370,7 +383,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'edit'     => [
+                                    'edit'      => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/edit/[:id].html',
@@ -383,7 +396,7 @@ return [
                                             ]
                                         ]
                                     ],
-                                    'remind'   => [
+                                    'remind'    => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/remind/[:affiliation-id].html',
@@ -396,7 +409,20 @@ return [
                                             ]
                                         ]
                                     ],
-                                    'approve'  => [
+                                    'reminders' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/reminders/[:affiliation-id].html',
+                                            'defaults' => [
+                                                'constraints' => [
+                                                    'id' => '[0-9_-]+',
+                                                ],
+                                                'action'      => 'reminders',
+                                                'privilege'   => 'reminders-admin',
+                                            ]
+                                        ]
+                                    ],
+                                    'approve'   => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [

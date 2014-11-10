@@ -6,6 +6,7 @@
         <th>{{ translate("txt-organisation") }}</th>
         <th>{{ translate("txt-country") }}</th>
         <th>{{ translate("txt-project") }}</th>
+        <th>{{ translate("txt-reminders") }}</th>
         <th>{{ translate("txt-remind") }}</th>
     </tr>
     </thead>
@@ -15,6 +16,11 @@
             <td>{{ affiliation }}</td>
             <td>{{ affiliation.organisation.country }}</td>
             <td>{{ affiliation.project }}</td>
+            <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}<br>
+                {% if affiliation.doaReminder.last.dateCreated %}
+                    <small>{{ affiliation.doaReminder.last.dateCreated|string_date }}</small>
+                {% endif %}
+            </td>
             <td>{{ doaLink(null, 'remind-admin', 'button', affiliation) }}</td>
         </tr>
     {% endfor %}

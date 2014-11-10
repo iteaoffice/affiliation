@@ -15,11 +15,17 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
+use Affiliation\Entity\LoiReminder as LoiReminderEntity;
 use Affiliation\Form\LoiApproval;
+use Affiliation\Form\LoiReminder;
 use Affiliation\Service\LoiServiceAwareInterface;
 use Contact\Service\ContactServiceAwareInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as PaginatorAdapter;
+use General\Service\EmailServiceAwareInterface;
 use General\Service\GeneralServiceAwareInterface;
 use Project\Service\ProjectServiceAwareInterface;
+use Zend\Paginator\Paginator;
 use Zend\Validator\File\FilesSize;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
@@ -36,6 +42,7 @@ use Zend\View\Model\ViewModel;
  */
 class LoiManagerController extends AffiliationAbstractController implements
     LoiServiceAwareInterface,
+    EmailServiceAwareInterface,
     ProjectServiceAwareInterface,
     GeneralServiceAwareInterface,
     ContactServiceAwareInterface
@@ -46,7 +53,6 @@ class LoiManagerController extends AffiliationAbstractController implements
     public function listAction()
     {
         $loi = $this->getLoiService()->findNotApprovedLoi();
-
 
         $form = new LoiApproval($loi, $this->getContactService());
 
@@ -65,8 +71,6 @@ class LoiManagerController extends AffiliationAbstractController implements
     public function approvalAction()
     {
         $loi = $this->getLoiService()->findNotApprovedLoi();
-
-
         $form = new LoiApproval($loi, $this->getContactService());
 
         return new ViewModel(
@@ -84,10 +88,112 @@ class LoiManagerController extends AffiliationAbstractController implements
     public function missingAction()
     {
         $affiliation = $this->getAffiliationService()->findAffiliationWithMissingLoi();
+        $page = $this->params('page');
+
+        $paginator = new Paginator(new PaginatorAdapter(new ORMPaginator($affiliation, false)));
+        $paginator->setDefaultItemCountPerPage(($page === 'all') ? PHP_INT_MAX : 15);
+        $paginator->setCurrentPageNumber($page);
+        $paginator->setPageRange(ceil($paginator->getTotalItemCount() / $paginator->getDefaultItemCountPerPage()));
 
         return new ViewModel(
             [
-                'affiliation' => $affiliation,
+                'paginator' => $paginator,
+            ]
+        );
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function remindAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+        );
+
+        $form = new LoiReminder($affiliationService->getAffiliation(), $this->getContactService());
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
+
+        //Get the corresponding template
+        $webInfo = $this->getGeneralService()->findWebInfoByInfo('/affiliation/loi:reminder');
+
+        $form->get('subject')->setValue($webInfo->getSubject());
+        $form->get('message')->setValue($webInfo->getContent());
+
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+
+            /**
+             * Send the email tot he office
+             */
+            $email = $this->getEmailService()->create();
+            $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
+            $email->addTo($this->zfcUserAuthentication()->getIdentity());
+            $email->setSubject(
+                str_replace(
+                    ['[project]'],
+                    [$affiliationService->getAffiliation()->getProject()],
+                    $form->getData()['subject']
+                )
+            );
+
+            $email->setHtmlLayoutName('signature_twig');
+            $email->setReceiver(
+                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getDisplayName()
+            );
+            $email->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
+            $email->setProject($affiliationService->getAffiliation()->getProject());
+            $email->setMessage($form->getData()['message']);
+
+            $this->getEmailService()->send();
+
+            //Store the reminder in the database
+            $loiReminder = new LoiReminderEntity();
+            $loiReminder->setAffiliation($affiliationService->getAffiliation());
+            $loiReminder->setEmail($form->getData()['message']);
+            $loiReminder->setReceiver(
+                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])
+            );
+            $loiReminder->setSender($this->zfcUserAuthentication()->getIdentity());
+            $this->getLoiService()->newEntity($loiReminder);
+
+            $this->flashMessenger()->setNamespace('success')->addMessage(
+                sprintf(
+                    _("txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                    $affiliationService->getAffiliation()->getOrganisation(),
+                    $affiliationService->getAffiliation()->getProject(),
+                    $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()
+                )
+            );
+
+            return $this->redirect()->toRoute('zfcadmin/affiliation-manager/loi/missing');
+        }
+
+        return new ViewModel(
+            [
+                'affiliationService' => $affiliationService,
+                'form'               => $form
+            ]
+        );
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function remindersAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+        );
+
+        return new ViewModel(
+            [
+                'affiliationService' => $affiliationService
             ]
         );
     }

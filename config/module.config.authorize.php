@@ -52,6 +52,11 @@ return [
                     'assertion' => DoaAssertion::class
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation-manager/doa/reminders',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation-manager/doa/approve',
                     'roles'     => [strtolower(Access::ACCESS_OFFICE)],
                     'assertion' => DoaAssertion::class
@@ -73,6 +78,11 @@ return [
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation-manager/loi/remind',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/loi/reminders',
                     'roles'     => [strtolower(Access::ACCESS_OFFICE)],
                     'assertion' => DoaAssertion::class
                 ],
