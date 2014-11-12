@@ -95,7 +95,6 @@ class Loi extends EntityAbstract implements ResourceInterface
      */
     private $contact;
 
-
     /**
      * @param $property
      *
@@ -322,4 +321,3 @@ class Loi extends EntityAbstract implements ResourceInterface
         return $this->size;
     }
 }
-

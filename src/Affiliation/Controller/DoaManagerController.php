@@ -53,7 +53,6 @@ class DoaManagerController extends AffiliationAbstractController implements
     {
         $doa = $this->getDoaService()->findNotApprovedDoa();
 
-
         $form = new DoaApproval($doa, $this->getContactService());
 
         return new ViewModel(
@@ -121,7 +120,6 @@ class DoaManagerController extends AffiliationAbstractController implements
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-
             /**
              * Send the email tot he office
              */
@@ -192,7 +190,6 @@ class DoaManagerController extends AffiliationAbstractController implements
         );
     }
 
-
     /**
      * @return \Zend\View\Model\ViewModel
      */
@@ -216,7 +213,6 @@ class DoaManagerController extends AffiliationAbstractController implements
         $doaService = $this->getDoaService()->setDoaId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-
 
         if (is_null($doaService)) {
             return $this->notFoundAction();
@@ -308,7 +304,6 @@ class DoaManagerController extends AffiliationAbstractController implements
             ]
         );
     }
-
 
     /**
      * Dedicated action to approve DOAs via an AJAX call

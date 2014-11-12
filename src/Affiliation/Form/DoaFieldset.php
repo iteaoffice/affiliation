@@ -84,7 +84,6 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
      */
     public function getInputFilterSpecification()
     {
-
         return [
             'dateApproved' => [
                 'required' => true,

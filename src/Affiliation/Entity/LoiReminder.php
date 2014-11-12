@@ -154,7 +154,6 @@ class LoiReminder extends EntityAbstract
         $this->affiliation = $affiliation;
     }
 
-
     /**
      * @return \Contact\Entity\Contact
      */
@@ -186,6 +185,4 @@ class LoiReminder extends EntityAbstract
     {
         $this->sender = $sender;
     }
-
-
 }

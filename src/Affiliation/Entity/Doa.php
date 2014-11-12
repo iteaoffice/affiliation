@@ -98,7 +98,6 @@ class Doa extends EntityAbstract implements ResourceInterface
      */
     private $contact;
 
-
     /**
      * @param $property
      *
@@ -137,7 +136,6 @@ class Doa extends EntityAbstract implements ResourceInterface
     {
         return sprintf("%s:%s", __CLASS__, $this->id);
     }
-
 
     /**
      * Needed for the hydration of form elements

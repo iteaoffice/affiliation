@@ -68,7 +68,6 @@ class LoiApproval extends Form implements InputFilterProviderInterface
             $this->add($affiliationFieldset);
         }
 
-
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Submit',

@@ -37,7 +37,6 @@ class PaginationLink extends LinkAbstract
     {
         $router = $this->getRouteMatch()->getMatchedRouteName();
 
-
         $params = array_merge(
             $this->getRouteMatch()->getParams(),
             [

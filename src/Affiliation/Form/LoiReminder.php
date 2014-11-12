@@ -11,10 +11,10 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
+use Deeplink\Entity\Target;
+use DoctrineORMModule\Form\Element\EntitySelect;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
-use DoctrineORMModule\Form\Element\EntitySelect;
-use Deeplink\Entity\Target;
 
 /**
  *
@@ -28,14 +28,12 @@ class LoiReminder extends Form implements InputFilterProviderInterface
     public function __construct(
         Affiliation $affiliation,
         ContactService $contactService
-
     ) {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
 
         $contactService->findContactsInAffiliation($affiliation);
-
 
         $this->add(
             [
@@ -101,7 +99,6 @@ class LoiReminder extends Form implements InputFilterProviderInterface
                 ]
             ]
         );
-
 
         $this->add(
             [

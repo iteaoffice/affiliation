@@ -127,9 +127,8 @@ class LoiManagerController extends AffiliationAbstractController implements
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-
             /**
-             * Send the email tot he office
+             * Send the email to the reminded user
              */
             $email = $this->getEmailService()->create();
             $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
@@ -198,7 +197,6 @@ class LoiManagerController extends AffiliationAbstractController implements
         );
     }
 
-
     /**
      * @return \Zend\View\Model\ViewModel
      */
@@ -222,7 +220,6 @@ class LoiManagerController extends AffiliationAbstractController implements
         $loiService = $this->getLoiService()->setLoiId(
             $this->getEvent()->getRouteMatch()->getParam('id')
         );
-
 
         if (is_null($loiService)) {
             return $this->notFoundAction();
@@ -315,7 +312,6 @@ class LoiManagerController extends AffiliationAbstractController implements
         );
     }
 
-
     /**
      * Dedicated action to approve LOIs via an AJAX call
      *
@@ -359,6 +355,5 @@ class LoiManagerController extends AffiliationAbstractController implements
                 'result' => 'success',
             ]
         );
-
     }
 }

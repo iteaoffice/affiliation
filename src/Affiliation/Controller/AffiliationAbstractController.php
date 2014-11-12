@@ -352,6 +352,4 @@ abstract class AffiliationAbstractController extends AbstractActionController im
 
         return $this;
     }
-
-
 }

@@ -28,14 +28,12 @@ class DoaReminder extends Form implements InputFilterProviderInterface
     public function __construct(
         Affiliation $affiliation,
         ContactService $contactService
-
     ) {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
 
         $contactService->findContactsInAffiliation($affiliation);
-
 
         $this->add(
             [

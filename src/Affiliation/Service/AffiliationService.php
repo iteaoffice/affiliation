@@ -290,7 +290,6 @@ class AffiliationService extends ServiceAbstract
         )->findAffiliationWithMissingLoi();
     }
 
-
     /**
      * Deactivate an affiliation
      *

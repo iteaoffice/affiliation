@@ -83,7 +83,6 @@ class Affiliation extends EntityRepository
         $subSelect->andWhere('call.doaRequirement = :doaRequirement');
         $qb->andWhere($qb->expr()->in('a.project', $subSelect->getDQL()));
 
-
         /**
          * Exclude the found DOAs the corresponding projects
          */
@@ -97,6 +96,7 @@ class Affiliation extends EntityRepository
         $qb->setParameter('doaRequirement', Call::DOA_REQUIREMENT_PER_PROJECT);
 
         $qb->addOrderBy('o.organisation', 'ASC');
+
         return $qb->getQuery()->getResult();
     }
 
@@ -130,13 +130,10 @@ class Affiliation extends EntityRepository
         $subSelect2->andWhere($qb->expr()->isNull('affiliation.dateEnd'));
         $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
 
-
         $qb->addOrderBy('o.organisation', 'ASC');
-
 
         return $qb->getQuery();
     }
-
 
     /**
      * Returns the affiliations based on the which
