@@ -13,6 +13,8 @@ use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
+use DoctrineORMModule\Form\Element\EntitySelect;
+use Deeplink\Entity\Target;
 
 /**
  *
@@ -48,6 +50,32 @@ class LoiReminder extends Form implements InputFilterProviderInterface
                     'id'       => 'receiver',
                     'required' => true,
                 ]
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => EntitySelect::class,
+                'name'       => 'deeplinkTarget',
+                'attributes' => [
+                    'label' => _("txt-deeplink-target"),
+                ],
+                'options'    => [
+                    'object_manager'  => $contactService->getEntityManager(),
+                    'target_class'    => "Deeplink\Entity\Target",
+                    'find_method'     => [
+                        'name'   => 'findBy',
+                        'params' => [
+                            'criteria' => [],
+                            'orderBy'  => [
+                                'route' => 'ASC'
+                            ]
+                        ]
+                    ],
+                    'label_generator' => function (Target $targetEntity) {
+                        return sprintf("%s (%s)", $targetEntity->getTarget(), $targetEntity->getRoute());
+                    },
+                ],
             ]
         );
 
