@@ -23,7 +23,7 @@
             <td>{{ loi.affiliation.organisation.country }}</td>
             <td>{{ loi.affiliation.project }}</td>
             <td>{{ loiLink(loi,'view-admin','icon') }} {{ loiLink(loi,'download','icon') }}</td>
-            <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact')) }}</td>
+            <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact').setValue(loi.contact.id)) }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('dateSigned')) }}</td>
             <td>
                 <button type="button" rel="{{ loi.id }}" data-complete-text="Approved"
@@ -80,7 +80,7 @@
     });
 
 
-    $('input[type=date]').datepicker({
+    $('input[type=text]').datepicker({
         sliderAccessArgs: {touchonly: false},
         dateFormat: 'yy-mm-dd'
     });

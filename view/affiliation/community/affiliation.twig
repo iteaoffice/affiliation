@@ -74,8 +74,8 @@
                 {{ doaLink(affiliationService.affiliation.doa,'replace','icon') }}
                 {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
             {% else %}
-                {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliationService.affiliation.doa.dateApproved|string_date) }}
-                {{ loiLink(affiliationService.affiliation.doa,'download','text') }}
+                {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliationService.affiliation.doa.dateApproved|string_date)|raw }}
+                {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
             {% endif %}
         </dd>
         <dt>{{ translate("txt-letter-of-intent") }}</dt>

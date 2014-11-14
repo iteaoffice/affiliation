@@ -340,6 +340,7 @@ class DoaManagerController extends AffiliationAbstractController implements
         $doa = $this->getAffiliationService()->findEntityById('Doa', $doa);
         $doa->setContact($this->getContactService()->setContactId($contact)->getContact());
         $doa->setDateSigned(\DateTime::createFromFormat('Y-h-d', $dateSigned));
+        $doa->setDateApproved(new \DateTime());
         $this->getDoaService()->updateEntity($doa);
 
         return new JsonModel(
