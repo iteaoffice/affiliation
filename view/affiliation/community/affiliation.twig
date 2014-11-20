@@ -70,7 +70,7 @@
                 {{ doaLink(null,'upload','text', affiliationService.affiliation) }}
             {% elseif affiliationService.affiliation.doa.dateApproved is null %}
                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
-                format(affiliationService.affiliation.doa.dateReceived|date("d-m-Y"))|raw }}
+                format(affiliationService.affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
                 {{ doaLink(affiliationService.affiliation.doa,'replace','icon') }}
                 {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
             {% else %}
@@ -84,7 +84,7 @@
                 {{ loiLink(null,'upload','text', affiliationService.affiliation) }}
             {% elseif affiliationService.affiliation.loi.dateApproved is null %}
                 {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
-                format(affiliationService.affiliation.loi.dateReceived|date("d-m-Y"))|raw }}
+                format(affiliationService.affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
                 {{ loiLink(affiliationService.affiliation.loi,'replace','icon') }}
                 {{ loiLink(affiliationService.affiliation.loi,'download','icon') }}
             {% else %}

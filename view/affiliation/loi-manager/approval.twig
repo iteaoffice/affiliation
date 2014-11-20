@@ -4,7 +4,7 @@
 
 <h1>{{ translate("txt-unapproved-affiliation-loi") }}</h1>
 
-<table class="table table-hover table-consended table-striped">
+<table class="table table-hover table-condensed table-striped">
     <thead>
     <tr>
         <th>{{ translate("txt-organisation") }}</th>
@@ -18,10 +18,11 @@
     </thead>
     <tbody>
     {% for loi in loi %}
+        {% set projectService = projectServiceProxy(loi.affiliation.project) %}
         <tr id="loi-{{ loi.id }}">
-            <td>{{ loi.affiliation }}</td>
+            <td>{{ affiliationLink(loi.affiliation,'view-community','name') }}</td>
             <td>{{ loi.affiliation.organisation.country }}</td>
-            <td>{{ loi.affiliation.project }}</td>
+            <td>{{ projectLink(projectService,'view-admin','name') }}</td>
             <td>{{ loiLink(loi,'view-admin','icon') }} {{ loiLink(loi,'download','icon') }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact').setValue(loi.contact.id)) }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('dateSigned')) }}</td>

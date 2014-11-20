@@ -92,7 +92,6 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
                 'required' => true,
             ],
             'dateSigned'   => [
-
                 'required'   => true,
                 'validators' => [
                     [
