@@ -27,5 +27,4 @@ return array(
     'affiliation/loi-manager/view'           => __DIR__ . '//view/affiliation/loi-manager/view.twig',
     'affiliation/community/affiliation'      => __DIR__ . '//view/affiliation/community/affiliation.twig',
     'affiliation/partial/pagination-control' => __DIR__ . '//view/affiliation/partial/pagination-control.twig',
-    'affiliation/partial/form/affiliation'   => __DIR__ . '//view/affiliation/partial/form/affiliation.twig',
 );

@@ -12,10 +12,11 @@
  */
 namespace Affiliation\Acl\Assertion;
 
+use Admin\Service\AdminService;
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
-use Project\Acl\Assertion\Project as ProjectAssertion;
 use Affiliation\Service\AffiliationService;
 use Contact\Service\ContactService;
+use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectService;
 use Zend\Http\Request;
 use Zend\Mvc\Router\RouteMatch;
@@ -151,6 +152,14 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     }
 
     /**
+     * @return AdminService
+     */
+    public function getAdminService()
+    {
+        return $this->getServiceLocator()->get(AdminService::class);
+    }
+
+    /**
      * Returns true when a role or roles have access
      *
      * @param $roles
@@ -160,7 +169,7 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     protected function rolesHaveAccess($roles)
     {
         if (!is_array($roles)) {
-            $roles = array($roles);
+            $roles = [$roles];
         }
         foreach ($this->getAccessRoles() as $access) {
             if (in_array(strtolower($access), $roles)) {
@@ -177,7 +186,9 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     public function getAccessRoles()
     {
         if (empty($this->accessRoles) && !$this->getContactService()->isEmpty()) {
-            $this->accessRoles = $this->getContactService()->getContact()->getRoles();
+            $this->accessRoles = $this->getAdminService()->findAccessRolesByContactAsArray(
+                $this->getContactService()->getContact()
+            );
         }
 
         return $this->accessRoles;
