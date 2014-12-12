@@ -54,7 +54,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
-                        'route'  => 'community/project/project',
+                        'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
                             'docRef' => $this->getProjectService()->getProject()->getDocRef()
@@ -84,7 +84,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
-                        'route'  => 'community/project/project',
+                        'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
                             'docRef' => $this->getProjectService()->getProject()->getDocRef()
@@ -129,7 +129,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
-                        'route'  => 'community/project/project',
+                        'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
                             'docRef' => $this->getProjectService()->getProject()->getDocRef()

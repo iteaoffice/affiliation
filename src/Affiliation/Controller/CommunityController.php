@@ -111,9 +111,8 @@ class CommunityController extends AffiliationAbstractController implements
                 );
 
                 return $this->redirect()->toRoute(
-                    'community/project/project',
-                    ['docRef' => $projectService->getProject()->getDocRef()],
-                    ['fragment' => 'partners']
+                    'community/project/project/partners',
+                    ['docRef' => $projectService->getProject()->getDocRef()]
                 );
             }
             /**
