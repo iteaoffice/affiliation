@@ -12,12 +12,12 @@ namespace Affiliation\Service;
 use Affiliation\Entity\Affiliation;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
 use Organisation\Service\OrganisationService;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
 use Project\Service\ProjectService;
-use Doctrine\ORM\QueryBuilder;
 
 /**
  * AffiliationService
@@ -138,7 +138,7 @@ class AffiliationService extends ServiceAbstract
         $which = self::WHICH_ONLY_ACTIVE
     ) {
         $affiliations = $this->getEntityManager()
-            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->getRepository($this->getFullEntityName('affiliation'))
             ->findAffiliationByProjectAndCountryAndWhich(
                 $project,
                 $country,
@@ -147,6 +147,27 @@ class AffiliationService extends ServiceAbstract
         foreach ($affiliations as $affiliation) {
             yield $this->createServiceElement($affiliation);
         }
+    }
+
+    /**
+     * @param Project $project
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return \Generator
+     */
+    public function findAmountOfAffiliationByProjectAndCountryAndWhich(
+        Project $project,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        return $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('affiliation'))
+            ->findAmountOfAffiliationByProjectAndCountryAndWhich(
+                $project,
+                $country,
+                $which
+            );
     }
 
     /**
@@ -171,6 +192,27 @@ class AffiliationService extends ServiceAbstract
         foreach ($affiliations as $affiliation) {
             yield $this->createServiceElement($affiliation);
         }
+    }
+
+    /**
+     * @param Version $version
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return int
+     */
+    public function findAmountOfAffiliationByProjectVersionAndCountryAndWhich(
+        Version $version,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        return $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->findAmountOfAffiliationByProjectVersionAndCountryAndWhich(
+                $version,
+                $country,
+                $which
+            );
     }
 
     /**
