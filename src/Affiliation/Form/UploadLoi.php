@@ -34,8 +34,8 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                 'name'    => 'file',
                 'options' => [
                     "label"      => "txt-file",
-                    "help-block" => _("txt-a-signed-loi-is-required")
-                ]
+                    "help-block" => _("txt-a-signed-loi-is-required"),
+                ],
             ]
         );
         $this->add(
@@ -44,8 +44,8 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-upload-loi")
-                ]
+                    'value' => _("txt-upload-loi"),
+                ],
             ]
         );
         $this->add(
@@ -54,8 +54,8 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                ]
+                    'value' => _("txt-cancel"),
+                ],
             ]
         );
     }
@@ -80,10 +80,10 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                     ),
                     new Extension(
                         [
-                            'extension' => ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
+                            'extension' => ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
                         ]
                     ),
-                ]
+                ],
             ]
         ];
     }

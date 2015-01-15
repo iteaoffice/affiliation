@@ -288,7 +288,7 @@ class AffiliationService extends ServiceAbstract
          * If the contact has no contact organisation, return null because we will not have a affiliation
          */
         if (is_null($contact->getContactOrganisation())) {
-            return null;
+            return;
         }
         foreach ($project->getAffiliation() as $affiliation) {
             if ($which === self::WHICH_ONLY_ACTIVE && !is_null($affiliation->getDateEnd())) {
@@ -305,7 +305,7 @@ class AffiliationService extends ServiceAbstract
             }
         }
 
-        return null;
+        return;
     }
 
     /**

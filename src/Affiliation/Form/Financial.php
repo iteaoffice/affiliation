@@ -43,7 +43,7 @@ class Financial extends Form
                 'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -57,7 +57,7 @@ class Financial extends Form
                 'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -70,7 +70,7 @@ class Financial extends Form
                 'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -79,12 +79,12 @@ class Financial extends Form
                 'name'       => 'attention',
                 'options'    => [
                     'label'      => _("txt-attention"),
-                    'help-block' => _("txt-financial-attention-form-element-explanation")
+                    'help-block' => _("txt-financial-attention-form-element-explanation"),
                 ],
                 'attributes' => [
                     'class'       => 'form-control',
-                    'placeholder' => _("txt-financial-attention-placeholder")
-                ]
+                    'placeholder' => _("txt-financial-attention-placeholder"),
+                ],
             ]
         );
         /**
@@ -118,7 +118,7 @@ class Financial extends Form
                 'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                ]
+                ],
             ]
         );
         $organisationFinancial = new FinancialOrganisation();
@@ -132,7 +132,7 @@ class Financial extends Form
                 ],
                 'attributes' => [
                     'required' => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -146,7 +146,7 @@ class Financial extends Form
                     'class'       => 'form-control',
                     'placeholder' => _("txt-address-placeholder"),
                     'required'    => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -160,7 +160,7 @@ class Financial extends Form
                     'class'       => 'form-control',
                     'placeholder' => _("txt-zip-code-placeholder"),
                     'required'    => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -174,7 +174,7 @@ class Financial extends Form
                     'class'       => 'form-control',
                     'placeholder' => _("txt-city-placeholder"),
                     'required'    => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -188,7 +188,7 @@ class Financial extends Form
                 'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -201,7 +201,7 @@ class Financial extends Form
                 ],
                 'attributes' => [
                     'required' => true,
-                ]
+                ],
             ]
         );
         $this->add(
@@ -210,8 +210,8 @@ class Financial extends Form
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update")
-                ]
+                    'value' => _("txt-update"),
+                ],
             ]
         );
         $this->add(
@@ -220,8 +220,8 @@ class Financial extends Form
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                ]
+                    'value' => _("txt-cancel"),
+                ],
             ]
         );
     }

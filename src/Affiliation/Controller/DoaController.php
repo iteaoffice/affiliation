@@ -77,13 +77,12 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
                     ['fragment' => 'details']
                 );
             }
-
         }
 
         return new ViewModel(
             [
                 'affiliationService' => $affiliationService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -159,13 +158,12 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
                     ['fragment' => 'details']
                 );
             }
-
         }
 
         return new ViewModel(
             [
                 'affiliationService' => $this->getAffiliationService(),
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -185,12 +183,12 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
         $renderProjectDoa = $this->renderDoa()->renderProjectDoa($programDoa);
         $response = $this->getResponse();
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
             ->addHeaderLine("Pragma: public")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $programDoa->parseFileName() . '.pdf"'
+                'attachment; filename="'.$programDoa->parseFileName().'.pdf"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderProjectDoa->getPDFData()));
@@ -222,16 +220,16 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $doa->parseFileName() . '.' .
-                $doa->getContentType()->getExtension() . '"'
+                'attachment; filename="'.$doa->parseFileName().'.'.
+                $doa->getContentType()->getExtension().'"'
             )
             ->addHeaderLine("Pragma: public")
-            ->addHeaderLine('Content-Type: ' . $doa->getContentType()->getContentType())
-            ->addHeaderLine('Content-Length: ' . $doa->getSize());
+            ->addHeaderLine('Content-Type: '.$doa->getContentType()->getContentType())
+            ->addHeaderLine('Content-Length: '.$doa->getSize());
 
         return $this->response;
     }

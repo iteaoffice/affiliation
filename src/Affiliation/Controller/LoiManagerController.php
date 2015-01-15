@@ -60,7 +60,7 @@ class LoiManagerController extends AffiliationAbstractController implements
             [
                 'loi'            => $loi,
                 'form'           => $form,
-                'projectService' => $this->getProjectService()
+                'projectService' => $this->getProjectService(),
             ]
         );
     }
@@ -77,7 +77,7 @@ class LoiManagerController extends AffiliationAbstractController implements
             [
                 'loi'            => $loi,
                 'form'           => $form,
-                'projectService' => $this->getProjectService()
+                'projectService' => $this->getProjectService(),
             ]
         );
     }
@@ -176,7 +176,7 @@ class LoiManagerController extends AffiliationAbstractController implements
         return new ViewModel(
             [
                 'affiliationService' => $affiliationService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -192,7 +192,7 @@ class LoiManagerController extends AffiliationAbstractController implements
 
         return new ViewModel(
             [
-                'affiliationService' => $affiliationService
+                'affiliationService' => $affiliationService,
             ]
         );
     }
@@ -284,7 +284,6 @@ class LoiManagerController extends AffiliationAbstractController implements
                 $loi->setContentType(
                     $this->getGeneralService()->findContentTypeByContentTypeName($fileData['loi']['file']['type'])
                 );
-
             }
 
             $this->getLoiService()->updateEntity($loi);
@@ -301,13 +300,12 @@ class LoiManagerController extends AffiliationAbstractController implements
                 'zfcadmin/affiliation-manager/loi/view',
                 ['id' => $loi->getId()]
             );
-
         }
 
         return new ViewModel(
             [
                 'loi'  => $loiService->getLoi(),
-                'form' => $form
+                'form' => $form,
             ]
         );
     }
@@ -327,7 +325,7 @@ class LoiManagerController extends AffiliationAbstractController implements
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => _("txt-contact-or-date-signed-is-empty")
+                    'error'  => _("txt-contact-or-date-signed-is-empty"),
                 ]
             );
         }
@@ -336,7 +334,7 @@ class LoiManagerController extends AffiliationAbstractController implements
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => _("txt-incorrect-date-format-should-be-yyyy-mm-dd")
+                    'error'  => _("txt-incorrect-date-format-should-be-yyyy-mm-dd"),
                 ]
             );
         }

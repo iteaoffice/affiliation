@@ -167,7 +167,7 @@ class EditController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -217,7 +217,6 @@ class EditController extends AffiliationAbstractController implements
                 $formData['city'] = $financialAddress->getCity();
                 $formData['country'] = $financialAddress->getCountry()->getId();
             }
-
         }
         $formData['organisation'] = $organisationService->parseOrganisationWithBranch($branch);
         $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
@@ -347,7 +346,7 @@ class EditController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -397,7 +396,7 @@ class EditController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -434,7 +433,7 @@ class EditController extends AffiliationAbstractController implements
                 $description = $form->getData();
                 $description->setAffiliation(
                     [
-                        $affiliationService->getAffiliation()
+                        $affiliationService->getAffiliation(),
                     ]
                 );
                 $description->setContact($this->zfcUserAuthentication()->getIdentity());
@@ -452,7 +451,7 @@ class EditController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }

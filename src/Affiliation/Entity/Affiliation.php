@@ -489,10 +489,10 @@ class Affiliation extends EntityAbstract implements ResourceInterface
                             [
                                 'name'    => 'InArray',
                                 'options' => [
-                                    'haystack' => array_keys($this->getSelfFundedTemplates())
-                                ]
-                            ]
-                        ]
+                                    'haystack' => array_keys($this->getSelfFundedTemplates()),
+                                ],
+                            ],
+                        ],
                     ]
                 )
             );

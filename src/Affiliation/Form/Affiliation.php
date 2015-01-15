@@ -36,7 +36,7 @@ class Affiliation extends Form
             }
             $affiliationValueOptions[$country] = [
                 'label'   => $country,
-                'options' => $groupOptions
+                'options' => $groupOptions,
             ];
         }
         /**
@@ -73,7 +73,7 @@ class Affiliation extends Form
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
         $this->add(
@@ -86,7 +86,7 @@ class Affiliation extends Form
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
         $this->add(
@@ -99,7 +99,7 @@ class Affiliation extends Form
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
         $this->add(
@@ -112,7 +112,7 @@ class Affiliation extends Form
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
         $this->add(
@@ -121,11 +121,11 @@ class Affiliation extends Form
                 'name'       => 'mainContribution',
                 'options'    => [
                     'label'      => _("txt-main-contribution-for-the-project"),
-                    'help-block' => _("txt--main-contribution-for-the-project-inline-help")
+                    'help-block' => _("txt--main-contribution-for-the-project-inline-help"),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
         $this->add(
@@ -138,7 +138,7 @@ class Affiliation extends Form
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
         $this->add(
@@ -147,8 +147,8 @@ class Affiliation extends Form
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update")
-                ]
+                    'value' => _("txt-update"),
+                ],
             ]
         );
         $this->add(
@@ -157,8 +157,8 @@ class Affiliation extends Form
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                ]
+                    'value' => _("txt-cancel"),
+                ],
             ]
         );
         $this->add(
@@ -170,8 +170,8 @@ class Affiliation extends Form
                     'value' => sprintf(
                         _("Deactivate %s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
-                    )
-                ]
+                    ),
+                ],
             ]
         );
         $this->add(
@@ -183,8 +183,8 @@ class Affiliation extends Form
                     'value' => sprintf(
                         _("Reactivate %s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
-                    )
-                ]
+                    ),
+                ],
             ]
         );
     }

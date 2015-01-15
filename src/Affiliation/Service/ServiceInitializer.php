@@ -42,7 +42,7 @@ class ServiceInitializer implements InitializerInterface
             AffiliationServiceAwareInterface::class => AffiliationService::class,
             DoaServiceAwareInterface::class         => DoaService::class,
             LoiServiceAwareInterface::class         => LoiService::class,
-            ConfigAwareInterface::class             => 'affiliation_module_config'
+            ConfigAwareInterface::class             => 'affiliation_module_config',
         ];
         /**
          * Go over each interface to see if we should add an interface

@@ -34,7 +34,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
          * Create a fieldSet per LOI (and affiliation)
          */
         foreach ($lois as $loi) {
-            $affiliationFieldset = new Fieldset('affiliation_' . $loi->getAffiliation()->getId());
+            $affiliationFieldset = new Fieldset('affiliation_'.$loi->getAffiliation()->getId());
 
             $contactService->findContactsInAffiliation($loi->getAffiliation());
             $affiliationFieldset->add(
@@ -43,13 +43,13 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                     'name'       => 'contact',
                     'options'    => [
                         'value_options' => $contactService->toFormValueOptions(),
-                        'label'         => _("txt-contact-name")
+                        'label'         => _("txt-contact-name"),
                     ],
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'contact-' . $loi->getId(),
+                        'id'       => 'contact-'.$loi->getId(),
                         'required' => true,
-                    ]
+                    ],
                 ]
             );
 
@@ -59,9 +59,9 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'dateSigned-' . $loi->getId(),
+                        'id'       => 'dateSigned-'.$loi->getId(),
                         'required' => true,
-                    ]
+                    ],
                 ]
             );
 
@@ -74,8 +74,8 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update")
-                ]
+                    'value' => _("txt-update"),
+                ],
             ]
         );
         $this->add(
@@ -84,8 +84,8 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                ]
+                    'value' => _("txt-cancel"),
+                ],
             ]
         );
     }

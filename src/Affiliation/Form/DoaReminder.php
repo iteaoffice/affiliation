@@ -41,13 +41,13 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                 'name'       => 'receiver',
                 'options'    => [
                     'value_options' => $contactService->toFormValueOptions(),
-                    'label'         => _("txt-contact-name")
+                    'label'         => _("txt-contact-name"),
                 ],
                 'attributes' => [
                     'class'    => 'form-control',
                     'id'       => 'receiver',
                     'required' => true,
-                ]
+                ],
             ]
         );
 
@@ -58,7 +58,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                 'attributes' => [
                     'label' => _("txt-subject"),
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
 
@@ -70,7 +70,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                     'label' => _("txt-message"),
                     'rows'  => 15,
                     'class' => 'form-control',
-                ]
+                ],
             ]
         );
 
@@ -89,9 +89,9 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                         'params' => [
                             'criteria' => [],
                             'orderBy'  => [
-                                'route' => 'ASC'
-                            ]
-                        ]
+                                'route' => 'ASC',
+                            ],
+                        ],
                     ],
                     'label_generator' => function (Target $targetEntity) {
                         return sprintf("%s (%s)", $targetEntity->getTarget(), $targetEntity->getRoute());
@@ -106,8 +106,8 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-send")
-                ]
+                    'value' => _("txt-send"),
+                ],
             ]
         );
         $this->add(
@@ -116,8 +116,8 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                ]
+                    'value' => _("txt-cancel"),
+                ],
             ]
         );
     }

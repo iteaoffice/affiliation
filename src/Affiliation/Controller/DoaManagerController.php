@@ -59,7 +59,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             [
                 'doa'            => $doa,
                 'form'           => $form,
-                'projectService' => $this->getProjectService()
+                'projectService' => $this->getProjectService(),
             ]
         );
     }
@@ -76,7 +76,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             [
                 'doa'            => $doa,
                 'form'           => $form,
-                'projectService' => $this->getProjectService()
+                'projectService' => $this->getProjectService(),
             ]
         );
     }
@@ -169,7 +169,7 @@ class DoaManagerController extends AffiliationAbstractController implements
         return new ViewModel(
             [
                 'affiliationService' => $affiliationService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -185,7 +185,7 @@ class DoaManagerController extends AffiliationAbstractController implements
 
         return new ViewModel(
             [
-                'affiliationService' => $affiliationService
+                'affiliationService' => $affiliationService,
             ]
         );
     }
@@ -277,7 +277,6 @@ class DoaManagerController extends AffiliationAbstractController implements
                 $doa->setContentType(
                     $this->getGeneralService()->findContentTypeByContentTypeName($fileData['doa']['file']['type'])
                 );
-
             }
 
             $this->getDoaService()->updateEntity($doa);
@@ -294,13 +293,12 @@ class DoaManagerController extends AffiliationAbstractController implements
                 'zfcadmin/affiliation-manager/doa/view',
                 ['id' => $doa->getId()]
             );
-
         }
 
         return new ViewModel(
             [
                 'doa'  => $doaService->getDoa(),
-                'form' => $form
+                'form' => $form,
             ]
         );
     }
@@ -320,7 +318,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => _("txt-contact-or-date-signed-is-empty")
+                    'error'  => _("txt-contact-or-date-signed-is-empty"),
                 ]
             );
         }
@@ -329,7 +327,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => _("txt-incorrect-date-format-should-be-yyyy-mm-dd")
+                    'error'  => _("txt-incorrect-date-format-should-be-yyyy-mm-dd"),
                 ]
             );
         }
@@ -348,6 +346,5 @@ class DoaManagerController extends AffiliationAbstractController implements
                 'result' => 'success',
             ]
         );
-
     }
 }

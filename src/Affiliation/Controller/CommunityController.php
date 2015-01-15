@@ -54,7 +54,7 @@ class CommunityController extends AffiliationAbstractController implements
                 'projectService'        => $this->getProjectService(),
                 'workpackageService'    => $this->getWorkpackageService(),
                 'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(null, null, true),
-                'versionType'           => $this->getProjectService()->getNextMode()->versionType
+                'versionType'           => $this->getProjectService()->getNextMode()->versionType,
             ]
         );
     }
@@ -180,7 +180,7 @@ class CommunityController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -330,7 +330,7 @@ class CommunityController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }

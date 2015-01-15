@@ -44,7 +44,7 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
             if ($element instanceof EntitySelect) {
                 $element->setOptions(
                     [
-                        'object_manager' => $entityManager
+                        'object_manager' => $entityManager,
                     ]
                 );
             }
@@ -60,7 +60,7 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
                 'name'    => 'contact',
                 'options' => [
                     "label" => "txt-signer",
-                ]
+                ],
             ]
         );
 
@@ -70,8 +70,8 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
                 'name'    => 'file',
                 'options' => [
                     "label"      => "txt-source-file",
-                    "help-block" => _("txt-attachment-requirements")
-                ]
+                    "help-block" => _("txt-attachment-requirements"),
+                ],
             ]
         );
     }
@@ -98,9 +98,9 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
                         'name'    => 'Date',
                         'options' => [
                             'pattern' => 'yyyy-mm-dd',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             'file'         => [
                 'required'   => false,
@@ -111,7 +111,7 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
                             'max' => '8MB',
                         ]
                     ),
-                ]
+                ],
             ]
         ];
     }

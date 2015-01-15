@@ -44,7 +44,7 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
             if ($element instanceof EntitySelect) {
                 $element->setOptions(
                     [
-                        'object_manager' => $entityManager
+                        'object_manager' => $entityManager,
                     ]
                 );
             }
@@ -60,7 +60,7 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
                 'name'    => 'contact',
                 'options' => [
                     "label" => "txt-signer",
-                ]
+                ],
             ]
         );
 
@@ -70,8 +70,8 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
                 'name'    => 'file',
                 'options' => [
                     "label"      => "txt-source-file",
-                    "help-block" => _("txt-attachment-requirements")
-                ]
+                    "help-block" => _("txt-attachment-requirements"),
+                ],
             ]
         );
     }
@@ -99,9 +99,9 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
                         'name'    => 'Date',
                         'options' => [
                             'pattern' => 'yyyy-mm-dd',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             'file'         => [
                 'required'   => false,
@@ -112,7 +112,7 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
                             'max' => '8MB',
                         ]
                     ),
-                ]
+                ],
             ]
         ];
     }

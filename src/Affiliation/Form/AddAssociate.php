@@ -42,12 +42,12 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'name'       => 'contact',
                 'options'    => [
                     'value_options' => $contacts,
-                    'label'         => _("txt-contact-name")
+                    'label'         => _("txt-contact-name"),
                 ],
                 'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                ]
+                ],
             ]
         );
 
@@ -57,8 +57,8 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update")
-                ]
+                    'value' => _("txt-update"),
+                ],
             ]
         );
         $this->add(
@@ -67,8 +67,8 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                ]
+                    'value' => _("txt-cancel"),
+                ],
             ]
         );
     }

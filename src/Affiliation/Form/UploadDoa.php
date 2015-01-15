@@ -34,8 +34,8 @@ class UploadDoa extends Form implements InputFilterProviderInterface
                 'name'    => 'file',
                 'options' => [
                     "label"      => "txt-file",
-                    "help-block" => _("txt-a-signed-doa-is-required")
-                ]
+                    "help-block" => _("txt-a-signed-doa-is-required"),
+                ],
             ]
         );
         $this->add(
@@ -44,8 +44,8 @@ class UploadDoa extends Form implements InputFilterProviderInterface
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-upload-project-doa")
-                ]
+                    'value' => _("txt-upload-project-doa"),
+                ],
             ]
         );
         $this->add(
@@ -54,8 +54,8 @@ class UploadDoa extends Form implements InputFilterProviderInterface
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                ]
+                    'value' => _("txt-cancel"),
+                ],
             ]
         );
     }
@@ -80,10 +80,10 @@ class UploadDoa extends Form implements InputFilterProviderInterface
                     ),
                     new Extension(
                         [
-                            'extension' => ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
+                            'extension' => ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
                         ]
                     ),
-                ]
+                ],
             ]
         ];
     }

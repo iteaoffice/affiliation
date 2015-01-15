@@ -78,13 +78,12 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
                     ['fragment' => 'details']
                 );
             }
-
         }
 
         return new ViewModel(
             [
                 'affiliationService' => $affiliationService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -162,13 +161,12 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
                     ['fragment' => 'details']
                 );
             }
-
         }
 
         return new ViewModel(
             [
                 'affiliationService' => $this->getAffiliationService(),
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }
@@ -188,12 +186,12 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         $renderProjectLoi = $this->renderLoi()->renderProjectLoi($programLoi);
         $response = $this->getResponse();
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
             ->addHeaderLine("Pragma: public")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $programLoi->parseFileName() . '.pdf"'
+                'attachment; filename="'.$programLoi->parseFileName().'.pdf"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderProjectLoi->getPDFData()));
@@ -225,16 +223,16 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $loi->parseFileName() . '.' .
-                $loi->getContentType()->getExtension() . '"'
+                'attachment; filename="'.$loi->parseFileName().'.'.
+                $loi->getContentType()->getExtension().'"'
             )
             ->addHeaderLine("Pragma: public")
-            ->addHeaderLine('Content-Type: ' . $loi->getContentType()->getContentType())
-            ->addHeaderLine('Content-Length: ' . $loi->getSize());
+            ->addHeaderLine('Content-Type: '.$loi->getContentType()->getContentType())
+            ->addHeaderLine('Content-Length: '.$loi->getSize());
 
         return $this->response;
     }

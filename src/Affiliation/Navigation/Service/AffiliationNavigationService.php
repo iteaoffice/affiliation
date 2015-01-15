@@ -57,7 +57,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'docRef' => $this->getProjectService()->getProject()->getDocRef()
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
                         ],
                         'pages'  => [
                             'affiliation' => [
@@ -68,10 +68,10 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'id' => $this->getRouteMatch()->getParam('id')
+                                    'id' => $this->getRouteMatch()->getParam('id'),
                                 ],
-                            ]
-                        ]
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -87,7 +87,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'docRef' => $this->getProjectService()->getProject()->getDocRef()
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
                         ],
                         'pages'  => [
                             'affiliation' => [
@@ -98,7 +98,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'route'  => 'community/affiliation/affiliation',
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                    'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                 ],
                                 'pages'  => [
                                     'edit' => [
@@ -111,12 +111,12 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                         'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                         'router' => $this->getRouter(),
                                         'params' => [
-                                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                         ],
-                                    ]
-                                ]
-                            ]
-                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -132,7 +132,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'docRef' => $this->getProjectService()->getProject()->getDocRef()
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
                         ],
                         'pages'  => [
                             'affiliation' => [
@@ -143,7 +143,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'route'  => 'community/affiliation/affiliation',
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                    'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                 ],
                                 'pages'  => [
                                     'edit' => [
@@ -156,12 +156,12 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                         'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                         'router' => $this->getRouter(),
                                         'params' => [
-                                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                         ],
-                                    ]
-                                ]
-                            ]
-                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -179,7 +179,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'upload' => [
@@ -192,10 +192,10 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'active' => true,
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId()
-                                ]
-                            ]
-                        ]
+                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId(),
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -214,7 +214,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'replace' => [
@@ -226,9 +226,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                 'active' => true,
                                 'router' => $this->getRouter(),
-                                'params' => $this->getRouteMatch()->getParams()
-                            ]
-                        ]
+                                'params' => $this->getRouteMatch()->getParams(),
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -246,7 +246,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'upload' => [
@@ -259,10 +259,10 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'active' => true,
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId()
-                                ]
-                            ]
-                        ]
+                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId(),
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -281,7 +281,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'replace' => [
@@ -293,9 +293,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                 'active' => true,
                                 'router' => $this->getRouter(),
-                                'params' => $this->getRouteMatch()->getParams()
-                            ]
-                        ]
+                                'params' => $this->getRouteMatch()->getParams(),
+                            ],
+                        ],
                     ]
                 );
                 break;
