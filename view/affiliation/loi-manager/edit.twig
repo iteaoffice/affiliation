@@ -1,0 +1,70 @@
+{% do headLink().appendStylesheet(
+'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
+) %}
+
+{% set projectService = projectServiceProxy(loi.affiliation.project) %}
+
+<h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
+    loi.affiliation.organisation.organisation,
+    projectService.parseFullname
+    ) }}</h1>
+
+{% do form.prepare() %}
+
+{{ form().openTag(form)|raw }}
+
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ projectLink(projectService,'view-admin', 'name') }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ affiliationLink(loi.affiliation,'view-community') }}</p>
+    </div>
+</div>
+
+{#{{ ztbformelement(form.get('contact')) }}#}
+
+{% set loiForm = form.get('loi') %}
+
+{{ ztbformelement(loiForm.get('dateSigned')) }}
+{{ ztbformelement(loiForm.get('dateApproved')) }}
+{{ contactformelement(loiForm.get('contact')) }}
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-download-current-loi") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ loiLink(loi,'download','text') }}</p>
+    </div>
+</div>
+
+{{ ztbformelement(loiForm.get('file')) }}
+
+<hr>
+
+
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+        {{ ztbformelement(form.get('delete')) }}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}
+
+
+<script type="text/javascript">
+    $('input[type=date]').datepicker({
+        sliderAccessArgs: {touchonly: false},
+        dateFormat: 'yy-mm-dd'
+    });
+</script>

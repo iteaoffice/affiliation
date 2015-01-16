@@ -57,7 +57,8 @@ class AffiliationLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return $this->getAffiliation()->getOrganisation()->getOrganisation();
+            return $this->getAction() !== 'view-community' ? '' : $this->getAffiliation()->getOrganisation(
+            )->getOrganisation();
         }
         $this->addRouterParam('entity', 'Affiliation');
         $this->addRouterParam('id', $this->getAffiliation()->getId());
@@ -84,6 +85,10 @@ class AffiliationLink extends LinkAbstract
             case 'edit-financial':
                 $this->setRouter('community/affiliation/edit/financial');
                 $this->setText(sprintf($this->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()));
+                break;
+            case 'add-associate':
+                $this->setRouter('community/affiliation/edit/add-associate');
+                $this->setText(sprintf($this->translate("txt-add-associate-affiliation-%s"), $this->getAffiliation()));
                 break;
             case 'edit-description':
                 $this->setRouter('community/affiliation/edit/description');

@@ -10,6 +10,7 @@
  */
 namespace Affiliation\Acl\Assertion;
 
+use Admin\Entity\Access;
 use Affiliation\Entity\Doa as DoaEntity;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
@@ -46,8 +47,12 @@ class Doa extends AssertionAbstract
             $privilege = $this->getRouteMatch()->getParam('privilege');
         }
         if (!$resource instanceof DoaEntity && !is_null($id)) {
+            /**
+             * @var $resource DoaEntity
+             */
             $resource = $this->getAffiliationService()->findEntityById('Doa', $id);
         }
+
         switch ($privilege) {
             case 'upload':
                 /**
@@ -98,6 +103,14 @@ class Doa extends AssertionAbstract
                     $resource->getAffiliation(),
                     'view-community'
                 );
+            case 'view-admin':
+            case 'edit-admin':
+            case 'list-admin':
+            case 'missing-admin':
+            case 'remind-admin':
+            case 'reminders-admin':
+            case 'approval-admin':
+                return $this->rolesHaveAccess([strtolower(Access::ACCESS_OFFICE)]);
         }
 
         return false;

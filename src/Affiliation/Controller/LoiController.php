@@ -32,14 +32,22 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
             $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
         );
-        $data               = array_merge_recursive(
+        $data = array_merge_recursive(
             $this->getRequest()->getPost()->toArray(),
             $this->getRequest()->getFiles()->toArray()
         );
-        $form               = new UploadLoi();
+        $form = new UploadLoi();
         $form->setData($data);
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (!isset($data['cancel'])) {
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
+            }
+
+            if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
                 //Create a article object element
                 $loiObject = new Entity\LoiObject();
@@ -63,19 +71,20 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
                         $affiliationService->getAffiliation()->getProject()
                     )
                 );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
             }
-            $this->redirect()->toRoute(
-                'community/affiliation/affiliation',
-                array('id' => $affiliationService->getAffiliation()->getId()),
-                array('fragment' => 'details')
-            );
         }
 
         return new ViewModel(
-            array(
+            [
                 'affiliationService' => $affiliationService,
-                'form'               => $form
-            )
+                'form'               => $form,
+            ]
         );
     }
 
@@ -90,6 +99,9 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
      */
     public function replaceAction()
     {
+        /**
+         * @var $loi Loi
+         */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
             $this->getEvent()->getRouteMatch()->getParam('id')
@@ -105,8 +117,16 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         $form = new UploadLoi();
         $form->get('submit')->setValue(_("txt-replace-loi"));
         $form->setData($data);
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (!isset($data['cancel'])) {
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $loi->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
+            }
+
+            if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
                 /**
                  * Remove the current entity
@@ -134,19 +154,20 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
                         $loi->getAffiliation()->getProject()
                     )
                 );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $loi->getAffiliation()->getId()],
+                    ['fragment' => 'details']
+                );
             }
-            $this->redirect()->toRoute(
-                'community/affiliation/affiliation',
-                array('id' => $loi->getAffiliation()->getId()),
-                array('fragment' => 'details')
-            );
         }
 
         return new ViewModel(
-            array(
+            [
                 'affiliationService' => $this->getAffiliationService(),
-                'form'               => $form
-            )
+                'form'               => $form,
+            ]
         );
     }
 
@@ -163,17 +184,17 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         $programLoi->setContact($this->zfcUserAuthentication()->getIdentity());
         $programLoi->setAffiliation($affiliationService->getAffiliation());
         $renderProjectLoi = $this->renderLoi()->renderProjectLoi($programLoi);
-        $response         = $this->getResponse();
+        $response = $this->getResponse();
         $response->getHeaders()
-                 ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-                 ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
-                 ->addHeaderLine("Pragma: public")
-                 ->addHeaderLine(
-                     'Content-Disposition',
-                     'attachment; filename="' . $programLoi->parseFileName() . '.pdf"'
-                 )
-                 ->addHeaderLine('Content-Type: application/pdf')
-                 ->addHeaderLine('Content-Length', strlen($renderProjectLoi->getPDFData()));
+            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
+            ->addHeaderLine("Pragma: public")
+            ->addHeaderLine(
+                'Content-Disposition',
+                'attachment; filename="'.$programLoi->parseFileName().'.pdf"'
+            )
+            ->addHeaderLine('Content-Type: application/pdf')
+            ->addHeaderLine('Content-Length', strlen($renderProjectLoi->getPDFData()));
         $response->setContent($renderProjectLoi->getPDFData());
 
         return $response;
@@ -185,6 +206,9 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
     public function downloadAction()
     {
         set_time_limit(0);
+        /**
+         * @var $loi Loi
+         */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
             $this->getEvent()->getRouteMatch()->getParam('id')
@@ -195,20 +219,20 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         /**
          * Due to the BLOB issue, we treat this as an array and we need to capture the first element
          */
-        $object   = $loi->getObject()->first()->getObject();
+        $object = $loi->getObject()->first()->getObject();
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()
-                 ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-                 ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
-                 ->addHeaderLine(
-                     'Content-Disposition',
-                     'attachment; filename="' . $loi->parseFileName() . '.' .
-                     $loi->getContentType()->getExtension() . '"'
-                 )
-                 ->addHeaderLine("Pragma: public")
-                 ->addHeaderLine('Content-Type: ' . $loi->getContentType()->getContentType())
-                 ->addHeaderLine('Content-Length: ' . $loi->getSize());
+            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
+            ->addHeaderLine(
+                'Content-Disposition',
+                'attachment; filename="'.$loi->parseFileName().'.'.
+                $loi->getContentType()->getExtension().'"'
+            )
+            ->addHeaderLine("Pragma: public")
+            ->addHeaderLine('Content-Type: '.$loi->getContentType()->getContentType())
+            ->addHeaderLine('Content-Length: '.$loi->getSize());
 
         return $this->response;
     }

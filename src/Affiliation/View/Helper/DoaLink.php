@@ -51,9 +51,9 @@ class DoaLink extends LinkAbstract
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
-            array(
+            [
                 'name' => $this->getDoa(),
-            )
+            ]
         );
         if (!$this->hasAccess(
             $this->getDoa(),
@@ -61,10 +61,13 @@ class DoaLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return 'Access denied';
+            return '';
         }
         $this->addRouterParam('entity', 'Doa');
-        $this->addRouterParam('id', $this->getDoa()->getId());
+        if (!is_null($doa)) {
+            $this->addRouterParam('id', $this->getDoa()->getId());
+            $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
+        }
         $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
 
         return $this->createLink();
@@ -113,6 +116,47 @@ class DoaLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getDoa()->getAffiliation()->getOrganisation(),
+                        $this->getDoa()->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'approval-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/approval');
+                $this->setText($this->translate("txt-approval-doa"));
+                break;
+            case 'missing-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/missing');
+                $this->setText($this->translate("txt-missing-doa"));
+                break;
+            case 'remind-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/remind');
+                $this->setText($this->translate("txt-send-reminder"));
+                break;
+            case 'reminders-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/reminders');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-see-reminders-%s-sent"),
+                        $this->getAffiliation()->getDoaReminder()->count()
+                    )
+                );
+                break;
+            case 'view-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/view');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-view-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getDoa()->getAffiliation()->getOrganisation(),
+                        $this->getDoa()->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'edit-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/doa/edit');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-edit-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getDoa()->getAffiliation()->getOrganisation(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )

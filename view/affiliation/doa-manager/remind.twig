@@ -1,0 +1,44 @@
+{% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
+
+<h1>{{ translate("txt-remind-doa-%s-in-%s")|format(
+    affiliationService.affiliation.organisation.organisation,
+    projectService.parseFullname
+    ) }}</h1>
+
+{% do form.prepare() %}
+
+{{ form().openTag(form)|raw }}
+
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ projectLink(projectService,'view-admin', 'name') }}</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ affiliationLink(affiliationService.affiliation,'view-community') }}</p>
+    </div>
+</div>
+
+{{ ztbformelement(form.get('receiver')) }}
+{{ ztbformelement(form.get('subject')) }}
+{{ ztbformelement(form.get('deeplinkTarget')) }}
+{{ ztbformelement(form.get('message')) }}
+
+<hr>
+
+
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

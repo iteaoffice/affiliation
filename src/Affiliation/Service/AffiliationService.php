@@ -12,9 +12,11 @@ namespace Affiliation\Service;
 use Affiliation\Entity\Affiliation;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
 use Organisation\Service\OrganisationService;
 use Project\Entity\Project;
+use Project\Entity\Version\Version;
 use Project\Service\ProjectService;
 
 /**
@@ -32,8 +34,8 @@ class AffiliationService extends ServiceAbstract
     /**
      * Constant to determine which affiliations must be taken from the database
      */
-    const WHICH_ALL           = 1;
-    const WHICH_ONLY_ACTIVE   = 2;
+    const WHICH_ALL = 1;
+    const WHICH_ONLY_ACTIVE = 2;
     const WHICH_ONLY_INACTIVE = 3;
     /**
      * @var Affiliation
@@ -69,6 +71,24 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * Checks if the affiliation has a DOA
+     *
+     * @return bool
+     */
+    public function hasDoa()
+    {
+        return !is_null($this->affiliation->getDoa());
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLoi()
+    {
+        return !is_null($this->affiliation->getLoi());
+    }
+
+    /**
      * @param Project $project
      * @param int     $which
      *
@@ -77,11 +97,32 @@ class AffiliationService extends ServiceAbstract
     public function findAffiliationByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {
         $affiliations = $this->getEntityManager()
-                             ->getRepository($this->getFullEntityName('Affiliation'))
-                             ->findAffiliationByProjectAndWhich($project, $which);
+            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->findAffiliationByProjectAndWhich($project, $which);
         foreach ($affiliations as $affiliation) {
             yield $this->createServiceElement($affiliation);
         }
+    }
+
+    /**
+     * @param Version $version
+     * @param int     $which
+     *
+     * @return ArrayCollection
+     */
+    public function findAffiliationByProjectVersionAndWhich(Version $version, $which = self::WHICH_ALL)
+    {
+        $affiliations = $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->findAffiliationByProjectVersionAndWhich($version, $which);
+
+        $result = new ArrayCollection();
+
+        foreach ($affiliations as $affiliation) {
+            $result->add($affiliation);
+        }
+
+        return $result;
     }
 
     /**
@@ -97,15 +138,81 @@ class AffiliationService extends ServiceAbstract
         $which = self::WHICH_ONLY_ACTIVE
     ) {
         $affiliations = $this->getEntityManager()
-                             ->getRepository($this->getFullEntityName('Affiliation'))
-                             ->findAffiliationByProjectAndCountryAndWhich(
-                                 $project,
-                                 $country,
-                                 $which
-                             );
+            ->getRepository($this->getFullEntityName('affiliation'))
+            ->findAffiliationByProjectAndCountryAndWhich(
+                $project,
+                $country,
+                $which
+            );
         foreach ($affiliations as $affiliation) {
             yield $this->createServiceElement($affiliation);
         }
+    }
+
+    /**
+     * @param Project $project
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return \Generator
+     */
+    public function findAmountOfAffiliationByProjectAndCountryAndWhich(
+        Project $project,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        return $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('affiliation'))
+            ->findAmountOfAffiliationByProjectAndCountryAndWhich(
+                $project,
+                $country,
+                $which
+            );
+    }
+
+    /**
+     * @param Version $version
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return \Generator
+     */
+    public function findAffiliationByProjectVersionAndCountryAndWhich(
+        Version $version,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        $affiliations = $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->findAffiliationByProjectVersionAndCountryAndWhich(
+                $version,
+                $country,
+                $which
+            );
+        foreach ($affiliations as $affiliation) {
+            yield $this->createServiceElement($affiliation);
+        }
+    }
+
+    /**
+     * @param Version $version
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return int
+     */
+    public function findAmountOfAffiliationByProjectVersionAndCountryAndWhich(
+        Version $version,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        return $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('Affiliation'))
+            ->findAmountOfAffiliationByProjectVersionAndCountryAndWhich(
+                $version,
+                $country,
+                $which
+            );
     }
 
     /**
@@ -121,7 +228,8 @@ class AffiliationService extends ServiceAbstract
         $which = self::WHICH_ONLY_ACTIVE
     ) {
         $countries = $this->findAffiliationCountriesByProjectAndWhich($project, $which);
-        $result    = new ArrayCollection();
+
+        $result = new ArrayCollection();
         foreach ($countries as $country) {
             /**
              * @var $affiliations Affiliation[]
@@ -151,13 +259,14 @@ class AffiliationService extends ServiceAbstract
          * @var $affiliations Affiliation[]
          */
         $affiliations = $this->getEntityManager()
-                             ->getRepository($this->getFullEntityName('affiliation'))
-                             ->findAffiliationByProjectAndWhich($project, $which);
-        $result       = [];
+            ->getRepository($this->getFullEntityName('affiliation'))
+            ->findAffiliationByProjectAndWhich($project, $which);
+        $result = [];
         foreach ($affiliations as $affiliation) {
             $result[$affiliation->getOrganisation()->getCountry()->getCountry()] =
                 $affiliation->getOrganisation()->getCountry();
         }
+
         ksort($result);
 
         return $result;
@@ -179,7 +288,7 @@ class AffiliationService extends ServiceAbstract
          * If the contact has no contact organisation, return null because we will not have a affiliation
          */
         if (is_null($contact->getContactOrganisation())) {
-            return null;
+            return;
         }
         foreach ($project->getAffiliation() as $affiliation) {
             if ($which === self::WHICH_ONLY_ACTIVE && !is_null($affiliation->getDateEnd())) {
@@ -190,13 +299,37 @@ class AffiliationService extends ServiceAbstract
             }
             if ($affiliation->getOrganisation()->getId() ===
                 $contact->getContactOrganisation()->getOrganisation()
-                        ->getId()
+                    ->getId()
             ) {
                 return $affiliation;
             }
         }
 
-        return null;
+        return;
+    }
+
+    /**
+     * Give a list of all affiliations which do not have a doa
+     *
+     * @return Affiliation[]
+     */
+    public function findAffiliationWithMissingDoa()
+    {
+        return $this->getEntityManager()->getRepository(
+            $this->getFullEntityName('affiliation')
+        )->findAffiliationWithMissingDoa();
+    }
+
+    /**
+     * Give a list of all affiliations which do not have a doa
+     *
+     * @return QueryBuilder
+     */
+    public function findAffiliationWithMissingLoi()
+    {
+        return $this->getEntityManager()->getRepository(
+            $this->getFullEntityName('affiliation')
+        )->findAffiliationWithMissingLoi();
     }
 
     /**
@@ -210,7 +343,7 @@ class AffiliationService extends ServiceAbstract
         $affiliation->setDateEnd(new \DateTime());
         $this->updateEntity($affiliation);
         $editYearRange = $projectService->parseEditYearRange();
-        $minEditYear   = array_shift($editYearRange);
+        $minEditYear = array_shift($editYearRange);
         /**
          * Remove the current cost and effort of the affiliation
          */
@@ -246,9 +379,9 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseRenameOptions()
     {
-        $options      = [];
+        $options = [];
         $organisation = $this->getAffiliation()->getOrganisation();
-        $contact      = $this->getAffiliation()->getContact();
+        $contact = $this->getAffiliation()->getContact();
         /**
          * Go over the organisation and grab all its affiliations
          */
@@ -341,10 +474,14 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param \Affiliation\Entity\Affiliation $affiliation
+     *
+     * @return $this;
      */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
+
+        return $this;
     }
 
     /**

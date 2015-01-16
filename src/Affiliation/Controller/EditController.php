@@ -11,15 +11,18 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity\Description;
 use Affiliation\Entity\Financial;
+use Affiliation\Form\AddAssociate;
 use Affiliation\Form\Affiliation as AffiliationForm;
 use Affiliation\Form\Financial as FinancialForm;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Service\ContactServiceAwareInterface;
 use General\Entity\Country;
+use General\Service\GeneralServiceAwareInterface;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type as OrganisationType;
 use Organisation\Service\OrganisationServiceAwareInterface;
+use Project\Service\ProjectService;
 use Project\Service\ProjectServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
@@ -29,6 +32,7 @@ use Zend\View\Model\ViewModel;
  */
 class EditController extends AffiliationAbstractController implements
     ProjectServiceAwareInterface,
+    GeneralServiceAwareInterface,
     OrganisationServiceAwareInterface,
     ContactServiceAwareInterface
 {
@@ -51,21 +55,17 @@ class EditController extends AffiliationAbstractController implements
         if ($projectService->isEmpty()) {
             return $this->notFoundAction();
         }
-        $formData                = [];
+        $formData = [];
         $formData['affiliation'] = sprintf(
             "%s|%s",
             $affiliationService->getAffiliation()->getOrganisation()->getId(),
             $affiliationService->getAffiliation()->getBranch()
         );
-        $formData['technical']   = $affiliationService->getAffiliation()->getContact()->getId();
-        $formData['valueChain']  = $affiliationService->getAffiliation()->getValueChain();
-        /**
-         * Check if the organisation has a financial contact
-         */
-        if (!is_null($affiliationService->getAffiliation()->getOrganisation()->getFinancial())) {
-            $formData['preferredDelivery'] = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
-                                                                ->getEmail();
-        }
+        $formData['technical'] = $affiliationService->getAffiliation()->getContact()->getId();
+        $formData['valueChain'] = $affiliationService->getAffiliation()->getValueChain();
+        $formData['marketAccess'] = $affiliationService->getAffiliation()->getMarketAccess();
+        $formData['mainContribution'] = $affiliationService->getAffiliation()->getMainContribution();
+
         /**
          * Check if the organisation has a financial contact
          */
@@ -75,13 +75,20 @@ class EditController extends AffiliationAbstractController implements
         $form = new AffiliationForm($affiliationService);
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
-            $formData    = $form->getData();
+            $formData = $form->getData();
             $affiliation = $affiliationService->getAffiliation();
             /**
              * When the deactivate button is pressed, handle this in the service layer
              */
             if (!is_null($formData['deactivate'])) {
                 $this->getAffiliationService()->deactivateAffiliation($affiliation);
+
+                //Update the rationale for public funding
+                $this->getProjectService()->updateCountryRationaleByAffiliation(
+                    $affiliation,
+                    ProjectService::AFFILIATION_DEACTIVATE
+                );
+
                 $this->flashMessenger()->setNamespace('success')->addMessage(
                     sprintf(
                         _("txt-affiliation-%s-has-successfully-been-deactivated"),
@@ -90,9 +97,8 @@ class EditController extends AffiliationAbstractController implements
                 );
 
                 return $this->redirect()->toRoute(
-                    'community/project/project',
-                    array('docRef' => $projectService->getProject()->getDocRef()),
-                    array('fragment' => 'partners')
+                    'community/project/project/partners',
+                    ['docRef' => $projectService->getProject()->getDocRef()]
                 );
             }
             /**
@@ -100,6 +106,13 @@ class EditController extends AffiliationAbstractController implements
              */
             if (!is_null($formData['reactivate'])) {
                 $this->getAffiliationService()->reactivateAffiliation($affiliation);
+
+                //Update the rationale for public funding
+                $this->getProjectService()->updateCountryRationaleByAffiliation(
+                    $affiliation,
+                    ProjectService::AFFILIATION_REACTIVATE
+                );
+
                 $this->flashMessenger()->setNamespace('success')->addMessage(
                     sprintf(
                         _("txt-affiliation-%s-has-successfully-been-reactivated"),
@@ -109,9 +122,9 @@ class EditController extends AffiliationAbstractController implements
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
-                    array(
+                    [
                         'id' => $affiliationService->getAffiliation()->getId()
-                    )
+                    ]
                 );
             }
             /**
@@ -124,6 +137,8 @@ class EditController extends AffiliationAbstractController implements
             $affiliation->setBranch($branch);
             $this->getAffiliationService()->updateEntity($affiliation);
             $affiliation->setValueChain($formData['valueChain']);
+            $affiliation->setMainContribution($formData['mainContribution']);
+            $affiliation->setMarketAccess($formData['marketAccess']);
             /**
              * Handle the financial organisation
              */
@@ -135,33 +150,25 @@ class EditController extends AffiliationAbstractController implements
             $financial->setBranch($branch);
             $financial->setContact($this->getContactService()->setContactId($formData['financial'])->getContact());
             $this->getAffiliationService()->updateEntity($financial);
-            /**
-             * Handle the preferred delivery for the organisation (OrganisationFinancial)
-             */
-            if (is_null($organisationFinancial = $affiliation->getOrganisation()->getFinancial())) {
-                $organisationFinancial = new \Organisation\Entity\Financial();
-                $organisationFinancial->setOrganisation($affiliation->getOrganisation());
-            }
-            $organisationFinancial->setEmail((bool) $formData['preferredDelivery']);
-            $this->getOrganisationService()->updateEntity($organisationFinancial);
+
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
             );
 
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
-                array(
+                [
                     'id' => $affiliationService->getAffiliation()->getId()
-                )
+                ]
             );
         }
 
         return new ViewModel(
-            array(
+            [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
-            )
+                'form'               => $form,
+            ]
         );
     }
 
@@ -189,30 +196,39 @@ class EditController extends AffiliationAbstractController implements
         if ($organisationService->isEmpty()) {
             return $this->notFoundAction();
         }
-        $formData              = [];
-        $branch                = null;
-        $branch                = $affiliationService->getAffiliation()->getFinancial()->getBranch();
-        $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getDisplayName();
-        $contactService        = $this->getContactService()->setContact(
-            $affiliationService->getAffiliation()->getFinancial()->getContact()
-        );
-        if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
-            $financialAddress    = $contactService->getFinancialAddress()->getAddress();
-            $formData['address'] = $financialAddress->getAddress();
-            $formData['zipCode'] = $financialAddress->getZipCode();
-            $formData['city']    = $financialAddress->getCity();
-            $formData['country'] = $financialAddress->getCountry()->getId();
+        $formData = [];
+        $branch = null;
+        $financialAddress = null;
+
+        if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
+            $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
+            $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact(
+            )->getDisplayName();
+
+            $contactService = clone $this->getContactService()->setContact(
+                $affiliationService->getAffiliation()->getFinancial()->getContact()
+            );
+            $formData['contact'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getId();
+
+            if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
+                $financialAddress = $contactService->getFinancialAddress()->getAddress();
+                $formData['address'] = $financialAddress->getAddress();
+                $formData['zipCode'] = $financialAddress->getZipCode();
+                $formData['city'] = $financialAddress->getCity();
+                $formData['country'] = $financialAddress->getCountry()->getId();
+            }
         }
-        $formData['organisation']      = $organisationService->parseOrganisationWithBranch($branch);
+        $formData['organisation'] = $organisationService->parseOrganisationWithBranch($branch);
         $formData['registeredCountry'] = $organisationService->getOrganisation()->getCountry()->getId();
         if (!is_null(
             $organisationFinancial = $affiliationService->getAffiliation()->getOrganisation()->getFinancial()
         )
         ) {
             $formData['preferredDelivery'] = $organisationFinancial->getEmail();
-            $formData['vat']               = $organisationFinancial->getVat();
-            $formData['omitContact']       = $organisationFinancial->getOmitContact();
+            $formData['vat'] = $organisationFinancial->getVat();
+            $formData['omitContact'] = $organisationFinancial->getOmitContact();
         }
+
         $form = new FinancialForm($affiliationService, $this->getGeneralService());
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
@@ -221,10 +237,12 @@ class EditController extends AffiliationAbstractController implements
              * This form is a aggregation of multiple form elements, so we treat it step by step
              */
             /**
-             * If the organisation or country has changed, find the new
+             * If the organisation or country has changed or is not set, find the new
              */
             if ($formData['organisation'] !== $organisationService->parseOrganisationWithBranch($branch) ||
-                intval($formData['country']) !== $financialAddress->getCountry()->getId()
+                is_null($financialAddress) ||
+                intval($formData['country']) !== $financialAddress->getCountry()->getId() ||
+                intval($formData['contact']) !== $financialAddress->getContact()->getId()
             ) {
                 /**
                  * The organisation, or country has changed, so try to find this country in the database
@@ -252,16 +270,25 @@ class EditController extends AffiliationAbstractController implements
                     $organisation->setType($organisationType);
                 }
                 $affiliationFinancial = $this->getAffiliationService()->getAffiliation()->getFinancial();
+                if (is_null($affiliationFinancial)) {
+                    $affiliationFinancial = new Financial();
+                    $affiliationFinancial->setAffiliation($this->getAffiliationService()->getAffiliation());
+                }
+                $affiliationFinancial->setContact(
+                    $this->getContactService()->setContactId($formData['contact'])->getContact()
+                );
                 $affiliationFinancial->setOrganisation($organisation);
                 $affiliationFinancial->setBranch(
                     trim(substr($formData['organisation'], strlen($organisation->getOrganisation())))
                 );
                 $this->getAffiliationService()->updateEntity($affiliationFinancial);
+            } else {
+                $affiliationFinancial = $this->getAffiliationService()->getAffiliation()->getFinancial();
             }
             /**
-             * The presence of a VAT number triggers the creation of a financial organiation
+             * The presence of a VAT number triggers the creation of a financial organisation
              */
-            if (empty($formData['vat'])) {
+            if (!empty($formData['vat'])) {
                 if (is_null($affiliationService->getAffiliation()->getOrganisation()->getFinancial())) {
                     $organisationFinancial = new \Organisation\Entity\Financial();
                 } else {
@@ -269,15 +296,14 @@ class EditController extends AffiliationAbstractController implements
                 }
                 $organisationFinancial->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
                 $organisationFinancial->setVat($formData['vat']);
+                $organisationFinancial->setEmail($formData['preferredDelivery']);
                 $organisationFinancial->setOmitContact($formData['omitContact']);
                 $this->getOrganisationService()->updateEntity($organisationFinancial);
             }
             /**
              * save the financial address
              */
-            $contactService = $this->getContactService()->setContact(
-                $affiliationService->getAffiliation()->getFinancial()->getContact()
-            );
+            $contactService = clone $this->getContactService()->setContact($affiliationFinancial->getContact());
             if (!is_null($contactService->getFinancialAddress())) {
                 $financialAddress = $contactService->getFinancialAddress()->getAddress();
             } else {
@@ -310,9 +336,9 @@ class EditController extends AffiliationAbstractController implements
 
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
-                array(
+                [
                     'id' => $affiliationService->getAffiliation()->getId()
-                )
+                ]
             );
         }
 
@@ -320,7 +346,57 @@ class EditController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
+            ]
+        );
+    }
+
+    /**
+     * @return array|ViewModel
+     */
+    public function addAssociateAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+        if ($affiliationService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        $projectService = $this->getProjectService()->setProject(
+            $affiliationService->getAffiliation()->getProject()
+        );
+        if ($projectService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray()
+        );
+
+        $form = new AddAssociate($affiliationService, $this->getContactService());
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            if (empty($form->getData()['cancel'])) {
+                $affiliation = $affiliationService->getAffiliation();
+                $affiliation->addAssociate(
+                    $this->getContactService()->setContactId($form->getData()['contact'])->getContact()
+                );
+                $this->getAffiliationService()->updateEntity($affiliation);
+            }
+
+            return $this->redirect()->toRoute(
+                'community/affiliation/affiliation',
+                ['id' => $affiliationService->getAffiliation()->getId()],
+                ['fragment' => 'contact']
+            );
+        }
+
+        return new ViewModel(
+            [
+                'affiliationService' => $affiliationService,
+                'projectService'     => $projectService,
+                'form'               => $form,
             ]
         );
     }
@@ -357,13 +433,14 @@ class EditController extends AffiliationAbstractController implements
                 $description = $form->getData();
                 $description->setAffiliation(
                     [
-                        $affiliationService->getAffiliation()
+                        $affiliationService->getAffiliation(),
                     ]
                 );
                 $description->setContact($this->zfcUserAuthentication()->getIdentity());
                 $this->getAffiliationService()->updateEntity($description);
             }
-            $this->redirect()->toRoute(
+
+            return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
                 ['id' => $affiliationService->getAffiliation()->getId()],
                 ['fragment' => 'description']
@@ -374,7 +451,7 @@ class EditController extends AffiliationAbstractController implements
             [
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
-                'form'               => $form
+                'form'               => $form,
             ]
         );
     }

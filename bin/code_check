@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+SRC_DIR="`pwd`"
+cd "`dirname "$0"`"
+
+./../../../bin/parallel-lint ./../src
+./../../../bin/twig-lint lint ./../view/
+./../../../bin/php-cs-fixer fix -v ./../src
+./../../../bin/phpcs -n -p --standard=PSR2 ./../src/

@@ -20,7 +20,8 @@ use Zend\Form\Form;
 class Financial extends Form
 {
     /**
-     * Class constructor
+     * @param AffiliationService $affiliationService
+     * @param GeneralService     $generalService
      */
     public function __construct(AffiliationService $affiliationService, GeneralService $generalService)
     {
@@ -33,163 +34,195 @@ class Financial extends Form
         }
         asort($countries);
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'organisation',
-                'options'    => array(
+                'options'    => [
                     'label' => _("txt-organisation-name"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'registeredCountry',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $countries,
                     'label'         => _("txt-registered-country"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'vat',
-                'options'    => array(
+                'options'    => [
                     'label' => _("txt-vat-number"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'attention',
-                'options'    => array(
+                'options'    => [
                     'label'      => _("txt-attention"),
-                    'help-block' => _("txt-financial-attention-form-element-explanation")
-                ),
-                'attributes' => array(
+                    'help-block' => _("txt-financial-attention-form-element-explanation"),
+                ],
+                'attributes' => [
                     'class'       => 'form-control',
-                    'placeholder' => _("txt-financial-attention-placeholder")
-                )
-            )
+                    'placeholder' => _("txt-financial-attention-placeholder"),
+                ],
+            ]
+        );
+        /**
+         * Collect the financial contacts
+         */
+        $financialContactValueOptions = [];
+
+        $financialContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()] =
+            $affiliationService->getAffiliation()->getContact()->getFormName();
+        foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
+            $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
+        }
+        $organisation = $affiliationService->getAffiliation()->getOrganisation();
+        foreach ($organisation->getAffiliation() as $affiliation) {
+            if (!is_null($affiliation->getFinancial())) {
+                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()] =
+                    $affiliation->getFinancial()->getContact()->getFormName();
+            }
+        }
+
+        asort($financialContactValueOptions);
+
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Select',
+                'name'       => 'contact',
+                'options'    => [
+                    'value_options' => $financialContactValueOptions,
+                    'label'         => _("txt-financial-contact"),
+                ],
+                'attributes' => [
+                    'class'    => 'form-control',
+                    'required' => true,
+                ],
+            ]
         );
         $organisationFinancial = new FinancialOrganisation();
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Radio',
                 'name'       => 'omitContact',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $organisationFinancial->getOmitContactTemplates(),
                     'label'         => _("txt-omit-contact"),
-                ),
-                'attributes' => array(
-                    'class'    => 'form-control',
+                ],
+                'attributes' => [
                     'required' => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
-                'type'       => 'Zend\Form\Element\Text',
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'address',
-                'options'    => array(
+                'options'    => [
                     'label' => _("txt-address"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'       => 'form-control',
                     'placeholder' => _("txt-address-placeholder"),
                     'required'    => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'zipCode',
-                'options'    => array(
+                'options'    => [
                     'label' => _("txt-zip-code"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'       => 'form-control',
                     'placeholder' => _("txt-zip-code-placeholder"),
                     'required'    => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'city',
-                'options'    => array(
+                'options'    => [
                     'label' => _("txt-city"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'       => 'form-control',
                     'placeholder' => _("txt-city-placeholder"),
                     'required'    => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'country',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $countries,
                     'label'         => _("txt-country"),
-                ),
-                'attributes' => array(
+                ],
+                'attributes' => [
                     'class'    => 'form-control',
                     'required' => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Radio',
                 'name'       => 'preferredDelivery',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $organisationFinancial->getEmailTemplates(),
                     'label'         => _("txt-preferred-delivery"),
-                ),
-                'attributes' => array(
-                    'class'    => 'form-control',
+                ],
+                'attributes' => [
                     'required' => true,
-                )
-            )
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update")
-                )
-            )
+                    'value' => _("txt-update"),
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'cancel',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                )
-            )
+                    'value' => _("txt-cancel"),
+                ],
+            ]
         );
     }
 }

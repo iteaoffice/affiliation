@@ -1,0 +1,37 @@
+<h1>{{ translate("txt-letter-of-intent") }}</h1>
+
+<dl class="dl-horizontal">
+    <dt>{{ translate("txt-loi-id") }}</dt>
+    <dd>{{ loi.id }}</dd>
+    <dt>{{ translate("txt-project") }}</dt>
+    {% set projectService = projectServiceProxy(loi.affiliation.project) %}
+    <dd>{{ projectLink(projectService, 'view-admin', 'name') }}</dd>
+    <dt>{{ translate("txt-project-partner") }}</dt>
+    <dd>{{ loi.affiliation.organisation }}</dd>
+    <dt>{{ translate("txt-partner") }}</dt>
+    <dd>{{ loi.affiliation.organisation }}</dd>
+    <dt>{{ translate("txt-date-uploaded") }}</dt>
+    <dd>{{ loi.affiliation.dateCreated|string_date }}</dd>
+    <dt>{{ translate("txt-signer") }}</dt>
+    <dd>{{ contactLink(loi.contact, 'view-admin', 'name') }}</dd>
+    <dt>{{ translate("txt-date-signed") }}</dt>
+    {% if loi.dateSigned %}
+        <dd>{{ loi.dateSigned|string_date }}</dd>
+    {% else %}
+        <dd>{{ translate("txt-this-loi-has-not-been-signed") }}</dd>
+    {% endif %}
+    <dt>{{ translate("txt-date-approved") }}</dt>
+    {% if loi.dateApproved %}
+        <dd>{{ loi.dateApproved|string_date }}</dd>
+    {% else %}
+        <dd>{{ translate("txt-this-loi-has-not-been-approved") }}</dd>
+    {% endif %}
+    {% if loi.contentType %}
+        <dt>{{ translate("txt-content-type") }}</dt>
+        <dd>{{ contentTypeIcon(loi.contentType) }} {{ loi.contentType.description }} ({{ loi.size|parse_size }})</dd>
+    {% endif %}
+    <dt>{{ translate("txt-download") }}</dt>
+    <dd>{{ loiLink(loi,'download','text') }}</dd>
+</dl>
+
+{{ loiLink(loi,'edit-admin','button') }}

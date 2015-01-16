@@ -27,7 +27,8 @@ interface AffiliationServiceAwareInterface
     /**
      * The affiliation service
      *
-     * @param AffiliationService $affiliationService
+     * @param  AffiliationService                                         $affiliationService
+     * @return \Affiliation\Controller\AffiliationAbstractController|null
      */
     public function setAffiliationService(AffiliationService $affiliationService);
 

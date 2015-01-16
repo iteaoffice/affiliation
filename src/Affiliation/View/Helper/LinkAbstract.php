@@ -87,19 +87,19 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
         /**
          * @var $serverUrl ServerUrl
          */
-        $serverUrl         = $this->serviceLocator->get('serverUrl');
+        $serverUrl = $this->serviceLocator->get('serverUrl');
         $this->linkContent = [];
-        $this->classes     = [];
+        $this->classes = [];
         $this->parseAction();
         $this->parseShow();
         if ('social' === $this->getShow()) {
-            return $serverUrl->__invoke() . $url($this->router, $this->routerParams);
+            return $serverUrl->__invoke().$url($this->router, $this->routerParams);
         }
         $uri = '<a href="%s" title="%s" class="%s">%s</a>';
 
         return sprintf(
             $uri,
-            $serverUrl() . $url($this->router, $this->routerParams),
+            $serverUrl().$url($this->router, $this->routerParams),
             $this->text,
             implode(' ', $this->classes),
             implode('', $this->linkContent)
@@ -121,25 +121,30 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     {
         switch ($this->getShow()) {
             case 'icon':
+            case 'button':
                 switch ($this->getAction()) {
                     case 'edit':
-                        $this->addLinkContent('<span class="glyphicon glyphicon-edit"></span>');
+                    case 'edit-description':
+                    case 'edit-community':
+                    case 'edit-financial':
+                        $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
                         break;
                     case 'download':
-                        $this->addLinkContent('<span class="glyphicon glyphicon-download"></span>');
+                        $this->addLinkContent('<i class="fa fa-download"></i>');
                         break;
                     case 'replace':
                         $this->addLinkContent('<span class="glyphicon glyphicon-repeat"></span>');
                         break;
                     default:
-                        $this->addLinkContent('<span class="glyphicon glyphicon-info-sign"></span>');
+                        $this->addLinkContent('<i class="fa fa-link"></i>');
                         break;
                 }
+                if ($this->getShow() === 'button') {
+                    $this->addLinkContent(' '.$this->getText());
+                    $this->addClasses("btn btn-primary");
+                }
                 break;
-            case 'button':
-                $this->addLinkContent('<span class="glyphicon glyphicon-info"></span> ' . $this->getText());
-                $this->addClasses("btn btn-primary");
-                break;
+
             case 'text':
                 $this->addLinkContent($this->getText());
                 break;
@@ -156,7 +161,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                  * Social is treated in the createLink function, no content needs to be created
                  */
 
-                return null;
+                return;
                 break;
             default:
                 if (!array_key_exists($this->getShow(), $this->showOptions)) {
@@ -213,7 +218,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     public function addLinkContent($linkContent)
     {
         if (!is_array($linkContent)) {
-            $linkContent = array($linkContent);
+            $linkContent = [$linkContent];
         }
         foreach ($linkContent as $content) {
             $this->linkContent[] = $content;
@@ -246,7 +251,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     public function addClasses($classes)
     {
         if (!is_array($classes)) {
-            $classes = array($classes);
+            $classes = [$classes];
         }
         foreach ($classes as $class) {
             $this->classes[] = $class;
@@ -423,7 +428,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
      * @return string
      */

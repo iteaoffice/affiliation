@@ -12,13 +12,18 @@ namespace Affiliation\Controller;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Affiliation\Service\ConfigAwareInterface;
+use Affiliation\Service\DoaService;
 use Affiliation\Service\FormService;
 use Affiliation\Service\FormServiceAwareInterface;
+use Affiliation\Service\LoiService;
 use Contact\Service\ContactService;
+use General\Service\EmailService;
 use General\Service\GeneralService;
+use Mailing\Service\MailingService;
 use Organisation\Service\OrganisationService;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
+use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
@@ -52,6 +57,10 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      */
     protected $projectService;
     /**
+     * @var WorkpackageService
+     */
+    protected $workpackageService;
+    /**
      * @var ContactService
      */
     protected $contactService;
@@ -63,6 +72,22 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      * @var GeneralService
      */
     protected $generalService;
+    /**
+     * @var MailingService
+     */
+    protected $mailingService;
+    /**
+     * @var EmailService
+     */
+    protected $emailService;
+    /**
+     * @var DoaService
+     */
+    protected $doaService;
+    /**
+     * @var LoiService
+     */
+    protected $loiService;
     /**
      * @var array
      */
@@ -224,6 +249,106 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     public function setProjectService(ProjectService $projectService)
     {
         $this->projectService = $projectService;
+
+        return $this;
+    }
+
+    /**
+     * @return WorkpackageService
+     */
+    public function getWorkpackageService()
+    {
+        return $this->workpackageService;
+    }
+
+    /**
+     * @param WorkpackageService $workpackageService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setWorkpackageService(WorkpackageService $workpackageService)
+    {
+        $this->workpackageService = $workpackageService;
+
+        return $this;
+    }
+
+    /**
+     * @return LoiService
+     */
+    public function getLoiService()
+    {
+        return $this->loiService;
+    }
+
+    /**
+     * @param LoiService $loiService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setLoiService(LoiService $loiService)
+    {
+        $this->loiService = $loiService;
+
+        return $this;
+    }
+
+    /**
+     * @return DoaService
+     */
+    public function getDoaService()
+    {
+        return $this->doaService;
+    }
+
+    /**
+     * @param DoaService $doaService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setDoaService(DoaService $doaService)
+    {
+        $this->doaService = $doaService;
+
+        return $this;
+    }
+
+    /**
+     * @return MailingService
+     */
+    public function getMailingService()
+    {
+        return $this->mailingService;
+    }
+
+    /**
+     * @param MailingService $mailingService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setMailingService(MailingService $mailingService)
+    {
+        $this->mailingService = $mailingService;
+
+        return $this;
+    }
+
+    /**
+     * @return EmailService
+     */
+    public function getEmailService()
+    {
+        return $this->emailService;
+    }
+
+    /**
+     * @param EmailService $emailService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setEmailService(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
 
         return $this;
     }

@@ -14,20 +14,24 @@ use Affiliation\Controller\ControllerInitializer;
 use Affiliation\Navigation\Factory\AffiliationNavigationServiceFactory;
 use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Affiliation\Service\AffiliationService;
+use Affiliation\Service\DoaService;
 use Affiliation\Service\FormService;
+use Affiliation\Service\LoiService;
 use Affiliation\Service\ServiceInitializer;
 
-$config      = [
+$config = [
     'controllers'     => [
         'initializers' => [
             ControllerInitializer::class
         ],
         'invokables'   => [
-            'affiliation-community' => 'Affiliation\Controller\CommunityController',
-            'affiliation-manager'   => 'Affiliation\Controller\AffiliationManagerController',
-            'affiliation-doa'       => 'Affiliation\Controller\DoaController',
-            'affiliation-loi'       => 'Affiliation\Controller\LoiController',
-            'affiliation-edit'      => 'Affiliation\Controller\EditController',
+            'affiliation-community'   => 'Affiliation\Controller\CommunityController',
+            'affiliation-manager'     => 'Affiliation\Controller\AffiliationManagerController',
+            'affiliation-doa'         => 'Affiliation\Controller\DoaController',
+            'affiliation-loi'         => 'Affiliation\Controller\LoiController',
+            'affiliation-edit'        => 'Affiliation\Controller\EditController',
+            'affiliation-doa-manager' => 'Affiliation\Controller\DoaManagerController',
+            'affiliation-loi-manager' => 'Affiliation\Controller\LoiManagerController',
         ],
     ],
     'service_manager' => [
@@ -36,12 +40,16 @@ $config      = [
         ],
         'invokables'   => [
             AffiliationService::class             => AffiliationService::class,
+            DoaService::class                     => DoaService::class,
+            LoiService::class                     => LoiService::class,
             FormService::class                    => FormService::class,
             AffiliationAssertion::class           => AffiliationAssertion::class,
             DoaAssertion::class                   => DoaAssertion::class,
             LoiAssertion::class                   => LoiAssertion::class,
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
             'affiliation_description_form_filter' => 'Affiliation\Form\FilterCreateObject',
+            'affiliation_loi_form_filter'         => 'Affiliation\Form\FilterCreateObject',
+            'affiliation_doa_form_filter'         => 'Affiliation\Form\FilterCreateObject',
         ],
         'factories'    => [
             'affiliation_module_options'        => 'Affiliation\Service\OptionServiceFactory',
@@ -51,6 +59,7 @@ $config      = [
     'view_helpers'    => [
         'invokables' => [
             'affiliationLink' => 'Affiliation\View\Helper\AffiliationLink',
+            'paginationLink'  => 'Affiliation\View\Helper\PaginationLink',
             'doaLink'         => 'Affiliation\View\Helper\DoaLink',
             'loiLink'         => 'Affiliation\View\Helper\LoiLink',
         ]

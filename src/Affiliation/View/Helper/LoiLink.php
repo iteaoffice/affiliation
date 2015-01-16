@@ -51,9 +51,9 @@ class LoiLink extends LinkAbstract
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
-            array(
+            [
                 'name' => $this->getLoi(),
-            )
+            ]
         );
         if (!$this->hasAccess(
             $this->getLoi(),
@@ -61,10 +61,13 @@ class LoiLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return 'Access denied';
+            return '';
         }
         $this->addRouterParam('entity', 'Loi');
-        $this->addRouterParam('id', $this->getLoi()->getId());
+        if (!is_null($loi)) {
+            $this->addRouterParam('id', $this->getLoi()->getId());
+            $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
+        }
         $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
 
         return $this->createLink();
@@ -113,6 +116,47 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'remind-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/remind');
+                $this->setText($this->translate("txt-send-reminder"));
+                break;
+            case 'approval-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/approval');
+                $this->setText($this->translate("txt-approval-loi"));
+                break;
+            case 'missing-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/missing');
+                $this->setText($this->translate("txt-missing-loi"));
+                break;
+            case 'reminders-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/reminders');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-see-reminders-%s-sent"),
+                        $this->getAffiliation()->getLoiReminder()->count()
+                    )
+                );
+                break;
+            case 'view-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/view');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-view-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->getProject()
+                    )
+                );
+                break;
+            case 'edit-admin':
+                $this->setRouter('zfcadmin/affiliation-manager/loi/edit');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-edit-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getLoi()->getAffiliation()->getOrganisation(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )

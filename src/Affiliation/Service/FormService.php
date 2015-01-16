@@ -34,17 +34,17 @@ class FormService implements ServiceLocatorAwareInterface
      * @param null $entity
      * @param bool $bind
      *
-     * @return array|object
+     * @return \Zend\Form\Form
      */
     private function getForm($className = null, $entity = null, $bind = true)
     {
         if (!$entity) {
             $entity = $this->getAffiliationService()->getEntity($className);
         }
-        $formName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form';
-        $form     = $this->getServiceLocator()->get($formName);
-        $filterName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form_filter';
-        $filter     = $this->getServiceLocator()->get($filterName);
+        $formName = 'affiliation_'.$entity->get('underscore_entity_name').'_form';
+        $form = $this->getServiceLocator()->get($formName);
+        $filterName = 'affiliation_'.$entity->get('underscore_entity_name').'_form_filter';
+        $filter = $this->getServiceLocator()->get($filterName);
         $form->setInputFilter($filter);
         if ($bind) {
             $form->bind($entity);
@@ -54,9 +54,9 @@ class FormService implements ServiceLocatorAwareInterface
     }
 
     /**
-     * @param       $className
-     * @param null  $entity
-     * @param array $data
+     * @param string $className
+     * @param null   $entity
+     * @param array  $data
      *
      * @return array|object
      */
@@ -84,7 +84,7 @@ class FormService implements ServiceLocatorAwareInterface
     public function getAffiliationService()
     {
         if (null === $this->affiliationService) {
-            $this->affiliationService = $this->getServiceLocator()->get('affiliation_generic_service');
+            $this->affiliationService = $this->getServiceLocator()->get(AffiliationService::class);
         }
 
         return $this->affiliationService;

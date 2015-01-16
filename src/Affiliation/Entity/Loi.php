@@ -12,16 +12,13 @@ namespace Affiliation\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
-use Zend\InputFilter\Factory as InputFactory;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
  * ProjectLoi
  *
  * @ORM\Table(name="project_loi")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Affiliation\Repository\Loi")
  */
 class Loi extends EntityAbstract implements ResourceInterface
 {
@@ -34,11 +31,17 @@ class Loi extends EntityAbstract implements ResourceInterface
     private $id;
     /**
      * @ORM\Column(name="date_signed", type="date", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Attributes({"step":"any"})
+     * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
      * @var \DateTime
      */
     private $dateSigned;
     /**
      * @ORM\Column(name="date_approved", type="datetime", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Attributes({"step":"any"})
+     * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
      * @var \DateTime
      */
     private $dateApproved;
@@ -55,7 +58,7 @@ class Loi extends EntityAbstract implements ResourceInterface
      */
     private $size;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist"}, mappedBy="loi")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist","remove"}, mappedBy="loi")
      * @Annotation\Exclude()
      * @var \Affiliation\Entity\LoiObject[]
      */
@@ -124,44 +127,11 @@ class Loi extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function __toString()
     {
         return sprintf("Loi: %s", $this->id);
-    }
-
-    /**
-     * @param InputFilterInterface $inputFilter
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function setInputFilter(InputFilterInterface $inputFilter)
-    {
-        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $factory     = new InputFactory();
-            $inputFilter->add(
-                $factory->createInput(
-                    array(
-                        'name'     => 'contact',
-                        'required' => false,
-                    )
-                )
-            );
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
     }
 
     /**

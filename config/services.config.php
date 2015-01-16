@@ -18,5 +18,11 @@ return [
         'affiliation_description_form' => function ($sm) {
             return new Form\CreateObject($sm, new Entity\Description());
         },
+        'affiliation_doa_form'         => function ($sm) {
+            return new Form\CreateObject($sm, new Entity\Doa());
+        },
+        'affiliation_loi_form'         => function ($sm) {
+            return new Form\CreateObject($sm, new Entity\Loi());
+        },
     ],
 ];

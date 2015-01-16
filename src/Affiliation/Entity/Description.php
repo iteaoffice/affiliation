@@ -51,7 +51,13 @@ class Description extends EntityAbstract
     /**
      * @ORM\Column(name="description", type="text", nullable=false)
      * @Annotation\Type("\Zend\Form\Element\Textarea")
-     * @Annotation\Options({"label":"txt-affiliation-description","help-block": "txt-affiliation-description-explanation"})
+     * @Annotation\Attributes({
+     * "rows":"12"
+     * })
+     * @Annotation\Options({
+     * "label":"txt-affiliation-description","help-block":
+     * "txt-affiliation-description-explanation"
+     * })
      * @Annotation\Required(true)
      * @var string
      */

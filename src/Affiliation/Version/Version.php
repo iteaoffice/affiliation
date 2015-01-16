@@ -20,7 +20,7 @@ final class Version
     /**
      * Affiliation version identification - see compareVersion()
      */
-    const VERSION = '1.1.1';
+    const VERSION = '1.1.2';
     /**
      * Github Service Identifier for version information is retrieved from
      */
@@ -93,9 +93,9 @@ final class Version
         if (null === $httpClient && !ini_get('allow_url_fopen')) {
             trigger_error(
                 sprintf(
-                    'allow_url_fopen is not set, and no Zend\Http\Client ' .
-                    'was passed. You must either set allow_url_fopen in ' .
-                    'your PHP configuration or pass a configured ' .
+                    'allow_url_fopen is not set, and no Zend\Http\Client '.
+                    'was passed. You must either set allow_url_fopen in '.
+                    'your PHP configuration or pass a configured '.
                     'Zend\Http\Client as the second argument to %s.',
                     __METHOD__
                 ),
@@ -133,11 +133,12 @@ final class Version
     protected static function getLatestFromGithub(Http\Client $httpClient = null)
     {
         $url = 'https://api.github.com/repos/debranova/affiliation/git/refs/tags/release-';
+        $url .= '?client_id=2b1088587b9820f33583&amp;client_secret=1738809f67b3fbf4198f2bc36ef54c52d6a3bb6c';
         if ($httpClient === null) {
-            $context     = stream_context_create(
+            $context = stream_context_create(
                 array(
                     'http' => array(
-                        'user_agent' => sprintf('Zend-Version/%s', self::VERSION),
+                        'user_agent' => sprintf('debranova-version/%s', self::VERSION),
                     ),
                 )
             );

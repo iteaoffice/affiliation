@@ -1,6 +1,7 @@
 debranova/affiliation
 =====================
 
-Version: 1.1.1
+master branch: 1.1-dev
+develop branch: 1.2-dev
 
 Module for the management of affiliates

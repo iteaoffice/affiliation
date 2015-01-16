@@ -9,6 +9,7 @@
  */
 namespace Affiliation\Entity;
 
+use Contact\Entity\Contact;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -43,10 +44,10 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * Templates for the self funded parameter
      * @var array
      */
-    protected $selfFundedTemplates = array(
+    protected $selfFundedTemplates = [
         self::NOT_SELF_FUNDED => 'txt-not-self-funded',
         self::SELF_FUNDED     => 'txt-self-funded',
-    );
+    ];
     /**
      * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
      * @ORM\Id
@@ -76,6 +77,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var string
      */
     private $valueChain;
+    /**
+     * @ORM\Column(name="market_access", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-market-access"})
+     * @var string
+     */
+    private $marketAccess;
+    /**
+     * @ORM\Column(name="main_contribution", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-main-contribution"})
+     * @var string
+     */
+    private $mainContribution;
     /**
      * @ORM\Column(name="self_funded", type="smallint", nullable=false)
      * @Annotation\Type("Zend\Form\Element\Radio")
@@ -272,6 +287,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var \Affiliation\Entity\Doa
      */
     private $doa;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OrderBy=({"DateCreated"="DESC"})
+     * @Annotation\Exclude();
+     * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
+     */
+    private $doaReminder;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OrderBy=({"DateCreated"="DESC"})
+     * @Annotation\Exclude();
+     * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
+     */
+    private $loiReminder;
 
     /**
      * Class constructor
@@ -279,17 +308,19 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function __construct()
     {
         $this->ictOrganisation = new Collections\ArrayCollection();
-        $this->description     = new Collections\ArrayCollection();
-        $this->invoice         = new Collections\ArrayCollection();
-        $this->invoiceCmShare  = new Collections\ArrayCollection();
+        $this->description = new Collections\ArrayCollection();
+        $this->invoice = new Collections\ArrayCollection();
+        $this->invoiceCmShare = new Collections\ArrayCollection();
         $this->invoicePostCalc = new Collections\ArrayCollection();
-        $this->log             = new Collections\ArrayCollection();
-        $this->version         = new Collections\ArrayCollection();
-        $this->associate       = new Collections\ArrayCollection();
-        $this->cost            = new Collections\ArrayCollection();
-        $this->funding         = new Collections\ArrayCollection();
-        $this->effort          = new Collections\ArrayCollection();
-        $this->spent           = new Collections\ArrayCollection();
+        $this->log = new Collections\ArrayCollection();
+        $this->version = new Collections\ArrayCollection();
+        $this->associate = new Collections\ArrayCollection();
+        $this->cost = new Collections\ArrayCollection();
+        $this->funding = new Collections\ArrayCollection();
+        $this->effort = new Collections\ArrayCollection();
+        $this->spent = new Collections\ArrayCollection();
+        $this->doaReminder = new Collections\ArrayCollection();
+        $this->loiReminder = new Collections\ArrayCollection();
         /**
          * Self-funded is default NOT
          */
@@ -362,91 +393,107 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
-            $factory     = new InputFactory();
+            $factory = new InputFactory();
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'       => 'branch',
                         'required'   => false,
-                        'filters'    => array(
-                            array('name' => 'StripTags'),
-                            array('name' => 'StringTrim'),
-                        ),
-                        'validators' => array(
-                            array(
+                        'filters'    => [
+                            ['name' => 'StripTags'],
+                            ['name' => 'StringTrim'],
+                        ],
+                        'validators' => [
+                            [
                                 'name'    => 'StringLength',
-                                'options' => array(
+                                'options' => [
                                     'encoding' => 'UTF-8',
                                     'min'      => 1,
                                     'max'      => 40,
-                                ),
-                            ),
-                        ),
-                    )
+                                ],
+                            ],
+                        ],
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'note',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'valueChain',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
+                        'name'     => 'mainContribution',
+                        'required' => false,
+                    ]
+                )
+            );
+            $inputFilter->add(
+                $factory->createInput(
+                    [
+                        'name'     => 'marketAccess',
+                        'required' => false,
+                    ]
+                )
+            );
+            $inputFilter->add(
+                $factory->createInput(
+                    [
                         'name'     => 'dateEnd',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'dateEnd',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'dateSelfFunded',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'contact',
                         'required' => false,
-                    )
+                    ]
                 )
             );
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'       => 'selfFunded',
                         'required'   => true,
-                        'validators' => array(
-                            array(
+                        'validators' => [
+                            [
                                 'name'    => 'InArray',
-                                'options' => array(
-                                    'haystack' => array_keys($this->getSelfFundedTemplates())
-                                )
-                            )
-                        )
-                    )
+                                'options' => [
+                                    'haystack' => array_keys($this->getSelfFundedTemplates()),
+                                ],
+                            ],
+                        ],
+                    ]
                 )
             );
             $this->inputFilter = $inputFilter;
@@ -461,15 +508,17 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function getArrayCopy()
     {
-        return array(
-            'branch'         => $this->branch,
-            'note'           => $this->note,
-            'valueChain'     => $this->valueChain,
-            'selfFunded'     => $this->selfFunded,
-            'dateEnd'        => $this->dateEnd,
-            'dateSelfFunded' => $this->dateSelfFunded,
-            'contact'        => $this->contact,
-        );
+        return [
+            'branch'           => $this->branch,
+            'note'             => $this->note,
+            'valueChain'       => $this->valueChain,
+            'selfFunded'       => $this->selfFunded,
+            'dateEnd'          => $this->dateEnd,
+            'dateSelfFunded'   => $this->dateSelfFunded,
+            'contact'          => $this->contact,
+            'marketAccess'     => $this->marketAccess,
+            'mainContribution' => $this->mainContribution,
+        ];
     }
 
     /**
@@ -478,6 +527,16 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function populate()
     {
         return $this->getArrayCopy();
+    }
+
+    /**
+     * @param Contact $contact
+     */
+    public function addAssociate(Contact $contact)
+    {
+        if (!$this->associate->contains($contact)) {
+            $this->associate->add($contact);
+        }
     }
 
     /**
@@ -894,5 +953,69 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setDoa($doa)
     {
         $this->doa = $doa;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainContribution()
+    {
+        return $this->mainContribution;
+    }
+
+    /**
+     * @param string $mainContribution
+     */
+    public function setMainContribution($mainContribution)
+    {
+        $this->mainContribution = $mainContribution;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMarketAccess()
+    {
+        return $this->marketAccess;
+    }
+
+    /**
+     * @param string $marketAccess
+     */
+    public function setMarketAccess($marketAccess)
+    {
+        $this->marketAccess = $marketAccess;
+    }
+
+    /**
+     * @return DoaReminder[]|Collections\ArrayCollection
+     */
+    public function getDoaReminder()
+    {
+        return $this->doaReminder;
+    }
+
+    /**
+     * @param DoaReminder[]|Collections\ArrayCollection $doaReminder
+     */
+    public function setDoaReminder($doaReminder)
+    {
+        $this->doaReminder = $doaReminder;
+    }
+
+    /**
+     * @return DoaReminder[]|Collections\ArrayCollection
+     */
+    public function getLoiReminder()
+    {
+        return $this->loiReminder;
+    }
+
+    /**
+     * @param DoaReminder[]|Collections\ArrayCollection $loiReminder
+     */
+    public function setLoiReminder($loiReminder)
+    {
+        $this->loiReminder = $loiReminder;
     }
 }

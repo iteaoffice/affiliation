@@ -1,0 +1,87 @@
+{% do headLink().appendStylesheet(
+'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
+) %}
+
+<h1>{{ translate("txt-unapproved-affiliation-loi") }}</h1>
+
+<table class="table table-hover table-consended table-striped">
+    <thead>
+    <tr>
+        <th>{{ translate("txt-organisation") }}</th>
+        <th>{{ translate("txt-country") }}</th>
+        <th>{{ translate("txt-project") }}</th>
+        <th>{{ translate("txt-operations") }}</th>
+        <th>{{ translate("txt-signer") }}</th>
+        <th>{{ translate("txt-date-signed") }}</th>
+        <th>{{ translate("txt-approve") }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for loi in loi %}
+        <tr id="loi-{{ loi.id }}">
+            <td>{{ loi.affiliation }}</td>
+            <td>{{ loi.affiliation.organisation.country }}</td>
+            <td>{{ loi.affiliation.project }}</td>
+            <td>{{ loiLink(loi,'view-admin','icon') }} {{ loiLink(loi,'download','icon') }}</td>
+            <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact')) }}</td>
+            <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('dateSigned')) }}</td>
+            <td>
+                <button type="button" rel="{{ loi.id }}" data-complete-text="Approved"
+                        class="btn btn-info approveButton"
+                        autocomplete="off"><i class="fa fa-check"></i>
+                    {{ translate("txt-approve") }}</button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    $(document).on('click', '.approveButton', function (e) {
+
+        e.preventDefault();
+
+        var btn = $(this);
+        btn.button('loading');
+
+        //LoiId
+        var loiId = btn.attr('rel');
+
+        $.ajax({
+            url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation-manager/loi/approve') }}',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                'loi': loiId,
+                'contact': $("#contact-" + loiId).val(),
+                'dateSigned': $("#dateSigned-" + loiId).val()
+            },
+            success: function (response) {
+                if (response.result == 'success') {
+                    btn.addClass('complete');
+                    $("#loi-" + loiId).addClass('success');
+                    btn.button('complete'); // button text will be "finished!"
+                }
+
+                if (response.result == 'error') {
+                    btn.button('reset');
+                    alert(response.error);
+                }
+
+            },
+            error: function (xhr) {
+                console.log(xhr);
+                alert('Error! Did you enable adblock????? Status = ' + xhr.status);
+            }
+        });
+
+
+    });
+
+
+    $('input[type=date]').datepicker({
+        sliderAccessArgs: {touchonly: false},
+        dateFormat: 'yy-mm-dd'
+    });
+</script>

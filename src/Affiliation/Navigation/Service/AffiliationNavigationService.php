@@ -40,7 +40,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
      */
     public function updateCommunityNavigation()
     {
-        $communityNavigation = $this->getNavigation()->findOneBy('route', 'community');
+        $communityNavigation = $this->getNavigation()->findOneBy('route', 'community/project/list');
         /**
          * Go over the routes to see if we need to extend the $this->pages array
          */
@@ -51,29 +51,27 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
-                            $this->translate("txt-project-details-of-%s"),
+                            $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
-                        'route'  => 'community/project/project',
+                        'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'docRef' => $this->getProjectService()->getProject()->getDocRef()
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
                         ],
                         'pages'  => [
                             'affiliation' => [
                                 'label'  => sprintf(
-                                    $this->translate("txt-affiliation-%s-in-%s"),
-                                    $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                    $this->getProjectService()->parseFullName()
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
                                 ),
                                 'active' => true,
                                 'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'id' => $this->getProjectService()->getProject()->getId()
+                                    'id' => $this->getRouteMatch()->getParam('id'),
                                 ],
-                            ]
-                        ]
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -83,26 +81,24 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
-                            $this->translate("txt-project-details-of-%s"),
+                            $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
-                        'route'  => 'community/project/project',
+                        'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'docRef' => $this->getProjectService()->getProject()->getDocRef()
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
                         ],
                         'pages'  => [
                             'affiliation' => [
                                 'label'  => sprintf(
-                                    $this->translate("txt-affiliation-%s-in-%s"),
-                                    $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                    $this->getProjectService()->parseFullName()
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
                                 ),
                                 'active' => true,
                                 'route'  => 'community/affiliation/affiliation',
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                    'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                 ],
                                 'pages'  => [
                                     'edit' => [
@@ -115,12 +111,12 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                         'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                         'router' => $this->getRouter(),
                                         'params' => [
-                                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                         ],
-                                    ]
-                                ]
-                            ]
-                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
@@ -130,26 +126,24 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
-                            $this->translate("txt-project-details-of-%s"),
+                            $this->translate("%s"),
                             $this->getProjectService()->parseFullName()
                         ),
-                        'route'  => 'community/project/project',
+                        'route'  => 'community/project/project/basics',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'docRef' => $this->getProjectService()->getProject()->getDocRef()
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
                         ],
                         'pages'  => [
                             'affiliation' => [
                                 'label'  => sprintf(
-                                    $this->translate("txt-affiliation-%s-in-%s"),
-                                    $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                    $this->getProjectService()->parseFullName()
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
                                 ),
                                 'active' => true,
                                 'route'  => 'community/affiliation/affiliation',
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                    'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                 ],
                                 'pages'  => [
                                     'edit' => [
@@ -162,17 +156,18 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                         'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                         'router' => $this->getRouter(),
                                         'params' => [
-                                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                                         ],
-                                    ]
-                                ]
-                            ]
-                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
             case 'community/affiliation/doa/upload':
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('affiliation-id'));
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
@@ -184,7 +179,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'upload' => [
@@ -197,16 +192,17 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'active' => true,
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId()
-                                ]
-                            ]
-                        ]
+                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId(),
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
             case 'community/affiliation/doa/replace':
                 $doa = $this->getAffiliationService()->findEntityById('Doa', $this->getRouteMatch()->getParam('id'));
                 $this->getAffiliationService()->setAffiliation($doa->getAffiliation());
+                $this->getProjectService()->setProject($doa->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
@@ -218,7 +214,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'replace' => [
@@ -230,14 +226,15 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                 'active' => true,
                                 'router' => $this->getRouter(),
-                                'params' => $this->getRouteMatch()->getParams()
-                            ]
-                        ]
+                                'params' => $this->getRouteMatch()->getParams(),
+                            ],
+                        ],
                     ]
                 );
                 break;
             case 'community/affiliation/loi/upload':
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('affiliation-id'));
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
@@ -249,7 +246,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'upload' => [
@@ -262,16 +259,17 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'active' => true,
                                 'router' => $this->getRouter(),
                                 'params' => [
-                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId()
-                                ]
-                            ]
-                        ]
+                                    'affiliation-id' => $this->getAffiliationService()->getAffiliation()->getId(),
+                                ],
+                            ],
+                        ],
                     ]
                 );
                 break;
             case 'community/affiliation/loi/replace':
                 $loi = $this->getAffiliationService()->findEntityById('Loi', $this->getRouteMatch()->getParam('id'));
                 $this->getAffiliationService()->setAffiliation($loi->getAffiliation());
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage(
                     [
                         'label'  => sprintf(
@@ -283,7 +281,7 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                         'route'  => 'community/affiliation/affiliation',
                         'router' => $this->getRouter(),
                         'params' => [
-                            'id' => $this->getAffiliationService()->getAffiliation()->getId()
+                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
                         ],
                         'pages'  => [
                             'replace' => [
@@ -295,9 +293,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                                 'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                 'active' => true,
                                 'router' => $this->getRouter(),
-                                'params' => $this->getRouteMatch()->getParams()
-                            ]
-                        ]
+                                'params' => $this->getRouteMatch()->getParams(),
+                            ],
+                        ],
                     ]
                 );
                 break;

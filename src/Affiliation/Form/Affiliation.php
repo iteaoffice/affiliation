@@ -10,7 +10,6 @@
 namespace Affiliation\Form;
 
 use Affiliation\Service\AffiliationService;
-use Organisation\Entity\Financial;
 use Zend\Form\Form;
 
 /**
@@ -19,7 +18,7 @@ use Zend\Form\Form;
 class Affiliation extends Form
 {
     /**
-     * Class constructor
+     * @param AffiliationService $affiliationService
      */
     public function __construct(AffiliationService $affiliationService)
     {
@@ -27,7 +26,7 @@ class Affiliation extends Form
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
         $technicalContactValueOptions = [];
-        $affiliationValueOptions      = [];
+        $affiliationValueOptions = [];
         foreach ($affiliationService->parseRenameOptions() as $country => $options) {
             $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
@@ -35,146 +34,158 @@ class Affiliation extends Form
                     $groupOptions[sprintf("%s|%s", $organisationId, $branch)] = $organisationWithBranch;
                 }
             }
-            $affiliationValueOptions[$country] = array(
+            $affiliationValueOptions[$country] = [
                 'label'   => $country,
-                'options' => $groupOptions
-            );
+                'options' => $groupOptions,
+            ];
         }
         /**
          * Collect the technical contacts
          */
         $technicalContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()] =
-            $affiliationService->getAffiliation()->getContact()->getDisplayName();
+            $affiliationService->getAffiliation()->getContact()->getFormName();
         foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
-            $technicalContactValueOptions[$contact->getId()] = $contact->getDisplayName();
+            $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
+        asort($technicalContactValueOptions);
         /**
          * Collect the financial contacts
          * This array starts from the technical contacts
          */
         $financialContactValueOptions = $technicalContactValueOptions;
-        $organisation                 = $affiliationService->getAffiliation()->getOrganisation();
+        $organisation = $affiliationService->getAffiliation()->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
             if (!is_null($affiliation->getFinancial())) {
                 $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()] =
-                    $affiliation->getFinancial()->getContact()->getDisplayName();
+                    $affiliation->getFinancial()->getContact()->getFormName();
             }
         }
+
+        asort($financialContactValueOptions);
+
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'affiliation',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $affiliationValueOptions,
                     'label'         => _("txt-change-affiliation"),
-                ),
-                'attributes' => array(
-                    'class'    => 'form-control',
-                    'required' => true,
-                )
-            )
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'technical',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $technicalContactValueOptions,
                     'label'         => _("txt-technical-contact"),
-                ),
-                'attributes' => array(
-                    'class'    => 'form-control',
-                    'required' => true,
-                )
-            )
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'financial',
-                'options'    => array(
+                'options'    => [
                     'value_options' => $financialContactValueOptions,
                     'label'         => _("txt-financial-contact"),
-                ),
-                'attributes' => array(
-                    'class'    => 'form-control',
-                    'required' => true,
-                )
-            )
-        );
-        $organisationFinancial = new Financial();
-        $this->add(
-            array(
-                'type'       => 'Zend\Form\Element\Radio',
-                'name'       => 'preferredDelivery',
-                'options'    => array(
-                    'value_options' => $organisationFinancial->getEmailTemplates(),
-                    'label'         => _("txt-preferred-delivery"),
-                ),
-                'attributes' => array(
-                    'class'    => 'form-control',
-                    'required' => true,
-                )
-            )
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'valueChain',
-                'options'    => array(
-                    'label' => _("txt-position-on-value-chain"),
-                ),
-                'attributes' => array(
-                    'class'    => 'form-control',
-                    'required' => true,
-                )
-            )
+                'options'    => [
+                    'label'      => _("txt-position-on-value-chain"),
+                    'help-block' => _("txt-position-on-value-chain-inline-help"),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'mainContribution',
+                'options'    => [
+                    'label'      => _("txt-main-contribution-for-the-project"),
+                    'help-block' => _("txt--main-contribution-for-the-project-inline-help"),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'marketAccess',
+                'options'    => [
+                    'label'      => _("txt-market-access"),
+                    'help-block' => _("txt-market-access-inline-help"),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+        $this->add(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update")
-                )
-            )
+                    'value' => _("txt-update"),
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'cancel',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => _("txt-cancel")
-                )
-            )
+                    'value' => _("txt-cancel"),
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'deactivate',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-danger",
                     'value' => sprintf(
-                        _("txt-deactivate-partner-%s"),
+                        _("Deactivate %s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
-                    )
-                )
-            )
+                    ),
+                ],
+            ]
         );
         $this->add(
-            array(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'reactivate',
-                'attributes' => array(
+                'attributes' => [
                     'class' => "btn btn-warning",
                     'value' => sprintf(
-                        _("txt-reactivate-partner-%s"),
+                        _("Reactivate %s"),
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
-                    )
-                )
-            )
+                    ),
+                ],
+            ]
         );
     }
 }

@@ -11,15 +11,15 @@ namespace Affiliation\Service;
 
 use Admin\Service\AdminService;
 use Admin\Service\AdminServiceAwareInterface;
+use Affiliation\Acl\Assertion\AssertionAbstract;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Loi;
+use BjyAuthorize\Service\Authorize;
 use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use BjyAuthorize\Service\Authorize;
-use Affiliation\Acl\Assertion\AssertionAbstract;
 
 /**
  * ServiceAbstract
@@ -58,7 +58,7 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      * @param $id
      *
      * @return null|Affiliation|Doa|Loi
@@ -105,6 +105,15 @@ abstract class ServiceAbstract implements
             $entity->getId()
         );
 
+        //When an an invite is updated, we need to flush the permissions for the project. Later we will use
+        //The dependencies for this, but for now we can use this trick
+        if ($entity->get('underscore_full_entity_name') === 'affiliation_entity_affiliation') {
+            $this->getAdminService()->flushPermitsByEntityAndId(
+                'project_entity_project',
+                $entity->getProject()->getId()
+            );
+        }
+
         return $entity;
     }
 
@@ -149,10 +158,10 @@ abstract class ServiceAbstract implements
          */
         if (strpos($entity, '-') !== false) {
             $entity = explode('-', $entity);
-            $entity = $entity[0] . ucfirst($entity[1]);
+            $entity = $entity[0].ucfirst($entity[1]);
         }
 
-        return ucfirst(join('', array_slice(explode('\\', __NAMESPACE__), 0, 1))) . '\\' . 'Entity' . '\\' . ucfirst(
+        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))).'\\'.'Entity'.'\\'.ucfirst(
             $entity
         );
     }

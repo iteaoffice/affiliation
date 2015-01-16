@@ -24,7 +24,7 @@ affiliationService.affiliation.organisation
     <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ organisationService.parseOrganisationWithBranch(affiliationService.affiliation.branch) }}</p>
+        <p class="form-control-static">{{ affiliationLink(affiliationService.affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -39,6 +39,7 @@ affiliationService.affiliation.organisation
 <fieldset>
     <legend>{{ translate("txt-organisation") }}</legend>
     {{ ztbformelement(form.get('organisation')) }}
+    {{ ztbformelement(form.get('contact')) }}
     {{ ztbformelement(form.get('registeredCountry')) }}
     {{ ztbformelement(form.get('vat')) }}
 </fieldset>
@@ -67,3 +68,29 @@ affiliationService.affiliation.organisation
 </div>
 
 {{ form().closeTag()|raw }}
+
+<script type="text/javascript">
+    $('select[name="contact"]').change(function () {
+        $.ajax({
+            url: '{{ url('contact/get-address-by-type') }}',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                'id': $('select[name="contact"]').val(),
+                'typeId': {{ constant("Contact\\Entity\\AddressType::ADDRESS_TYPE_FINANCIAL") }}
+
+            },
+            success: function (response) {
+                $('textarea[name="address"]').val(response.address);
+                $('input[name="zipCode"]').val(response.zipCode);
+                $('input[name="city"]').val(response.city);
+                $('select[name="country"]').val(response.country);
+            },
+            error: function (xhr) {
+                alert('Error!  Status = ' + xhr.status);
+            }
+        });
+    });
+
+
+</script>
