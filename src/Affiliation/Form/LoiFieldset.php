@@ -113,7 +113,7 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
                         ]
                     ),
                 ],
-            ]
+            ],
         ];
     }
 }

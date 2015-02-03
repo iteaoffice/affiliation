@@ -84,7 +84,7 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                         ]
                     ),
                 ],
-            ]
+            ],
         ];
     }
 }

@@ -84,7 +84,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
         return [
             'contact' => [
                 'required' => true,
-            ]
+            ],
         ];
     }
 }

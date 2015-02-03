@@ -112,7 +112,7 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
                         ]
                     ),
                 ],
-            ]
+            ],
         ];
     }
 }
