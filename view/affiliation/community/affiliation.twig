@@ -157,10 +157,11 @@
                 <tr>
                     <td colspan="2">{{ translate("txt-costs") }}</td>
                     {% for year in years %}
-                        <td>{{ costPerYear[year]|parse_cost }}</td>
+                        <td class="cost_version_value"
+                            rel="cost_version_{{ year }}">{{ costPerYear[year]|parse_cost }}</td>
                         {% set totalPerYear = totalPerYear + costPerYear[year] %}
                     {% endfor %}
-                    <th>{{ totalPerYear|parse_cost }}</th>
+                    <th id="cost_version_total">{{ totalPerYear|parse_cost }}</th>
                 </tr>
                 </tbody>
                 <thead>
@@ -182,17 +183,19 @@
                     {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                     workpackage,
                     affiliationService.affiliation,
-                    latestVersion
+                    latestVersion,
+                    'object'
                     ) %}
                     {% set totalPerWP = 0 %}
                     <tr>
                         <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
                         <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                         {% for year in years %}
-                            <td>{{ effortPerYear[year]|default(0)|parse_effort }}</td>
-                            {% set totalPerWP = totalPerWP + effortPerYear[year] %}
+                            <td class="effort_version_value"
+                                rel="effort_version_{{ affiliationService.affiliation.id }}_{{ workpackage.id }}_{{ year }}">{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
+                            {% set totalPerWP = totalPerWP + effortPerYear[year].effort %}
                         {% endfor %}
-                        <th>{{ totalPerWP|parse_effort }}</th>
+                        <th id="effort_version_total_{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -231,24 +234,21 @@
 
 
                 {% set totalPerYear = 0 %}
-                <tr>
+                <tr class="cost_row">
                     <td colspan="2">{{ translate("txt-costs") }}</td>
                     {% for year in years %}
                         <td>
-                            {% if costPerYear[year] - costPerYearInVersion[year] > 0.001 and projectService.hasVersions() %}
-                                <i class="fa fa-angle-double-up increase pull-left"></i>
-                                <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
 
-                            {% elseif costPerYear[year] - costPerYearInVersion[year] < -0.001 and projectService.hasVersions() %}
-                                <i class="fa fa-angle-double-down decrease pull-left"></i>
-                                <span class="changed">{{ costPerYear[year]|parse_cost }}</span>
-                            {% else %}
-                                {{ costPerYear[year]|parse_cost }}
-                            {% endif %}
+                            <i class="fa pull-left"></i>
+                            <a id="cost_{{ year }}"
+                               href="#" class="affiliation" id="cost" data-type="text"
+                               data-pk="{{ affiliationService.affiliation.id }},{{ year }}"
+                               data-url="{{ url('json/update-effort') }}"
+                               data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost }}</a>
                         </td>
                         {% set totalPerYear = totalPerYear + costPerYear[year] %}
                     {% endfor %}
-                    <th>{{ totalPerYear|parse_cost }}</th>
+                    <th class="cost_total"><i class="fa pull-left"></i><span>{{ totalPerYear|parse_cost }}</span>
                 </tr>
                 </tbody>
                 <thead>
@@ -269,7 +269,8 @@
                 {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(projectService.project) %}
                     {% set effortPerYear = projectService.findTotalEffortByWorkpackageAndAffiliationPerYear(
                     workpackage,
-                    affiliationService.affiliation) %}
+                    affiliationService.affiliation,
+                    'object') %}
                     {% set totalPerWP = 0 %}
 
                     {# do a second iteration over the previous version to highlight the difference#}
@@ -283,24 +284,35 @@
                     {% endif %}
 
 
-                    <tr>
+                    <tr class="workpackage_row" rel="{{ workpackage.id }}">
                         <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
                         <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                         {% for year in years %}
-                            <td>
-                                {% if effortPerYear[year] - effortPerYearInVersion[year] > 0.001 and projectService.hasVersions() %}
-                                    <i class="fa fa-angle-double-up increase pull-left"></i>
-                                    <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
-                                {% elseif effortPerYearInVersion[year] - effortPerYear[year] > 0.001 and projectService.hasVersions() %}
-                                    <i class="fa fa-angle-double-down decrease pull-left"></i>
-                                    <span class="changed">{{ effortPerYear[year]|parse_effort }}</span>
-                                {% else %}
-                                    {{ effortPerYear[year]|default(0)|parse_effort }}
-                                {% endif %}
-                            </td>
-                            {% set totalPerWP = totalPerWP + effortPerYear[year] %}
-                        {% endfor %}
-                        <th>{{ totalPerWP|parse_effort }}</th>
+                        {% set effortInCurrentYear = effortPerYear[year].effort %}
+
+                        <td>
+                            {% if
+                            year in projectService.parseEditYearRange() and
+                            (
+                            hasProjectEditRights or
+                            isAllowed(workpackage, 'edit-community') or
+                            isAllowed(affiliationService.affiliation, 'edit-affiliation')
+                            ) %}
+                                <i class="fa pull-left"></i>
+                                <a id="effort_{{ affiliationService.affiliation.id }}_{{ workpackage.id }}_{{ year }}"
+                                   href="#" class="affiliation workpackage" id="effort" data-type="text"
+                                   data-pk="{{ affiliationService.affiliation.id }},{{ workpackage.id }},{{ year }}"
+                                   data-url="{{ url('json/update-effort') }}"
+                                   data-title="{{ translate("txt-update-effort") }}">{{ effortInCurrentYear|parse_effort }}</a>
+                            {% else %}
+                                <span id="effort_{{ affiliationService.affiliation.id }}_{{ workpackage.id }}_{{ year }}"
+                                      class="workpackage"
+                                      rel="{{ year }}">{{ effortInCurrentYear|parse_effort }}</span>
+                            {% endif %}
+                            {% set totalPerWP = totalPerWP + effortInCurrentYear %}
+                            {% endfor %}
+                        <th class="effort_total"><i class="fa pull-left"></i><span>{{ totalPerWP|parse_effort }}</span>
+                        </th>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -315,7 +327,7 @@
 
         <h3>{{ translate("txt-associate-details") }}</h3>
 
-        {% if contactsInAffiliation.contacts.count() > 0 %}
+        {% if contactsInAffiliation.contacts|length > 0 %}
             <table class="table table-striped table-hover table-condensed">
                 <thead>
                 <tr>
@@ -391,3 +403,22 @@
         </div>
     {% endif %}
 </div>
+
+
+<script type="text/javascript">
+    $(document).on("ajaxComplete", function () {
+        $(document).updateEffort();
+        $(document).updateCost();
+    });
+
+    /**
+     * Calculate the sum per year
+     */
+    $(document).ready(function () {
+        $(document).updateEffort();
+        $(document).updateCost();
+        //turn to inline mode
+        $.fn.editable.defaults.mode = 'popup';
+        $('.affiliation').editable();
+    });
+</script>

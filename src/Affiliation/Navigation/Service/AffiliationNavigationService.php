@@ -165,6 +165,51 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                     ]
                 );
                 break;
+            case 'community/affiliation/edit/add-associate':
+                $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('id'));
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
+                $communityNavigation->addPage(
+                    [
+                        'label'  => sprintf(
+                            $this->translate("%s"),
+                            $this->getProjectService()->parseFullName()
+                        ),
+                        'route'  => 'community/project/project/basics',
+                        'router' => $this->getRouter(),
+                        'params' => [
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
+                        ],
+                        'pages'  => [
+                            'affiliation' => [
+                                'label'  => sprintf(
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
+                                ),
+                                'active' => true,
+                                'route'  => 'community/affiliation/affiliation',
+                                'router' => $this->getRouter(),
+                                'params' => [
+                                    'id' => $this->getAffiliationService()->getAffiliation()->getId(),
+                                ],
+                                'pages'  => [
+                                    'edit' => [
+                                        'label'  => sprintf(
+                                            $this->translate("txt-add-associates-to-affiliation-%s-in-%s"),
+                                            $this->getAffiliationService()->getAffiliation()->getOrganisation(),
+                                            $this->getProjectService()->parseFullName()
+                                        ),
+                                        'active' => true,
+                                        'route'  => $this->getRouteMatch()->getMatchedRouteName(),
+                                        'router' => $this->getRouter(),
+                                        'params' => [
+                                            'id' => $this->getAffiliationService()->getAffiliation()->getId(),
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ]
+                );
+                break;
             case 'community/affiliation/doa/upload':
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('affiliation-id'));
                 $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());

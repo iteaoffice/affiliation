@@ -33,7 +33,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
         foreach ($contactService->findContactsInOrganisation(
             $affiliationService->getAffiliation()->getOrganisation()
         ) as $contact) {
-            $contacts[$contact->getId()] = $contact->getDisplayName();
+            $contacts[$contact->getId()] = $contact->getFormName();
         }
 
         $this->add(
