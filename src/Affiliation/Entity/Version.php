@@ -40,7 +40,7 @@ class Version extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
-     * @var \Contact\Entity\Contact
+     * @var Affiliation
      */
     private $affiliation;
     /**
@@ -133,7 +133,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param \Contact\Entity\Contact $affiliation
+     * @param Affiliation $affiliation
      */
     public function setAffiliation($affiliation)
     {
@@ -141,7 +141,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @return Affiliation
      */
     public function getAffiliation()
     {
