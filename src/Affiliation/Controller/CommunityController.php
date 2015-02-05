@@ -138,7 +138,7 @@ class CommunityController extends AffiliationAbstractController implements
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
                     [
-                        'id' => $affiliationService->getAffiliation()->getId()
+                        'id' => $affiliationService->getAffiliation()->getId(),
                     ]
                 );
             }
@@ -179,7 +179,7 @@ class CommunityController extends AffiliationAbstractController implements
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
                 [
-                    'id' => $affiliationService->getAffiliation()->getId()
+                    'id' => $affiliationService->getAffiliation()->getId(),
                 ]
             );
         }
@@ -329,7 +329,7 @@ class CommunityController extends AffiliationAbstractController implements
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
                 [
-                    'id' => $affiliationService->getAffiliation()->getId()
+                    'id' => $affiliationService->getAffiliation()->getId(),
                 ]
             );
         }

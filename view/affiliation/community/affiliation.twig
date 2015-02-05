@@ -1,3 +1,6 @@
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName)) %}
+
 {% set years = projectService.parseYearRange(false, affiliationService.affiliation) %}
 
 {% set projectYears = projectService.parseYearRange(true) %}
@@ -130,7 +133,7 @@
             #}
 
             {% set versionService = versionServiceProxy(latestVersion) %}
-            <h3>{{ translate("txt-latest-%s-version-of-type-%s")|format(versionService.parseStatus(), latestVersion.versionType) }}</h3>
+            <h3>{{ translate("txt-latest-%s-version-of-type-%s")|format(versionService.parseStatus()|lower, latestVersion.versionType) }}</h3>
 
             <p>{{ translate("txt-latest-submitted-version-of-type-%s-explanation")|format(latestVersion.versionType) }}</p>
 
@@ -258,9 +261,6 @@
                                       class="workpackage"
                                       rel="{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</span>
                             {% endif %}
-
-
-
                         </td>
                         {% set totalPerYear = totalPerYear + costPerYear[year] %}
                     {% endfor %}
