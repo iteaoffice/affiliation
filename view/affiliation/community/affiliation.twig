@@ -158,10 +158,10 @@
                     <td colspan="2">{{ translate("txt-costs") }}</td>
                     {% for year in years %}
                         <td class="cost_version_value"
-                            rel="cost_version_{{ year }}">{{ costPerYear[year]|parse_cost }}</td>
+                            rel="cost_version_{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</td>
                         {% set totalPerYear = totalPerYear + costPerYear[year] %}
                     {% endfor %}
-                    <th id="cost_version_total">{{ totalPerYear|parse_cost }}</th>
+                    <th id="cost_version_total">{{ totalPerYear|parse_cost_edit }}</th>
                 </tr>
                 </tbody>
                 <thead>
@@ -251,12 +251,12 @@
                                    href="#" class="affiliation workpackage" id="cost" data-type="text"
                                    data-pk="{{ affiliationService.affiliation.id }},{{ year }}"
                                    data-url="{{ url('json/update-cost') }}"
-                                   data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost }}</a>
+                                   data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost_edit }}</a>
                             {% else %}
                                 <i class="fa pull-left"></i>
                                 <span id="cost_{{ year }}"
                                       class="workpackage"
-                                      rel="{{ year }}">{{ costPerYear[year]|parse_cost }}</span>
+                                      rel="{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</span>
                             {% endif %}
 
 
@@ -264,7 +264,7 @@
                         </td>
                         {% set totalPerYear = totalPerYear + costPerYear[year] %}
                     {% endfor %}
-                    <th class="cost_total"><i class="fa pull-left"></i><span>{{ totalPerYear|parse_cost }}</span>
+                    <th class="cost_total"><i class="fa pull-left"></i><span>{{ totalPerYear|parse_cost_edit }}</span>
                 </tr>
                 </tbody>
                 <thead>
