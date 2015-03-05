@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Loi;
@@ -17,9 +18,7 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- *
- * Class RenderLoi
- * @package Affiliation\Controller\Plugin
+ * Class RenderLoi.
  */
 class RenderLoi extends AbstractPlugin
 {
@@ -40,7 +39,7 @@ class RenderLoi extends AbstractPlugin
         $pdf->addPage();
         $pdf->SetFontSize(9);
         $twig = $this->getServiceLocator()->get('ZfcTwigRenderer');
-        /**
+        /*
          * Write the contact details
          */
         $contactService = $this->getContactService()->setContact($loi->getContact());
@@ -48,16 +47,16 @@ class RenderLoi extends AbstractPlugin
         $pdf->Write(0, $contactService->parseFullName());
         $pdf->SetXY(14, 60);
         $pdf->Write(0, $contactService->parseOrganisation());
-        /**
+        /*
          * Write the current date
          */
         $pdf->SetXY(77, 55);
         $pdf->Write(0, date("Y-m-d"));
-        /**
+        /*
          * Write the Reference
          */
         $pdf->SetXY(118, 55);
-        /**
+        /*
          * Use the NDA object to render the filename
          */
         $pdf->Write(0, $loi->parseFileName());
@@ -70,7 +69,7 @@ class RenderLoi extends AbstractPlugin
             )
         );
         $pdf->writeHTMLCell(0, 0, 14, 70, $ndaContent);
-        /**
+        /*
          * Signage block
          */
         $pdf->SetXY(14, 250);
@@ -92,7 +91,7 @@ class RenderLoi extends AbstractPlugin
     }
 
     /**
-     * Gateway to the General Service
+     * Gateway to the General Service.
      *
      * @return GeneralService
      */
@@ -102,7 +101,7 @@ class RenderLoi extends AbstractPlugin
     }
 
     /**
-     * Gateway to the Contact Service
+     * Gateway to the Contact Service.
      *
      * @return ContactService
      */

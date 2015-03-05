@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Project
- * @package     Entity
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -14,7 +15,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
 
 /**
- * Entity for the Affiliation
+ * Entity for the Affiliation.
  *
  * @ORM\Table(name="project_loi_reminder")
  * @ORM\Entity
@@ -22,7 +23,6 @@ use Zend\Form\Annotation;
  * @Annotation\Name("affiliation_loi_reminder")
  *
  * @category    Affiliation
- * @package     Entity
  */
 class LoiReminder extends EntityAbstract
 {
@@ -30,17 +30,20 @@ class LoiReminder extends EntityAbstract
      * @ORM\Column(name="reminder_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
      * @var integer
      */
     private $id;
     /**
      * @ORM\Column(name="email", type="text", nullable=false)
+     *
      * @var string
      */
     private $email;
     /**
      * @ORM\Column(name="date_created", type="datetime", nullable=false)
      * @Gedmo\Timestampable(on="create")
+     *
      * @var \DateTime
      */
     private $dateCreated;
@@ -49,6 +52,7 @@ class LoiReminder extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
+     *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
@@ -57,6 +61,7 @@ class LoiReminder extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="receiver_id", referencedColumnName="contact_id", nullable=true)
      * })
+     *
      * @var \Contact\Entity\Contact
      */
     private $receiver;
@@ -65,6 +70,7 @@ class LoiReminder extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="sender_id", referencedColumnName="contact_id", nullable=true)
      * })
+     *
      * @var \Contact\Entity\Contact
      */
     private $sender;
@@ -82,8 +88,6 @@ class LoiReminder extends EntityAbstract
     /**
      * @param $property
      * @param $value
-     *
-     * @return void
      */
     public function __set($property, $value)
     {

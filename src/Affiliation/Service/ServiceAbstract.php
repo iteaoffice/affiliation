@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Service;
 
 use Admin\Service\AdminService;
@@ -22,7 +23,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * ServiceAbstract
+ * ServiceAbstract.
  */
 abstract class ServiceAbstract implements
     AdminServiceAwareInterface,
@@ -77,7 +78,7 @@ abstract class ServiceAbstract implements
     {
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
-        /**
+        /*
          * Update the permissions
          */
         $this->getAdminService()->flushPermitsByEntityAndId(
@@ -97,7 +98,7 @@ abstract class ServiceAbstract implements
     {
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
-        /**
+        /*
          * Update the permissions
          */
         $this->getAdminService()->flushPermitsByEntityAndId(
@@ -131,7 +132,7 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * Build dynamically a entity based on the full entity name
+     * Build dynamically a entity based on the full entity name.
      *
      * @param $entity
      *
@@ -145,7 +146,7 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * Create a full path to the entity for Doctrine
+     * Create a full path to the entity for Doctrine.
      *
      * @param $entity
      *
@@ -153,7 +154,7 @@ abstract class ServiceAbstract implements
      */
     public function getFullEntityName($entity)
     {
-        /**
+        /*
          * Convert a - to a camelCased situation
          */
         if (strpos($entity, '-') !== false) {
@@ -180,8 +181,8 @@ abstract class ServiceAbstract implements
      */
     public function addResource(EntityAbstract $entity, $assertion)
     {
-        /**
-         * @var $assertion AssertionAbstract
+        /*
+         * @var AssertionAbstract
          */
         $assertion = $this->getServiceLocator()->get($assertion);
         if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)

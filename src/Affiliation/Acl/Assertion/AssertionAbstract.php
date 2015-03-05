@@ -1,15 +1,16 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category   Project
- * @package    Acl
- * @subpackage Assertion
+ *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright  2004-2014 ITEA Office
  * @license    http://debranova.org/license.txt proprietary
+ *
  * @link       http://debranova.org
  */
+
 namespace Affiliation\Acl\Assertion;
 
 use Admin\Service\AdminService;
@@ -25,14 +26,14 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Create a link to an document
+ * Create a link to an document.
  *
  * @category   Project
- * @package    Acl
- * @subpackage Assertion
+ *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright  2004-2014 ITEA Office
  * @license    http://debranova.org/license.txt proprietary
+ *
  * @link       http://debranova.org
  */
 abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAwareInterface
@@ -59,7 +60,7 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     }
 
     /**
-     * Proxy to the original request object to handle form
+     * Proxy to the original request object to handle form.
      *
      * @return Request
      */
@@ -93,7 +94,7 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     }
 
     /**
-     * Gateway to the Affiliation Service
+     * Gateway to the Affiliation Service.
      *
      * @return AffiliationService
      */
@@ -160,7 +161,7 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     }
 
     /**
-     * Returns true when a role or roles have access
+     * Returns true when a role or roles have access.
      *
      * @param $roles
      *

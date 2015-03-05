@@ -1,16 +1,18 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * PHP Version 5
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   2004-2014 ITEA Office
  * @license     http://debranova.org/license.txt proprietary
+ *
  * @link        http://debranova.org
  */
+
 namespace Affiliation\Controller;
 
 use Affiliation\Entity\Doa;
@@ -29,13 +31,14 @@ use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
- * Affiliation controller
+ * Affiliation controller.
  *
  * @category   Affiliation
- * @package    Controller
+ *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright  2004-2014 ITEA Office
  * @license    http://debranova.org/license.txt proprietary
+ *
  * @link       http://debranova.org
  */
 class DoaManagerController extends AffiliationAbstractController implements
@@ -120,7 +123,7 @@ class DoaManagerController extends AffiliationAbstractController implements
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
+            /*
              * Send the email tot he office
              */
             $email = $this->getEmailService()->create();
@@ -230,8 +233,8 @@ class DoaManagerController extends AffiliationAbstractController implements
         $form->get('doa')->get('contact')->setValueOptions($this->getContactService()->toFormValueOptions());
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
-             * @var $doa Doa
+            /*
+             * @var Doa
              */
             $doa = $form->getData();
             if (isset($data['cancel'])) {
@@ -258,7 +261,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             $fileData = $this->params()->fromFiles();
 
             if ($fileData['doa']['file']['error'] === 0) {
-                /**
+                /*
                  * Replace the content of the object
                  */
                 if (!$doa->getObject()->isEmpty()) {
@@ -304,7 +307,7 @@ class DoaManagerController extends AffiliationAbstractController implements
     }
 
     /**
-     * Dedicated action to approve DOAs via an AJAX call
+     * Dedicated action to approve DOAs via an AJAX call.
      *
      * @return JsonModel
      */
@@ -332,8 +335,8 @@ class DoaManagerController extends AffiliationAbstractController implements
             );
         }
 
-        /**
-         * @var $doa Doa
+        /*
+         * @var Doa
          */
         $doa = $this->getAffiliationService()->findEntityById('Doa', $doa);
         $doa->setContact($this->getContactService()->setContactId($contact)->getContact());

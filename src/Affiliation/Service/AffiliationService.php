@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Affiliation;
@@ -20,19 +21,18 @@ use Project\Entity\Version\Version;
 use Project\Service\ProjectService;
 
 /**
- * AffiliationService
+ * AffiliationService.
  *
  * this is a generic wrapper service for all the other services
  *
  * First parameter of all methods (lowercase, underscore_separated)
  * will be used to fetch the correct model service, one exception is the 'linkModel'
  * method.
- *
  */
 class AffiliationService extends ServiceAbstract
 {
     /**
-     * Constant to determine which affiliations must be taken from the database
+     * Constant to determine which affiliations must be taken from the database.
      */
     const WHICH_ALL = 1;
     const WHICH_ONLY_ACTIVE = 2;
@@ -71,7 +71,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Checks if the affiliation has a DOA
+     * Checks if the affiliation has a DOA.
      *
      * @return bool
      */
@@ -216,7 +216,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Produce a list of affiliations grouped per country
+     * Produce a list of affiliations grouped per country.
      *
      * @param Project $project
      * @param int     $which
@@ -231,7 +231,7 @@ class AffiliationService extends ServiceAbstract
 
         $result = new ArrayCollection();
         foreach ($countries as $country) {
-            /**
+            /*
              * @var $affiliations Affiliation[]
              */
             $result->set(
@@ -255,8 +255,8 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationCountriesByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {
-        /**
-         * @var $affiliations Affiliation[]
+        /*
+         * @var Affiliation[]
          */
         $affiliations = $this->getEntityManager()
             ->getRepository($this->getFullEntityName('affiliation'))
@@ -284,7 +284,7 @@ class AffiliationService extends ServiceAbstract
         Contact $contact,
         $which = self::WHICH_ONLY_ACTIVE
     ) {
-        /**
+        /*
          * If the contact has no contact organisation, return null because we will not have a affiliation
          */
         if (is_null($contact->getContactOrganisation())) {
@@ -309,7 +309,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Give a list of all affiliations which do not have a doa
+     * Give a list of all affiliations which do not have a doa.
      *
      * @return Affiliation[]
      */
@@ -321,7 +321,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Give a list of all affiliations which do not have a doa
+     * Give a list of all affiliations which do not have a doa.
      *
      * @return QueryBuilder
      */
@@ -333,7 +333,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Deactivate an affiliation
+     * Deactivate an affiliation.
      *
      * @param Affiliation $affiliation
      */
@@ -344,7 +344,7 @@ class AffiliationService extends ServiceAbstract
         $this->updateEntity($affiliation);
         $editYearRange = $projectService->parseEditYearRange();
         $minEditYear = array_shift($editYearRange);
-        /**
+        /*
          * Remove the current cost and effort of the affiliation
          */
         foreach ($affiliation->getEffort() as $effort) {
@@ -352,7 +352,7 @@ class AffiliationService extends ServiceAbstract
                 $this->getProjectService()->removeEntity($effort);
             }
         }
-        /**
+        /*
          * Remove the current cost and effort of the affiliation
          */
         foreach ($affiliation->getCost() as $cost) {
@@ -363,7 +363,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Reactivate an affiliation
+     * Reactivate an affiliation.
      *
      * @param Affiliation $affiliation
      */
@@ -375,14 +375,14 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * This function creates an array of organisations with branches which are optional when a user wants to change
-     * his affiliation
+     * his affiliation.
      */
     public function parseRenameOptions()
     {
         $options = [];
         $organisation = $this->getAffiliation()->getOrganisation();
         $contact = $this->getAffiliation()->getContact();
-        /**
+        /*
          * Go over the organisation and grab all its affiliations
          */
         foreach ($organisation->getAffiliation() as $affiliation) {
@@ -392,7 +392,7 @@ class AffiliationService extends ServiceAbstract
             [$affiliation->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
-        /**
+        /*
          * Go over the organisation and join the clusters and grab all its affiliations
          */
         foreach ($organisation->getCluster() as $cluster) {
@@ -405,7 +405,7 @@ class AffiliationService extends ServiceAbstract
                 }
             }
         }
-        /**
+        /*
          * Go over the contact and grab all its affiliations
          */
         foreach ($contact->getAffiliation() as $affiliation) {
@@ -415,7 +415,7 @@ class AffiliationService extends ServiceAbstract
             [$affiliation->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
         }
-        /**
+        /*
          * Add the contact organisation (from the contact)
          */
         if (!is_null($contact->getContactOrganisation())) {
@@ -427,11 +427,11 @@ class AffiliationService extends ServiceAbstract
                     $contact->getContactOrganisation()->getBranch()
                 );
         }
-        /**
+        /*
          * Add the contact organisation (from the organisation)
          */
         if (!is_null($organisation->getContactOrganisation())) {
-            /**
+            /*
              * Add the contact organisation
              */
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
@@ -441,7 +441,7 @@ class AffiliationService extends ServiceAbstract
                 $this->getOrganisationService()->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()->getBranch()
                 );
-            /**
+            /*
              * Go over the clusters
              */
             foreach ($organisation->getContactOrganisation()->getOrganisation()->getCluster() as $cluster) {
@@ -493,7 +493,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Gateway to the Project Service
+     * Gateway to the Project Service.
      *
      * @return ProjectService
      */
@@ -503,7 +503,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Gateway to the Organisation Service
+     * Gateway to the Organisation Service.
      *
      * @return OrganisationService
      */

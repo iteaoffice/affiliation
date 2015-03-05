@@ -1,25 +1,23 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Entity\Affiliation;
 
 /**
- * Create a link to an affiliation
+ * Create a link to an affiliation.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
  */
 class AffiliationLink extends LinkAbstract
 {
@@ -34,6 +32,7 @@ class AffiliationLink extends LinkAbstract
      * @param             $show
      *
      * @return string
+     *
      * @throws \RuntimeException
      * @throws \Exception
      */
@@ -42,7 +41,7 @@ class AffiliationLink extends LinkAbstract
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
-        /**
+        /*
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
@@ -67,7 +66,7 @@ class AffiliationLink extends LinkAbstract
     }
 
     /**
-     * Extract the relevant parameters based on the action
+     * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
      */

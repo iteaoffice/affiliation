@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Controller;
 
 use Affiliation\Entity\Description;
@@ -28,7 +29,6 @@ use Zend\View\Model\ViewModel;
 
 /**
  * @category    Affiliation
- * @package     Controller
  */
 class EditController extends AffiliationAbstractController implements
     ProjectServiceAwareInterface,
@@ -37,7 +37,7 @@ class EditController extends AffiliationAbstractController implements
     ContactServiceAwareInterface
 {
     /**
-     * Edit a affiliation
+     * Edit a affiliation.
      *
      * @return ViewModel
      */
@@ -66,7 +66,7 @@ class EditController extends AffiliationAbstractController implements
         $formData['marketAccess'] = $affiliationService->getAffiliation()->getMarketAccess();
         $formData['mainContribution'] = $affiliationService->getAffiliation()->getMainContribution();
 
-        /**
+        /*
          * Check if the organisation has a financial contact
          */
         if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
@@ -77,7 +77,7 @@ class EditController extends AffiliationAbstractController implements
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
             $formData = $form->getData();
             $affiliation = $affiliationService->getAffiliation();
-            /**
+            /*
              * When the deactivate button is pressed, handle this in the service layer
              */
             if (!is_null($formData['deactivate'])) {
@@ -101,7 +101,7 @@ class EditController extends AffiliationAbstractController implements
                     ['docRef' => $projectService->getProject()->getDocRef()]
                 );
             }
-            /**
+            /*
              * When the deactivate button is pressed, handle this in the service layer
              */
             if (!is_null($formData['reactivate'])) {
@@ -127,7 +127,7 @@ class EditController extends AffiliationAbstractController implements
                     ]
                 );
             }
-            /**
+            /*
              * Parse the organisation and branch
              */
             list($organisationId, $branch) = explode('|', $formData['affiliation']);
@@ -139,7 +139,7 @@ class EditController extends AffiliationAbstractController implements
             $affiliation->setValueChain($formData['valueChain']);
             $affiliation->setMainContribution($formData['mainContribution']);
             $affiliation->setMarketAccess($formData['marketAccess']);
-            /**
+            /*
              * Handle the financial organisation
              */
             if (is_null($financial = $affiliation->getFinancial())) {
@@ -174,6 +174,7 @@ class EditController extends AffiliationAbstractController implements
 
     /**
      * @return \Zend\Http\Response|ViewModel
+     *
      * @throws \Doctrine\ORM\ORMException
      */
     public function financialAction()
@@ -233,10 +234,10 @@ class EditController extends AffiliationAbstractController implements
         $form->setData($formData);
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
             $formData = $form->getData();
-            /**
+            /*
              * This form is a aggregation of multiple form elements, so we treat it step by step
              */
-            /**
+            /*
              * If the organisation or country has changed or is not set, find the new
              */
             if ($formData['organisation'] !== $organisationService->parseOrganisationWithBranch($branch) ||
@@ -244,14 +245,14 @@ class EditController extends AffiliationAbstractController implements
                 intval($formData['country']) !== $financialAddress->getCountry()->getId() ||
                 intval($formData['contact']) !== $financialAddress->getContact()->getId()
             ) {
-                /**
+                /*
                  * The organisation, or country has changed, so try to find this country in the database
                  */
                 $organisation = $this->getOrganisationService()->findOrganisationByNameCountry(
                     trim($formData['organisation']),
                     $this->getGeneralService()->findEntityById('Country', $formData['country'])
                 );
-                /**
+                /*
                  * If the organisation is not found, create it
                  */
                 if (is_null($organisation)) {
@@ -260,8 +261,8 @@ class EditController extends AffiliationAbstractController implements
                     $organisation->setCountry(
                         $this->getGeneralService()->findEntityById('Country', $formData['country'])
                     );
-                    /**
-                     * @var $organisationType OrganisationType
+                    /*
+                     * @var OrganisationType
                      */
                     $organisationType = $this->getOrganisationService()->getEntityManager()->getReference(
                         'Organisation\Entity\Type',
@@ -285,7 +286,7 @@ class EditController extends AffiliationAbstractController implements
             } else {
                 $affiliationFinancial = $this->getAffiliationService()->getAffiliation()->getFinancial();
             }
-            /**
+            /*
              * The presence of a VAT number triggers the creation of a financial organisation
              */
             if (!empty($formData['vat'])) {
@@ -300,7 +301,7 @@ class EditController extends AffiliationAbstractController implements
                 $organisationFinancial->setOmitContact($formData['omitContact']);
                 $this->getOrganisationService()->updateEntity($organisationFinancial);
             }
-            /**
+            /*
              * save the financial address
              */
             $contactService = clone $this->getContactService()->setContact($affiliationFinancial->getContact());
@@ -309,8 +310,8 @@ class EditController extends AffiliationAbstractController implements
             } else {
                 $financialAddress = new Address();
                 $financialAddress->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
-                /**
-                 * @var $addressType AddressType
+                /*
+                 * @var AddressType
                  */
                 $addressType = $this->getContactService()->getEntityManager()->getReference(
                     'Contact\Entity\AddressType',
@@ -321,8 +322,8 @@ class EditController extends AffiliationAbstractController implements
             $financialAddress->setAddress($formData['address']);
             $financialAddress->setZipCode($formData['zipCode']);
             $financialAddress->setCity($formData['city']);
-            /**
-             * @var $country Country
+            /*
+             * @var Country
              */
             $country = $this->getContactService()->getEntityManager()->getReference(
                 'General\Entity\Country',
@@ -419,8 +420,8 @@ class EditController extends AffiliationAbstractController implements
             return $this->notFoundAction();
         }
         if (!$affiliationService->getAffiliation()->getDescription()->isEmpty()) {
-            /**
-             * @var $description Description
+            /*
+             * @var Description
              */
             $description = $affiliationService->getAffiliation()->getDescription()->first();
         } else {

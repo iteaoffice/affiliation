@@ -1,19 +1,20 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Project
- * @package     Entity
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 
 /**
- * Entity for the Affiliation
+ * Entity for the Affiliation.
  *
  * @ORM\Table(name="affiliation_invoice")
  * @ORM\Entity
@@ -21,7 +22,6 @@ use Zend\Form\Annotation;
  * @Annotation\Name("affiliation_invoice")
  *
  * @category    Affiliation
- * @package     Entity
  */
 class Invoice //extends EntityAbstract
 {
@@ -29,26 +29,31 @@ class Invoice //extends EntityAbstract
      * @ORM\Column(name="affiliation_invoice_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
      * @var integer
      */
     private $id;
     /**
      * @ORM\Column(name="period", type="integer", nullable=false)
+     *
      * @var integer
      */
     private $period;
     /**
      * @ORM\Column(name="year", type="integer", nullable=false)
+     *
      * @var integer
      */
     private $year;
     /**
      * @ORM\Column(name="amount_invoiced", type="decimal", nullable=true)
+     *
      * @var float
      */
     private $amountInvoiced;
     /**
      * @ORM\Column(name="version_id", type="integer", nullable=false)
+     *
      * @var integer
      */
     private $versionId;
@@ -57,6 +62,7 @@ class Invoice //extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
+     *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;

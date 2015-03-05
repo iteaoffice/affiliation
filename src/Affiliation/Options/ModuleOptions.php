@@ -1,35 +1,35 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Options
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Options;
 
 use Zend\Stdlib\AbstractOptions;
 
 /**
- * Class ModuleOptions
- * @package Affiliation\Options
+ * Class ModuleOptions.
  */
 class ModuleOptions extends AbstractOptions implements
     AffiliationOptionsInterface
 {
     /**
-     * Turn off strict options mode
+     * Turn off strict options mode.
      */
     protected $__strictMode__ = false;
     /**
-     * Location of the PDF having the DOA template
+     * Location of the PDF having the DOA template.
      *
      * @var string
      */
     protected $doaTemplate = '';
     /**
-     * Location of the PDF having the LOI template
+     * Location of the PDF having the LOI template.
      *
      * @var string
      */

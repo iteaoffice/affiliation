@@ -1,13 +1,13 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Entity
- * @subpackage  Document
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +16,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 
 /**
- * ProjectLoiObject
+ * ProjectLoiObject.
  *
  * @ORM\Table(name="project_loi_object")
  * @ORM\Entity
@@ -27,11 +27,13 @@ class LoiObject extends EntityAbstract
      * @ORM\Column(name="object_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
      * @var integer
      */
     private $id;
     /**
      * @ORM\Column(name="object", type="blob", nullable=false)
+     *
      * @var resource
      */
     private $object;
@@ -40,12 +42,13 @@ class LoiObject extends EntityAbstract
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="loi_id", referencedColumnName="loi_id")
      * })
+     *
      * @var \Affiliation\Entity\Loi
      */
     private $loi;
 
     /**
-     * Magic Getter
+     * Magic Getter.
      *
      * @param $property
      *
@@ -57,12 +60,10 @@ class LoiObject extends EntityAbstract
     }
 
     /**
-     * Magic Setter
+     * Magic Setter.
      *
      * @param $property
      * @param $value
-     *
-     * @return void
      */
     public function __set($property, $value)
     {
@@ -70,11 +71,10 @@ class LoiObject extends EntityAbstract
     }
 
     /**
-     * Set input filter
+     * Set input filter.
      *
      * @param InputFilterInterface $inputFilter
      *
-     * @return void
      * @throws \Exception
      */
     public function setInputFilter(InputFilterInterface $inputFilter)
@@ -97,7 +97,7 @@ class LoiObject extends EntityAbstract
     }
 
     /**
-     * Needed for the hydration of form elements
+     * Needed for the hydration of form elements.
      *
      * @return array
      */

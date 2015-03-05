@@ -1,13 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Navigation
- * @subpackage  Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Navigation\Service;
 
 use Affiliation\Service\AffiliationService;
@@ -20,10 +20,7 @@ use Zend\Mvc\Router\Http\TreeRouteStack;
 use Zend\Navigation\Navigation;
 
 /**
- * Factory for the Affiliation admin navigation
- *
- * @package    Affiliation
- * @subpackage Navigation\Service
+ * Factory for the Affiliation admin navigation.
  */
 class NavigationServiceAbstract implements
     AffiliationServiceAwareInterface,

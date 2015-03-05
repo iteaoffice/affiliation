@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Controller;
 
 use Affiliation\Entity;
@@ -18,12 +19,11 @@ use Zend\View\Model\ViewModel;
 
 /**
  * @category    Affiliation
- * @package     Controller
  */
 class DoaController extends AffiliationAbstractController implements GeneralServiceAwareInterface
 {
     /**
-     * Upload a DOA for a project (based on the affiliation)
+     * Upload a DOA for a project (based on the affiliation).
      *
      * @return ViewModel
      */
@@ -88,9 +88,10 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
     }
 
     /**
-     * Action to replace an mis-uploaded DoA
+     * Action to replace an mis-uploaded DoA.
      *
      * @return ViewModel
+     *
      * @throws \Zend\Form\Exception\InvalidArgumentException
      * @throws \InvalidArgumentException
      * @throws \Zend\Mvc\Exception\DomainException
@@ -98,8 +99,8 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
      */
     public function replaceAction()
     {
-        /**
-         * @var $doa Doa
+        /*
+         * @var Doa
          */
         $doa = $this->getAffiliationService()->findEntityById(
             'Doa',
@@ -126,7 +127,7 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
 
             if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
-                /**
+                /*
                  * Remove the current entity
                  */
                 foreach ($doa->getObject() as $object) {
@@ -203,8 +204,8 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
     public function downloadAction()
     {
         set_time_limit(0);
-        /**
-         * @var $doa Doa
+        /*
+         * @var Doa
          */
         $doa = $this->getAffiliationService()->findEntityById(
             'Doa',
@@ -213,7 +214,7 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
         if (is_null($doa) || sizeof($doa->getObject()) === 0) {
             return $this->notFoundAction();
         }
-        /**
+        /*
          * Due to the BLOB issue, we treat this as an array and we need to capture the first element
          */
         $object = $doa->getObject()->first()->getObject();

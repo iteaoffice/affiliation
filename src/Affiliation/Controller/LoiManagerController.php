@@ -1,16 +1,18 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * PHP Version 5
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   2004-2014 ITEA Office
  * @license     http://debranova.org/license.txt proprietary
+ *
  * @link        http://debranova.org
  */
+
 namespace Affiliation\Controller;
 
 use Affiliation\Entity\Loi;
@@ -31,13 +33,14 @@ use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
- * Affiliation controller
+ * Affiliation controller.
  *
  * @category   Affiliation
- * @package    Controller
+ *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright  2004-2014 ITEA Office
  * @license    http://debranova.org/license.txt proprietary
+ *
  * @link       http://debranova.org
  */
 class LoiManagerController extends AffiliationAbstractController implements
@@ -127,7 +130,7 @@ class LoiManagerController extends AffiliationAbstractController implements
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
+            /*
              * Send the email to the reminded user
              */
             $email = $this->getEmailService()->create();
@@ -237,8 +240,8 @@ class LoiManagerController extends AffiliationAbstractController implements
         $form->get('loi')->get('contact')->setValueOptions($this->getContactService()->toFormValueOptions());
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
-             * @var $loi Loi
+            /*
+             * @var Loi
              */
             $loi = $form->getData();
             if (isset($data['cancel'])) {
@@ -265,7 +268,7 @@ class LoiManagerController extends AffiliationAbstractController implements
             $fileData = $this->params()->fromFiles();
 
             if ($fileData['loi']['file']['error'] === 0) {
-                /**
+                /*
                  * Replace the content of the object
                  */
                 if (!$loi->getObject()->isEmpty()) {
@@ -311,7 +314,7 @@ class LoiManagerController extends AffiliationAbstractController implements
     }
 
     /**
-     * Dedicated action to approve LOIs via an AJAX call
+     * Dedicated action to approve LOIs via an AJAX call.
      *
      * @return JsonModel
      */
@@ -339,8 +342,8 @@ class LoiManagerController extends AffiliationAbstractController implements
             );
         }
 
-        /**
-         * @var $loi Loi
+        /*
+         * @var Loi
          */
         $loi = $this->getAffiliationService()->findEntityById('Loi', $loi);
         $loi->setContact($this->getContactService()->setContactId($contact)->getContact());

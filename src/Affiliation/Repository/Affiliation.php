@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Repository
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Repository;
 
 use Affiliation\Entity;
@@ -21,12 +22,11 @@ use Project\Entity\Version\Version;
 
 /**
  * @category    Affiliation
- * @package     Repository
  */
 class Affiliation extends EntityRepository
 {
     /**
-     * Returns the affiliations based on the which
+     * Returns the affiliations based on the which.
      *
      * @param Project $project
      * @param int     $which
@@ -61,7 +61,8 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns a list of affiliations which do not have an DOA
+     * Returns a list of affiliations which do not have an DOA.
+     *
      * @throws InvalidArgumentException
      *
      * @return Entity\Affiliation[]
@@ -73,7 +74,7 @@ class Affiliation extends EntityRepository
         $qb->from('Affiliation\Entity\Affiliation', 'a');
         $qb->join('a.organisation', 'o');
 
-        /**
+        /*
          * Fetch the corresponding projects
          */
         $subSelect = $this->_em->createQueryBuilder();
@@ -83,7 +84,7 @@ class Affiliation extends EntityRepository
         $subSelect->andWhere('call.doaRequirement = :doaRequirement');
         $qb->andWhere($qb->expr()->in('a.project', $subSelect->getDQL()));
 
-        /**
+        /*
          * Exclude the found DOAs the corresponding projects
          */
         $subSelect2 = $this->_em->createQueryBuilder();
@@ -101,7 +102,8 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns a list of affiliations which do not have an Loi
+     * Returns a list of affiliations which do not have an Loi.
+     *
      * @throws InvalidArgumentException
      *
      * @return QueryBuilder
@@ -114,13 +116,13 @@ class Affiliation extends EntityRepository
         $qb->join('a.organisation', 'o');
         $qb->join('a.project', 'p');
 
-        /**
-         * @var $projectRepository \Project\Repository\Project
+        /*
+         * @var \Project\Repository\Project
          */
         $projectRepository = $this->getEntityManager()->getRepository('Project\Entity\Project');
         $qb = $projectRepository->onlyActiveProject($qb);
 
-        /**
+        /*
          * Exclude the found LOIs the corresponding projects
          */
         $subSelect2 = $this->_em->createQueryBuilder();
@@ -136,7 +138,7 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns the affiliations based on the which
+     * Returns the affiliations based on the which.
      *
      * @param Version $version
      * @param int     $which
@@ -164,7 +166,7 @@ class Affiliation extends EntityRepository
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
 
-        /**
+        /*
          * Fetch the affiliations from the version
          */
         $subSelect = $this->_em->createQueryBuilder();
@@ -182,7 +184,7 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns the affiliations based on the which
+     * Returns the affiliations based on the which.
      *
      * @param Version $version
      * @param Country $country
@@ -213,7 +215,7 @@ class Affiliation extends EntityRepository
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
 
-        /**
+        /*
          * Fetch the affiliations from the version
          */
         $subSelect = $this->_em->createQueryBuilder();
@@ -231,7 +233,7 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns the affiliations based on the which
+     * Returns the affiliations based on the which.
      *
      * @param Version $version
      * @param Country $country
@@ -265,7 +267,7 @@ class Affiliation extends EntityRepository
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
 
-        /**
+        /*
          * Fetch the affiliations from the version
          */
         $subSelect = $this->_em->createQueryBuilder();
@@ -284,7 +286,7 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns the affiliations based on the which and country
+     * Returns the affiliations based on the which and country.
      *
      * @param Project $project
      * @param Country $country
@@ -322,7 +324,7 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns the affiliations based on the which and country
+     * Returns the affiliations based on the which and country.
      *
      * @param Project $project
      * @param Country $country

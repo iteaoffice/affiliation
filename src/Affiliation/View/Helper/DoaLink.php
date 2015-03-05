@@ -1,14 +1,14 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Doa as DoaAssertion;
@@ -16,11 +16,9 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 
 /**
- * Create a link to an doa
+ * Create a link to an doa.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
  */
 class DoaLink extends LinkAbstract
 {
@@ -47,7 +45,7 @@ class DoaLink extends LinkAbstract
         $this->setAction($action);
         $this->setShow($show);
         $this->setAffiliation($affiliation);
-        /**
+        /*
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
@@ -74,7 +72,7 @@ class DoaLink extends LinkAbstract
     }
 
     /**
-     * Extract the relevant parameters based on the action
+     * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
      */
@@ -205,7 +203,7 @@ class DoaLink extends LinkAbstract
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
-        /**
+        /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
         if (!is_null($affiliation)) {

@@ -1,25 +1,22 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Navigation
- * @subpackage  Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Navigation\Service;
 
 /**
- * Factory for the Affiliation admin navigation
- *
- * @package    Affiliation
- * @subpackage Navigation\Service
+ * Factory for the Affiliation admin navigation.
  */
 class AffiliationNavigationService extends NavigationServiceAbstract
 {
     /**
-     * Add the dedicated pages to the navigation
+     * Add the dedicated pages to the navigation.
      */
     public function update()
     {
@@ -36,12 +33,12 @@ class AffiliationNavigationService extends NavigationServiceAbstract
     }
 
     /**
-     * Update the navigation for a affiliation
+     * Update the navigation for a affiliation.
      */
     public function updateCommunityNavigation()
     {
         $communityNavigation = $this->getNavigation()->findOneBy('route', 'community/project/list');
-        /**
+        /*
          * Go over the routes to see if we need to extend the $this->pages array
          */
         switch ($this->getRouteMatch()->getMatchedRouteName()) {

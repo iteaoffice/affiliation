@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Project
- * @package     Entity
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,7 +18,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 
 /**
- * Entity for the Affiliation
+ * Entity for the Affiliation.
  *
  * @ORM\Table(name="description")
  * @ORM\Entity
@@ -25,7 +26,6 @@ use Zend\InputFilter\InputFilterInterface;
  * @Annotation\Name("affiliation_description")
  *
  * @category    Affiliation
- * @package     Entity
  */
 class Description extends EntityAbstract
 {
@@ -34,6 +34,7 @@ class Description extends EntityAbstract
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
+     *
      * @var integer
      */
     private $id;
@@ -45,6 +46,7 @@ class Description extends EntityAbstract
      *    inverseJoinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")}
      * )
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Affiliation[]|ArrayCollection()
      */
     private $affiliation;
@@ -59,6 +61,7 @@ class Description extends EntityAbstract
      * "txt-affiliation-description-explanation"
      * })
      * @Annotation\Required(true)
+     *
      * @var string
      */
     private $description;
@@ -68,12 +71,13 @@ class Description extends EntityAbstract
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=true)
      * })
      * @Annotation\Exclude()
+     *
      * @var \Contact\Entity\Contact
      */
     private $contact;
 
     /**
-     * Class constructor
+     * Class constructor.
      */
     public function __construct()
     {
@@ -93,8 +97,6 @@ class Description extends EntityAbstract
     /**
      * @param $property
      * @param $value
-     *
-     * @return void
      */
     public function __set($property, $value)
     {
@@ -102,7 +104,8 @@ class Description extends EntityAbstract
     }
 
     /**
-     * ToString
+     * ToString.
+     *
      * @return string
      */
     public function __toString()
@@ -113,7 +116,6 @@ class Description extends EntityAbstract
     /**
      * @param InputFilterInterface $inputFilter
      *
-     * @return void
      * @throws \Exception
      */
     public function setInputFilter(InputFilterInterface $inputFilter)

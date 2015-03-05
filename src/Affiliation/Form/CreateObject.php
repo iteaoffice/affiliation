@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Content
- * @package     Form
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity\EntityAbstract;
@@ -34,7 +35,7 @@ class CreateObject extends Form
         $this->serviceManager = $serviceManager;
         $entityManager = $this->serviceManager->get('doctrine.entitymanager.orm_default');
         $objectSpecificFieldset = '\Affiliation\Form\\'.ucfirst($object->get('entity_name')).'Fieldset';
-        /**
+        /*
          * Load a specific fieldSet when present
          */
         if (class_exists($objectSpecificFieldset)) {
