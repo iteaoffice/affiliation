@@ -34,7 +34,7 @@ class CreateObject extends Form
 
         $this->serviceManager = $serviceManager;
         $entityManager = $this->serviceManager->get('doctrine.entitymanager.orm_default');
-        $objectSpecificFieldset = '\Affiliation\Form\\'.ucfirst($object->get('entity_name')).'Fieldset';
+        $objectSpecificFieldset = '\Affiliation\Form\\' . ucfirst($object->get('entity_name')) . 'Fieldset';
         /*
          * Load a specific fieldSet when present
          */
@@ -46,6 +46,7 @@ class CreateObject extends Form
         $objectFieldset->setUseAsBaseFieldset(true);
         $this->add($objectFieldset);
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
         $this->add(

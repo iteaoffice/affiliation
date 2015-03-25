@@ -28,13 +28,14 @@ class DoaApproval extends Form implements InputFilterProviderInterface
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
         /*
          * Create a fieldSet per DOA (and affiliation)
          */
         foreach ($doa as $doa) {
-            $affiliationFieldset = new Fieldset('affiliation_'.$doa->getAffiliation()->getId());
+            $affiliationFieldset = new Fieldset('affiliation_' . $doa->getAffiliation()->getId());
 
             $contactService->findContactsInAffiliation($doa->getAffiliation());
             $affiliationFieldset->add(
@@ -47,7 +48,7 @@ class DoaApproval extends Form implements InputFilterProviderInterface
                     ],
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'contact-'.$doa->getId(),
+                        'id'       => 'contact-' . $doa->getId(),
                         'required' => true,
                     ],
                 ]
@@ -59,7 +60,7 @@ class DoaApproval extends Form implements InputFilterProviderInterface
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'dateSigned-'.$doa->getId(),
+                        'id'       => 'dateSigned-' . $doa->getId(),
                         'required' => true,
                     ],
                 ]

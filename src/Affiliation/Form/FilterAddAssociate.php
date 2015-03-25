@@ -14,6 +14,9 @@ use Zend\InputFilter\InputFilter;
 
 class FilterAddAssociate extends InputFilter
 {
+    /**
+     *
+     */
     public function __construct()
     {
     }

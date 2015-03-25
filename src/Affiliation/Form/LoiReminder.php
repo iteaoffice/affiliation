@@ -23,7 +23,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class LoiReminder extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Affiliation    $affiliation
+     * @param Affiliation $affiliation
      * @param ContactService $contactService
      */
     public function __construct(
@@ -32,6 +32,7 @@ class LoiReminder extends Form implements InputFilterProviderInterface
     ) {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
         $contactService->findContactsInAffiliation($affiliation);

@@ -22,12 +22,13 @@ class Financial extends Form
 {
     /**
      * @param AffiliationService $affiliationService
-     * @param GeneralService     $generalService
+     * @param GeneralService $generalService
      */
     public function __construct(AffiliationService $affiliationService, GeneralService $generalService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
         $countries = [];
         foreach ($generalService->findAll('country') as $country) {

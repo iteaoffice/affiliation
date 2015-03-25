@@ -12,10 +12,10 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
+use Deeplink\Entity\Target;
+use DoctrineORMModule\Form\Element\EntitySelect;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
-use DoctrineORMModule\Form\Element\EntitySelect;
-use Deeplink\Entity\Target;
 
 /**
  *
@@ -23,7 +23,7 @@ use Deeplink\Entity\Target;
 class DoaReminder extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Affiliation    $affiliation
+     * @param Affiliation $affiliation
      * @param ContactService $contactService
      */
     public function __construct(
@@ -32,6 +32,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
     ) {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
         $contactService->findContactsInAffiliation($affiliation);

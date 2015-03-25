@@ -28,6 +28,7 @@ use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
+use Zend\I18n\View\Helper\Translate;
 
 /**
  * @category    Affiliation
@@ -352,5 +353,20 @@ abstract class AffiliationAbstractController extends AbstractActionController im
         $this->emailService = $emailService;
 
         return $this;
+    }
+
+    /**
+     * Proxy for the flash messenger helper to have the string translated earlier
+     *
+     * @param $string
+     * @return string
+     */
+    protected function translate($string)
+    {
+        /**
+         * @var $translate Translate
+         */
+        $translate = $this->getServiceLocator()->get('ViewHelperManager')->get('translate');
+        return $translate($string);
     }
 }
