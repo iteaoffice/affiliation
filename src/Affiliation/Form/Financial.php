@@ -22,7 +22,7 @@ class Financial extends Form
 {
     /**
      * @param AffiliationService $affiliationService
-     * @param GeneralService $generalService
+     * @param GeneralService     $generalService
      */
     public function __construct(AffiliationService $affiliationService, GeneralService $generalService)
     {

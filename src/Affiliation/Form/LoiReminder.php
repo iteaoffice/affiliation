@@ -23,7 +23,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class LoiReminder extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Affiliation $affiliation
+     * @param Affiliation    $affiliation
      * @param ContactService $contactService
      */
     public function __construct(

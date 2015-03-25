@@ -13,8 +13,7 @@ namespace Affiliation\Form;
 use Zend\InputFilter\InputFilter;
 
 /**
- * Class FilterCreateObject
- * @package Affiliation\Form
+ * Class FilterCreateObject.
  */
 class FilterCreateObject extends InputFilter
 {

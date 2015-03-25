@@ -356,17 +356,19 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * Proxy for the flash messenger helper to have the string translated earlier
+     * Proxy for the flash messenger helper to have the string translated earlier.
      *
      * @param $string
+     *
      * @return string
      */
     protected function translate($string)
     {
-        /**
-         * @var $translate Translate
+        /*
+         * @var Translate
          */
         $translate = $this->getServiceLocator()->get('ViewHelperManager')->get('translate');
+
         return $translate($string);
     }
 }
