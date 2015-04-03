@@ -332,6 +332,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
      */
     private $loiReminder;
+    /**
+     * @ORM\ManyToMany(targetEntity="Project\Entity\Achievement", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Achievement[]
+     */
+    private $achievement;
 
     /**
      * Class constructor.
@@ -352,6 +359,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->spent = new Collections\ArrayCollection();
         $this->doaReminder = new Collections\ArrayCollection();
         $this->loiReminder = new Collections\ArrayCollection();
+        $this->achievement = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -1047,5 +1055,21 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setLoiReminder($loiReminder)
     {
         $this->loiReminder = $loiReminder;
+    }
+
+    /**
+     * @return \Project\Entity\Achievement[]
+     */
+    public function getAchievement()
+    {
+        return $this->achievement;
+    }
+
+    /**
+     * @param \Project\Entity\Achievement[] $achievement
+     */
+    public function setAchievement($achievement)
+    {
+        $this->achievement = $achievement;
     }
 }

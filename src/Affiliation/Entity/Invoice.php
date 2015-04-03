@@ -58,7 +58,7 @@ class Invoice //extends EntityAbstract
      */
     private $versionId;
     /**
-     * @ORM\ManyToOne(targetEntity="\Affiliation\Entity\Affiliation", inversedBy="invoice", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="invoice", cascade={"persist"})
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
@@ -66,13 +66,163 @@ class Invoice //extends EntityAbstract
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
-//    /**
-//     * @var \Invoice
-//     *
-//     * @ORM\ManyToOne(targetEntity="Invoice")
-//     * @ORM\JoinColumns({
-//     * @ORM\JoinColumn(name="invoice_id", referencedColumnName="invoice_id")
-//     * })
-//     */
-//    private $invoice;
+    /**
+     * @ORM\OneToOne(targetEntity="Invoice\Entity\Invoice", inversedBy="affiliationInvoice", cascade={"persist"})
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="invoice_id", referencedColumnName="invoice_id", nullable=false)
+     * })
+     * @var \Invoice\Entity\Invoice
+     */
+    private $invoice;
+
+    /**
+     * Class constructor.
+     */
+    public function __construct()
+    {
+
+    }
+
+    /**
+     * @param $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $this->$property;
+    }
+
+    /**
+     * @param $property
+     * @param $value
+     */
+    public function __set($property, $value)
+    {
+        $this->$property = $value;
+    }
+
+    /**
+     * Returns the string identifier of the Resource.
+     *
+     * @return string
+     */
+    public function getResourceId()
+    {
+        return sprintf("%s:%s", __CLASS__, $this->id);
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPeriod()
+    {
+        return $this->period;
+    }
+
+    /**
+     * @param int $period
+     */
+    public function setPeriod($period)
+    {
+        $this->period = $period;
+    }
+
+    /**
+     * @return int
+     */
+    public function getYear()
+    {
+        return $this->year;
+    }
+
+    /**
+     * @param int $year
+     */
+    public function setYear($year)
+    {
+        $this->year = $year;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAmountInvoiced()
+    {
+        return $this->amountInvoiced;
+    }
+
+    /**
+     * @param float $amountInvoiced
+     */
+    public function setAmountInvoiced($amountInvoiced)
+    {
+        $this->amountInvoiced = $amountInvoiced;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVersionId()
+    {
+        return $this->versionId;
+    }
+
+    /**
+     * @param int $versionId
+     */
+    public function setVersionId($versionId)
+    {
+        $this->versionId = $versionId;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @param mixed $invoice
+     */
+    public function setInvoice($invoice)
+    {
+        $this->invoice = $invoice;
+    }
+
+
 }

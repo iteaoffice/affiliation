@@ -69,6 +69,9 @@ class Affiliation extends AssertionAbstract
                 if ($this->getContactService()->hasPermit('edit', $resource)) {
                     return true;
                 }
+                if ($this->getContactService()->hasPermit('financial', $resource)) {
+                    return true;
+                }
                 break;
             case 'edit-financial':
                 if ($this->getContactService()->hasPermit('financial', $resource)) {

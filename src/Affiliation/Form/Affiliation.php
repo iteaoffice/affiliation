@@ -25,6 +25,7 @@ class Affiliation extends Form
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
         $technicalContactValueOptions = [];
         $affiliationValueOptions = [];
