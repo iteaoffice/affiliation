@@ -15,10 +15,8 @@ use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
-use Organisation\Service\OrganisationService;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
-use Project\Service\ProjectService;
 
 /**
  * AffiliationService.
@@ -90,7 +88,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @return \Generator
      */
@@ -106,7 +104,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Version $version
-     * @param int     $which
+     * @param int $which
      *
      * @return ArrayCollection
      */
@@ -128,7 +126,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return \Generator
      */
@@ -152,7 +150,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return \Generator
      */
@@ -173,7 +171,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return \Generator
      */
@@ -197,7 +195,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return int
      */
@@ -219,7 +217,7 @@ class AffiliationService extends ServiceAbstract
      * Produce a list of affiliations grouped per country.
      *
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @return ArrayCollection
      */
@@ -249,7 +247,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @return \General\Entity\Country[]
      */
@@ -275,7 +273,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Contact $contact
-     * @param int     $which
+     * @param int $which
      *
      * @return null|Affiliation
      */
@@ -399,8 +397,7 @@ class AffiliationService extends ServiceAbstract
             foreach ($cluster->getMember() as $clusterMember) {
                 foreach ($clusterMember->getAffiliation() as $affiliation) {
                     $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-                    $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation(
-                    )->getId()][$affiliation->getBranch()] =
+                    $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
                         $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
                 }
             }
@@ -420,8 +417,7 @@ class AffiliationService extends ServiceAbstract
          */
         if (!is_null($contact->getContactOrganisation())) {
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
-            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
-            )][$contact->getContactOrganisation()->getOrganisation()->getId()]
+            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()->getBranch()
@@ -435,8 +431,7 @@ class AffiliationService extends ServiceAbstract
              * Add the contact organisation
              */
             $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
-            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry(
-            )][$contact->getContactOrganisation()->getOrganisation()->getId()]
+            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()] =
                 $this->getOrganisationService()->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()->getBranch()
@@ -444,13 +439,14 @@ class AffiliationService extends ServiceAbstract
             /*
              * Go over the clusters
              */
-            foreach ($organisation->getContactOrganisation()->getOrganisation()->getCluster() as $cluster) {
-                foreach ($cluster->getMember() as $clusterMember) {
-                    foreach ($clusterMember->getAffiliation() as $affiliation) {
-                        $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
-                        $options[$affiliation->getOrganisation()->getCountry()->getCountry(
-                        )][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
-                            $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+            foreach ($organisation->getContactOrganisation() as $contactOrganisation) {
+                foreach ($contactOrganisation->getOrganisation()->getCluster() as $cluster) {
+                    foreach ($cluster->getMember() as $clusterMember) {
+                        foreach ($clusterMember->getAffiliation() as $affiliation) {
+                            $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
+                            $options[$affiliation->getOrganisation()->getCountry()->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()] =
+                                $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+                        }
                     }
                 }
             }
@@ -492,23 +488,5 @@ class AffiliationService extends ServiceAbstract
         return $this->affiliation;
     }
 
-    /**
-     * Gateway to the Project Service.
-     *
-     * @return ProjectService
-     */
-    public function getProjectService()
-    {
-        return $this->getServiceLocator()->get(ProjectService::class);
-    }
 
-    /**
-     * Gateway to the Organisation Service.
-     *
-     * @return OrganisationService
-     */
-    public function getOrganisationService()
-    {
-        return $this->getServiceLocator()->get('organisation_organisation_service');
-    }
 }

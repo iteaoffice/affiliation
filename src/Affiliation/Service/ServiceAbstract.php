@@ -12,12 +12,14 @@ namespace Affiliation\Service;
 
 use Admin\Service\AdminService;
 use Admin\Service\AdminServiceAwareInterface;
-use Affiliation\Acl\Assertion\AssertionAbstract;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Loi;
 use BjyAuthorize\Service\Authorize;
+use Organisation\Service\OrganisationService;
+use Organisation\Service\OrganisationServiceAwareInterface;
+use Project\Service\ProjectService;
 use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -27,6 +29,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 abstract class ServiceAbstract implements
     AdminServiceAwareInterface,
+    OrganisationServiceAwareInterface,
     ServiceLocatorAwareInterface,
     ServiceInterface
 {
@@ -38,6 +41,14 @@ abstract class ServiceAbstract implements
      * @var AdminService;
      */
     protected $adminService;
+    /**
+     * @var OrganisationService;
+     */
+    protected $organisationService;
+    /**
+     * @var ProjectService;
+     */
+    protected $projectService;
     /**
      * @var AuthenticationService;
      */
@@ -159,10 +170,10 @@ abstract class ServiceAbstract implements
          */
         if (strpos($entity, '-') !== false) {
             $entity = explode('-', $entity);
-            $entity = $entity[0].ucfirst($entity[1]);
+            $entity = $entity[0] . ucfirst($entity[1]);
         }
 
-        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))).'\\'.'Entity'.'\\'.ucfirst(
+        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))) . '\\' . 'Entity' . '\\' . ucfirst(
             $entity
         );
     }
@@ -253,6 +264,45 @@ abstract class ServiceAbstract implements
     public function setAdminService(AdminService $adminService)
     {
         $this->adminService = $adminService;
+
+        return $this;
+    }
+
+
+    /**
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->serviceLocator->get(ProjectService::class);
+    }
+
+    /**
+     * @param ProjectService $projectService
+     * @return ServiceAbstract
+     */
+    public function setProjectService(ProjectService $projectService)
+    {
+        $this->projectService = $projectService;
+
+        return $this;
+    }
+
+    /**
+     * @return OrganisationService
+     */
+    public function getOrganisationService()
+    {
+        return $this->organisationService;
+    }
+
+    /**
+     * @param OrganisationService $organisationService
+     * @return ServiceAbstract
+     */
+    public function setOrganisationService(OrganisationService $organisationService)
+    {
+        $this->organisationService = $organisationService;
 
         return $this;
     }

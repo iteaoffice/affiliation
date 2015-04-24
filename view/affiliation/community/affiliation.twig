@@ -26,6 +26,7 @@
     <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
     <li><a href="#cost-and-effort" data-toggle="tab">{{ translate("txt-cost-and-effort") }}</a></li>
     <li><a href="#contact" data-toggle="tab">{{ translate("txt-contacts") }}</a></li>
+    <li><a href="#achievement" data-toggle="tab">{{ translate("txt-achievements") }}</a></li>
     {% if isAllowed(affiliationService.affiliation,'edit-affiliation') or isAllowed(affiliationService.affiliation,'edit-financial') %}
         <li><a href="#invoicing" data-toggle="tab">{{ translate("txt-invoicing") }}</a></li>
     {% endif %}
@@ -55,34 +56,41 @@
             <dd>{{ affiliationService.affiliation.mainContribution|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
             <dt>{{ translate("txt-market-access") }}</dt>
             <dd>{{ affiliationService.affiliation.marketAccess|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
-            {#<dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>#}
-            {#<dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}#}
-            {#{% if programDoa.dateApproved is null %}#}
-            {#{{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}#}
-            {#{{ programDoaLink(programDoa,'replace','icon') }}#}
-            {#{{ programDoaLink(programDoa,'download','icon') }}#}
-            {#{% else %}#}
-            {#{{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}#}
-            {#{{ programDoaLink(programDoa,'download','icon') }}#}
-            {#{% endif %}#}
-            {#{% else %}#}
-            {#{{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}#}
-            {#{% endfor %}#}
-            {#</dd>#}
-            <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
-            <dd>
-                {% if not affiliationService.hasDoa() %}
-                    {{ doaLink(null,'upload','text', affiliationService.affiliation) }}
-                {% elseif affiliationService.affiliation.doa.dateApproved is null %}
-                    {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
-                    format(affiliationService.affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
-                    {{ doaLink(affiliationService.affiliation.doa,'replace','icon') }}
-                    {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
-                {% else %}
-                    {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliationService.affiliation.doa.dateApproved|string_date)|raw }}
-                    {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
-                {% endif %}
-            </dd>
+
+            {% if projectService.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
+                <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
+                <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
+                        {% if programDoa.dateApproved is null %}
+                            {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
+                            {{ programDoaLink(programDoa,'replace','icon') }}
+                            {{ programDoaLink(programDoa,'download','icon') }}
+                        {% else %}
+                            {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}
+                            {{ programDoaLink(programDoa,'download','icon') }}
+                        {% endif %}
+                    {% else %}
+                        {{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}
+                    {% endfor %}
+                </dd>
+            {% endif %}
+
+            {% if projectService.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}
+                <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
+                <dd>
+                    {% if not affiliationService.hasDoa() %}
+                        {{ doaLink(null,'upload','text', affiliationService.affiliation) }}
+                    {% elseif affiliationService.affiliation.doa.dateApproved is null %}
+                        {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
+                        format(affiliationService.affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
+                        {{ doaLink(affiliationService.affiliation.doa,'replace','icon') }}
+                        {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
+                    {% else %}
+                        {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliationService.affiliation.doa.dateApproved|string_date)|raw }}
+                        {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
+                    {% endif %}
+                </dd>
+            {% endif %}
+
             <dt>{{ translate("txt-letter-of-intent") }}</dt>
             <dd>
                 {% if not affiliationService.hasLoi() %}
@@ -113,7 +121,7 @@
         {% for description in affiliationService.affiliation.description %}
             <dl class="dl-horizontal">
                 <dt>{{ translate("txt-description") }}</dt>
-                <dd>{{ description.description|raw }}</dd>
+                <dd>{{ description.description|raw|nl2br }}</dd>
             </dl>
         {% else %}
             {{ ztbalert().warning(translate("txt-no-description-found-for-%s")|format(
@@ -341,7 +349,6 @@
     </div>
     <div class="tab-pane" id="contact">
 
-
         <h3>{{ translate("txt-associate-details") }}</h3>
 
         {% if contactsInAffiliation.contacts|length > 0 %}
@@ -369,6 +376,47 @@
 
         {{ affiliationLink(affiliationService.affiliation,'add-associate','button') }}
     </div>
+
+    <div class="tab-pane" id="achievement">
+
+        <h3>{{ translate("txt-exploitation-related-achievement") }}</h3>
+
+        {% if affiliationService.affiliation.achievement.count > 0 %}
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>{{ translate("txt-achievement") }}</th>
+                    <th>{{ translate("txt-date") }}</th>
+                    <th>{{ translate("txt-category") }}</th>
+                    <th>{{ translate("txt-type") }}</th>
+                    <th>{{ translate("txt-contact") }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for achievement in affiliationService.affiliation.achievement %}
+                    <tr>
+                        <td>
+                            {{ achievementLink(achievement,'view-community', 'name') }}
+                        </td>
+                        <td>{{ achievement.dateCreated|string_date }} {% if latestReviewMeeting and latestReviewMeeting.dateEnd < result.dateCreated %}
+                                <span class="label label-primary">{{ translate("txt-new") }}</span>{% endif %}</td>
+                        <td>{{ achievement.type.category }}</td>
+                        <td>{{ achievement.type }}</td>
+                        <td>{{ achievement.contact.displayName }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <br>
+            {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(projectService.parseFullname()))|raw }}
+        {% endif %}
+
+        {{ achievementLink(null, 'create', 'button', affiliationService.affiliation) }}
+    </div>
+
+
 
     {% if isAllowed(affiliationService.affiliation,'edit-affiliation') or isAllowed(affiliationService.affiliation,'edit-financial') %}
         <div class="tab-pane" id="invoicing">
