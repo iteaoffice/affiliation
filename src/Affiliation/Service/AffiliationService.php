@@ -88,7 +88,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return \Generator
      */
@@ -104,7 +104,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Version $version
-     * @param int $which
+     * @param int     $which
      *
      * @return ArrayCollection
      */
@@ -126,7 +126,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return \Generator
      */
@@ -150,7 +150,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return \Generator
      */
@@ -171,7 +171,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return \Generator
      */
@@ -195,7 +195,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return int
      */
@@ -217,7 +217,7 @@ class AffiliationService extends ServiceAbstract
      * Produce a list of affiliations grouped per country.
      *
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return ArrayCollection
      */
@@ -247,7 +247,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return \General\Entity\Country[]
      */
@@ -273,7 +273,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Contact $contact
-     * @param int $which
+     * @param int     $which
      *
      * @return null|Affiliation
      */
@@ -487,6 +487,5 @@ class AffiliationService extends ServiceAbstract
     {
         return $this->affiliation;
     }
-
 
 }

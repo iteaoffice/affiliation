@@ -224,5 +224,4 @@ class Invoice //extends EntityAbstract
         $this->invoice = $invoice;
     }
 
-
 }
