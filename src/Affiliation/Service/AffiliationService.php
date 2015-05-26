@@ -15,6 +15,7 @@ use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
+use Program\Entity\Call\Call;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
 
@@ -152,7 +153,7 @@ class AffiliationService extends ServiceAbstract
      * @param Country $country
      * @param int     $which
      *
-     * @return \Generator
+     * @return int
      */
     public function findAmountOfAffiliationByProjectAndCountryAndWhich(
         Project $project,
@@ -166,6 +167,20 @@ class AffiliationService extends ServiceAbstract
                 $country,
                 $which
             );
+    }
+    
+    /**
+     * @param Project $project
+     * @param Country $country
+     * @param Call    $call
+     *
+     * @return int
+     */
+    public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call)
+    {
+        return $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('affiliation'))
+            ->findAmountOfAffiliationByCountryAndCall($country, $call);
     }
 
     /**
