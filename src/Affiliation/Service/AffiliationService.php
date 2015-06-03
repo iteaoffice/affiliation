@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
 use Invoice\Entity\Method;
+use Program\Entity\Call\Call;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Funding\Source;
 use Project\Entity\Funding\Status;
@@ -420,7 +421,7 @@ class AffiliationService extends ServiceAbstract
      * @param Country $country
      * @param int $which
      *
-     * @return \Generator
+     * @return int
      */
     public function findAmountOfAffiliationByProjectAndCountryAndWhich(
         Project $project,
@@ -434,6 +435,20 @@ class AffiliationService extends ServiceAbstract
                 $country,
                 $which
             );
+    }
+
+    /**
+     * @param Project $project
+     * @param Country $country
+     * @param Call $call
+     *
+     * @return int
+     */
+    public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call)
+    {
+        return $this->getEntityManager()
+            ->getRepository($this->getFullEntityName('affiliation'))
+            ->findAmountOfAffiliationByCountryAndCall($country, $call);
     }
 
     /**

@@ -337,7 +337,7 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * Returns the affiliations based on the which and country.
+     * Returns the affiliations based on Project, which and country.
      *
      * @param Project $project
      * @param Country $country
@@ -374,5 +374,32 @@ class Affiliation extends EntityRepository
         $qb->addGroupBy('a.project');
 
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
+    }
+    
+    /**
+     * Returns the number of affiliations per Country and Call.
+     *
+     * @param Country   $country
+     * @param Call      $call
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return int
+     */
+    public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('COUNT(a) amount');
+        $qb->from('Affiliation\Entity\Affiliation', 'a');
+        $qb->join('a.organisation', 'o');
+        $qb->join('a.project', 'p');
+        $qb->where('p.call = ?1');
+        $qb->andWhere('o.country = ?2');
+        $qb->addOrderBy('o.organisation', 'ASC');
+        $qb->setParameter(1, $call);
+        $qb->setParameter(2, $country);
+        $qb->addGroupBy('o.country');
+
+        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
     }
 }
