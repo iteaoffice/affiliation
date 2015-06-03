@@ -10,6 +10,7 @@
 
 namespace Affiliation\Acl\Assertion;
 
+use Admin\Entity\Access;
 use Affiliation\Entity\Affiliation as AffiliationEntity;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
@@ -50,6 +51,7 @@ class Affiliation extends AssertionAbstract
             $resource = $this->getAffiliationService()->setAffiliationId($id)->getAffiliation();
         }
 
+
         switch ($privilege) {
             case 'view-community':
                 if ($this->getContactService()->hasPermit('view', $resource)) {
@@ -78,6 +80,10 @@ class Affiliation extends AssertionAbstract
                     return true;
                 }
                 break;
+            case 'payment-sheet-admin':
+            case 'payment-sheet-admin-pdf':
+            case 'view-admin':
+                return $this->rolesHaveAccess(strtolower(Access::ACCESS_OFFICE));
         }
 
         return false;

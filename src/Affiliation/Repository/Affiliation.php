@@ -29,7 +29,7 @@ class Affiliation extends EntityRepository
      * Returns the affiliations based on the which.
      *
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -73,6 +73,13 @@ class Affiliation extends EntityRepository
         $qb->select('a');
         $qb->from('Affiliation\Entity\Affiliation', 'a');
         $qb->join('a.organisation', 'o');
+        $qb->join('a.project', 'p');
+
+        /**
+         * @var $projectRepository \Project\Repository\Project
+         */
+        $projectRepository = $this->getEntityManager()->getRepository('Project\Entity\Project');
+        $qb = $projectRepository->onlyActiveProject($qb);
 
         /*
          * Fetch the corresponding projects
@@ -91,10 +98,14 @@ class Affiliation extends EntityRepository
         $subSelect2->select('affiliation');
         $subSelect2->from('Affiliation\Entity\Doa', 'doa');
         $subSelect2->join('doa.affiliation', 'affiliation');
-        $subSelect2->andWhere($qb->expr()->isNull('affiliation.dateEnd'));
+
+
         $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
 
         $qb->setParameter('doaRequirement', Call::DOA_REQUIREMENT_PER_PROJECT);
+
+        //Exclude de-activated partners
+        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
 
         $qb->addOrderBy('o.organisation', 'ASC');
 
@@ -116,8 +127,8 @@ class Affiliation extends EntityRepository
         $qb->join('a.organisation', 'o');
         $qb->join('a.project', 'p');
 
-        /*
-         * @var \Project\Repository\Project
+        /**
+         * @var $projectRepository \Project\Repository\Project
          */
         $projectRepository = $this->getEntityManager()->getRepository('Project\Entity\Project');
         $qb = $projectRepository->onlyActiveProject($qb);
@@ -129,8 +140,10 @@ class Affiliation extends EntityRepository
         $subSelect2->select('affiliation');
         $subSelect2->from('Affiliation\Entity\Loi', 'loi');
         $subSelect2->join('loi.affiliation', 'affiliation');
-        $subSelect2->andWhere($qb->expr()->isNull('affiliation.dateEnd'));
         $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
+
+        //Exclude de-activated partners
+        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
 
         $qb->addOrderBy('o.organisation', 'ASC');
 
@@ -141,7 +154,7 @@ class Affiliation extends EntityRepository
      * Returns the affiliations based on the which.
      *
      * @param Version $version
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -188,7 +201,7 @@ class Affiliation extends EntityRepository
      *
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -237,7 +250,7 @@ class Affiliation extends EntityRepository
      *
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -282,7 +295,7 @@ class Affiliation extends EntityRepository
         $qb->addOrderBy('o.organisation', 'ASC');
         $qb->addGroupBy('a.project');
 
-        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
     /**
@@ -290,7 +303,7 @@ class Affiliation extends EntityRepository
      *
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -328,7 +341,7 @@ class Affiliation extends EntityRepository
      *
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -360,6 +373,6 @@ class Affiliation extends EntityRepository
 
         $qb->addGroupBy('a.project');
 
-        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 }

@@ -10,8 +10,8 @@
 
 namespace Affiliation\Form;
 
-use Affiliation\Entity\Loi;
 use Contact\Service\ContactService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -22,10 +22,10 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class LoiApproval extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Loi[]          $lois
+     * @param ArrayCollection $lois
      * @param ContactService $contactService
      */
-    public function __construct(array $lois, ContactService $contactService)
+    public function __construct(ArrayCollection $lois, ContactService $contactService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -36,7 +36,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
          * Create a fieldSet per LOI (and affiliation)
          */
         foreach ($lois as $loi) {
-            $affiliationFieldset = new Fieldset('affiliation_'.$loi->getAffiliation()->getId());
+            $affiliationFieldset = new Fieldset('affiliation_' . $loi->getAffiliation()->getId());
 
             $contactService->findContactsInAffiliation($loi->getAffiliation());
             $affiliationFieldset->add(
@@ -49,7 +49,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                     ],
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'contact-'.$loi->getId(),
+                        'id'       => 'contact-' . $loi->getId(),
                         'required' => true,
                     ],
                 ]
@@ -61,7 +61,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'dateSigned-'.$loi->getId(),
+                        'id'       => 'dateSigned-' . $loi->getId(),
                         'required' => true,
                     ],
                 ]

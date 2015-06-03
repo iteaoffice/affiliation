@@ -102,6 +102,21 @@ return [
                     'assertion' => DoaAssertion::class
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation-manager/affiliation/view',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/affiliation/payment-sheet',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation-manager/affiliation/payment-sheet-pdf',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
                     'route'     => 'community/affiliation/affiliation',
                     'roles'     => [strtolower(Access::ACCESS_USER)],
                     'assertion' => AffiliationAssertion::class

@@ -12,6 +12,7 @@ namespace Affiliation\Repository;
 
 use Affiliation\Entity\Loi as LoiEntity;
 use Doctrine\ORM\EntityRepository;
+use Organisation\Entity\Organisation;
 
 /**
  * @category    Affiliation
@@ -29,6 +30,25 @@ class Loi extends EntityRepository
         $qb->join('l.affiliation', 'a');
         $qb->andWhere($qb->expr()->isNull('l.dateApproved'));
         $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+
+        $qb->addOrderBy('l.dateCreated', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param Organisation $organisation
+     * @return LoiEntity[]
+     */
+    public function findLoiByOrganisation(Organisation $organisation)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('l');
+        $qb->from('Affiliation\Entity\Loi', 'l');
+        $qb->join('l.affiliation', 'a');
+
+        $qb->andWhere('a.organisation = :organisation');
+        $qb->setParameter('organisation', $organisation);
 
         $qb->addOrderBy('l.dateCreated', 'ASC');
 

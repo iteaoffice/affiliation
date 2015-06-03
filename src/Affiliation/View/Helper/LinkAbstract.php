@@ -52,6 +52,14 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      */
     protected $show;
     /**
+     * @var int
+     */
+    protected $year;
+    /**
+     * @var int
+     */
+    protected $period;
+    /**
      * @var string
      */
     protected $alternativeShow;
@@ -79,12 +87,12 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      */
     public function createLink()
     {
-        /*
-         * @var Url
+        /**
+         * @var $url Url
          */
         $url = $this->serviceLocator->get('url');
-        /*
-         * @var ServerUrl
+        /**
+         * @var $serverUrl ServerUrl
          */
         $serverUrl = $this->serviceLocator->get('serverUrl');
         $this->linkContent = [];
@@ -92,13 +100,13 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
         $this->parseAction();
         $this->parseShow();
         if ('social' === $this->getShow()) {
-            return $serverUrl->__invoke().$url($this->router, $this->routerParams);
+            return $serverUrl->__invoke() . $url($this->router, $this->routerParams);
         }
         $uri = '<a href="%s" title="%s" class="%s">%s</a>';
 
         return sprintf(
             $uri,
-            $serverUrl().$url($this->router, $this->routerParams),
+            $serverUrl() . $url($this->router, $this->routerParams),
             $this->text,
             implode(' ', $this->classes),
             implode('', $this->linkContent)
@@ -126,9 +134,11 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                     case 'edit-description':
                     case 'edit-community':
                     case 'edit-financial':
+                    case 'edit-admin':
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
                         break;
                     case 'download':
+                    case 'payment-sheet-admin-pdf':
                         $this->addLinkContent('<i class="fa fa-download"></i>');
                         break;
                     case 'replace':
@@ -139,7 +149,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                         break;
                 }
                 if ($this->getShow() === 'button') {
-                    $this->addLinkContent(' '.$this->getText());
+                    $this->addLinkContent(' ' . $this->getText());
                     $this->addClasses("btn btn-primary");
                 }
                 break;
@@ -285,8 +295,8 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param EntityAbstract $entity
-     * @param string         $assertion
-     * @param string         $action
+     * @param string $assertion
+     * @param string $action
      *
      * @return bool
      */
@@ -348,14 +358,14 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param null|EntityAbstract $resource
-     * @param string              $privilege
+     * @param string $privilege
      *
      * @return bool
      */
     public function isAllowed($resource, $privilege = null)
     {
-        /*
-         * @var IsAllowed
+        /**
+         * @var $isAllowed IsAllowed
          */
         $isAllowed = $this->serviceLocator->get('isAllowed');
 
@@ -367,7 +377,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      *
      * @param string $key
      * @param        $value
-     * @param bool   $allowNull
+     * @param bool $allowNull
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {
@@ -434,5 +444,43 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     public function translate($string)
     {
         return $this->serviceLocator->get('translate')->__invoke($string);
+    }
+
+    /**
+     * @return int
+     */
+    public function getYear()
+    {
+        return $this->year;
+    }
+
+    /**
+     * @param int $year
+     * @return LinkAbstract
+     */
+    public function setYear($year)
+    {
+        $this->year = $year;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPeriod()
+    {
+        return $this->period;
+    }
+
+    /**
+     * @param int $period
+     * @return LinkAbstract
+     */
+    public function setPeriod($period)
+    {
+        $this->period = $period;
+
+        return $this;
     }
 }

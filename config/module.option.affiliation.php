@@ -9,8 +9,9 @@ $options = [
     /**
      * Indicate here if a project has versions
      */
-    'doa_template' => __DIR__ . '/../../../../styles/itea/template/pdf/doa-template.pdf',
-    'loi_template' => __DIR__ . '/../../../../styles/itea/template/pdf/nda-template.pdf',
+    'doa_template'           => __DIR__ . '/../../../../styles/itea/template/pdf/doa-template.pdf',
+    'loi_template'           => __DIR__ . '/../../../../styles/itea/template/pdf/nda-template.pdf',
+    'payment_sheet_template' => __DIR__ . '/../../../../styles/itea/template/pdf/blank-template-firstpage.pdf',
 ];
 /**
  * You do not need to edit below this line

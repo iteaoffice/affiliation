@@ -52,11 +52,14 @@ class Invoice //extends EntityAbstract
      */
     private $amountInvoiced;
     /**
-     * @ORM\Column(name="version_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="invoice", cascade={"persist"})
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=true)
+     * })
      *
-     * @var integer
+     * @var \Project\Entity\Version\Version
      */
-    private $versionId;
+    private $version;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="invoice", cascade={"persist"})
      * @ORM\JoinColumns({
@@ -80,7 +83,6 @@ class Invoice //extends EntityAbstract
      */
     public function __construct()
     {
-
     }
 
     /**
@@ -209,7 +211,26 @@ class Invoice //extends EntityAbstract
     }
 
     /**
-     * @return mixed
+     * @return \Project\Entity\Version\Version
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param \Project\Entity\Version\Version $version
+     * @return Invoice
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return \Invoice\Entity\Invoice
      */
     public function getInvoice()
     {
@@ -217,11 +238,13 @@ class Invoice //extends EntityAbstract
     }
 
     /**
-     * @param mixed $invoice
+     * @param \Invoice\Entity\Invoice $invoice
+     * @return Invoice
      */
     public function setInvoice($invoice)
     {
         $this->invoice = $invoice;
-    }
 
+        return $this;
+    }
 }

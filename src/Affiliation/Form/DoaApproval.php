@@ -12,6 +12,7 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity\Doa;
 use Contact\Service\ContactService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -22,9 +23,9 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class DoaApproval extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Doa[] $doa
+     * @param ArrayCollection $doa
      */
-    public function __construct(array $doa, ContactService $contactService)
+    public function __construct(ArrayCollection $doa, ContactService $contactService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');

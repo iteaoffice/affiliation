@@ -23,7 +23,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class InvoicePostCalc
+class InvoicePostCalc extends EntityAbstract
 {
     /**
      * @ORM\Column(name="postcalc_id", type="integer", nullable=false)
@@ -48,14 +48,114 @@ class InvoicePostCalc
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
-//
-//    /**
-//     * @var \Invoice
-//     *
-//     * @ORM\ManyToOne(targetEntity="Invoice")
-//     * @ORM\JoinColumns({
-//     * @ORM\JoinColumn(name="invoice_id", referencedColumnName="invoice_id")
-//     * })
-//     */
-//    private $invoice;
+    /**
+     * @ORM\OneToOne(targetEntity="Invoice\Entity\Invoice", inversedBy="affiliationInvoicePostCalc", cascade={"persist"})
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="invoice_id", referencedColumnName="invoice_id", nullable=false)
+     * })
+     * @var \Invoice\Entity\Invoice
+     */
+    private $invoice;
+
+    /**
+     * Class constructor.
+     */
+    public function __construct()
+    {
+    }
+
+    /**
+     * @param $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $this->$property;
+    }
+
+    /**
+     * @param $property
+     * @param $value
+     */
+    public function __set($property, $value)
+    {
+        $this->$property = $value;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     * @return InvoicePostCalc
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAmountInvoiced()
+    {
+        return $this->amountInvoiced;
+    }
+
+    /**
+     * @param float $amountInvoiced
+     * @return InvoicePostCalc
+     */
+    public function setAmountInvoiced($amountInvoiced)
+    {
+        $this->amountInvoiced = $amountInvoiced;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @return InvoicePostCalc
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
+    }
+
+    /**
+     * @return \Invoice\Entity\Invoice
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @param \Invoice\Entity\Invoice $invoice
+     * @return InvoicePostCalc
+     */
+    public function setInvoice($invoice)
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
 }

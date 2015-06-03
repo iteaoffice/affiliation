@@ -11,6 +11,8 @@
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Loi;
+use Doctrine\Common\Collections\ArrayCollection;
+use Organisation\Entity\Organisation;
 
 /**
  * LoiService.
@@ -55,7 +57,17 @@ class LoiService extends ServiceAbstract
      */
     public function findNotApprovedLoi()
     {
-        return $this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findNotApprovedLoi();
+        return new ArrayCollection($this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findNotApprovedLoi());
+    }
+
+    /**
+     * Get a list Loi's by organisation
+     *
+     * @return Loi[]
+     */
+    public function findLoiByOrganisation(Organisation $organisation)
+    {
+        return $this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findLoiByOrganisation($organisation);
     }
 
     /**

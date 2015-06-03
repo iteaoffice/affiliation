@@ -11,6 +11,8 @@
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Doa;
+use Doctrine\Common\Collections\ArrayCollection;
+use Organisation\Entity\Organisation;
 
 /**
  * DoaService.
@@ -55,7 +57,17 @@ class DoaService extends ServiceAbstract
      */
     public function findNotApprovedDoa()
     {
-        return $this->getEntityManager()->getRepository($this->getFullEntityName('doa'))->findNotApprovedDoa();
+        return new ArrayCollection($this->getEntityManager()->getRepository($this->getFullEntityName('doa'))->findNotApprovedDoa());
+    }
+
+    /**
+     * Get a list DOA's by organisation
+     *
+     * @return Doa[]
+     */
+    public function findDoaByOrganisation(Organisation $organisation)
+    {
+        return $this->getEntityManager()->getRepository($this->getFullEntityName('doa'))->findDoaByOrganisation($organisation);
     }
 
     /**

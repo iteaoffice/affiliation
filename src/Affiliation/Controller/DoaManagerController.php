@@ -15,13 +15,14 @@
 
 namespace Affiliation\Controller;
 
-use Affiliation\Entity\Doa;
 use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\DoaReminder as DoaReminderEntity;
 use Affiliation\Form\DoaApproval;
 use Affiliation\Form\DoaReminder;
 use Affiliation\Service\DoaServiceAwareInterface;
 use Contact\Service\ContactServiceAwareInterface;
+use Deeplink\Service\DeeplinkServiceAwareInterface;
+use Deeplink\View\Helper\DeeplinkLink;
 use General\Service\EmailServiceAwareInterface;
 use General\Service\GeneralServiceAwareInterface;
 use Mailing\Service\MailingServiceAwareInterface;
@@ -47,7 +48,8 @@ class DoaManagerController extends AffiliationAbstractController implements
     EmailServiceAwareInterface,
     GeneralServiceAwareInterface,
     MailingServiceAwareInterface,
-    ContactServiceAwareInterface
+    ContactServiceAwareInterface,
+    DeeplinkServiceAwareInterface
 {
     /**
      * @return ViewModel
@@ -124,11 +126,13 @@ class DoaManagerController extends AffiliationAbstractController implements
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             /*
-             * Send the email tot he office
+             * Send the email to the receiving user
              */
+            $receiver = $this->getContactService()->findEntityById('contact', $form->getData()['receiver']);
+
             $email = $this->getEmailService()->create();
             $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
-            $email->addTo($this->zfcUserAuthentication()->getIdentity());
+            $email->addTo($receiver);
             $email->setSubject(
                 str_replace(
                     ['[project]'],
@@ -138,12 +142,25 @@ class DoaManagerController extends AffiliationAbstractController implements
             );
 
             $email->setHtmlLayoutName('signature_twig');
-            $email->setReceiver(
-                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getDisplayName()
-            );
+            $email->setReceiver($receiver->getDisplayName());
             $email->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
             $email->setProject($affiliationService->getAffiliation()->getProject());
             $email->setMessage($form->getData()['message']);
+
+            //Create the deeplink in the email
+            $target = $this->getDeeplinkService()->findEntityById('target', $data['deeplinkTarget']);
+            //Create a deeplink for the user which redirects to the profile-page
+            $deeplink = $this->getDeeplinkService()->createDeeplink(
+                $target,
+                $receiver,
+                null,
+                $affiliationService->getAffiliation()->getId()
+            );
+            /**
+             * @var $deeplinkLink DeeplinkLink
+             */
+            $deeplinkLink = $this->getServiceLocator()->get('viewhelpermanager')->get('deeplinkLink');
+            $email->setDeeplink($deeplinkLink($deeplink, 'view', 'link'));
 
             $this->getEmailService()->send();
 
@@ -159,7 +176,7 @@ class DoaManagerController extends AffiliationAbstractController implements
 
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(
-                    _("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                    $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
                     $affiliationService->getAffiliation()->getOrganisation(),
                     $affiliationService->getAffiliation()->getProject(),
                     $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()
@@ -247,7 +264,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             if (isset($data['delete'])) {
                 $this->flashMessenger()->setNamespace('success')->addMessage(
                     sprintf(
-                        _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
+                        $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
                         $doa->getAffiliation()->getOrganisation(),
                         $doa->getAffiliation()->getProject()
                     )

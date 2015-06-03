@@ -11,7 +11,7 @@
 namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Loi;
-use Application\Options\ModuleOptions;
+use Affiliation\Options\ModuleOptions;
 use Contact\Service\ContactService;
 use General\Service\GeneralService;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;

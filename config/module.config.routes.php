@@ -7,6 +7,13 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+namespace Affiliation;
+
+use Affiliation\Controller\AffiliationManagerController;
+use Affiliation\Controller\AffiliationController;
+use Affiliation\Controller\DoaManagerController;
+use Affiliation\Controller\LoiManagerController;
+
 return [
     'router' => [
         'routes' => [
@@ -198,6 +205,39 @@ return [
             ],
             'zfcadmin'  => [
                 'child_routes' => [
+                    'affiliation'         => [
+                        'type'          => 'Segment',
+                        'priority'      => 1000,
+                        'options'       => [
+                            'route'    => '/affiliation',
+                            'defaults' => [
+                                'namespace'  => __NAMESPACE__,
+                                'controller' => AffiliationController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
+                        'may_terminate' => false,
+                        'child_routes'  => [
+                            'affiliation' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id].html',
+                                    'defaults' => [
+                                        'action' => 'affiliation',
+                                    ]
+                                ]
+                            ],
+                            'list'        => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                    'defaults' => [
+                                        'action' => 'list',
+                                    ]
+                                ]
+                            ],
+                        ]
+                    ],
                     'affiliation-manager' => [
                         'type'          => 'Segment',
                         'priority'      => 1000,
@@ -205,24 +245,69 @@ return [
                             'route'    => '/affiliation',
                             'defaults' => [
                                 'namespace'  => __NAMESPACE__,
-                                'controller' => 'affiliation-manager',
+                                'controller' => AffiliationManagerController::class,
                                 'action'     => 'index',
                             ],
                         ],
-                        'may_terminate' => true,
+                        'may_terminate' => false,
                         'child_routes'  => [
-                            'loi' => [
+                            'affiliation' => [
+                                'type'          => 'Segment',
+                                'priority'      => 1000,
+                                'options'       => [
+                                    'route'    => '/',
+                                    'defaults' => [
+                                        'namespace'  => __NAMESPACE__,
+                                        'controller' => AffiliationManagerController::class,
+                                        'action'     => 'index',
+                                    ],
+                                ],
+                                'may_terminate' => false,
+                                'child_routes'  => [
+                                    'view'              => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => 'view/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'view',
+                                                'privilege' => 'view-admin',
+                                            ]
+                                        ]
+                                    ],
+                                    'payment-sheet'     => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => 'payment-sheet/[:id]/year-[:year]/period-[:period].html',
+                                            'defaults' => [
+                                                'action'    => 'payment-sheet',
+                                                'privilege' => 'payment-sheet-admin',
+                                            ]
+                                        ]
+                                    ],
+                                    'payment-sheet-pdf' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => 'payment-sheet/[:id]/year-[:year]/period-[:period].pdf',
+                                            'defaults' => [
+                                                'action'    => 'payment-sheet-pdf',
+                                                'privilege' => 'payment-sheet-admin',
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ],
+                            'loi'         => [
                                 'type'          => 'Segment',
                                 'priority'      => 1000,
                                 'options'       => [
                                     'route'    => '/loi',
                                     'defaults' => [
                                         'namespace'  => __NAMESPACE__,
-                                        'controller' => 'affiliation-loi-manager',
+                                        'controller' => LoiManagerController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
-                                'may_terminate' => true,
+                                'may_terminate' => false,
                                 'child_routes'  => [
                                     'list'      => [
                                         'type'     => 'Segment',
@@ -323,14 +408,14 @@ return [
                                     ],
                                 ]
                             ],
-                            'doa' => [
+                            'doa'         => [
                                 'type'          => 'Segment',
                                 'priority'      => 1000,
                                 'options'       => [
                                     'route'    => '/doa',
                                     'defaults' => [
                                         'namespace'  => __NAMESPACE__,
-                                        'controller' => 'affiliation-doa-manager',
+                                        'controller' => DoaManagerController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -430,9 +515,9 @@ return [
                                             'defaults' => [
                                                 'action'    => 'approve',
                                                 'privilege' => 'edit-admin',
-                                            ],
-                                        ],
-                                    ],
+                                            ]
+                                        ]
+                                    ]
                                 ]
                             ]
                         ]

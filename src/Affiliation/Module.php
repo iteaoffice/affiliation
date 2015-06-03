@@ -14,6 +14,7 @@ namespace Affiliation;
 
 use Affiliation\Controller\Plugin\RenderDoa;
 use Affiliation\Controller\Plugin\RenderLoi;
+use Affiliation\Controller\Plugin\RenderPaymentSheet;
 use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature;
@@ -31,16 +32,16 @@ class Module implements
 {
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+        return [
+            'Zend\Loader\ClassMapAutoloader' => [
                 __DIR__.'/../../autoload_classmap.php',
-            ),
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+            ],
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__.'/../../src/'.__NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**
@@ -68,8 +69,14 @@ class Module implements
      */
     public function getControllerPluginConfig()
     {
-        return array(
-            'factories' => array(
+        return [
+            'factories' => [
+                'renderPaymentSheet' => function ($sm) {
+                    $renderPaymentSheet = new RenderPaymentSheet();
+                    $renderPaymentSheet->setServiceLocator($sm->getServiceLocator());
+
+                    return $renderPaymentSheet;
+                },
                 'renderDoa' => function ($sm) {
                     $renderDoa = new RenderDoa();
                     $renderDoa->setServiceLocator($sm->getServiceLocator());
@@ -82,8 +89,8 @@ class Module implements
 
                     return $renderLoi;
                 },
-            ),
-        );
+            ],
+        ];
     }
 
     /**

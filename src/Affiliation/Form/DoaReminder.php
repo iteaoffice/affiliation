@@ -87,7 +87,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                     'object_manager'  => $contactService->getEntityManager(),
                     'target_class'    => "Deeplink\Entity\Target",
                     'find_method'     => [
-                        'name'   => 'findBy',
+                        'name'   => 'findTargetsWithRoute',
                         'params' => [
                             'criteria' => [],
                             'orderBy'  => [

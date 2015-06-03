@@ -10,7 +10,11 @@
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Acl\Assertion\Doa as DoaAssertion;
 use Affiliation\Acl\Assertion\Loi as LoiAssertion;
+use Affiliation\Controller\AffiliationController;
+use Affiliation\Controller\AffiliationManagerController;
 use Affiliation\Controller\ControllerInitializer;
+use Affiliation\Controller\DoaManagerController;
+use Affiliation\Controller\LoiManagerController;
 use Affiliation\Navigation\Factory\AffiliationNavigationServiceFactory;
 use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Affiliation\Service\AffiliationService;
@@ -25,13 +29,14 @@ $config = [
             ControllerInitializer::class
         ],
         'invokables'   => [
-            'affiliation-community'   => 'Affiliation\Controller\CommunityController',
-            'affiliation-manager'     => 'Affiliation\Controller\AffiliationManagerController',
-            'affiliation-doa'         => 'Affiliation\Controller\DoaController',
-            'affiliation-loi'         => 'Affiliation\Controller\LoiController',
-            'affiliation-edit'        => 'Affiliation\Controller\EditController',
-            'affiliation-doa-manager' => 'Affiliation\Controller\DoaManagerController',
-            'affiliation-loi-manager' => 'Affiliation\Controller\LoiManagerController',
+            AffiliationManagerController::class => AffiliationManagerController::class,
+            AffiliationController::class        => AffiliationController::class,
+            'affiliation-community'             => 'Affiliation\Controller\CommunityController',
+            'affiliation-doa'                   => 'Affiliation\Controller\DoaController',
+            'affiliation-loi'                   => 'Affiliation\Controller\LoiController',
+            'affiliation-edit'                  => 'Affiliation\Controller\EditController',
+            DoaManagerController::class         => DoaManagerController::class,
+            LoiManagerController::class         => LoiManagerController::class,
         ],
     ],
     'service_manager' => [
