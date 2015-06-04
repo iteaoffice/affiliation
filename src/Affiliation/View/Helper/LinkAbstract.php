@@ -107,9 +107,10 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
         return sprintf(
             $uri,
             $serverUrl() . $url($this->router, $this->routerParams),
-            $this->text,
+            htmlentities($this->text),
             implode(' ', $this->classes),
-            implode('', $this->linkContent)
+            in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode('',
+                $this->linkContent) : htmlentities(implode('', $this->linkContent))
         );
     }
 
