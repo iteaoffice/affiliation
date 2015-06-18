@@ -16,12 +16,11 @@ use Affiliation\Form\Financial;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Service\ContactServiceAwareInterface;
-use General\Entity\Country;
 use Organisation\Entity\Organisation;
-use Organisation\Entity\Type as OrganisationType;
 use Organisation\Service\OrganisationServiceAwareInterface;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectServiceAwareInterface;
+use Project\Service\ReportServiceAwareInterface;
 use Project\Service\WorkpackageServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
@@ -32,6 +31,7 @@ class CommunityController extends AffiliationAbstractController implements
     ProjectServiceAwareInterface,
     WorkpackageServiceAwareInterface,
     OrganisationServiceAwareInterface,
+    ReportServiceAwareInterface,
     ContactServiceAwareInterface
 {
     /**
@@ -52,17 +52,23 @@ class CommunityController extends AffiliationAbstractController implements
         );
         $hasProjectEditRights = $this->isAllowed($affiliationService->getAffiliation()->getProject(), 'edit-community');
 
+        $latestVersion = $this->getProjectService()->getLatestProjectVersion();
+
+
         return new ViewModel(
             [
-                'affiliationService' => $affiliationService,
+                'affiliationService'    => $affiliationService,
                 'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation(
                     $affiliationService->getAffiliation()
                 ),
-                'projectService' => $this->getProjectService(),
-                'workpackageService' => $this->getWorkpackageService(),
-                'latestVersion' => $this->getProjectService()->getLatestProjectVersion(null, null, true),
-                'versionType' => $this->getProjectService()->getNextMode()->versionType,
-                'hasProjectEditRights' => $hasProjectEditRights,
+                'projectService'        => $this->getProjectService(),
+                'workpackageService'    => $this->getWorkpackageService(),
+                'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(null, null, true),
+                'versionType'           => $this->getProjectService()->getNextMode()->versionType,
+                'hasProjectEditRights'  => $hasProjectEditRights,
+                'reportService'         => $this->getReportService(),
+                'versionService'        => $this->getVersionService(),
+
             ]
         );
     }
@@ -170,7 +176,7 @@ class CommunityController extends AffiliationAbstractController implements
                 $organisationFinancial = new \Organisation\Entity\Financial();
                 $organisationFinancial->setOrganisation($affiliation->getOrganisation());
             }
-            $organisationFinancial->setEmail((bool) $formData['preferredDelivery']);
+            $organisationFinancial->setEmail((bool)$formData['preferredDelivery']);
             $this->getOrganisationService()->updateEntity($organisationFinancial);
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())

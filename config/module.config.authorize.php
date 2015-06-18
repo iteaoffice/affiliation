@@ -137,6 +137,11 @@ return [
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
+                    'route'     => 'community/affiliation/edit/update-effort-spent',
+                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
                     'route'     => 'community/affiliation/edit/description',
                     'roles'     => strtolower(Access::ACCESS_USER),
                     'assertion' => AffiliationAssertion::class

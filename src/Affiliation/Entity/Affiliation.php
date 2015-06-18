@@ -303,6 +303,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $spent;
     /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Report\EffortSpent", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Report\EffortSpent[]|Collections\ArrayCollection()
+     */
+    private $projectReportEffortSpent;
+    /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
@@ -360,6 +367,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->doaReminder = new Collections\ArrayCollection();
         $this->loiReminder = new Collections\ArrayCollection();
         $this->achievement = new Collections\ArrayCollection();
+        $this->projectReportEffortSpent = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -1071,5 +1079,24 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setAchievement($achievement)
     {
         $this->achievement = $achievement;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[]
+     */
+    public function getProjectReportEffortSpent()
+    {
+        return $this->projectReportEffortSpent;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
+     * @return Affiliation
+     */
+    public function setProjectReportEffortSpent($projectReportEffortSpent)
+    {
+        $this->projectReportEffortSpent = $projectReportEffortSpent;
+
+        return $this;
     }
 }

@@ -65,7 +65,7 @@ class AffiliationLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return $this->getAction() !== 'view-community' ? '??' : $this->getAffiliation()->getOrganisation()->getOrganisation();
+            return $this->getAction() !== 'view-community' ? '' : $this->getAffiliation()->getOrganisation()->getOrganisation();
         }
         $this->addRouterParam('entity', 'Affiliation');
         $this->addRouterParam('year', $this->getYear());

@@ -12,6 +12,7 @@ return array(
     'affiliation/edit/affiliation'                  => __DIR__ . '//view/affiliation/edit/affiliation.twig',
     'affiliation/edit/financial'                    => __DIR__ . '//view/affiliation/edit/financial.twig',
     'affiliation/edit/add-associate'                => __DIR__ . '//view/affiliation/edit/add-associate.twig',
+    'affiliation/edit/update-effort-spent'          => __DIR__ . '//view/affiliation/edit/update-effort-spent.twig',
     'affiliation/community/affiliation'             => __DIR__ . '//view/affiliation/community/affiliation.twig',
     'affiliation/affiliation-manager/payment-sheet' => __DIR__ . '//view/affiliation/affiliation-manager/payment-sheet.twig',
     'affiliation/affiliation-manager/view'          => __DIR__ . '//view/affiliation/affiliation-manager/view.twig',

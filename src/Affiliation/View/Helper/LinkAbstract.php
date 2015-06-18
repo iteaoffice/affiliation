@@ -135,6 +135,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                     case 'edit-description':
                     case 'edit-community':
                     case 'edit-financial':
+                    case 'update-effort-spent':
                     case 'edit-admin':
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
                         break;
