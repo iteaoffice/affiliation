@@ -13,8 +13,6 @@
 
 namespace Affiliation\View\Helper;
 
-use Zend\View\Helper\Url;
-
 /**
  * Create a link to an document.
  *

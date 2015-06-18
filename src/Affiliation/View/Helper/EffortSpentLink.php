@@ -39,7 +39,7 @@ class EffortSpentLink extends LinkAbstract
      *
      * @return string
      */
-    public function __invoke(Affiliation $affiliation, $action = 'view', $show = 'name', Report $report)
+    public function __invoke(Affiliation $affiliation, $action, $show, Report $report)
     {
         $this->setReport($report);
         $this->setAffiliation($affiliation);

@@ -209,6 +209,4 @@ class NavigationServiceAbstract implements
     {
         $this->reportService = $reportService;
     }
-
-
 }

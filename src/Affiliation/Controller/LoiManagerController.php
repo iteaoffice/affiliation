@@ -15,7 +15,6 @@
 
 namespace Affiliation\Controller;
 
-use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
 use Affiliation\Entity\LoiReminder as LoiReminderEntity;
 use Affiliation\Form\LoiApproval;

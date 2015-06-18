@@ -79,7 +79,7 @@ final class Version
      * @link   https://api.github.com/repos/zendframework/zf2/git/refs/tags/release-
      * @link   http://framework.zend.com/api/zf-version?v=2
      *
-     * @param string      $service    Version service with which to retrieve the version
+     * @param string $service Version service with which to retrieve the version
      * @param Http\Client $httpClient HTTP client with which to retrieve the version
      *
      * @return string
@@ -93,9 +93,9 @@ final class Version
         if (null === $httpClient && !ini_get('allow_url_fopen')) {
             trigger_error(
                 sprintf(
-                    'allow_url_fopen is not set, and no Zend\Http\Client '.
-                    'was passed. You must either set allow_url_fopen in '.
-                    'your PHP configuration or pass a configured '.
+                    'allow_url_fopen is not set, and no Zend\Http\Client ' .
+                    'was passed. You must either set allow_url_fopen in ' .
+                    'your PHP configuration or pass a configured ' .
                     'Zend\Http\Client as the second argument to %s.',
                     __METHOD__
                 ),
@@ -136,11 +136,11 @@ final class Version
         $url .= '?client_id=2b1088587b9820f33583&amp;client_secret=1738809f67b3fbf4198f2bc36ef54c52d6a3bb6c';
         if ($httpClient === null) {
             $context = stream_context_create(
-                array(
-                    'http' => array(
+                [
+                    'http' => [
                         'user_agent' => sprintf('debranova-version/%s', self::VERSION),
-                    ),
-                )
+                    ],
+                ]
             );
             $apiResponse = file_get_contents($url, false, $context);
         } else {

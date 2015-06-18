@@ -34,11 +34,11 @@ class Module implements
     {
         return [
             'Zend\Loader\ClassMapAutoloader' => [
-                __DIR__.'/../../autoload_classmap.php',
+                __DIR__ . '/../../autoload_classmap.php',
             ],
             'Zend\Loader\StandardAutoloader' => [
                 'namespaces' => [
-                    __NAMESPACE__ => __DIR__.'/../../src/'.__NAMESPACE__,
+                    __NAMESPACE__ => __DIR__ . '/../../src/' . __NAMESPACE__,
                 ],
             ],
         ];
@@ -49,7 +49,7 @@ class Module implements
      */
     public function getConfig()
     {
-        return include __DIR__.'/../../config/module.config.php';
+        return include __DIR__ . '/../../config/module.config.php';
     }
 
     /**
@@ -59,7 +59,7 @@ class Module implements
      */
     public function getServiceConfig()
     {
-        return include __DIR__.'/../../config/services.config.php';
+        return include __DIR__ . '/../../config/services.config.php';
     }
 
     /**
@@ -77,13 +77,13 @@ class Module implements
 
                     return $renderPaymentSheet;
                 },
-                'renderDoa' => function ($sm) {
+                'renderDoa'          => function ($sm) {
                     $renderDoa = new RenderDoa();
                     $renderDoa->setServiceLocator($sm->getServiceLocator());
 
                     return $renderDoa;
                 },
-                'renderLoi' => function ($sm) {
+                'renderLoi'          => function ($sm) {
                     $renderLoi = new RenderLoi();
                     $renderLoi->setServiceLocator($sm->getServiceLocator());
 
@@ -103,7 +103,7 @@ class Module implements
     public function onBootstrap(EventInterface $e)
     {
         $app = $e->getParam('application');
-        $em  = $app->getEventManager();
+        $em = $app->getEventManager();
         $em->attach(
             MvcEvent::EVENT_DISPATCH,
             function ($event) {

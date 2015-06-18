@@ -22,7 +22,7 @@ use Zend\Form\Fieldset;
 class ObjectFieldset extends Fieldset
 {
     /**
-     * @param EntityManager  $entityManager
+     * @param EntityManager $entityManager
      * @param EntityAbstract $object
      */
     public function __construct(EntityManager $entityManager, EntityAbstract $object)
@@ -50,7 +50,7 @@ class ObjectFieldset extends Fieldset
             }
             if ($element instanceof Radio) {
                 $attributes = $element->getAttributes();
-                $valueOptionsArray = 'get'.ucfirst($attributes['array']);
+                $valueOptionsArray = 'get' . ucfirst($attributes['array']);
                 $element->setOptions(
                     array_merge_recursive(
                         $element->getOptions(),

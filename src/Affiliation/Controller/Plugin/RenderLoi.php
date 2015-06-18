@@ -62,11 +62,11 @@ class RenderLoi extends AbstractPlugin
         $pdf->Write(0, $loi->parseFileName());
         $ndaContent = $twig->render(
             'affiliation/pdf/loi-project',
-            array(
+            [
                 'contact'      => $loi->getContact(),
                 'project'      => $loi->getAffiliation()->getProject(),
                 'organisation' => $loi->getAffiliation()->getOrganisation(),
-            )
+            ]
         );
         $pdf->writeHTMLCell(0, 0, 14, 70, $ndaContent);
         /*

@@ -42,9 +42,9 @@ class FormService implements ServiceLocatorAwareInterface
         if (!$entity) {
             $entity = $this->getAffiliationService()->getEntity($className);
         }
-        $formName = 'affiliation_'.$entity->get('underscore_entity_name').'_form';
+        $formName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form';
         $form = $this->getServiceLocator()->get($formName);
-        $filterName = 'affiliation_'.$entity->get('underscore_entity_name').'_form_filter';
+        $filterName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form_filter';
         $filter = $this->getServiceLocator()->get($filterName);
         $form->setInputFilter($filter);
         if ($bind) {
@@ -56,8 +56,8 @@ class FormService implements ServiceLocatorAwareInterface
 
     /**
      * @param string $className
-     * @param null   $entity
-     * @param array  $data
+     * @param null $entity
+     * @param array $data
      *
      * @return array|object
      */

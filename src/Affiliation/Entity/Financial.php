@@ -113,7 +113,7 @@ class Financial extends EntityAbstract
     {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
-            $factory     = new InputFactory();
+            $factory = new InputFactory();
             $this->inputFilter = $inputFilter;
         }
 

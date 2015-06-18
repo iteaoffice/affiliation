@@ -76,6 +76,26 @@ class AffiliationLink extends LinkAbstract
     }
 
     /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
+        }
+
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
+
+    /**
      * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
@@ -124,25 +144,5 @@ class AffiliationLink extends LinkAbstract
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
         }
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
     }
 }

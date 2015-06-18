@@ -130,13 +130,13 @@ class Description extends EntityAbstract
     {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
-            $factory     = new InputFactory();
+            $factory = new InputFactory();
             $inputFilter->add(
                 $factory->createInput(
-                    array(
+                    [
                         'name'     => 'description',
                         'required' => true,
-                    )
+                    ]
                 )
             );
             $this->inputFilter = $inputFilter;

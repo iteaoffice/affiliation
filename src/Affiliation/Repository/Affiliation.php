@@ -2,10 +2,10 @@
 /**
  * ITEA Office copyright message placeholder.
  *
- * @category    Affiliation
+ * @category Affiliation
  *
- * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
+ * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
 
 namespace Affiliation\Repository;
@@ -375,12 +375,12 @@ class Affiliation extends EntityRepository
 
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
-    
+
     /**
      * Returns the number of affiliations per Country and Call.
      *
-     * @param Country   $country
-     * @param Call      $call
+     * @param Country $country
+     * @param Call $call
      *
      * @throws InvalidArgumentException
      *
@@ -400,6 +400,6 @@ class Affiliation extends EntityRepository
         $qb->setParameter(2, $country);
         $qb->addGroupBy('o.country');
 
-        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 }

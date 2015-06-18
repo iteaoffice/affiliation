@@ -485,12 +485,17 @@ class EditController extends AffiliationAbstractController implements
         $report = $reportService->getReport();
 
         $latestVersion = $this->getProjectService()->getLatestProjectVersion();
-        $totalPlannedEffort = $this->getVersionService()->findTotalEffortByAffiliationAndVersionUpToReportingPeriod($affiliationService->getAffiliation(),
-            $latestVersion, $report);
+        $totalPlannedEffort = $this->getVersionService()->findTotalEffortByAffiliationAndVersionUpToReportingPeriod(
+            $affiliationService->getAffiliation(),
+            $latestVersion,
+            $report
+        );
 
 
-        if (!$effortSpent = $reportService->findEffortSpentByReportAndAffiliation($report,
-            $affiliationService->getAffiliation())
+        if (!$effortSpent = $reportService->findEffortSpentByReportAndAffiliation(
+            $report,
+            $affiliationService->getAffiliation()
+        )
         ) {
             $effortSpent = new ReportEffortSpent();
             $effortSpent->setAffiliation($affiliationService->getAffiliation());
@@ -525,7 +530,6 @@ class EditController extends AffiliationAbstractController implements
             }
 
             if ($form->isValid()) {
-
                 $effortSpent->setEffort($data['effort']);
                 $effortSpent->setComment($data['comment']);
                 $effortSpent->setSummary($data['summary']);
@@ -538,8 +542,6 @@ class EditController extends AffiliationAbstractController implements
                     ['fragment' => 'report']
                 );
             }
-
-
         }
 
         return new ViewModel(
@@ -553,6 +555,4 @@ class EditController extends AffiliationAbstractController implements
             ]
         );
     }
-
-
 }

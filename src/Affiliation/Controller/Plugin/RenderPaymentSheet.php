@@ -71,8 +71,11 @@ class RenderPaymentSheet extends AbstractPlugin
                 'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod($projectService->getProject()->getCall()->getProgram()),
                 'invoiceService'                 => $this->getInvoiceService(),
                 'versionService'                 => $versionService,
-                'versionContributionInformation' => $versionService->getProjectVersionContributionInformation($affiliation,
-                    $latestVersion, $year)
+                'versionContributionInformation' => $versionService->getProjectVersionContributionInformation(
+                    $affiliation,
+                    $latestVersion,
+                    $year
+                )
             ]
         );
         $pdf->writeHTMLCell(0, 0, 14, 50, $paymentSheetContent);
