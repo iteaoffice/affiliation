@@ -28,10 +28,10 @@ class Affiliation extends AssertionAbstract
      * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl                                 $acl
-     * @param RoleInterface                       $role
+     * @param Acl $acl
+     * @param RoleInterface $role
      * @param ResourceInterface|AffiliationEntity $resource
-     * @param string                              $privilege
+     * @param string $privilege
      *
      * @return bool
      */
@@ -63,6 +63,7 @@ class Affiliation extends AssertionAbstract
             case 'add-associate':
             case 'edit-affiliation':
             case 'edit-description':
+            case 'update-effort-spent':
             case 'edit-community':
                 $this->getProjectService()->setProject($resource->getProject());
                 if ($this->getProjectService()->isStopped()) {

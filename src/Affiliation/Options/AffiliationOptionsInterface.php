@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ITEA Office copyright message placeholder.
  *
@@ -47,7 +46,6 @@ interface AffiliationOptionsInterface
 
     /**
      * @param string $paymentSheetTemplate
-     *
      * @return ModuleOptions
      */
     public function setPaymentSheetTemplate($paymentSheetTemplate);

@@ -8,7 +8,6 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
-
 namespace Affiliation\Options;
 
 use Zend\Stdlib\AbstractOptions;
@@ -36,11 +35,19 @@ class ModuleOptions extends AbstractOptions implements
      */
     protected $loiTemplate = '';
     /**
-     * Location of the PDF having the payment sheet.
+     * Location of the PDF having the payment sheet
      *
      * @var string
      */
     protected $paymentSheetTemplate = '';
+
+    /**
+     * @return string
+     */
+    public function getDoaTemplate()
+    {
+        return $this->doaTemplate;
+    }
 
     /**
      * @param $doaTemplate
@@ -57,9 +64,9 @@ class ModuleOptions extends AbstractOptions implements
     /**
      * @return string
      */
-    public function getDoaTemplate()
+    public function getLoiTemplate()
     {
-        return $this->doaTemplate;
+        return $this->loiTemplate;
     }
 
     /**
@@ -77,14 +84,6 @@ class ModuleOptions extends AbstractOptions implements
     /**
      * @return string
      */
-    public function getLoiTemplate()
-    {
-        return $this->loiTemplate;
-    }
-
-    /**
-     * @return string
-     */
     public function getPaymentSheetTemplate()
     {
         return $this->paymentSheetTemplate;
@@ -92,7 +91,6 @@ class ModuleOptions extends AbstractOptions implements
 
     /**
      * @param string $paymentSheetTemplate
-     *
      * @return ModuleOptions
      */
     public function setPaymentSheetTemplate($paymentSheetTemplate)

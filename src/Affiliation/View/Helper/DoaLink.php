@@ -32,9 +32,9 @@ class DoaLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Doa         $doa
-     * @param string      $action
-     * @param string      $show
+     * @param Doa $doa
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string
@@ -83,7 +83,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/upload');
                 $this->setText(
                     sprintf(
-                        $this->translate('txt-upload-doa-for-organisation-%s-in-project-%s-link-title'),
+                        $this->translate("txt-upload-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getAffiliation()->getOrganisation(),
                         $this->getAffiliation()->getProject()
                     )
@@ -93,7 +93,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/render');
                 $this->setText(
                     sprintf(
-                        $this->translate('txt-render-doa-for-organisation-%s-in-project-%s-link-title'),
+                        $this->translate("txt-render-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getDoa()->getAffiliation()->getOrganisation(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -103,7 +103,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/replace');
                 $this->setText(
                     sprintf(
-                        $this->translate('txt-replace-doa-for-organisation-%s-in-project-%s-link-title'),
+                        $this->translate("txt-replace-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getDoa()->getAffiliation()->getOrganisation(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -113,7 +113,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/download');
                 $this->setText(
                     sprintf(
-                        $this->translate('txt-download-doa-for-organisation-%s-in-project-%s-link-title'),
+                        $this->translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getDoa()->getAffiliation()->getOrganisation(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -121,21 +121,21 @@ class DoaLink extends LinkAbstract
                 break;
             case 'approval-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/doa/approval');
-                $this->setText($this->translate('txt-approval-doa'));
+                $this->setText($this->translate("txt-approval-doa"));
                 break;
             case 'missing-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/doa/missing');
-                $this->setText($this->translate('txt-missing-doa'));
+                $this->setText($this->translate("txt-missing-doa"));
                 break;
             case 'remind-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/doa/remind');
-                $this->setText($this->translate('txt-send-reminder'));
+                $this->setText($this->translate("txt-send-reminder"));
                 break;
             case 'reminders-admin':
                 $this->setRouter('zfcadmin/affiliation-manager/doa/reminders');
                 $this->setText(
                     sprintf(
-                        $this->translate('txt-see-reminders-%s-sent'),
+                        $this->translate("txt-see-reminders-%s-sent"),
                         $this->getAffiliation()->getDoaReminder()->count()
                     )
                 );
@@ -144,7 +144,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation-manager/doa/view');
                 $this->setText(
                     sprintf(
-                        $this->translate('txt-view-doa-for-organisation-%s-in-project-%s-link-title'),
+                        $this->translate("txt-view-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getDoa()->getAffiliation()->getOrganisation(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -154,14 +154,14 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation-manager/doa/edit');
                 $this->setText(
                     sprintf(
-                        $this->translate('txt-edit-doa-for-organisation-%s-in-project-%s-link-title'),
+                        $this->translate("txt-edit-doa-for-organisation-%s-in-project-%s-link-title"),
                         $this->getDoa()->getAffiliation()->getOrganisation(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
                 );
                 break;
             default:
-                throw new \Exception(sprintf('%s is an incorrect action for %s', $this->getAction(), __CLASS__));
+                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
         }
     }
 

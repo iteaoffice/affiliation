@@ -62,11 +62,11 @@ class RenderDoa extends AbstractPlugin
         $pdf->Write(0, $doa->parseFileName());
         $ndaContent = $twig->render(
             'affiliation/pdf/doa-project',
-            array(
+            [
                 'contact'      => $doa->getContact(),
                 'project'      => $doa->getAffiliation()->getProject(),
                 'organisation' => $doa->getAffiliation()->getOrganisation(),
-            )
+            ]
         );
         $pdf->writeHTMLCell(0, 0, 14, 85, $ndaContent);
         /*

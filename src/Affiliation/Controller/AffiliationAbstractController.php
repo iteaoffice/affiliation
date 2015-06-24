@@ -29,6 +29,7 @@ use Mailing\Service\MailingService;
 use Organisation\Service\OrganisationService;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
+use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\AbstractActionController;
@@ -74,6 +75,10 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      * @var ProjectService
      */
     protected $projectService;
+    /**
+     * @var ReportService
+     */
+    protected $reportService;
     /**
      * @var VersionService
      */
@@ -445,6 +450,25 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     public function setInvoiceService(InvoiceService $invoiceService)
     {
         $this->invoiceService = $invoiceService;
+
+        return $this;
+    }
+
+    /**
+     * @return ReportService
+     */
+    public function getReportService()
+    {
+        return $this->reportService;
+    }
+
+    /**
+     * @param ReportService $reportService
+     * @return AffiliationAbstractController
+     */
+    public function setReportService(ReportService $reportService)
+    {
+        $this->reportService = $reportService;
 
         return $this;
     }

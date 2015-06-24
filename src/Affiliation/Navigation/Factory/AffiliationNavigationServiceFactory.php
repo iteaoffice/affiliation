@@ -12,6 +12,7 @@ namespace Affiliation\Navigation\Factory;
 
 use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Affiliation\Service\AffiliationService;
+use Project\Service\ReportService;
 use Zend\Navigation\Navigation;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -32,21 +33,23 @@ class AffiliationNavigationServiceFactory implements FactoryInterface
     {
         $affiliationNavigationService = new AffiliationNavigationService();
         $affiliationNavigationService->setTranslator($serviceLocator->get('viewhelpermanager')->get('translate'));
-        /*
-         * @var AffiliationService
+        /**
+         * @var AffiliationService $affiliationService
          */
         $affiliationService = $serviceLocator->get(AffiliationService::class);
         $affiliationNavigationService->setAffiliationService($affiliationService);
-        /*
-         * @var AffiliationService
+        /**
+         * @var ReportService $reportService
          */
-        $affiliationService = $serviceLocator->get(AffiliationService::class);
-        $affiliationNavigationService->setAffiliationService($affiliationService);
+        $reportService = $serviceLocator->get(ReportService::class);
+        $affiliationNavigationService->setReportService($reportService);
+
+
         $application = $serviceLocator->get('application');
         $affiliationNavigationService->setRouteMatch($application->getMvcEvent()->getRouteMatch());
         $affiliationNavigationService->setRouter($application->getMvcEvent()->getRouter());
-        /*
-         * @var Navigation
+        /**
+         * @var Navigation $navigation
          */
         $navigation = $serviceLocator->get('navigation');
         $affiliationNavigationService->setNavigation($navigation);

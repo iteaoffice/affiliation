@@ -21,6 +21,7 @@ use Affiliation\Form\DoaApproval;
 use Affiliation\Form\DoaReminder;
 use Affiliation\Service\DoaServiceAwareInterface;
 use Contact\Service\ContactServiceAwareInterface;
+use Deeplink\Entity\Target;
 use Deeplink\Service\DeeplinkServiceAwareInterface;
 use Deeplink\View\Helper\DeeplinkLink;
 use General\Service\EmailServiceAwareInterface;
@@ -147,7 +148,10 @@ class DoaManagerController extends AffiliationAbstractController implements
             $email->setProject($affiliationService->getAffiliation()->getProject());
             $email->setMessage($form->getData()['message']);
 
-            //Create the deeplink in the email
+            /**
+             * Create the deeplink in the email
+             * @var $target Target
+             */
             $target = $this->getDeeplinkService()->findEntityById('target', $data['deeplinkTarget']);
             //Create a deeplink for the user which redirects to the profile-page
             $deeplink = $this->getDeeplinkService()->createDeeplink(

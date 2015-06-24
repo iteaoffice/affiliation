@@ -14,17 +14,19 @@ use Affiliation\Entity\Description;
 use Affiliation\Entity\Financial;
 use Affiliation\Form\AddAssociate;
 use Affiliation\Form\Affiliation as AffiliationForm;
+use Affiliation\Form\EffortSpent;
 use Affiliation\Form\Financial as FinancialForm;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Service\ContactServiceAwareInterface;
-use General\Entity\Country;
 use General\Service\GeneralServiceAwareInterface;
 use Organisation\Entity\Organisation;
-use Organisation\Entity\Type as OrganisationType;
 use Organisation\Service\OrganisationServiceAwareInterface;
+use Project\Entity\Report\EffortSpent as ReportEffortSpent;
 use Project\Service\ProjectService;
 use Project\Service\ProjectServiceAwareInterface;
+use Project\Service\ReportServiceAwareInterface;
+use Project\Service\VersionServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -34,6 +36,8 @@ class EditController extends AffiliationAbstractController implements
     ProjectServiceAwareInterface,
     GeneralServiceAwareInterface,
     OrganisationServiceAwareInterface,
+    ReportServiceAwareInterface,
+    VersionServiceAwareInterface,
     ContactServiceAwareInterface
 {
     /**
@@ -203,8 +207,7 @@ class EditController extends AffiliationAbstractController implements
 
         if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
             $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
-            $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact(
-            )->getDisplayName();
+            $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getDisplayName();
 
             $contactService = clone $this->getContactService()->setContact(
                 $affiliationService->getAffiliation()->getFinancial()->getContact()
@@ -453,6 +456,102 @@ class EditController extends AffiliationAbstractController implements
                 'affiliationService' => $affiliationService,
                 'projectService'     => $projectService,
                 'form'               => $form,
+            ]
+        );
+    }
+
+
+    /**
+     * @return ViewModel
+     */
+    public function updateEffortSpentAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+        if ($affiliationService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+        $projectService = $this->getProjectService()->setProject(
+            $affiliationService->getAffiliation()->getProject()
+        );
+        $reportService = $this->getReportService()->setReportId($this->getEvent()->getRouteMatch()->getParam('report'));
+        if ($reportService->isEmpty()) {
+            return $this->notFoundAction();
+        }
+
+        //Find the latestVersion
+
+        $report = $reportService->getReport();
+
+        $latestVersion = $this->getProjectService()->getLatestProjectVersion();
+        $totalPlannedEffort = $this->getVersionService()->findTotalEffortByAffiliationAndVersionUpToReportingPeriod(
+            $affiliationService->getAffiliation(),
+            $latestVersion,
+            $report
+        );
+
+
+        if (!$effortSpent = $reportService->findEffortSpentByReportAndAffiliation(
+            $report,
+            $affiliationService->getAffiliation()
+        )
+        ) {
+            $effortSpent = new ReportEffortSpent();
+            $effortSpent->setAffiliation($affiliationService->getAffiliation());
+            $effortSpent->setReport($report);
+        }
+
+        /**
+         * Inject the known data form the object into the data array for form population
+         */
+        $data = array_merge(
+            [
+                'effort'  => $effortSpent->getEffort(),
+                'comment' => $effortSpent->getComment(),
+                'summary' => $effortSpent->getSummary()
+            ],
+            $this->getRequest()->getPost()->toArray()
+        );
+
+        $form = new EffortSpent($totalPlannedEffort);
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost()) {
+            /**
+             * Handle the cancel request
+             */
+            if (!is_null($this->getRequest()->getPost()->get('cancel'))) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'report']
+                );
+            }
+
+            if ($form->isValid()) {
+                $effortSpent->setEffort($data['effort']);
+                $effortSpent->setComment($data['comment']);
+                $effortSpent->setSummary($data['summary']);
+                $effortSpent->setContact($this->zfcUserAuthentication()->getIdentity());
+                $this->getProjectService()->updateEntity($effortSpent);
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliationService->getAffiliation()->getId()],
+                    ['fragment' => 'report']
+                );
+            }
+        }
+
+        return new ViewModel(
+            [
+                'affiliationService' => $affiliationService,
+                'projectService'     => $projectService,
+                'reportService'      => $reportService,
+                'report'             => $report,
+                'form'               => $form,
+                'totalPlannedEffort' => $totalPlannedEffort
             ]
         );
     }

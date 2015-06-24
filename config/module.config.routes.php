@@ -9,8 +9,8 @@
  */
 namespace Affiliation;
 
-use Affiliation\Controller\AffiliationManagerController;
 use Affiliation\Controller\AffiliationController;
+use Affiliation\Controller\AffiliationManagerController;
 use Affiliation\Controller\DoaManagerController;
 use Affiliation\Controller\LoiManagerController;
 
@@ -53,7 +53,7 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'affiliation'   => [
+                                    'affiliation'         => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/affiliation/[:id].html',
@@ -63,7 +63,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'add-associate' => [
+                                    'add-associate'       => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/add-associate/[:id].html',
@@ -73,7 +73,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'financial'     => [
+                                    'financial'           => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/financial/[:id].html',
@@ -83,13 +83,23 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'description'   => [
+                                    'description'         => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/description/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'description',
                                                 'privilege' => 'edit-description'
+                                            ],
+                                        ],
+                                    ],
+                                    'update-effort-spent' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/update-effort-spent/affiliation-[:id]/report-[:report].html',
+                                            'defaults' => [
+                                                'action'    => 'update-effort-spent',
+                                                'privilege' => 'update-effort-spent',
                                             ],
                                         ],
                                     ],

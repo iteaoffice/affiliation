@@ -32,9 +32,9 @@ class LoiLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Loi         $loi
-     * @param string      $action
-     * @param string      $show
+     * @param Loi $loi
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string

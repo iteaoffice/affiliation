@@ -65,7 +65,7 @@ class AffiliationLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return $this->getAction() !== 'view-community' ? '??' : $this->getAffiliation()->getOrganisation()->getOrganisation();
+            return $this->getAction() !== 'view-community' ? '' : $this->getAffiliation()->getOrganisation()->getOrganisation();
         }
         $this->addRouterParam('entity', 'Affiliation');
         $this->addRouterParam('year', $this->getYear());
@@ -73,6 +73,26 @@ class AffiliationLink extends LinkAbstract
         $this->addRouterParam('id', $this->getAffiliation()->getId());
 
         return $this->createLink();
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
+        }
+
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
     }
 
     /**
@@ -124,25 +144,5 @@ class AffiliationLink extends LinkAbstract
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
         }
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
     }
 }

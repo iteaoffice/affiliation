@@ -14,6 +14,7 @@ use Affiliation\Service\AffiliationService;
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Project\Service\ProjectService;
 use Project\Service\ProjectServiceAwareInterface;
+use Project\Service\ReportService;
 use Zend\I18n\View\Helper\Translate;
 use Zend\Mvc\Router\Http\RouteMatch;
 use Zend\Mvc\Router\Http\TreeRouteStack;
@@ -42,6 +43,10 @@ class NavigationServiceAbstract implements
      * @var ProjectService;
      */
     protected $projectService;
+    /**
+     * @var ReportService
+     */
+    protected $reportService;
     /**
      * @var TreeRouteStack
      */
@@ -187,5 +192,21 @@ class NavigationServiceAbstract implements
     public function setProjectService(ProjectService $projectService)
     {
         $this->projectService = $projectService;
+    }
+
+    /**
+     * @return ReportService
+     */
+    public function getReportService()
+    {
+        return $this->reportService;
+    }
+
+    /**
+     * @param ReportService $reportService
+     */
+    public function setReportService(ReportService $reportService)
+    {
+        $this->reportService = $reportService;
     }
 }

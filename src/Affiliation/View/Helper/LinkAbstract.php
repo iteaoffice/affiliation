@@ -109,8 +109,10 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
             $serverUrl() . $url($this->router, $this->routerParams),
             htmlentities($this->text),
             implode(' ', $this->classes),
-            in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode('',
-                $this->linkContent) : htmlentities(implode('', $this->linkContent))
+            in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode(
+                '',
+                $this->linkContent
+            ) : htmlentities(implode('', $this->linkContent))
         );
     }
 
@@ -135,6 +137,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                     case 'edit-description':
                     case 'edit-community':
                     case 'edit-financial':
+                    case 'update-effort-spent':
                     case 'edit-admin':
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
                         break;
