@@ -239,6 +239,7 @@ class CommunityController extends AffiliationAbstractController implements
             /*
              * This form is a aggregation of multiple form elements, so we treat it step by step
              */
+
             /*
              * If the organisation or country has changed, find the new
              */
@@ -302,7 +303,7 @@ class CommunityController extends AffiliationAbstractController implements
             } else {
                 $financialAddress = new Address();
                 $financialAddress->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
-                /*
+                /**
                  * @var AddressType
                  */
                 $addressType = $this->getContactService()->getEntityManager()->getReference(
@@ -314,7 +315,7 @@ class CommunityController extends AffiliationAbstractController implements
             $financialAddress->setAddress($formData['address']);
             $financialAddress->setZipCode($formData['zipCode']);
             $financialAddress->setCity($formData['city']);
-            /*
+            /**
              * @var Country
              */
             $country = $this->getContactService()->getEntityManager()->getReference(

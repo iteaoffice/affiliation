@@ -79,7 +79,6 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
         $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
-
         $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period);
         $response = $this->getResponse();
         $response->getHeaders()
