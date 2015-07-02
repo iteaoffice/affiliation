@@ -135,13 +135,23 @@ class AffiliationLink extends LinkAbstract
             case 'payment-sheet':
                 $this->setRouter('community/affiliation/payment-sheet');
                 $this->setText(
-                    sprintf($this->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"), $this->getAffiliation(),$this->getYear(), $this->getPeriod())
+                    sprintf(
+                        $this->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->getAffiliation(),
+                        $this->getYear(),
+                        $this->getPeriod()
+                    )
                 );
                 break;
             case 'payment-sheet-pdf':
                 $this->setRouter('community/affiliation/payment-sheet-pdf');
                 $this->setText(
-                    sprintf($this->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"), $this->getAffiliation(), $this->getPeriod(), $this->getYear())
+                    sprintf(
+                        $this->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->getAffiliation(),
+                        $this->getPeriod(),
+                        $this->getYear()
+                    )
                 );
                 break;
             default:

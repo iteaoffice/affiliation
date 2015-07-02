@@ -37,7 +37,7 @@ class Doa extends EntityRepository
     }
 
     /**
-     * @param Organisation $organisation
+     * @param  Organisation $organisation
      * @return DoaEntity[]
      */
     public function findDoaByOrganisation(Organisation $organisation)

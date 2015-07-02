@@ -48,7 +48,7 @@ class AffiliationPdf extends \FPDI
      * @param $header
      * @param $data
      */
-    public function ColoredTable($header, $data, array $width = null, $lastRow = false)
+    public function coloredTable($header, $data, array $width = null, $lastRow = false)
     {
         // Colors, line width and bold font
         $this->SetDrawColor(205, 205, 205);
@@ -87,7 +87,6 @@ class AffiliationPdf extends \FPDI
             $counter = 0;
 
             foreach ($row as $column) {
-
                 if ($lastRow && $rowCounter === (sizeof($data))) {
                     $this->SetFont('', 'B');
                 }

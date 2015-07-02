@@ -44,7 +44,6 @@ class AffiliationNavigationServiceFactory implements FactoryInterface
         $reportService = $serviceLocator->get(ReportService::class);
         $affiliationNavigationService->setReportService($reportService);
 
-
         $application = $serviceLocator->get('application');
         $affiliationNavigationService->setRouteMatch($application->getMvcEvent()->getRouteMatch());
         $affiliationNavigationService->setRouter($application->getMvcEvent()->getRouter());

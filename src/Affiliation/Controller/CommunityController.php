@@ -69,7 +69,7 @@ class CommunityController extends AffiliationAbstractController implements
                 'hasProjectEditRights'  => $hasProjectEditRights,
                 'reportService'         => $this->getReportService(),
                 'versionService'        => $this->getVersionService(),
-                'invoiceService' => $this->getInvoiceService()
+                'invoiceService'        => $this->getInvoiceService()
 
             ]
         );

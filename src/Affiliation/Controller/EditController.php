@@ -468,7 +468,6 @@ class EditController extends AffiliationAbstractController implements
         );
     }
 
-
     /**
      * @return ViewModel
      */
@@ -498,7 +497,6 @@ class EditController extends AffiliationAbstractController implements
             $latestVersion,
             $report
         );
-
 
         if (!$effortSpent = $reportService->findEffortSpentByReportAndAffiliation(
             $report,

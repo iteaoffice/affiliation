@@ -34,6 +34,4 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
     {
         return new ViewModel();
     }
-
-
 }

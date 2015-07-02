@@ -160,6 +160,7 @@ class DoaManagerController extends AffiliationAbstractController implements
                 null,
                 $affiliationService->getAffiliation()->getId()
             );
+
             /**
              * @var $deeplinkLink DeeplinkLink
              */

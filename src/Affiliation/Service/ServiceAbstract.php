@@ -287,7 +287,7 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * @param  ProjectService $projectService
+     * @param  ProjectService  $projectService
      * @return ServiceAbstract
      */
     public function setProjectService(ProjectService $projectService)
@@ -323,7 +323,6 @@ abstract class ServiceAbstract implements
     {
         return $this->serviceLocator->get(InvoiceService::class);
     }
-
 
     /**
      * @return VersionService

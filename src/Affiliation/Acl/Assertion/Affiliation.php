@@ -28,10 +28,10 @@ class Affiliation extends AssertionAbstract
      * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl $acl
-     * @param RoleInterface $role
+     * @param Acl                                 $acl
+     * @param RoleInterface                       $role
      * @param ResourceInterface|AffiliationEntity $resource
-     * @param string $privilege
+     * @param string                              $privilege
      *
      * @return bool
      */
@@ -75,7 +75,6 @@ class Affiliation extends AssertionAbstract
                 }
                 break;
             case 'update-effort-spent':
-
                 //Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
                 if (!is_null($reportId)) {
