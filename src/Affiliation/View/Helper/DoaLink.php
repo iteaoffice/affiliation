@@ -32,9 +32,9 @@ class DoaLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Doa $doa
-     * @param string $action
-     * @param string $show
+     * @param Doa         $doa
+     * @param string      $action
+     * @param string      $show
      * @param Affiliation $affiliation
      *
      * @return string

@@ -3,6 +3,7 @@
 return array(
     'Affiliation\Options\ModuleOptions'                                  => __DIR__ . '/src/Affiliation/Options/ModuleOptions.php',
     'Affiliation\Options\AffiliationOptionsInterface'                    => __DIR__ . '/src/Affiliation/Options/AffiliationOptionsInterface.php',
+    'Affiliation\View\Helper\EffortSpentLink'                            => __DIR__ . '/src/Affiliation/View/Helper/EffortSpentLink.php',
     'Affiliation\View\Helper\DoaLink'                                    => __DIR__ . '/src/Affiliation/View/Helper/DoaLink.php',
     'Affiliation\View\Helper\LinkAbstract'                               => __DIR__ . '/src/Affiliation/View/Helper/LinkAbstract.php',
     'Affiliation\View\Helper\PaginationLink'                             => __DIR__ . '/src/Affiliation/View/Helper/PaginationLink.php',
@@ -65,6 +66,7 @@ return array(
     'Affiliation\Form\Affiliation'                                       => __DIR__ . '/src/Affiliation/Form/Affiliation.php',
     'Affiliation\Form\CreateObject'                                      => __DIR__ . '/src/Affiliation/Form/CreateObject.php',
     'Affiliation\Form\FilterAddAssociate'                                => __DIR__ . '/src/Affiliation/Form/FilterAddAssociate.php',
+    'Affiliation\Form\EffortSpent'                                       => __DIR__ . '/src/Affiliation/Form/EffortSpent.php',
     'Affiliation\Form\UploadLoi'                                         => __DIR__ . '/src/Affiliation/Form/UploadLoi.php',
     'Affiliation\Form\Financial'                                         => __DIR__ . '/src/Affiliation/Form/Financial.php',
     'Affiliation\Form\AddAssociate'                                      => __DIR__ . '/src/Affiliation/Form/AddAssociate.php',

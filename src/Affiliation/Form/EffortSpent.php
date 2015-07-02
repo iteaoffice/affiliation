@@ -37,7 +37,6 @@ class EffortSpent extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-
         $this->add(
             [
                 'type'    => 'Zend\Form\Element\Text',

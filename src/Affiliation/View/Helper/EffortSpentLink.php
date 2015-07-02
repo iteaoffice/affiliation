@@ -32,9 +32,9 @@ class EffortSpentLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Report $report
-     * @param string $action
-     * @param string $show
+     * @param Report      $report
+     * @param string      $action
+     * @param string      $show
      * @param Affiliation $affiliation
      *
      * @return string

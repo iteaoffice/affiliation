@@ -406,7 +406,7 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param DeeplinkService $deeplinkService
+     * @param  DeeplinkService               $deeplinkService
      * @return AffiliationAbstractController
      */
     public function setDeeplinkService(DeeplinkService $deeplinkService)
@@ -425,7 +425,7 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param VersionService $versionService
+     * @param  VersionService                $versionService
      * @return AffiliationAbstractController
      */
     public function setVersionService(VersionService $versionService)
@@ -444,7 +444,7 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param InvoiceService $invoiceService
+     * @param  InvoiceService                $invoiceService
      * @return AffiliationAbstractController
      */
     public function setInvoiceService(InvoiceService $invoiceService)
@@ -463,7 +463,7 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param ReportService $reportService
+     * @param  ReportService                 $reportService
      * @return AffiliationAbstractController
      */
     public function setReportService(ReportService $reportService)

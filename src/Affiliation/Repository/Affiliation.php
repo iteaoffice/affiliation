@@ -29,7 +29,7 @@ class Affiliation extends EntityRepository
      * Returns the affiliations based on the which.
      *
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @throws InvalidArgumentException
      *
@@ -99,7 +99,6 @@ class Affiliation extends EntityRepository
         $subSelect2->from('Affiliation\Entity\Doa', 'doa');
         $subSelect2->join('doa.affiliation', 'affiliation');
 
-
         $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
 
         $qb->setParameter('doaRequirement', Call::DOA_REQUIREMENT_PER_PROJECT);
@@ -154,7 +153,7 @@ class Affiliation extends EntityRepository
      * Returns the affiliations based on the which.
      *
      * @param Version $version
-     * @param int $which
+     * @param int     $which
      *
      * @throws InvalidArgumentException
      *
@@ -201,7 +200,7 @@ class Affiliation extends EntityRepository
      *
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @throws InvalidArgumentException
      *
@@ -250,7 +249,7 @@ class Affiliation extends EntityRepository
      *
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @throws InvalidArgumentException
      *
@@ -295,7 +294,7 @@ class Affiliation extends EntityRepository
         $qb->addOrderBy('o.organisation', 'ASC');
         $qb->addGroupBy('a.project');
 
-        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
     /**
@@ -303,7 +302,7 @@ class Affiliation extends EntityRepository
      *
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @throws InvalidArgumentException
      *
@@ -341,7 +340,7 @@ class Affiliation extends EntityRepository
      *
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @throws InvalidArgumentException
      *
@@ -373,14 +372,14 @@ class Affiliation extends EntityRepository
 
         $qb->addGroupBy('a.project');
 
-        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
     /**
      * Returns the number of affiliations per Country and Call.
      *
      * @param Country $country
-     * @param Call $call
+     * @param Call    $call
      *
      * @throws InvalidArgumentException
      *
@@ -400,6 +399,6 @@ class Affiliation extends EntityRepository
         $qb->setParameter(2, $country);
         $qb->addGroupBy('o.country');
 
-        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
     }
 }

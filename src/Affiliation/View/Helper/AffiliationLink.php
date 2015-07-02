@@ -30,8 +30,8 @@ class AffiliationLink extends LinkAbstract
      * @param Affiliation $affiliation
      * @param             $action
      * @param             $show
-     * @param int $year
-     * @param int $period
+     * @param int         $year
+     * @param int         $period
      *
      * @return string
      *

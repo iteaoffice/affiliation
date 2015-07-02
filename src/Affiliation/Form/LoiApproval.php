@@ -23,7 +23,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
 {
     /**
      * @param ArrayCollection $lois
-     * @param ContactService $contactService
+     * @param ContactService  $contactService
      */
     public function __construct(ArrayCollection $lois, ContactService $contactService)
     {

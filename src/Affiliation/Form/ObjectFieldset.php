@@ -22,7 +22,7 @@ use Zend\Form\Fieldset;
 class ObjectFieldset extends Fieldset
 {
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManager  $entityManager
      * @param EntityAbstract $object
      */
     public function __construct(EntityManager $entityManager, EntityAbstract $object)

@@ -219,7 +219,7 @@ class Invoice //extends EntityAbstract
     }
 
     /**
-     * @param \Project\Entity\Version\Version $version
+     * @param  \Project\Entity\Version\Version $version
      * @return Invoice
      */
     public function setVersion($version)
@@ -238,7 +238,7 @@ class Invoice //extends EntityAbstract
     }
 
     /**
-     * @param \Invoice\Entity\Invoice $invoice
+     * @param  \Invoice\Entity\Invoice $invoice
      * @return Invoice
      */
     public function setInvoice($invoice)

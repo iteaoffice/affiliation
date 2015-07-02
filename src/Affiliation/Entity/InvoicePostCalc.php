@@ -92,7 +92,7 @@ class InvoicePostCalc extends EntityAbstract
     }
 
     /**
-     * @param int $id
+     * @param  int             $id
      * @return InvoicePostCalc
      */
     public function setId($id)
@@ -111,7 +111,7 @@ class InvoicePostCalc extends EntityAbstract
     }
 
     /**
-     * @param float $amountInvoiced
+     * @param  float           $amountInvoiced
      * @return InvoicePostCalc
      */
     public function setAmountInvoiced($amountInvoiced)
@@ -130,7 +130,7 @@ class InvoicePostCalc extends EntityAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
+     * @param  Affiliation     $affiliation
      * @return InvoicePostCalc
      */
     public function setAffiliation($affiliation)
@@ -149,7 +149,7 @@ class InvoicePostCalc extends EntityAbstract
     }
 
     /**
-     * @param \Invoice\Entity\Invoice $invoice
+     * @param  \Invoice\Entity\Invoice $invoice
      * @return InvoicePostCalc
      */
     public function setInvoice($invoice)

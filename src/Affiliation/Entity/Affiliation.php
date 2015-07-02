@@ -1090,7 +1090,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
+     * @param  Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
      * @return Affiliation
      */
     public function setProjectReportEffortSpent($projectReportEffortSpent)

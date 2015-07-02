@@ -42,8 +42,8 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
 
-        $year = (int)$this->params('year');
-        $period = (int)$this->params('period');
+        $year = (int) $this->params('year');
+        $period = (int) $this->params('period');
 
         $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
@@ -72,12 +72,11 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
         ]);
     }
 
-
     public function paymentSheetPdfAction()
     {
         $affiliation = $this->getAffiliationService()->setAffiliationId($this->params('id'))->getAffiliation();
-        $year = (int)$this->params('year');
-        $period = (int)$this->params('period');
+        $year = (int) $this->params('year');
+        $period = (int) $this->params('period');
 
         $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period);
         $response = $this->getResponse();

@@ -22,7 +22,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
 {
     /**
      * @param AffiliationService $affiliationService
-     * @param ContactService $contactService
+     * @param ContactService     $contactService
      */
     public function __construct(AffiliationService $affiliationService, ContactService $contactService)
     {

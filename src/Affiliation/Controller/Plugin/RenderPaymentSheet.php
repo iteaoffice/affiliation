@@ -32,7 +32,7 @@ class RenderPaymentSheet extends AbstractPlugin
     protected $serviceLocator;
 
     /**
-     * @param Affiliation $affiliation
+     * @param  Affiliation    $affiliation
      * @param $year
      * @param $period
      * @return AffiliationPdf
@@ -47,7 +47,6 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $contactService = clone $this->getContactService()->setContact($affiliation->getContact());
         $financialContactService = clone $this->getContactService()->setContact($affiliation->getFinancial()->getContact());
-
 
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getPaymentSheetTemplate());
@@ -79,7 +78,6 @@ class RenderPaymentSheet extends AbstractPlugin
             ]
         );
         $pdf->writeHTMLCell(0, 0, 14, 50, $paymentSheetContent);
-
 
         return $pdf;
     }
@@ -133,7 +131,6 @@ class RenderPaymentSheet extends AbstractPlugin
     {
         return $this->getServiceLocator()->get(InvoiceService::class);
     }
-
 
     /**
      * Gateway to the Contact Service.

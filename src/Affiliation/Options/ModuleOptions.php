@@ -90,7 +90,7 @@ class ModuleOptions extends AbstractOptions implements
     }
 
     /**
-     * @param string $paymentSheetTemplate
+     * @param  string        $paymentSheetTemplate
      * @return ModuleOptions
      */
     public function setPaymentSheetTemplate($paymentSheetTemplate)
