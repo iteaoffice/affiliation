@@ -53,7 +53,7 @@ class DoaService extends ServiceAbstract
     /**
      * Get a list of not approved doas.
      *
-     * @return Doa[]
+     * @return Doa[]|ArrayCollection
      */
     public function findNotApprovedDoa()
     {

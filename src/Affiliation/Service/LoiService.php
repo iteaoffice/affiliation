@@ -53,7 +53,7 @@ class LoiService extends ServiceAbstract
     /**
      * Get a list of not approved lois.
      *
-     * @return Loi[]
+     * @return Loi[]|ArrayCollection
      */
     public function findNotApprovedLoi()
     {
