@@ -139,6 +139,7 @@ class Affiliation extends Form
                     'help-block' => _("txt-market-access-inline-help"),
                 ],
                 'attributes' => [
+                    'cols'  => 8,
                     'class' => 'form-control',
                 ],
             ]

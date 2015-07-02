@@ -32,6 +32,7 @@ class AffiliationLink extends LinkAbstract
      * @param             $show
      * @param int $year
      * @param int $period
+     * @param null $fragment
      *
      * @return string
      *
@@ -39,24 +40,26 @@ class AffiliationLink extends LinkAbstract
      * @throws \Exception
      */
     public function __invoke(
-        Affiliation $affiliation = null,
+        Affiliation $affiliation,
         $action = 'view',
         $show = 'name',
         $year = null,
-        $period = null
+        $period = null,
+        $fragment = null
     ) {
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
         $this->setYear($year);
         $this->setPeriod($period);
+        $this->setFragment($fragment);
         /*
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
             [
                 'name'         => $this->getAffiliation(),
-                'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation(),
+                'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation()
             ]
         );
         if (!$this->hasAccess(
@@ -129,16 +132,16 @@ class AffiliationLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/affiliation');
                 $this->setText(sprintf($this->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
                 break;
-            case 'payment-sheet-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/affiliation/payment-sheet');
+            case 'payment-sheet':
+                $this->setRouter('community/affiliation/payment-sheet');
                 $this->setText(
-                    sprintf($this->translate("txt-show-payment-sheet-of-affiliation-%s"), $this->getAffiliation())
+                    sprintf($this->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"), $this->getAffiliation(),$this->getYear(), $this->getPeriod())
                 );
                 break;
-            case 'payment-sheet-admin-pdf':
-                $this->setRouter('zfcadmin/affiliation-manager/affiliation/payment-sheet-pdf');
+            case 'payment-sheet-pdf':
+                $this->setRouter('community/affiliation/payment-sheet-pdf');
                 $this->setText(
-                    sprintf($this->translate("txt-download-payment-sheet-of-affiliation-%s"), $this->getAffiliation())
+                    sprintf($this->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"), $this->getAffiliation(), $this->getPeriod(), $this->getYear())
                 );
                 break;
             default:

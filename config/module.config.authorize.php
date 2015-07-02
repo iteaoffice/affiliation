@@ -107,13 +107,13 @@ return [
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation-manager/affiliation/payment-sheet',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'route'     => 'community/affiliation/payment-sheet',
+                    'roles'     => [strtolower(Access::ACCESS_USER)],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation-manager/affiliation/payment-sheet-pdf',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'route'     => 'community/affiliation/payment-sheet-pdf',
+                    'roles'     => [strtolower(Access::ACCESS_USER)],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [

@@ -389,6 +389,10 @@ class EditController extends AffiliationAbstractController implements
                 $this->getAffiliationService()->updateEntity($affiliation);
             }
 
+            $this->flashMessenger()->setNamespace('success')->addMessage(
+                sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+            );
+
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
                 ['id' => $affiliationService->getAffiliation()->getId()],
@@ -442,6 +446,10 @@ class EditController extends AffiliationAbstractController implements
                 );
                 $description->setContact($this->zfcUserAuthentication()->getIdentity());
                 $this->getAffiliationService()->updateEntity($description);
+
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+                );
             }
 
             return $this->redirect()->toRoute(
@@ -507,9 +515,10 @@ class EditController extends AffiliationAbstractController implements
          */
         $data = array_merge(
             [
-                'effort'  => $effortSpent->getEffort(),
-                'comment' => $effortSpent->getComment(),
-                'summary' => $effortSpent->getSummary()
+                'effort'       => $effortSpent->getEffort(),
+                'comment'      => $effortSpent->getComment(),
+                'summary'      => $effortSpent->getSummary(),
+                'marketAccess' => $affiliationService->getAffiliation()->getMarketAccess()
             ],
             $this->getRequest()->getPost()->toArray()
         );
@@ -535,6 +544,15 @@ class EditController extends AffiliationAbstractController implements
                 $effortSpent->setSummary($data['summary']);
                 $effortSpent->setContact($this->zfcUserAuthentication()->getIdentity());
                 $this->getProjectService()->updateEntity($effortSpent);
+
+                //Update the marketAccess
+                $affiliation = $affiliationService->getAffiliation();
+                $affiliation->setMarketAccess($data['marketAccess']);
+                $this->getAffiliationService()->updateEntity($affiliation);
+
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+                );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',

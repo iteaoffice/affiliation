@@ -16,11 +16,13 @@ use Affiliation\Form\Financial;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Service\ContactServiceAwareInterface;
+use Invoice\Service\InvoiceServiceAwareInterface;
 use Organisation\Entity\Organisation;
 use Organisation\Service\OrganisationServiceAwareInterface;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectServiceAwareInterface;
 use Project\Service\ReportServiceAwareInterface;
+use Project\Service\VersionServiceAwareInterface;
 use Project\Service\WorkpackageServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
@@ -32,7 +34,9 @@ class CommunityController extends AffiliationAbstractController implements
     WorkpackageServiceAwareInterface,
     OrganisationServiceAwareInterface,
     ReportServiceAwareInterface,
-    ContactServiceAwareInterface
+    ContactServiceAwareInterface,
+    VersionServiceAwareInterface,
+    InvoiceServiceAwareInterface
 {
     /**
      * Show the details of 1 affiliation.
@@ -52,9 +56,6 @@ class CommunityController extends AffiliationAbstractController implements
         );
         $hasProjectEditRights = $this->isAllowed($affiliationService->getAffiliation()->getProject(), 'edit-community');
 
-        $latestVersion = $this->getProjectService()->getLatestProjectVersion();
-
-
         return new ViewModel(
             [
                 'affiliationService'    => $affiliationService,
@@ -63,15 +64,79 @@ class CommunityController extends AffiliationAbstractController implements
                 ),
                 'projectService'        => $this->getProjectService(),
                 'workpackageService'    => $this->getWorkpackageService(),
-                'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(null, null, true),
+                'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(),
                 'versionType'           => $this->getProjectService()->getNextMode()->versionType,
                 'hasProjectEditRights'  => $hasProjectEditRights,
                 'reportService'         => $this->getReportService(),
                 'versionService'        => $this->getVersionService(),
+                'invoiceService' => $this->getInvoiceService()
 
             ]
         );
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function paymentSheetAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
+
+        $year = (int)$this->params('year');
+        $period = (int)$this->params('period');
+
+        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+
+        $latestVersion = $projectService->getLatestProjectVersion();
+        $versionService = $this->getVersionService()->setVersion($latestVersion);
+
+        $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
+        $financialContactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
+
+        return new ViewModel([
+            'year'                           => $year,
+            'period'                         => $period,
+            'affiliationService'             => $affiliationService,
+            'projectService'                 => $projectService,
+            'contactService'                 => $contactService,
+            'financialContactService'        => $financialContactService,
+            'organisationService'            => $this->getOrganisationService(),
+            'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod($projectService->getProject()->getCall()->getProgram()),
+            'invoiceService'                 => $this->getInvoiceService(),
+            'versionService'                 => $versionService,
+            'versionContributionInformation' => $versionService->getProjectVersionContributionInformation(
+                $affiliationService->getAffiliation(),
+                $latestVersion,
+                $year
+            )
+        ]);
+    }
+
+
+    public function paymentSheetPdfAction()
+    {
+        $affiliation = $this->getAffiliationService()->setAffiliationId($this->params('id'))->getAffiliation();
+        $year = (int)$this->params('year');
+        $period = (int)$this->params('period');
+
+
+        $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period);
+        $response = $this->getResponse();
+        $response->getHeaders()
+            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
+            ->addHeaderLine("Pragma: public")
+            ->addHeaderLine(
+                'Content-Disposition',
+                'attachment; filename="' . $affiliation->getOrganisation()->getId() . '.pdf"'
+            )
+            ->addHeaderLine('Content-Type: application/pdf')
+            ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
+        $response->setContent($renderPaymentSheet->getPDFData());
+
+        return $response;
+    }
+
 
     /**
      * Edit a affiliation.

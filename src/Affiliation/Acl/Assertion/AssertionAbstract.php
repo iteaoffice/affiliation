@@ -19,6 +19,7 @@ use Affiliation\Service\AffiliationService;
 use Contact\Service\ContactService;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectService;
+use Project\Service\ReportService;
 use Zend\Http\Request;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\Permissions\Acl\Assertion\AssertionInterface;
@@ -109,6 +110,15 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     public function getProjectService()
     {
         return $this->getServiceLocator()->get(ProjectService::class);
+    }
+
+
+    /**
+     * @return ReportService
+     */
+    public function getReportService()
+    {
+        return $this->getServiceLocator()->get(ReportService::class);
     }
 
     /**

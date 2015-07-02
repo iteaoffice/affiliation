@@ -7,50 +7,42 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c] 2004-2014 ITEA Office (http://itea3.org]
  */
-use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
-use Affiliation\Acl\Assertion\Doa as DoaAssertion;
-use Affiliation\Acl\Assertion\Loi as LoiAssertion;
-use Affiliation\Controller\AffiliationController;
-use Affiliation\Controller\AffiliationManagerController;
-use Affiliation\Controller\ControllerInitializer;
-use Affiliation\Controller\DoaManagerController;
-use Affiliation\Controller\LoiManagerController;
+use Affiliation\Acl\Assertion;
+use Affiliation\Controller;
 use Affiliation\Navigation\Factory\AffiliationNavigationServiceFactory;
 use Affiliation\Navigation\Service\AffiliationNavigationService;
-use Affiliation\Service\AffiliationService;
-use Affiliation\Service\DoaService;
-use Affiliation\Service\FormService;
-use Affiliation\Service\LoiService;
-use Affiliation\Service\ServiceInitializer;
+use Affiliation\Service;
+use Affiliation\View\Helper;
 
 $config = [
     'controllers'     => [
         'initializers' => [
-            ControllerInitializer::class
+            Controller\ControllerInitializer::class
         ],
         'invokables'   => [
-            AffiliationManagerController::class => AffiliationManagerController::class,
-            AffiliationController::class        => AffiliationController::class,
-            'affiliation-community'             => 'Affiliation\Controller\CommunityController',
-            'affiliation-doa'                   => 'Affiliation\Controller\DoaController',
-            'affiliation-loi'                   => 'Affiliation\Controller\LoiController',
-            'affiliation-edit'                  => 'Affiliation\Controller\EditController',
-            DoaManagerController::class         => DoaManagerController::class,
-            LoiManagerController::class         => LoiManagerController::class,
+            Controller\AffiliationManagerController::class => Controller\AffiliationManagerController::class,
+            Controller\AffiliationController::class        => Controller\AffiliationController::class,
+            Controller\DoaManagerController::class         => Controller\DoaManagerController::class,
+            Controller\LoiManagerController::class         => Controller\LoiManagerController::class,
+            Controller\CommunityController::class          => Controller\CommunityController::class,
+            Controller\DoaController::class                => Controller\DoaController::class,
+            Controller\LoiController::class                => Controller\LoiController::class,
+            Controller\EditController::class               => Controller\EditController::class,
+
         ],
     ],
     'service_manager' => [
         'initializers' => [
-            ServiceInitializer::class
+            Service\ServiceInitializer::class
         ],
         'invokables'   => [
-            AffiliationService::class             => AffiliationService::class,
-            DoaService::class                     => DoaService::class,
-            LoiService::class                     => LoiService::class,
-            FormService::class                    => FormService::class,
-            AffiliationAssertion::class           => AffiliationAssertion::class,
-            DoaAssertion::class                   => DoaAssertion::class,
-            LoiAssertion::class                   => LoiAssertion::class,
+            Service\AffiliationService::class     => Service\AffiliationService::class,
+            Service\DoaService::class             => Service\DoaService::class,
+            Service\LoiService::class             => Service\LoiService::class,
+            Service\FormService::class            => Service\FormService::class,
+            Assertion\Affiliation::class          => Assertion\Affiliation::class,
+            Assertion\Doa::class                  => Assertion\Doa::class,
+            Assertion\Loi::class                  => Assertion\Loi::class,
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
             'affiliation_description_form_filter' => 'Affiliation\Form\FilterCreateObject',
             'affiliation_loi_form_filter'         => 'Affiliation\Form\FilterCreateObject',
@@ -63,11 +55,12 @@ $config = [
     ],
     'view_helpers'    => [
         'invokables' => [
-            'affiliationLink'            => 'Affiliation\View\Helper\AffiliationLink',
-            'affiliationEffortSpentLink' => 'Affiliation\View\Helper\EffortSpentLink',
-            'paginationLink'             => 'Affiliation\View\Helper\PaginationLink',
-            'doaLink'                    => 'Affiliation\View\Helper\DoaLink',
-            'loiLink'                    => 'Affiliation\View\Helper\LoiLink',
+            'affiliationLink'            => Helper\AffiliationLink::class,
+            'affiliationEffortSpentLink' => Helper\EffortSpentLink::class,
+            'paginationLink'             => Helper\PaginationLink::class,
+            'doaLink'                    => Helper\DoaLink::class,
+            'loiLink'                    => Helper\LoiLink::class,
+            'paymentSheet'               => Helper\PaymentSheet::class,
         ]
     ],
     'view_manager'    => [

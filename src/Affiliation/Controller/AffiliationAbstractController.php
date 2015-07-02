@@ -185,7 +185,7 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      */
     public function getContactService()
     {
-        return $this->contactService;
+        return clone $this->contactService;
     }
 
     /**

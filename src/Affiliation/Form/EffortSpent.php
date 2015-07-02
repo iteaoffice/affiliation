@@ -52,12 +52,28 @@ class EffortSpent extends Form implements InputFilterProviderInterface
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'marketAccess',
+                'options'    => [
+                    'label'      => _("txt-exploitation-prospects"),
+                    'help-block' => _("txt-market-access-inline-help"),
+                ],
+                'attributes' => [
+                    'rows'  => 8,
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'summary',
                 'options'    => [
                     'label'      => _("txt-summary"),
                     'help-block' => _("txt-brief-summary-of-partner-during-reporting-period"),
                 ],
                 'attributes' => [
+                    'rows'  => 8,
                     'class' => 'form-control',
                 ],
             ]
@@ -72,6 +88,7 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                     'help-block' => _("txt-effort-spent-comment-on-discrepancy-help-block"),
                 ],
                 'attributes' => [
+                    'rows'  => 8,
                     'class' => 'form-control',
                 ],
             ]

@@ -390,6 +390,53 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                     ]
                 );
                 break;
+            case 'community/affiliation/payment-sheet':
+                $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('id'));
+                $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
+                $communityNavigation->addPage(
+                    [
+                        'label'  => sprintf(
+                            $this->translate("%s"),
+                            $this->getProjectService()->parseFullName()
+                        ),
+                        'route'  => 'community/project/project/basics',
+                        'router' => $this->getRouter(),
+                        'params' => [
+                            'docRef' => $this->getProjectService()->getProject()->getDocRef(),
+                        ],
+                        'pages'  => [
+                            'affiliation' => [
+                                'label'  => sprintf(
+                                    $this->getAffiliationService()->getAffiliation()->getOrganisation()
+                                ),
+                                'active' => false,
+                                'route'  => 'community/affiliation/affiliation',
+                                'router' => $this->getRouter(),
+                                'params' => [
+                                    'id' => $this->getAffiliationService()->getAffiliation()->getId(),
+                                ],
+                                'pages'  => [
+                                    'edit' => [
+                                        'label'  => sprintf(
+                                            $this->translate("txt-payment-sheet-for-affiliation-%s-in-%s"),
+                                            $this->getAffiliationService()->getAffiliation()->getOrganisation(),
+                                            $this->getProjectService()->parseFullName()
+                                        ),
+                                        'active' => true,
+                                        'route'  => $this->getRouteMatch()->getMatchedRouteName(),
+                                        'router' => $this->getRouter(),
+                                        'params' => [
+                                            'id'     => $this->getAffiliationService()->getAffiliation()->getId(),
+                                            'year'   => $this->getRouteMatch()->getParam('year'),
+                                            'period' => $this->getRouteMatch()->getParam('period')
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ]
+                );
+                break;
         }
     }
 }

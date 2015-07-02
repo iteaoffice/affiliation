@@ -51,7 +51,6 @@ class Affiliation extends AssertionAbstract
             $resource = $this->getAffiliationService()->setAffiliationId($id)->getAffiliation();
         }
 
-
         switch ($privilege) {
             case 'view-community':
                 if ($this->getContactService()->hasPermit('view', $resource)) {
@@ -63,7 +62,6 @@ class Affiliation extends AssertionAbstract
             case 'add-associate':
             case 'edit-affiliation':
             case 'edit-description':
-            case 'update-effort-spent':
             case 'edit-community':
                 $this->getProjectService()->setProject($resource->getProject());
                 if ($this->getProjectService()->isStopped()) {
@@ -76,14 +74,38 @@ class Affiliation extends AssertionAbstract
                     return true;
                 }
                 break;
+            case 'update-effort-spent':
+
+                //Block access to an already closed report
+                $reportId = $this->getRouteMatch()->getParam('report');
+                if (!is_null($reportId)) {
+                    //Find the corresponding report
+                    $this->getReportService()->setReportId($reportId);
+                    if ($this->getReportService()->isEmpty() || $this->getReportService()->isFinal()) {
+                        return false;
+                    }
+                }
+
+                $this->getProjectService()->setProject($resource->getProject());
+                if ($this->getProjectService()->isStopped()) {
+                    return false;
+                }
+                if ($this->getContactService()->hasPermit('edit', $resource)) {
+                    return true;
+                }
+
+                break;
             case 'edit-financial':
+            case 'payment-sheet':
+            case 'payment-sheet-pdf':
                 if ($this->getContactService()->hasPermit('financial', $resource)) {
                     return true;
                 }
+
                 break;
-            case 'payment-sheet-admin':
-            case 'payment-sheet-admin-pdf':
+
             case 'view-admin':
+            case 'payment-sheet-admin':
                 return $this->rolesHaveAccess(strtolower(Access::ACCESS_OFFICE));
         }
 

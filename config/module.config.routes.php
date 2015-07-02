@@ -9,10 +9,7 @@
  */
 namespace Affiliation;
 
-use Affiliation\Controller\AffiliationController;
-use Affiliation\Controller\AffiliationManagerController;
-use Affiliation\Controller\DoaManagerController;
-use Affiliation\Controller\LoiManagerController;
+use Affiliation\Controller;
 
 return [
     'router' => [
@@ -26,13 +23,13 @@ return [
                             'route'    => '/affiliation',
                             'defaults' => [
                                 'namespace'  => 'affiliation',
-                                'controller' => 'affiliation-community',
+                                'controller' => Controller\CommunityController::class,
                                 'action'     => 'index',
                             ],
                         ],
                         'may_terminate' => true,
                         'child_routes'  => [
-                            'affiliation' => [
+                            'affiliation'       => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/details/[:id].html',
@@ -42,12 +39,32 @@ return [
                                     ],
                                 ],
                             ],
-                            'edit'        => [
+                            'payment-sheet'     => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].html',
+                                    'defaults' => [
+                                        'action'    => 'payment-sheet',
+                                        'privilege' => 'payment-sheet',
+                                    ]
+                                ]
+                            ],
+                            'payment-sheet-pdf' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].pdf',
+                                    'defaults' => [
+                                        'action'    => 'payment-sheet-pdf',
+                                        'privilege' => 'payment-sheet',
+                                    ]
+                                ]
+                            ],
+                            'edit'              => [
                                 'type'          => 'Segment',
                                 'options'       => [
                                     'route'    => '/edit',
                                     'defaults' => [
-                                        'controller' => 'affiliation-edit',
+                                        'controller' => Controller\EditController::class,
                                         'action'     => 'edit',
                                     ],
                                 ],
@@ -105,12 +122,12 @@ return [
                                     ],
                                 ]
                             ],
-                            'doa'         => [
+                            'doa'               => [
                                 'type'         => 'Segment',
                                 'options'      => [
                                     'route'    => '/doa',
                                     'defaults' => [
-                                        'controller' => 'affiliation-doa',
+                                        'controller' =>Controller\DoaController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -157,12 +174,12 @@ return [
                                     ],
                                 ]
                             ],
-                            'loi'         => [
+                            'loi'               => [
                                 'type'         => 'Segment',
                                 'options'      => [
                                     'route'    => '/loi',
                                     'defaults' => [
-                                        'controller' => 'affiliation-loi',
+                                        'controller' => Controller\LoiController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -274,7 +291,7 @@ return [
                                 ],
                                 'may_terminate' => false,
                                 'child_routes'  => [
-                                    'view'              => [
+                                    'view' => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => 'view/[:id].html',
@@ -284,26 +301,7 @@ return [
                                             ]
                                         ]
                                     ],
-                                    'payment-sheet'     => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => 'payment-sheet/[:id]/year-[:year]/period-[:period].html',
-                                            'defaults' => [
-                                                'action'    => 'payment-sheet',
-                                                'privilege' => 'payment-sheet-admin',
-                                            ]
-                                        ]
-                                    ],
-                                    'payment-sheet-pdf' => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => 'payment-sheet/[:id]/year-[:year]/period-[:period].pdf',
-                                            'defaults' => [
-                                                'action'    => 'payment-sheet-pdf',
-                                                'privilege' => 'payment-sheet-admin',
-                                            ]
-                                        ]
-                                    ]
+
                                 ]
                             ],
                             'loi'         => [

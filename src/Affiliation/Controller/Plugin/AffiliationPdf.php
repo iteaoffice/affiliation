@@ -44,6 +44,66 @@ class AffiliationPdf extends \FPDI
         $this->SetXY(PDF_MARGIN_LEFT, 5);
     }
 
+    /**
+     * @param $header
+     * @param $data
+     */
+    public function ColoredTable($header, $data, array $width = null, $lastRow = false)
+    {
+        // Colors, line width and bold font
+        $this->SetDrawColor(205, 205, 205);
+        $this->SetFillColor(255, 255, 255);
+        $this->SetLineWidth(0.1);
+        $this->SetFont('', 'B');
+        // Header
+        if (is_null($width)) {
+            $w = [40, 35, 40, 45, 40];
+        } else {
+            $w = $width;
+        }
+
+        $num_headers = count($header);
+
+        for ($i = 0; $i < $num_headers; ++$i) {
+            $this->Cell($w[$i], 7, $header[$i], 1, 0, 'l', 1);
+        }
+
+
+        if ($num_headers === 0) {
+            $this->Cell(array_sum($w), 0, '', 'B');
+        }
+
+        $this->Ln();
+
+
+        // Color and font restoration
+        $this->SetFillColor(249, 249, 249);
+        $this->SetTextColor(0);
+        $this->SetFont('');
+        // Data
+        $fill = 0;
+        $rowCounter = 1;
+        foreach ($data as $row) {
+            $counter = 0;
+
+            foreach ($row as $column) {
+
+                if ($lastRow && $rowCounter === (sizeof($data))) {
+                    $this->SetFont('', 'B');
+                }
+
+
+                $this->Cell($w[$counter], 6, $column, 'LR', 0, 'L', $fill);
+                $counter++;
+            }
+            $rowCounter++;
+            $this->Ln();
+            $fill = !$fill;
+        }
+        $this->Cell(array_sum($w), 0, '', 'T');
+        $this->Ln();
+    }
+
     public function footer()
     {
         // emtpy method body

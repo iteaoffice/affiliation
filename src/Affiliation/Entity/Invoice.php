@@ -23,7 +23,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class Invoice //extends EntityAbstract
+class Invoice extends EntityAbstract
 {
     /**
      * @ORM\Column(name="affiliation_invoice_id", type="integer", nullable=false)

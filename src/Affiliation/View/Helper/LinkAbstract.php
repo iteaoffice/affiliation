@@ -12,8 +12,14 @@
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\EntityAbstract;
+use Affiliation\Service\AffiliationService;
 use BjyAuthorize\Controller\Plugin\IsAllowed;
 use BjyAuthorize\Service\Authorize;
+use Contact\Service\ContactService;
+use Invoice\Service\InvoiceService;
+use Organisation\Service\OrganisationService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -66,6 +72,10 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     /**
      * @var array List of parameters needed to construct the URL from the router
      */
+    protected $fragment = null;
+    /**
+     * @var array List of parameters needed to construct the URL from the router
+     */
     protected $routerParams = [];
     /**
      * @var array content of the link (will be imploded during creation of the link)
@@ -106,7 +116,11 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
         return sprintf(
             $uri,
-            $serverUrl() . $url($this->router, $this->routerParams),
+            $serverUrl() . $url(
+                $this->router,
+                $this->routerParams,
+                is_null($this->getFragment()) ?: ['fragment' => $this->getFragment()]
+            ),
             htmlentities($this->text),
             implode(' ', $this->classes),
             in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode(
@@ -142,9 +156,12 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
                         break;
                     case 'download':
-                    case 'payment-sheet-admin-pdf':
                         $this->addLinkContent('<i class="fa fa-download"></i>');
                         break;
+                    case 'payment-sheet-pdf':
+                        $this->addLinkContent('<i class="fa fa-file-pdf-o"></i>');
+                        break;
+
                     case 'replace':
                         $this->addLinkContent('<span class="glyphicon glyphicon-repeat"></span>');
                         break;
@@ -433,6 +450,54 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     }
 
     /**
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->getServiceLocator()->get(ProjectService::class);
+    }
+
+    /**
+     * @return AffiliationService
+     */
+    public function getAffiliationService()
+    {
+        return $this->getServiceLocator()->get(AffiliationService::class);
+    }
+
+    /**
+     * @return VersionService
+     */
+    public function getVersionService()
+    {
+        return $this->getServiceLocator()->get(VersionService::class);
+    }
+
+    /**
+     * @return ContactService
+     */
+    public function getContactService()
+    {
+        return clone $this->getServiceLocator()->get('contact_contact_service');
+    }
+
+    /**
+     * @return InvoiceService
+     */
+    public function getInvoiceService()
+    {
+        return $this->getServiceLocator()->get(InvoiceService::class);
+    }
+
+    /**
+     * @return OrganisationService
+     */
+    public function getOrganisationService()
+    {
+        return $this->getServiceLocator()->get(OrganisationService::class);
+    }
+
+    /**
      * @param RouteMatch $routeMatch
      */
     public function setRouteMatch(RouteMatch $routeMatch)
@@ -486,5 +551,21 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
         $this->period = $period;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFragment()
+    {
+        return $this->fragment;
+    }
+
+    /**
+     * @param string $fragment
+     */
+    public function setFragment($fragment)
+    {
+        $this->fragment = $fragment;
     }
 }

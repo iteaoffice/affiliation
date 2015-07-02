@@ -11,6 +11,7 @@
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Invoice;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
@@ -169,6 +170,22 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * @param Affiliation $affiliation
+     * @param $period
+     * @param $year
+     *
+     * @return Invoice[]
+     */
+    public function findAffiliationInvoiceByAffiliationPeriodAndYear(Affiliation $affiliation, $period, $year)
+    {
+        return $affiliation->getInvoice()->filter(
+            function (Invoice $invoice) use ($period, $year) {
+                return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
+            }
+        );
+    }
+
+    /**
      * @param Version $version
      * @param $year
      * @param $period
@@ -178,6 +195,10 @@ class AffiliationService extends ServiceAbstract
     public function parseContributionDue(Version $version, $year, $period)
     {
         $contributionDue = 0;
+
+        if (is_null($year) || is_null($period)) {
+            throw new \InvalidArgumentException("Year snd/or period cannot be null");
+        }
 
         switch ($this->getInvoiceService()->findInvoiceMethod($version->getProject()->getCall()->getProgram())->getId()) {
 
@@ -359,8 +380,6 @@ class AffiliationService extends ServiceAbstract
                 return $fee->getPercentage() / 100;
             case Method::METHOD_CONTRIBUTION:
                 return $fee->getContribution();
-            default:
-                return null;
         }
     }
 
