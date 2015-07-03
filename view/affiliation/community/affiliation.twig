@@ -537,52 +537,52 @@
 
                     {{ affiliationLink(affiliationService.affiliation, 'edit-financial','button') }}
                 </tab>
-                <tab heading="{{ translate("txt-payment-sheet") }}">
+                {% if isAllowed(affiliationService.affiliation,'payment-sheet-admin') %}
+                    <tab heading="{{ translate("txt-payment-sheet") }}">
 
 
-                    {% set year =  "now"|date("Y") %}
-                    {% set period = ("now"|date("M") <= 6) ? 1 : 2 %}
+                        {% set year =  "now"|date("Y") %}
+                        {% set period = ("now"|date("M") <= 6) ? 1 : 2 %}
 
-                    <h3>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliationService.affiliation,'payment-sheet-pdf','icon', year, period) }}</h3>
+                        <h3>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliationService.affiliation,'payment-sheet-pdf','icon', year, period) }}</h3>
 
-                    {{ paymentSheet(affiliationService.affiliation, year, period) }}
+                        {{ paymentSheet(affiliationService.affiliation, year, period) }}
 
-                </tab>
+                    </tab>
 
-                <tab heading="{{ translate("txt-invoices") }}">
+                    <tab heading="{{ translate("txt-invoices") }}">
 
-                    <h3>{{ translate("txt-partner-invoices") }}</h3>
+                        <h3>{{ translate("txt-partner-invoices") }}</h3>
 
-                    <table class="table table-hover table-striped">
-                        <thead>
-                        <tr>
-                            <th>{{ translate("txt-invoice-number") }}</th>
-                            <th>{{ translate("txt-invoice-date") }}</th>
-                            <th>{{ translate("txt-period") }}</th>
-                            <th>{{ translate("txt-amount") }}</th>
-                            <th>{{ translate("txt-status") }}</th>
-                            <th>{{ translate("txt-download") }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for affilaitionInvoice in affiliationService.affiliation.invoice %}
-                            {% set invoiceService = invoiceService.setInvoice(affilaitionInvoice.invoice) %}
-                            {% if invoiceService.isSent() %}
-                                <tr>
-                                    <td>{{ affilaitionInvoice.invoice.invoiceNr }}</td>
-                                    <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
-                                    <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
-                                    <td>{{ invoiceService.parseTotal()|localizedcurrency("EUR") }}</td>
-                                    <td>{{ invoiceService.parseStatus() }}</td>
-                                    <td>{{ invoiceLink(invoiceService.invoice,'download','icon') }}</td>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
-
-
-                </tab>
+                        <table class="table table-hover table-striped">
+                            <thead>
+                            <tr>
+                                <th>{{ translate("txt-invoice-number") }}</th>
+                                <th>{{ translate("txt-invoice-date") }}</th>
+                                <th>{{ translate("txt-period") }}</th>
+                                <th>{{ translate("txt-amount") }}</th>
+                                <th>{{ translate("txt-status") }}</th>
+                                <th>{{ translate("txt-download") }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for affilaitionInvoice in affiliationService.affiliation.invoice %}
+                                {% set invoiceService = invoiceService.setInvoice(affilaitionInvoice.invoice) %}
+                                {% if invoiceService.isSent() %}
+                                    <tr>
+                                        <td>{{ affilaitionInvoice.invoice.invoiceNr }}</td>
+                                        <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
+                                        <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
+                                        <td>{{ invoiceService.parseTotal()|localizedcurrency("EUR") }}</td>
+                                        <td>{{ invoiceService.parseStatus() }}</td>
+                                        <td>{{ invoiceLink(invoiceService.invoice,'download','icon') }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </tab>
+                {% endif %}
             </tabset>
         </div>
     {% endif %}
