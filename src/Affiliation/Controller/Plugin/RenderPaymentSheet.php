@@ -50,7 +50,13 @@ class RenderPaymentSheet extends AbstractPlugin
         $versionService = $this->getVersionService()->setVersion($latestVersion);
 
         $contactService = clone $this->getContactService()->setContact($affiliation->getContact());
-        $financialContactService = clone $this->getContactService()->setContact($affiliation->getFinancial()->getContact());
+
+        if (!is_null($this->getAffiliationService()->getFinancialContact($affiliation))) {
+            $financialContactService = clone $this->getContactService()->setContact($this->getAffiliationService()->getFinancialContact($affiliation));
+        } else {
+            $financialContactService = null;
+        }
+
 
         $affiliationService = $this->getAffiliationService()->setAffiliation($affiliation);
 
@@ -136,7 +142,7 @@ class RenderPaymentSheet extends AbstractPlugin
             ],
         ];
 
-        $pdf->coloredTable([], $projectDetails, [55, 125]);
+        $pdf->coloredTable([], $projectDetails, [55, 130]);
 
 
         //Partner information
@@ -181,7 +187,7 @@ class RenderPaymentSheet extends AbstractPlugin
             ]
         ];
 
-        $pdf->coloredTable([], $partnersDetails, [55, 125]);
+        $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
         //Technical contact
         $pdf->writeHTMLCell(
@@ -208,65 +214,70 @@ class RenderPaymentSheet extends AbstractPlugin
             ],
         ];
 
-        $pdf->coloredTable([], $partnersDetails, [55, 125]);
+        $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
-        //Financial contact
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            sprintf("<h3>%s</h3>", $this->translate("txt-financial-contact")),
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
 
-        $financialAddress = $financialContactService->getFinancialAddress();
-        $financialDetails = [
-            [
-                $this->translate("txt-name"),
-                trim($financialContactService->parseAttention() . ' ' . $financialContactService->parseFullName())
-            ],
-            [
-                $this->translate("txt-email"),
-                $financialContactService->getContact()->getEmail()
-            ],
-            [
-                $this->translate("txt-vat-number"),
-                $affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial()->getVat()
-            ],
-            [
-                $this->translate("txt-billing-address"),
-                sprintf(
-                    "%s \n %s\n%s\n%s %s\n%s",
-                    $this->getOrganisationService()->parseOrganisationWithBranch(
-                        $affiliationService->getAffiliation()->getFinancial()->getBranch(),
-                        $affiliationService->getAffiliation()->getFinancial()->getOrganisation()
-                    ),
-                    trim($financialContactService->parseAttention() . ' ' . $financialContactService->parseFullName()),
-                    $financialAddress->getAddress()->getAddress(),
-                    $financialAddress->getAddress()->getZipCode(),
-                    $financialAddress->getAddress()->getCity(),
-                    strtoupper($financialAddress->getAddress()->getCountry())
-                )
-            ],
-            [
-                $this->translate("txt-preferred-delivery"),
-                ($affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial()->getEmail() === Financial::EMAIL_DELIVERY) ?
+        if (!is_null($financialContactService)) {
+
+            //Financial contact
+            $pdf->writeHTMLCell(
+                0,
+                0,
+                '',
+                '',
+                sprintf("<h3>%s</h3>", $this->translate("txt-financial-contact")),
+                0,
+                1,
+                0,
+                true,
+                '',
+                true
+            );
+
+
+            $financialAddress = $financialContactService->getFinancialAddress();
+            $financialDetails = [
+                [
+                    $this->translate("txt-name"),
+                    trim($financialContactService->parseAttention() . ' ' . $financialContactService->parseFullName())
+                ],
+                [
+                    $this->translate("txt-email"),
+                    $financialContactService->getContact()->getEmail()
+                ],
+                [
+                    $this->translate("txt-vat-number"),
+                    $affiliationService->parseVatNumber($affiliationService->getAffiliation())
+                ],
+                [
+                    $this->translate("txt-billing-address"),
                     sprintf(
-                        $this->translate("txt-by-email-to-%s"),
-                        $financialContactService->getContact()->getEmail()
-                    ) :
-                    $this->translate("txt-by-postal-mail")
+                        "%s \n %s\n%s\n%s %s\n%s",
+                        $this->getOrganisationService()->parseOrganisationWithBranch(
+                            $affiliationService->getAffiliation()->getFinancial()->getBranch(),
+                            $affiliationService->getAffiliation()->getFinancial()->getOrganisation()
+                        ),
+                        trim($financialContactService->parseAttention() . ' ' . $financialContactService->parseFullName()),
+                        $financialAddress->getAddress()->getAddress(),
+                        $financialAddress->getAddress()->getZipCode(),
+                        $financialAddress->getAddress()->getCity(),
+                        strtoupper($financialAddress->getAddress()->getCountry())
+                    )
+                ],
+                [
+                    $this->translate("txt-preferred-delivery"),
+                    ($affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial()->getEmail() === Financial::EMAIL_DELIVERY) ?
+                        sprintf(
+                            $this->translate("txt-by-email-to-%s"),
+                            $financialContactService->getContact()->getEmail()
+                        ) :
+                        $this->translate("txt-by-postal-mail")
 
-            ],
-        ];
+                ],
+            ];
 
-        $pdf->coloredTable([], $financialDetails, [55, 125]);
+            $pdf->coloredTable([], $financialDetails, [55, 130]);
+        }
 
         $pdf->addPage();
 
@@ -372,7 +383,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $fundingDetails[] = $totalColumn;
 
 
-        $pdf->coloredTable($header, $fundingDetails, [20, 25, 25, 25, 25, 25, 35], true);
+        $pdf->coloredTable($header, $fundingDetails, [15, 25, 35, 25, 25, 25, 35], true);
 
         $contributionDue = $affiliationService->parseContributionDue($versionService->getVersion(), $year, $period);
         $contributionPaid = $affiliationService->parseContributionPaid($year, $period);
@@ -454,7 +465,7 @@ class RenderPaymentSheet extends AbstractPlugin
             '',
         ];
 
-        $pdf->coloredTable($header, $currentInvoiceDetails, [45, 25, 25, 25, 25, 35], true);
+        $pdf->coloredTable($header, $currentInvoiceDetails, [40, 35, 25, 25, 25, 35], true);
 
 
         $pdf->writeHTMLCell(

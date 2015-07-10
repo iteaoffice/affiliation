@@ -127,7 +127,7 @@ return [
                                 'options'      => [
                                     'route'    => '/doa',
                                     'defaults' => [
-                                        'controller' =>Controller\DoaController::class,
+                                        'controller' => Controller\DoaController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -239,7 +239,7 @@ return [
                             'route'    => '/affiliation',
                             'defaults' => [
                                 'namespace'  => __NAMESPACE__,
-                                'controller' => AffiliationController::class,
+                                'controller' => Controller\AffiliationController::class,
                                 'action'     => 'index',
                             ],
                         ],
@@ -272,7 +272,7 @@ return [
                             'route'    => '/affiliation',
                             'defaults' => [
                                 'namespace'  => __NAMESPACE__,
-                                'controller' => AffiliationManagerController::class,
+                                'controller' => Controller\AffiliationManagerController::class,
                                 'action'     => 'index',
                             ],
                         ],
@@ -285,7 +285,7 @@ return [
                                     'route'    => '/',
                                     'defaults' => [
                                         'namespace'  => __NAMESPACE__,
-                                        'controller' => AffiliationManagerController::class,
+                                        'controller' => Controller\AffiliationManagerController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -311,7 +311,7 @@ return [
                                     'route'    => '/loi',
                                     'defaults' => [
                                         'namespace'  => __NAMESPACE__,
-                                        'controller' => LoiManagerController::class,
+                                        'controller' => Controller\LoiManagerController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -423,7 +423,7 @@ return [
                                     'route'    => '/doa',
                                     'defaults' => [
                                         'namespace'  => __NAMESPACE__,
-                                        'controller' => DoaManagerController::class,
+                                        'controller' => Controller\DoaManagerController::class,
                                         'action'     => 'index',
                                     ],
                                 ],

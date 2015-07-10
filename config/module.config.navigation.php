@@ -11,11 +11,8 @@ return [
     'navigation' => [
         'admin' => [
             // And finally, here is where we define our page hierarchy
-            'affiliation' => [
-                'label'    => _("txt-partner-admin"),
-                'resource' => 'zfcadmin',
-                'route'    => 'zfcadmin/affiliation-manager/doa/list',
-                'pages'    => [
+            'organisation' => [
+                'pages' => [
                     'doa-approval' => [
                         'label' => _("txt-doa-approval"),
                         'route' => 'zfcadmin/affiliation-manager/doa/approval',

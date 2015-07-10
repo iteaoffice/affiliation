@@ -85,30 +85,28 @@ class CommunityController extends AffiliationAbstractController implements
         $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
-        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+//        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+//
+//        $latestVersion = $projectService->getLatestProjectVersion();
+//        $versionService = $this->getVersionService()->setVersion($latestVersion);
+//
+//        $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
+//
+//        /**
+//         * The financial contact can be the billing organsisation (organisationFinancial) or the technical contact if not provided
+//         */
+//        if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
+//            $financialContactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
+//        } else {
+//            $financialContactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
+//        }
 
-        $latestVersion = $projectService->getLatestProjectVersion();
-        $versionService = $this->getVersionService()->setVersion($latestVersion);
-
-        $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
-        $financialContactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
 
         return new ViewModel([
             'year'                           => $year,
             'period'                         => $period,
             'affiliationService'             => $affiliationService,
-            'projectService'                 => $projectService,
-            'contactService'                 => $contactService,
-            'financialContactService'        => $financialContactService,
-            'organisationService'            => $this->getOrganisationService(),
-            'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod($projectService->getProject()->getCall()->getProgram()),
-            'invoiceService'                 => $this->getInvoiceService(),
-            'versionService'                 => $versionService,
-            'versionContributionInformation' => $versionService->getProjectVersionContributionInformation(
-                $affiliationService->getAffiliation(),
-                $latestVersion,
-                $year
-            )
+
         ]);
     }
 

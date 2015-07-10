@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
 use Invoice\Entity\Method;
+use Organisation\Entity\Type;
 use Program\Entity\Call\Call;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Funding\Source;
@@ -101,12 +102,16 @@ class AffiliationService extends ServiceAbstract
      * This function calculates the factor to which the contribution should be calculated.
      * We removed the switch on office to facilitate the contribution based invoicing
      *
-     * @param  int       $year
-     * @param  int       $period
+     * @param  int $year
+     * @param  int $period
      * @return float|int
      */
     public function parseContributionFactor($year, $period)
     {
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+        $period = (int)$period;
+
         $projectService = $this->getProjectService()->setProject($this->affiliation->getProject());
 
         switch (true) {
@@ -120,16 +125,88 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * The VATnumber is first checked in the financial organisation. If that cannot be found we do a fallback
+     * tot he organisation > finanical
+     *
+     * @param Affiliation $affiliation
+     * @return string|null
+     */
+    public function parseVatNumber(Affiliation $affiliation)
+    {
+        //Find first the corresponding organisation
+        switch (true) {
+            case !is_null($affiliation->getFinancial()):
+                $organisation = $affiliation->getFinancial()->getOrganisation();
+                break;
+            default:
+                $organisation = $affiliation->getOrganisation();
+                break;
+        }
+
+        /**
+         * Return the VAT number is there is a financial organisation
+         */
+        if (!is_null($organisation->getFinancial())) {
+            return $organisation->getFinancial()->getVat();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @return Contact
+     */
+    public function getFinancialContact(Affiliation $affiliation)
+    {
+        if (!is_null($affiliation->getFinancial())) {
+            return $affiliation->getFinancial()->getContact();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @return bool
+     */
+    public function canCreateInvoice(Affiliation $affiliation)
+    {
+        $errors = [];
+        switch (true) {
+            case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE:
+                $errors[] = 'No invoice is needed for the given organisation type';
+                break;
+            case is_null($affiliation->getFinancial()):
+                $errors[] = 'No financial contact set for this partner';
+                break;
+            case is_null($affiliation->getFinancial()->getOrganisation()->getFinancial()):
+                $errors[] = 'No financial contact set for this organisation';
+                break;
+            case is_null($affiliation->getFinancial()->getContact()):
+                $errors[] = 'No financial contact set for this organisation';
+                break;
+
+        }
+
+        return $errors;
+    }
+
+    /**
      * This function calculates the factor to which the contribution should be calculated.
      * We removed the switch on office to facilitate the contribution based invoicing
      *
-     * @param  int       $projectYear
-     * @param  int       $year
-     * @param  int       $period
+     * @param  int $projectYear
+     * @param  int $year
+     * @param  int $period
      * @return float|int
      */
     public function parseContributionFactorDue($projectYear, $year, $period)
     {
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+        $period = (int)$period;
+
         switch (true) {
             case !$this->isFundedInYear($projectYear):
                 return 0;
@@ -149,8 +226,11 @@ class AffiliationService extends ServiceAbstract
      */
     public function getFundingInYear($year)
     {
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+
         foreach ($this->getAffiliation()->getFunding() as $funding) {
-            if ((int) $funding->getDateStart()->format("Y") === $year && $funding->getSource()->getId() === Source::SOURCE_OFFICE) {
+            if ((int)$funding->getDateStart()->format("Y") === $year && $funding->getSource()->getId() === Source::SOURCE_OFFICE) {
                 return $funding;
             }
         };
@@ -163,11 +243,13 @@ class AffiliationService extends ServiceAbstract
      */
     public function isFundedInYear($year)
     {
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+
         return is_null($this->getFundingInYear($year)) ? false : $this->getFundingInYear($year)->getStatus()->getId() === Status::STATUS_ALL_GOOD;
     }
 
     /**
-<<<<<<< HEAD
      * @param Affiliation $affiliation
      * @param $period
      * @param $year
@@ -176,6 +258,10 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationInvoiceByAffiliationPeriodAndYear(Affiliation $affiliation, $period, $year)
     {
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+        $period = (int)$period;
+
         return $affiliation->getInvoice()->filter(
             function (Invoice $invoice) use ($period, $year) {
                 return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
@@ -185,9 +271,6 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Version $version
-=======
-     * @param  Version    $version
->>>>>>> 46421212cde5d9fbd801273cd12688c4b0e21686
      * @param $year
      * @param $period
      * @return float|int
@@ -196,9 +279,12 @@ class AffiliationService extends ServiceAbstract
     public function parseContributionDue(Version $version, $year, $period)
     {
         $contributionDue = 0;
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+        $period = (int)$period;
 
         if (is_null($year) || is_null($period)) {
-            throw new \InvalidArgumentException("Year snd/or period cannot be null");
+            throw new \InvalidArgumentException("Year and/or period cannot be null");
         }
 
         switch ($this->getInvoiceService()->findInvoiceMethod($version->getProject()->getCall()->getProgram())->getId()) {
@@ -264,6 +350,9 @@ class AffiliationService extends ServiceAbstract
     public function parseContributionPaid($year, $period)
     {
         $countribitionPaid = 0;
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+        $period = (int)$period;
 
         //Sum the invoiced amount of all invoices for this affiliation
         foreach ($this->getAffiliation()->getInvoice() as $invoice) {
@@ -280,7 +369,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param  Version   $version
+     * @param  Version $version
      * @param $year
      * @param $period
      * @return float|int
@@ -320,7 +409,7 @@ class AffiliationService extends ServiceAbstract
      * This function counts the effort or costs per affiliaton and returns the total per year. We pick the total amount out per given ear
      *
      * @param  Version $version
-     * @param  int     $year
+     * @param  int $year
      * @return float
      */
     public function parseContributionBase(Version $version, $year)
@@ -330,6 +419,8 @@ class AffiliationService extends ServiceAbstract
          */
         $versionService = $this->getVersionService()->setVersion($version);
         $base = 0;
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
 
         /**
          * The base (the sum of the costs or effort in the version depends on the invoiceMethod (percentage === 'costs', contribution === 'effort')
@@ -360,12 +451,15 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param  Version    $version
+     * @param  Version $version
      * @param $year
      * @return float|null
      */
     public function parseContributionFee(Version $version, $year)
     {
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+
         /**
          * Based on the invoiceMethod we return or a percentage or the contriubtion
          */
@@ -381,7 +475,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @return \Generator
      */
@@ -397,7 +491,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Version $version
-     * @param int     $which
+     * @param int $which
      *
      * @return ArrayCollection
      */
@@ -419,7 +513,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return \Generator
      */
@@ -443,7 +537,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return int
      */
@@ -464,7 +558,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param Call    $call
+     * @param Call $call
      *
      * @return int
      */
@@ -478,7 +572,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return \Generator
      */
@@ -502,7 +596,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @return int
      */
@@ -524,7 +618,7 @@ class AffiliationService extends ServiceAbstract
      * Produce a list of affiliations grouped per country.
      *
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @return ArrayCollection
      */
@@ -551,7 +645,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @return \General\Entity\Country[]
      */
@@ -577,7 +671,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Contact $contact
-     * @param int     $which
+     * @param int $which
      *
      * @return null|Affiliation
      */

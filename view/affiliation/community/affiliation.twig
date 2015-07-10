@@ -1,6 +1,8 @@
 {% do headTitle().append(translate("txt-affiliation")) %}
 {% do headTitle().append(translate("txt-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName)) %}
 
+{% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
+
 {% set years = projectService.parseYearRange(false, affiliationService.affiliation) %}
 
 {% set projectYears = projectService.parseYearRange(true) %}
@@ -542,7 +544,7 @@
 
 
                         {% set year =  "now"|date("Y") %}
-                        {% set period = ("now"|date("M") <= 6) ? 1 : 2 %}
+                        {% set period = ("now"|date("n") <= 6) ? 1 : 2 %}
 
                         <h3>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliationService.affiliation,'payment-sheet-pdf','icon', year, period) }}</h3>
 

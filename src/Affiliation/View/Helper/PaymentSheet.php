@@ -36,7 +36,7 @@ class PaymentSheet extends LinkAbstract
      * @return null|string
      * @throws \Exception
      */
-    public function __invoke(Affiliation $affiliation, $year, $period, $forEmail = false)
+    public function __invoke(Affiliation $affiliation, $year, $period)
     {
         $affiliationService = $this->getAffiliationService()->setAffiliation($affiliation);
 
@@ -46,16 +46,15 @@ class PaymentSheet extends LinkAbstract
         $versionService = $this->getVersionService()->setVersion($latestVersion);
 
         $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
-        $financialContactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
 
-        if ($forEmail) {
-            $template = 'affiliation/partial/payment-sheet-email';
+        if (!is_null($affiliationService->getFinancialContact($affiliationService->getAffiliation()))) {
+            $financialContactService = $this->getContactService()->setContact($affiliationService->getFinancialContact($affiliationService->getAffiliation()));
         } else {
-            $template = 'affiliation/partial/payment-sheet';
+            $financialContactService = null;
         }
 
         return $this->getZfcTwigRenderer()->render(
-            $template,
+            'affiliation/partial/payment-sheet',
             [
                 'year'                           => $year,
                 'period'                         => $period,
@@ -65,7 +64,7 @@ class PaymentSheet extends LinkAbstract
                 'financialContactService'        => $financialContactService,
                 'organisationService'            => $this->getOrganisationService(),
                 'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod($projectService->getProject()->getCall()->getProgram()),
-                'invoiceService'                 => $this->getInvoiceService(),
+                'invoiceService'                 => clone $this->getInvoiceService(),
                 'versionService'                 => $versionService,
                 'versionContributionInformation' => $versionService->getProjectVersionContributionInformation(
                     $affiliationService->getAffiliation(),
