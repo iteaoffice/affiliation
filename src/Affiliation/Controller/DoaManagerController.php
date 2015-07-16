@@ -188,7 +188,7 @@ class DoaManagerController extends AffiliationAbstractController implements
                 )
             );
 
-            return $this->redirect()->toRoute('zfcadmin/affiliation-manager/doa/missing');
+            return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
         }
 
         return new ViewModel(
@@ -261,7 +261,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             $doa = $form->getData();
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation-manager/doa/view',
+                    'zfcadmin/affiliation/doa/view',
                     ['id' => $doa->getId()]
                 );
             }
@@ -277,7 +277,7 @@ class DoaManagerController extends AffiliationAbstractController implements
 
                 $this->getDoaService()->removeEntity($doa);
 
-                return $this->redirect()->toRoute('zfcadmin/affiliation-manager/doa/list');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/doa/list');
             }
 
             $fileData = $this->params()->fromFiles();
@@ -315,7 +315,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             );
 
             return $this->redirect()->toRoute(
-                'zfcadmin/affiliation-manager/doa/view',
+                'zfcadmin/affiliation/doa/view',
                 ['id' => $doa->getId()]
             );
         }

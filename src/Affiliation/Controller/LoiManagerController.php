@@ -172,7 +172,7 @@ class LoiManagerController extends AffiliationAbstractController implements
                 )
             );
 
-            return $this->redirect()->toRoute('zfcadmin/affiliation-manager/loi/missing');
+            return $this->redirect()->toRoute('zfcadmin/affiliation/loi/missing');
         }
 
         return new ViewModel(
@@ -245,7 +245,7 @@ class LoiManagerController extends AffiliationAbstractController implements
             $loi = $form->getData();
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation-manager/loi/view',
+                    'zfcadmin/affiliation/loi/view',
                     ['id' => $loi->getId()]
                 );
             }
@@ -261,7 +261,7 @@ class LoiManagerController extends AffiliationAbstractController implements
 
                 $this->getLoiService()->removeEntity($loi);
 
-                return $this->redirect()->toRoute('zfcadmin/affiliation-manager/loi/list');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/loi/list');
             }
 
             $fileData = $this->params()->fromFiles();
@@ -299,7 +299,7 @@ class LoiManagerController extends AffiliationAbstractController implements
             );
 
             return $this->redirect()->toRoute(
-                'zfcadmin/affiliation-manager/loi/view',
+                'zfcadmin/affiliation/loi/view',
                 ['id' => $loi->getId()]
             );
         }

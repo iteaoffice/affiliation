@@ -129,8 +129,12 @@ class AffiliationLink extends LinkAbstract
                 );
                 break;
             case 'view-admin':
-                $this->setRouter('zfcadmin/affiliation/affiliation');
-                $this->setText(sprintf($this->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
+                $this->setRouter('zfcadmin/affiliation/view');
+                $this->setText(sprintf($this->translate("txt-view-affiliation-in-admin-%s"), $this->getAffiliation()));
+                break;
+            case 'edit-admin':
+                $this->setRouter('zfcadmin/affiliation/edit');
+                $this->setText(sprintf($this->translate("txt-edit-affiliation-in-admin-%s"), $this->getAffiliation()));
                 break;
             case 'payment-sheet':
                 $this->setRouter('community/affiliation/payment-sheet');

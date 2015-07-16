@@ -32,9 +32,9 @@ class LoiLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Loi         $loi
-     * @param string      $action
-     * @param string      $show
+     * @param Loi $loi
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string
@@ -120,19 +120,19 @@ class LoiLink extends LinkAbstract
                 );
                 break;
             case 'remind-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/remind');
+                $this->setRouter('zfcadmin/affiliation/loi/remind');
                 $this->setText($this->translate("txt-send-reminder"));
                 break;
             case 'approval-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/approval');
+                $this->setRouter('zfcadmin/affiliation/loi/approval');
                 $this->setText($this->translate("txt-approval-loi"));
                 break;
             case 'missing-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/missing');
+                $this->setRouter('zfcadmin/affiliation/loi/missing');
                 $this->setText($this->translate("txt-missing-loi"));
                 break;
             case 'reminders-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/reminders');
+                $this->setRouter('zfcadmin/affiliation/loi/reminders');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-see-reminders-%s-sent"),
@@ -141,7 +141,7 @@ class LoiLink extends LinkAbstract
                 );
                 break;
             case 'view-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/view');
+                $this->setRouter('zfcadmin/affiliation/loi/view');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-view-loi-for-organisation-%s-in-project-%s-link-title"),
@@ -151,7 +151,7 @@ class LoiLink extends LinkAbstract
                 );
                 break;
             case 'edit-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/edit');
+                $this->setRouter('zfcadmin/affiliation/loi/edit');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-edit-loi-for-organisation-%s-in-project-%s-link-title"),

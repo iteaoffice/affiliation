@@ -13,6 +13,7 @@ namespace Affiliation\Controller;
 use Contact\Service\ContactServiceAwareInterface;
 use Invoice\Service\InvoiceServiceAwareInterface;
 use Organisation\Service\OrganisationServiceAwareInterface;
+use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectServiceAwareInterface;
 use Project\Service\VersionServiceAwareInterface;
 use Zend\View\Model\ViewModel;
@@ -32,6 +33,34 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
      */
     public function viewAction()
     {
-        return new ViewModel();
+        $affiliationService = $this->getAffiliationService()->setAffiliationId(
+            $this->getEvent()->getRouteMatch()->getParam('id')
+        );
+        $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+
+        $this->getProjectService()->addResource(
+            $affiliationService->getAffiliation()->getProject(),
+            ProjectAssertion::class
+        );
+        $hasProjectEditRights = $this->isAllowed($affiliationService->getAffiliation()->getProject(), 'edit-community');
+
+        return new ViewModel(
+            [
+                'affiliationService'    => $affiliationService,
+                'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation(
+                    $affiliationService->getAffiliation()
+                ),
+                'projectService'        => $this->getProjectService(),
+                'workpackageService'    => $this->getWorkpackageService(),
+                'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(),
+                'versionType'           => $this->getProjectService()->getNextMode()->versionType,
+                'hasProjectEditRights'  => $hasProjectEditRights,
+                'reportService'         => $this->getReportService(),
+                'versionService'        => $this->getVersionService(),
+                'invoiceService'        => $this->getInvoiceService(),
+                'organisationService'   => $this->getOrganisationService()->setOrganisation($affiliationService->getAffiliation()->getOrganisation())
+
+            ]
+        );
     }
 }

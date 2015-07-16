@@ -444,7 +444,7 @@
             {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(projectService.parseFullname()))|raw }}
         {% endif %}
 
-        <h3>{{ translate("txt-exploitation-related-achievement") }}</h3>
+        <h4>{{ translate("txt-exploitation-related-achievement") }}</h4>
 
         {% if affiliationService.affiliation.achievement.count > 0 %}
             <table class="table table-hover table-striped">

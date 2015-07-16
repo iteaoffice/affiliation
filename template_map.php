@@ -31,7 +31,6 @@ return array(
     'affiliation/doa-manager/view'                  => __DIR__ . '//view/affiliation/doa-manager/view.twig',
     'affiliation/loi/replace'                       => __DIR__ . '//view/affiliation/loi/replace.twig',
     'affiliation/loi/upload'                        => __DIR__ . '//view/affiliation/loi/upload.twig',
-    'affiliation/pdf/payment-sheet'                 => __DIR__ . '//view/affiliation/pdf/payment-sheet.twig',
     'affiliation/pdf/doa-project'                   => __DIR__ . '//view/affiliation/pdf/doa-project.twig',
     'affiliation/pdf/loi-project'                   => __DIR__ . '//view/affiliation/pdf/loi-project.twig',
 );

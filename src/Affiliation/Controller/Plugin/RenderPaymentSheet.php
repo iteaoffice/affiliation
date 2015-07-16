@@ -321,8 +321,10 @@ class RenderPaymentSheet extends AbstractPlugin
 
             if ($affiliationService->isSelfFunded()) {
                 $yearData[] = $this->translate("txt-self-funded");
-            } else {
+            } elseif (!is_null($affiliationService->getFundingInYear($projectYear))) {
                 $yearData[] = $affiliationService->getFundingInYear($projectYear)->getStatus()->getStatus();
+            } else {
+                $yearData[] = "-";
             }
 
             if ($invoiceMethod->getId() === Method::METHOD_PERCENTAGE) {

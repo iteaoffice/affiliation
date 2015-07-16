@@ -22,89 +22,89 @@ return [
              */
             'BjyAuthorize\Guard\Route' => [
                 [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/list',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/approval',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/missing',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/view',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/edit',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/remind',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/reminders',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/doa/approve',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/list',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/approval',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/missing',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/remind',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/reminders',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/view',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/edit',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/loi/approve',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
-                    'assertion' => DoaAssertion::class
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation-manager/affiliation/view',
+                    'route'     => 'zfcadmin/affiliation/view',
                     'roles'     => [strtolower(Access::ACCESS_OFFICE)],
                     'assertion' => AffiliationAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/list',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/approval',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/missing',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/view',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/edit',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/remind',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/reminders',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/doa/approve',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/list',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/approval',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/missing',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/remind',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/reminders',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/view',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/edit',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/loi/approve',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/payment-sheet',

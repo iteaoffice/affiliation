@@ -15,19 +15,19 @@ return [
                 'pages' => [
                     'doa-approval' => [
                         'label' => _("txt-doa-approval"),
-                        'route' => 'zfcadmin/affiliation-manager/doa/approval',
+                        'route' => 'zfcadmin/affiliation/doa/approval',
                     ],
                     'doa-missing'  => [
                         'label' => _("txt-missing-doa"),
-                        'route' => 'zfcadmin/affiliation-manager/doa/missing',
+                        'route' => 'zfcadmin/affiliation/doa/missing',
                     ],
                     'loi-approval' => [
                         'label' => _("txt-loi-approval"),
-                        'route' => 'zfcadmin/affiliation-manager/loi/approval',
+                        'route' => 'zfcadmin/affiliation/loi/approval',
                     ],
                     'loi-missing'  => [
                         'label' => _("txt-missing-loi"),
-                        'route' => 'zfcadmin/affiliation-manager/loi/missing',
+                        'route' => 'zfcadmin/affiliation/loi/missing',
                     ],
                 ],
             ],
