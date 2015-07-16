@@ -218,7 +218,6 @@ class RenderPaymentSheet extends AbstractPlugin
 
 
         if (!is_null($financialContactService)) {
-
             //Financial contact
             $pdf->writeHTMLCell(
                 0,
