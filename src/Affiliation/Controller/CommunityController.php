@@ -103,9 +103,9 @@ class CommunityController extends AffiliationAbstractController implements
 
 
         return new ViewModel([
-            'year'                           => $year,
-            'period'                         => $period,
-            'affiliationService'             => $affiliationService,
+            'year'               => $year,
+            'period'             => $period,
+            'affiliationService' => $affiliationService,
 
         ]);
     }
@@ -126,7 +126,8 @@ class CommunityController extends AffiliationAbstractController implements
             ->addHeaderLine("Pragma: public")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $affiliation->getOrganisation()->getId() . '.pdf"'
+                'attachment; filename="' . sprintf("payment_sheet_%s_%s_%sH.pdf", $affiliation->getOrganisation()->getDocRef(),
+                    $year, $period) . '"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
