@@ -47,7 +47,11 @@
             <dt>{{ translate("txt-status") }}</dt>
             <dd>{{ projectService.parseStatus() }}</dd>
             <dt>{{ translate("txt-project-leader") }}</dt>
-            <dd>{{ projectService.project.contact.displayName() }}</dd>
+            <dd>{{ projectService.project.contact.displayName() }}
+                ({{ projectService.project.contact.contactOrganisation.organisation }}) <a
+                        href="mailto:{{ projectService.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+                {{ contactLink(projectService.project.contact,'view-admin','icon') }}
+            </dd>
             {#<dt>{{ translate("txt-call-name") }}</dt>#}
             {#<dd>{{ projectService.project.call }}</dd>#}
             <dt>{{ translate("txt-project-country") }}</dt>
@@ -113,10 +117,18 @@
                 {% endif %}
             </dd>
             <dt>{{ translate("txt-technical-contact") }}</dt>
-            <dd>{{ affiliationService.affiliation.contact.displayName() }}</dd>
+            <dd>{{ affiliationService.affiliation.contact.displayName() }}
+                <a href="mailto:{{ affiliationService.affiliation.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+                {{ contactLink(affiliationService.affiliation.contact,'view-admin','icon') }}
+            </dd>
             {% if affiliationService.affiliation.financial %}
                 <dt>{{ translate("txt-financial-contact") }}</dt>
-                <dd>{{ affiliationService.affiliation.financial.contact.displayName }}</dd>
+                <dd>
+                    {{ affiliationService.affiliation.financial.contact.displayName }} <a
+                            href="mailto:{{ affiliationService.affiliation.financial.contact.email }}"><i
+                                class="fa fa-envelope-o"></i></a>
+                    {{ contactLink(affiliationService.affiliation.contact,'view-admin','icon') }}
+                </dd>
             {% endif %}
         </dl>
 
@@ -403,7 +415,6 @@
                 <tbody>
                 {% for report in affiliationService.affiliation.project.report %}
 
-
                     {% set effortSpent = reportService.findEffortSpentByReportAndAffiliation(report, affiliationService.affiliation) %}
 
                     {% if latestVersion %}
@@ -422,10 +433,10 @@
                                 [{{ translate("txt-py") }}]
                             </td>
                             <td>
-                                {% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'update', report) }}{% endif %}</td>
+                                {% if not report.dateFinal and report.datePeriod|date('Y') >= "now"|date("Y") %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'update', report) }}{% endif %}</td>
                         {% else %}
                             <td></td>
-                            <td>{% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'button', report) }}{% endif %}</td>
+                            <td>{% if not report.dateFinal and report.datePeriod|date('Y') >= "now"|date("Y") %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'button', report) }}{% endif %}</td>
                         {% endif %}
                     </tr>
                     {% if effortSpent %}

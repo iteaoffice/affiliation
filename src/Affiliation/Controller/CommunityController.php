@@ -126,8 +126,12 @@ class CommunityController extends AffiliationAbstractController implements
             ->addHeaderLine("Pragma: public")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . sprintf("payment_sheet_%s_%s_%sH.pdf", $affiliation->getOrganisation()->getDocRef(),
-                    $year, $period) . '"'
+                'attachment; filename="' . sprintf(
+                    "payment_sheet_%s_%s_%sH.pdf",
+                    $affiliation->getOrganisation()->getDocRef(),
+                    $year,
+                    $period
+                ) . '"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));

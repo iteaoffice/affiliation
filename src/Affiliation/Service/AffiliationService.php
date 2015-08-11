@@ -77,7 +77,7 @@ class AffiliationService extends ServiceAbstract
 
     public function isSelfFunded()
     {
-        return $this->affiliation->getSelfFunded() === Affiliation::SELF_FUNDED;
+        return $this->affiliation->getSelfFunded() === Affiliation::SELF_FUNDED && !is_null($this->affiliation->getDateSelfFunded());
     }
 
     /**
@@ -174,7 +174,8 @@ class AffiliationService extends ServiceAbstract
     {
         $errors = [];
         switch (true) {
-            case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE:
+            case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE &&
+                !($affiliation->getProject()->getCall()->getProgram()->getId() === 3 && $affiliation->getOrganisation()->getType()->getId() === Type::TYPE_UNIVERSITY):
                 $errors[] = 'No invoice is needed for the given organisation type';
                 break;
             case is_null($affiliation->getFinancial()):

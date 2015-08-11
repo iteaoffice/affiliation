@@ -59,6 +59,11 @@
             {#<dd>{{ projectService.project.call }}</dd>#}
             <dt>{{ translate("txt-project-country") }}</dt>
             <dd>{{ projectService.project.contact.contactOrganisation.organisation.country }}</dd>
+
+            {% if affiliationService.isSelfFunded() %}
+                <dt>{{ translate("txt-self-funded") }}</dt>
+                <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliationService.affiliatin.dateSelfFunded) }}</dd>
+            {% endif %}
         </dl>
 
         <dl class="dl-horizontal">
@@ -246,7 +251,7 @@
         </tabset>
     </div>
     <div class="tab-pane" id="version">
-        <h4>{{ translate("txt-version-information-information") }}</h4>
+        <h4>{{ translate("txt-version-information") }}</h4>
 
         <table class="table table-hover table-striped table-condensed">
             <thead>

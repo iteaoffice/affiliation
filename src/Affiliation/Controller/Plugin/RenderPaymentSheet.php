@@ -138,7 +138,7 @@ class RenderPaymentSheet extends AbstractPlugin
             ],
             [
                 $this->translate("txt-version-date"),
-                $versionService->getVersion()->getDateReviewed()->format("d-m-Y")
+                (!is_null($versionService->getVersion()->getDateReviewed()) ? $versionService->getVersion()->getDateReviewed()->format("d-m-Y") : '')
             ],
         ];
 
