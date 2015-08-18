@@ -381,7 +381,8 @@
                 <tbody>
                 {% for contact in contactsInAffiliation.contacts %}
                     <tr>
-                        <td>{{ contact.displayName }}</td>
+                        <td>{{ contact.displayName }} <a
+                                    href="mailto:{{ contact.email }}"><i class="fa fa-envelope-o"></i></a></td>
                         <td>
                             {{ contactsInAffiliation['contactRole'][contact.id]|join(', ') }}
                         </td>

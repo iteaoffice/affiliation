@@ -57,7 +57,6 @@ $config = [
         'invokables' => [
             'affiliationLink'            => Helper\AffiliationLink::class,
             'affiliationEffortSpentLink' => Helper\EffortSpentLink::class,
-            'paginationLink'             => Helper\PaginationLink::class,
             'doaLink'                    => Helper\DoaLink::class,
             'loiLink'                    => Helper\LoiLink::class,
             'paymentSheet'               => Helper\PaymentSheet::class,

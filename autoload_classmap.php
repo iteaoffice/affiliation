@@ -6,7 +6,6 @@ return array(
     'Affiliation\View\Helper\EffortSpentLink'                            => __DIR__ . '/src/Affiliation/View/Helper/EffortSpentLink.php',
     'Affiliation\View\Helper\DoaLink'                                    => __DIR__ . '/src/Affiliation/View/Helper/DoaLink.php',
     'Affiliation\View\Helper\LinkAbstract'                               => __DIR__ . '/src/Affiliation/View/Helper/LinkAbstract.php',
-    'Affiliation\View\Helper\PaginationLink'                             => __DIR__ . '/src/Affiliation/View/Helper/PaginationLink.php',
     'Affiliation\View\Helper\LoiLink'                                    => __DIR__ . '/src/Affiliation/View/Helper/LoiLink.php',
     'Affiliation\View\Helper\PaymentSheet'                               => __DIR__ . '/src/Affiliation/View/Helper/PaymentSheet.php',
     'Affiliation\View\Helper\AffiliationLink'                            => __DIR__ . '/src/Affiliation/View/Helper/AffiliationLink.php',

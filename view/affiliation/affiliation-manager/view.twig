@@ -54,7 +54,9 @@
             <dt>{{ translate("txt-status") }}</dt>
             <dd>{{ projectService.parseStatus() }}</dd>
             <dt>{{ translate("txt-project-leader") }}</dt>
-            <dd>{{ projectService.project.contact.displayName() }}</dd>
+            <dd>{{ contactLink(projectService.project.contact,'view-admin','name') }} <a
+                        href="mailto:{{ projectService.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+            </dd>
             {#<dt>{{ translate("txt-call-name") }}</dt>#}
             {#<dd>{{ projectService.project.call }}</dd>#}
             <dt>{{ translate("txt-project-country") }}</dt>
@@ -116,10 +118,14 @@
                 {% endif %}
             </dd>
             <dt>{{ translate("txt-technical-contact") }}</dt>
-            <dd>{{ contactLink(affiliationService.affiliation.contact,'view-admin','name') }}</dd>
+            <dd>{{ contactLink(affiliationService.affiliation.contact,'view-admin','name') }} <a
+                        href="mailto:{{ affiliationService.affiliation.contact.email }}"><i
+                            class="fa fa-envelope-o"></i></a></dd>
             {% if affiliationService.affiliation.financial %}
                 <dt>{{ translate("txt-financial-contact") }}</dt>
-                <dd>{{ contactLink(affiliationService.affiliation.financial.contact,'view-admin','name') }}</dd>
+                <dd>{{ contactLink(affiliationService.affiliation.financial.contact,'view-admin','name') }} <a
+                            href="mailto:{{ affiliationService.affiliation.financial.contact.email }}"><i
+                                class="fa fa-envelope-o"></i></a></dd>
             {% endif %}
         </dl>
 
@@ -411,7 +417,7 @@
             </table>
         {% else %}
             <br>
-            {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(projectService.parseFullname()))|raw }}
+            {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s-in-%s")|format(affiliationService.affiliation,projectService.parseFullname()))|raw }}
         {% endif %}
 
         <h4>{{ translate("txt-exploitation-related-achievement") }}</h4>
@@ -447,7 +453,7 @@
 
         {% else %}
             <br>
-            {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(projectService.parseFullname()))|raw }}
+            {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s-in-%s")|format(affiliationService.affiliation,projectService.parseFullname()))|raw }}
         {% endif %}
 
         {{ achievementLink(null, 'create', 'button', affiliationService.affiliation) }}
@@ -456,31 +462,35 @@
 
         <h3>{{ translate("txt-partner-invoices") }}</h3>
 
-        <table class="table table-hover table-striped">
-            <thead>
-            <tr>
-                <th>{{ translate("txt-invoice-number") }}</th>
-                <th>{{ translate("txt-invoice-date") }}</th>
-                <th>{{ translate("txt-period") }}</th>
-                <th>{{ translate("txt-amount") }}</th>
-                <th>{{ translate("txt-status") }}</th>
-                <th>{{ translate("txt-download") }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for affilaitionInvoice in affiliationService.affiliation.invoice %}
-                {% set invoiceService = invoiceService.setInvoice(affilaitionInvoice.invoice) %}
+        {% if affiliationService.affiliation.invoice.count() > 0 %}
+            <table class="table table-hover table-striped">
+                <thead>
                 <tr>
-                    <td>{{ invoiceLink(affilaitionInvoice.invoice,'view','invoice') }}</td>
-                    <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
-                    <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
-                    <td>{{ invoiceService.parseTotal()|localizedcurrency("EUR") }}</td>
-                    <td>{{ invoiceService.parseStatus() }}</td>
-                    <td>{{ invoiceLink(invoiceService.invoice,'download','icon') }}</td>
+                    <th>{{ translate("txt-invoice-number") }}</th>
+                    <th>{{ translate("txt-invoice-date") }}</th>
+                    <th>{{ translate("txt-period") }}</th>
+                    <th>{{ translate("txt-amount") }}</th>
+                    <th>{{ translate("txt-status") }}</th>
+                    <th>{{ translate("txt-download") }}</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for affilaitionInvoice in affiliationService.affiliation.invoice %}
+                    {% set invoiceService = invoiceService.setInvoice(affilaitionInvoice.invoice) %}
+                    <tr>
+                        <td>{{ invoiceLink(affilaitionInvoice.invoice,'view','invoice') }}</td>
+                        <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
+                        <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
+                        <td>{{ invoiceService.parseTotal()|localizedcurrency("EUR") }}</td>
+                        <td>{{ invoiceService.parseStatus() }}</td>
+                        <td>{{ invoiceLink(invoiceService.invoice,'download','icon') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            {{ ztbalert().info(translate("txt-no-invoices-were-created-for-%s-in-%s")|format(affiliationService.affiliation,projectService.parseFullname()))|raw }}
+        {% endif %}
         </tab>
     </div>
 </div>
