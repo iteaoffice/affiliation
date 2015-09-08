@@ -43,6 +43,14 @@ class PaymentSheet extends LinkAbstract
         $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
         $latestVersion = $projectService->getLatestProjectVersion();
+
+        /**
+         * We don't need a payment sheet, when we have no versions
+         */
+        if (is_null($latestVersion)) {
+            return '';
+        }
+
         $versionService = $this->getVersionService()->setVersion($latestVersion);
 
         $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());

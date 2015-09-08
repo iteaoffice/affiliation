@@ -404,6 +404,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @return string
+     */
+    public function parseBranchedName()
+    {
+        return trim(
+            preg_replace(
+                '/^(([^\~]*)\~\s?)?\s?(.*)$/',
+                '${2}' . $this->getOrganisation()->getOrganisation() . ' ${3}',
+                $this->getBranch()
+            )
+        );
+    }
+
+    /**
      * Returns the string identifier of the Resource.
      *
      * @return string

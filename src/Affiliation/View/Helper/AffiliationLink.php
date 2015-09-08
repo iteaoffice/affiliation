@@ -59,7 +59,8 @@ class AffiliationLink extends LinkAbstract
         $this->setShowOptions(
             [
                 'name'         => $this->getAffiliation(),
-                'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation()
+                'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation(),
+                'organisation-branch' => $this->getAffiliation()->parseBranchedName()
             ]
         );
         if (!$this->hasAccess(

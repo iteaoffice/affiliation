@@ -176,13 +176,16 @@ class AffiliationService extends ServiceAbstract
         switch (true) {
             case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE &&
                 !($affiliation->getProject()->getCall()->getProgram()->getId() === 3 && $affiliation->getOrganisation()->getType()->getId() === Type::TYPE_UNIVERSITY):
-                $errors[] = 'No invoice is needed for the given organisation type';
+                $errors[] = sprintf('No invoice is needed for %s', $affiliation->getOrganisation()->getType()->getDescription());
                 break;
             case is_null($affiliation->getFinancial()):
-                $errors[] = 'No financial contact set for this partner';
+                $errors[] = 'No financial organisation set for this partner';
+                break;
+            case !is_null($affiliation->getDateEnd()):
+                $errors[] = 'Partner is de-activated';
                 break;
             case is_null($affiliation->getFinancial()->getOrganisation()->getFinancial()):
-                $errors[] = 'No financial contact set for this organisation';
+                $errors[] = 'No financial information set for this organisation';
                 break;
             case is_null($affiliation->getFinancial()->getContact()):
                 $errors[] = 'No financial contact set for this organisation';
