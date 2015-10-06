@@ -14,7 +14,7 @@
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
     projectService.parseFullName()
-    ) }}</p>
+    ) }} {{ affiliationLink(affiliationService.affiliation,'view-admin','icon') }}</p>
 
 {% if affiliationService.affiliation.dateEnd %}
     {{ ztbalert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(

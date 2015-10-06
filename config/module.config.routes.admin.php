@@ -29,7 +29,16 @@ return [
                         ],
                         'may_terminate' => false,
                         'child_routes'  => [
-                            'view' => [
+                            'list'           => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                    'defaults' => [
+                                        'action' => 'list',
+                                    ]
+                                ]
+                            ],
+                            'view'           => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/view/[:id].html',
@@ -39,16 +48,27 @@ return [
                                     ]
                                 ]
                             ],
-                            'list' => [
+                            'edit'           => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                    'route'    => '/edit/[:id].html',
                                     'defaults' => [
-                                        'action' => 'list',
+                                        'action'    => 'edit',
+                                        'privilege' => 'edit-admin',
                                     ]
                                 ]
                             ],
-                            'loi'  => [
+                            'edit-associate' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/edit-associate/affiliation-[:affiliation]/contact-[:contact].html',
+                                    'defaults' => [
+                                        'action'    => 'edit-associate',
+                                        'privilege' => 'edit-admin',
+                                    ]
+                                ]
+                            ],
+                            'loi'            => [
                                 'type'          => 'Segment',
                                 'priority'      => 1000,
                                 'options'       => [
@@ -160,7 +180,7 @@ return [
                                     ],
                                 ]
                             ],
-                            'doa'  => [
+                            'doa'            => [
                                 'type'          => 'Segment',
                                 'priority'      => 1000,
                                 'options'       => [

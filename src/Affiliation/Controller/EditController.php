@@ -156,7 +156,10 @@ class EditController extends AffiliationAbstractController implements
             $this->getAffiliationService()->updateEntity($financial);
 
             $this->flashMessenger()->setNamespace('success')->addMessage(
-                sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+                sprintf(
+                    $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                    $affiliationService->getAffiliation()
+                )
             );
 
             return $this->redirect()->toRoute(
@@ -335,7 +338,10 @@ class EditController extends AffiliationAbstractController implements
             $financialAddress->setCountry($country);
             $this->getContactService()->updateEntity($financialAddress);
             $this->flashMessenger()->setNamespace('success')->addMessage(
-                sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+                sprintf(
+                    $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                    $affiliationService->getAffiliation()
+                )
             );
 
             return $this->redirect()->toRoute(
@@ -390,7 +396,10 @@ class EditController extends AffiliationAbstractController implements
             }
 
             $this->flashMessenger()->setNamespace('success')->addMessage(
-                sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+                sprintf(
+                    $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                    $affiliationService->getAffiliation()
+                )
             );
 
             return $this->redirect()->toRoute(
@@ -448,7 +457,10 @@ class EditController extends AffiliationAbstractController implements
                 $this->getAffiliationService()->updateEntity($description);
 
                 $this->flashMessenger()->setNamespace('success')->addMessage(
-                    sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+                    sprintf(
+                        $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                        $affiliationService->getAffiliation()
+                    )
                 );
             }
 
@@ -549,7 +561,10 @@ class EditController extends AffiliationAbstractController implements
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 $this->flashMessenger()->setNamespace('success')->addMessage(
-                    sprintf(_("txt-affiliation-%s-has-successfully-been-updated"), $affiliationService->getAffiliation())
+                    sprintf(
+                        $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                        $affiliationService->getAffiliation()
+                    )
                 );
 
                 return $this->redirect()->toRoute(

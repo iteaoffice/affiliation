@@ -226,15 +226,16 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param $year
+     * @param $source
      * @return Funding|null
      */
-    public function getFundingInYear($year)
+    public function getFundingInYear($year, $source = Source::SOURCE_OFFICE)
     {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
 
         foreach ($this->getAffiliation()->getFunding() as $funding) {
-            if ((int)$funding->getDateStart()->format("Y") === $year && $funding->getSource()->getId() === Source::SOURCE_OFFICE) {
+            if ((int)$funding->getDateStart()->format("Y") === $year && $funding->getSource()->getId() === $source) {
                 return $funding;
             }
         };

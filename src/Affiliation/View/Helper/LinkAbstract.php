@@ -11,10 +11,12 @@
 
 namespace Affiliation\View\Helper;
 
+use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Service\AffiliationService;
 use BjyAuthorize\Controller\Plugin\IsAllowed;
 use BjyAuthorize\Service\Authorize;
+use Contact\Entity\Contact;
 use Contact\Service\ContactService;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
@@ -89,6 +91,14 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      * @var array
      */
     protected $showOptions = [];
+    /**
+     * @var Contact
+     */
+    protected $contact;
+    /**
+     * @var Affiliation
+     */
+    protected $affiliation;
 
     /**
      * This function produces the link in the end.
@@ -316,8 +326,8 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param EntityAbstract $entity
-     * @param string         $assertion
-     * @param string         $action
+     * @param string $assertion
+     * @param string $action
      *
      * @return bool
      */
@@ -379,7 +389,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param null|EntityAbstract $resource
-     * @param string              $privilege
+     * @param string $privilege
      *
      * @return bool
      */
@@ -398,7 +408,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      *
      * @param string $key
      * @param        $value
-     * @param bool   $allowNull
+     * @param bool $allowNull
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {
@@ -524,7 +534,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     }
 
     /**
-     * @param  int          $year
+     * @param  int $year
      * @return LinkAbstract
      */
     public function setYear($year)
@@ -543,7 +553,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     }
 
     /**
-     * @param  int          $period
+     * @param  int $period
      * @return LinkAbstract
      */
     public function setPeriod($period)
@@ -567,5 +577,43 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     public function setFragment($fragment)
     {
         $this->fragment = $fragment;
+    }
+
+    /**
+     * @return Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param Contact $contact
+     * @return LinkAbstract
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @return LinkAbstract
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
     }
 }

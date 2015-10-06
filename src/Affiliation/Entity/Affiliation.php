@@ -45,7 +45,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @var array
      */
-    protected $selfFundedTemplates = [
+    protected static $selfFundedTemplates = [
         self::NOT_SELF_FUNDED => 'txt-not-self-funded',
         self::SELF_FUNDED     => 'txt-self-funded',
     ];
@@ -427,13 +427,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         return sprintf("%s:%s", __CLASS__, $this->id);
     }
 
-    /**
-     * @return array
-     */
-    public function getSelfFundedTemplates()
-    {
-        return $this->selfFundedTemplates;
-    }
 
     /**
      * @param InputFilterInterface $inputFilter
@@ -584,6 +577,15 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @return array
      */
+    public static function getSelfFundedTemplates()
+    {
+        return self::$selfFundedTemplates;
+    }
+
+
+    /**
+     * @return array
+     */
     public function populate()
     {
         return $this->getArrayCopy();
@@ -597,6 +599,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         if (!$this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
+    }
+
+    /**
+     * @param Contact $contact
+     */
+    public function removeAssociate(Contact $contact)
+    {
+        $this->associate->removeElement($contact);
     }
 
     /**
@@ -864,10 +874,15 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @param bool|true $textual
      * @return int
      */
-    public function getSelfFunded()
+    public function getSelfFunded($textual = false)
     {
+        if ($textual) {
+            return self::$selfFundedTemplates[$this->selfFunded];
+        }
+
         return $this->selfFunded;
     }
 

@@ -51,20 +51,21 @@
             <dd>{{ projectLink(projectService,'view-admin', 'name') }}
                 {{ projectLink(projectService,'view-community', 'icon') }}
             </dd>
+            <dt>{{ translate("txt-program-call") }}</dt>
+            <dd>{{ affiliationService.affiliation.project.call }}</dd>
             <dt>{{ translate("txt-status") }}</dt>
             <dd>{{ projectService.parseStatus() }}</dd>
             <dt>{{ translate("txt-project-leader") }}</dt>
             <dd>{{ contactLink(projectService.project.contact,'view-admin','name') }} <a
                         href="mailto:{{ projectService.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
             </dd>
-            {#<dt>{{ translate("txt-call-name") }}</dt>#}
-            {#<dd>{{ projectService.project.call }}</dd>#}
+
             <dt>{{ translate("txt-project-country") }}</dt>
             <dd>{{ projectService.project.contact.contactOrganisation.organisation.country }}</dd>
 
             {% if affiliationService.isSelfFunded() %}
                 <dt>{{ translate("txt-self-funded") }}</dt>
-                <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliationService.affiliatin.dateSelfFunded) }}</dd>
+                <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliationService.affiliation.dateSelfFunded|time_diff) }}</dd>
             {% endif %}
         </dl>
 
@@ -150,21 +151,19 @@
     <div class="tab-pane" id="associates">
         <h3>{{ translate("txt-associates") }}</h3>
 
-        {% if contactsInAffiliation.contacts|length > 0 %}
+        {% if affiliationService.affiliation.associate.count() > 0 %}
             <table class="table table-striped table-hover table-condensed">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-associate-name") }}</th>
-                    <th>{{ translate("txt-roles") }}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for contact in contactsInAffiliation.contacts %}
+                {% for contact in affiliationService.affiliation.associate %}
                     <tr>
-                        <td>{{ contactLink(contact, 'view-admin','name') }}</td>
                         <td>
-                            {{ contactsInAffiliation['contactRole'][contact.id]|join(', ') }}
-                        </td>
+                            {{ associateLink(affiliationService.affiliation,'edit','contact', contact) }}
+                            {{ contactLink(contact, 'view-admin','icon') }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

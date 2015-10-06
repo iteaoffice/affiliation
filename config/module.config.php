@@ -56,6 +56,7 @@ $config = [
     'view_helpers'    => [
         'invokables' => [
             'affiliationLink'            => Helper\AffiliationLink::class,
+            'associateLink'              => Helper\AssociateLink::class,
             'affiliationEffortSpentLink' => Helper\EffortSpentLink::class,
             'doaLink'                    => Helper\DoaLink::class,
             'loiLink'                    => Helper\LoiLink::class,

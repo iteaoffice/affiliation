@@ -10,6 +10,8 @@
 
 namespace Affiliation\Entity;
 
+use Zend\InputFilter\InputFilter;
+
 /**
  * Annotations class.
  *
@@ -17,6 +19,11 @@ namespace Affiliation\Entity;
  */
 abstract class EntityAbstract implements EntityInterface
 {
+    /**
+     * @var InputFilter
+     */
+    protected $inputFilter;
+
     /**
      * @param string $switch
      *

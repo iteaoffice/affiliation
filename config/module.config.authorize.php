@@ -27,6 +27,16 @@ return [
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/edit',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/edit-associate',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/doa/list',
                     'roles'     => [strtolower(Access::ACCESS_OFFICE)],
                     'assertion' => DoaAssertion::class
