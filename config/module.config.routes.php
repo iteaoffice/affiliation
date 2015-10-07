@@ -7,6 +7,10 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+namespace Affiliation;
+
+use Affiliation\Controller;
+
 return [
     'router' => [
         'routes' => [
@@ -19,13 +23,13 @@ return [
                             'route'    => '/affiliation',
                             'defaults' => [
                                 'namespace'  => 'affiliation',
-                                'controller' => 'affiliation-community',
+                                'controller' => Controller\CommunityController::class,
                                 'action'     => 'index',
                             ],
                         ],
                         'may_terminate' => true,
                         'child_routes'  => [
-                            'affiliation' => [
+                            'affiliation'       => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/details/[:id].html',
@@ -35,18 +39,38 @@ return [
                                     ],
                                 ],
                             ],
-                            'edit'        => [
+                            'payment-sheet'     => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].html',
+                                    'defaults' => [
+                                        'action'    => 'payment-sheet',
+                                        'privilege' => 'payment-sheet',
+                                    ]
+                                ]
+                            ],
+                            'payment-sheet-pdf' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].pdf',
+                                    'defaults' => [
+                                        'action'    => 'payment-sheet-pdf',
+                                        'privilege' => 'payment-sheet',
+                                    ]
+                                ]
+                            ],
+                            'edit'              => [
                                 'type'          => 'Segment',
                                 'options'       => [
                                     'route'    => '/edit',
                                     'defaults' => [
-                                        'controller' => 'affiliation-edit',
+                                        'controller' => Controller\EditController::class,
                                         'action'     => 'edit',
                                     ],
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'affiliation'   => [
+                                    'affiliation'         => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/affiliation/[:id].html',
@@ -56,7 +80,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'add-associate' => [
+                                    'add-associate'       => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/add-associate/[:id].html',
@@ -66,7 +90,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'financial'     => [
+                                    'financial'           => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/financial/[:id].html',
@@ -76,7 +100,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'description'   => [
+                                    'description'         => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/description/[:id].html',
@@ -86,14 +110,24 @@ return [
                                             ],
                                         ],
                                     ],
+                                    'update-effort-spent' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/update-effort-spent/affiliation-[:id]/report-[:report].html',
+                                            'defaults' => [
+                                                'action'    => 'update-effort-spent',
+                                                'privilege' => 'update-effort-spent',
+                                            ],
+                                        ],
+                                    ],
                                 ]
                             ],
-                            'doa'         => [
+                            'doa'               => [
                                 'type'         => 'Segment',
                                 'options'      => [
                                     'route'    => '/doa',
                                     'defaults' => [
-                                        'controller' => 'affiliation-doa',
+                                        'controller' => Controller\DoaController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -140,12 +174,12 @@ return [
                                     ],
                                 ]
                             ],
-                            'loi'         => [
+                            'loi'               => [
                                 'type'         => 'Segment',
                                 'options'      => [
                                     'route'    => '/loi',
                                     'defaults' => [
-                                        'controller' => 'affiliation-loi',
+                                        'controller' => Controller\LoiController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -196,249 +230,6 @@ return [
                     ]
                 ]
             ],
-            'zfcadmin'  => [
-                'child_routes' => [
-                    'affiliation-manager' => [
-                        'type'          => 'Segment',
-                        'priority'      => 1000,
-                        'options'       => [
-                            'route'    => '/affiliation',
-                            'defaults' => [
-                                'namespace'  => __NAMESPACE__,
-                                'controller' => 'affiliation-manager',
-                                'action'     => 'index',
-                            ],
-                        ],
-                        'may_terminate' => true,
-                        'child_routes'  => [
-                            'loi' => [
-                                'type'          => 'Segment',
-                                'priority'      => 1000,
-                                'options'       => [
-                                    'route'    => '/loi',
-                                    'defaults' => [
-                                        'namespace'  => __NAMESPACE__,
-                                        'controller' => 'affiliation-loi-manager',
-                                        'action'     => 'index',
-                                    ],
-                                ],
-                                'may_terminate' => true,
-                                'child_routes'  => [
-                                    'list'      => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/list.html',
-                                            'defaults' => [
-                                                'action'    => 'list',
-                                                'privilege' => 'list-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'approval'  => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/approval.html',
-                                            'defaults' => [
-                                                'action'    => 'approval',
-                                                'privilege' => 'approval-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'missing'   => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/missing[/page-:page].html',
-                                            'defaults' => [
-                                                'action'    => 'missing',
-                                                'privilege' => 'missing-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'view'      => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'priority'    => 100,
-                                            'route'       => '/[:id].html',
-                                            'constraints' => [
-                                                'id' => '[0-9_-]+',
-                                            ],
-                                            'defaults'    => [
-                                                'action'    => 'view',
-                                                'privilege' => 'view-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'remind'    => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/remind/[:affiliation-id].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'remind',
-                                                'privilege'   => 'remind-admin',
-                                            ]
-                                        ]
-                                    ],
-                                    'reminders' => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/reminders/[:affiliation-id].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'reminders',
-                                                'privilege'   => 'reminders-admin',
-                                            ]
-                                        ]
-                                    ],
-                                    'edit'      => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/edit/[:id].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'edit',
-                                                'privilege'   => 'edit-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'approve'   => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/approve.html',
-                                            'defaults' => [
-                                                'action'    => 'approve',
-                                                'privilege' => 'edit-admin',
-                                            ],
-                                        ],
-                                    ],
-                                ]
-                            ],
-                            'doa' => [
-                                'type'          => 'Segment',
-                                'priority'      => 1000,
-                                'options'       => [
-                                    'route'    => '/doa',
-                                    'defaults' => [
-                                        'namespace'  => __NAMESPACE__,
-                                        'controller' => 'affiliation-doa-manager',
-                                        'action'     => 'index',
-                                    ],
-                                ],
-                                'may_terminate' => true,
-                                'child_routes'  => [
-                                    'list'      => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/list.html',
-                                            'defaults' => [
-                                                'action'    => 'list',
-                                                'privilege' => 'list-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'approval'  => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/approval.html',
-                                            'defaults' => [
-                                                'action'    => 'approval',
-                                                'privilege' => 'approval-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'missing'   => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/missing[/page-:page].html',
-                                            'defaults' => [
-                                                'action'    => 'missing',
-                                                'privilege' => 'missing-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'view'      => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'priority'    => 100,
-                                            'route'       => '/[:id].html',
-                                            'constraints' => [
-                                                'id' => '[0-9_-]+',
-                                            ],
-                                            'defaults'    => [
-                                                'action'    => 'view',
-                                                'privilege' => 'view-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'edit'      => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/edit/[:id].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'edit',
-                                                'privilege'   => 'edit-admin',
-                                            ]
-                                        ]
-                                    ],
-                                    'remind'    => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/remind/[:affiliation-id].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'remind',
-                                                'privilege'   => 'remind-admin',
-                                            ]
-                                        ]
-                                    ],
-                                    'reminders' => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/reminders/[:affiliation-id].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'reminders',
-                                                'privilege'   => 'reminders-admin',
-                                            ]
-                                        ]
-                                    ],
-                                    'approve'   => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/approve.html',
-                                            'defaults' => [
-                                                'action'    => 'approve',
-                                                'privilege' => 'edit-admin',
-                                            ],
-                                        ],
-                                    ],
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
         ]
     ]
 ];

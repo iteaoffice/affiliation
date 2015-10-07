@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Service;
 
 interface FormServiceAwareInterface
@@ -21,7 +22,8 @@ interface FormServiceAwareInterface
     /**
      * Set formService.
      *
-     * @param  FormService                                           $formService
+     * @param FormService $formService
+     *
      * @return \Affiliation\Controller\AffiliationAbstractController
      */
     public function setFormService($formService);

@@ -1,29 +1,27 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Navigation
- * @subpackage  Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Navigation\Service;
 
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Project\Service\ProjectService;
 use Project\Service\ProjectServiceAwareInterface;
+use Project\Service\ReportService;
 use Zend\I18n\View\Helper\Translate;
 use Zend\Mvc\Router\Http\RouteMatch;
 use Zend\Mvc\Router\Http\TreeRouteStack;
 use Zend\Navigation\Navigation;
 
 /**
- * Factory for the Affiliation admin navigation
- *
- * @package    Affiliation
- * @subpackage Navigation\Service
+ * Factory for the Affiliation admin navigation.
  */
 class NavigationServiceAbstract implements
     AffiliationServiceAwareInterface,
@@ -45,6 +43,10 @@ class NavigationServiceAbstract implements
      * @var ProjectService;
      */
     protected $projectService;
+    /**
+     * @var ReportService
+     */
+    protected $reportService;
     /**
      * @var TreeRouteStack
      */
@@ -190,5 +192,21 @@ class NavigationServiceAbstract implements
     public function setProjectService(ProjectService $projectService)
     {
         $this->projectService = $projectService;
+    }
+
+    /**
+     * @return ReportService
+     */
+    public function getReportService()
+    {
+        return $this->reportService;
+    }
+
+    /**
+     * @param ReportService $reportService
+     */
+    public function setReportService(ReportService $reportService)
+    {
+        $this->reportService = $reportService;
     }
 }

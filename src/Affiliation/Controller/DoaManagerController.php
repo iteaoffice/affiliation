@@ -1,25 +1,29 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * PHP Version 5
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   2004-2014 ITEA Office
  * @license     http://debranova.org/license.txt proprietary
+ *
  * @link        http://debranova.org
  */
+
 namespace Affiliation\Controller;
 
-use Affiliation\Entity\Doa;
 use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\DoaReminder as DoaReminderEntity;
 use Affiliation\Form\DoaApproval;
 use Affiliation\Form\DoaReminder;
 use Affiliation\Service\DoaServiceAwareInterface;
 use Contact\Service\ContactServiceAwareInterface;
+use Deeplink\Entity\Target;
+use Deeplink\Service\DeeplinkServiceAwareInterface;
+use Deeplink\View\Helper\DeeplinkLink;
 use General\Service\EmailServiceAwareInterface;
 use General\Service\GeneralServiceAwareInterface;
 use Mailing\Service\MailingServiceAwareInterface;
@@ -29,13 +33,14 @@ use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
- * Affiliation controller
+ * Affiliation controller.
  *
  * @category   Affiliation
- * @package    Controller
+ *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright  2004-2014 ITEA Office
  * @license    http://debranova.org/license.txt proprietary
+ *
  * @link       http://debranova.org
  */
 class DoaManagerController extends AffiliationAbstractController implements
@@ -44,7 +49,8 @@ class DoaManagerController extends AffiliationAbstractController implements
     EmailServiceAwareInterface,
     GeneralServiceAwareInterface,
     MailingServiceAwareInterface,
-    ContactServiceAwareInterface
+    ContactServiceAwareInterface,
+    DeeplinkServiceAwareInterface
 {
     /**
      * @return ViewModel
@@ -120,12 +126,14 @@ class DoaManagerController extends AffiliationAbstractController implements
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
-             * Send the email tot he office
+            /*
+             * Send the email to the receiving user
              */
+            $receiver = $this->getContactService()->findEntityById('contact', $form->getData()['receiver']);
+
             $email = $this->getEmailService()->create();
             $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
-            $email->addTo($this->zfcUserAuthentication()->getIdentity());
+            $email->addTo($receiver);
             $email->setSubject(
                 str_replace(
                     ['[project]'],
@@ -135,12 +143,29 @@ class DoaManagerController extends AffiliationAbstractController implements
             );
 
             $email->setHtmlLayoutName('signature_twig');
-            $email->setReceiver(
-                $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getDisplayName()
-            );
+            $email->setReceiver($receiver->getDisplayName());
             $email->setOrganisation($affiliationService->getAffiliation()->getOrganisation());
             $email->setProject($affiliationService->getAffiliation()->getProject());
             $email->setMessage($form->getData()['message']);
+
+            /**
+             * Create the deeplink in the email
+             * @var $target Target
+             */
+            $target = $this->getDeeplinkService()->findEntityById('target', $data['deeplinkTarget']);
+            //Create a deeplink for the user which redirects to the profile-page
+            $deeplink = $this->getDeeplinkService()->createDeeplink(
+                $target,
+                $receiver,
+                null,
+                $affiliationService->getAffiliation()->getId()
+            );
+
+            /**
+             * @var $deeplinkLink DeeplinkLink
+             */
+            $deeplinkLink = $this->getServiceLocator()->get('viewhelpermanager')->get('deeplinkLink');
+            $email->setDeeplink($deeplinkLink($deeplink, 'view', 'link'));
 
             $this->getEmailService()->send();
 
@@ -156,14 +181,14 @@ class DoaManagerController extends AffiliationAbstractController implements
 
             $this->flashMessenger()->setNamespace('success')->addMessage(
                 sprintf(
-                    _("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                    $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
                     $affiliationService->getAffiliation()->getOrganisation(),
                     $affiliationService->getAffiliation()->getProject(),
                     $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()
                 )
             );
 
-            return $this->redirect()->toRoute('zfcadmin/affiliation-manager/doa/missing');
+            return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
         }
 
         return new ViewModel(
@@ -230,13 +255,13 @@ class DoaManagerController extends AffiliationAbstractController implements
         $form->get('doa')->get('contact')->setValueOptions($this->getContactService()->toFormValueOptions());
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
-             * @var $doa Doa
+            /*
+             * @var Doa
              */
             $doa = $form->getData();
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation-manager/doa/view',
+                    'zfcadmin/affiliation/doa/view',
                     ['id' => $doa->getId()]
                 );
             }
@@ -244,7 +269,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             if (isset($data['delete'])) {
                 $this->flashMessenger()->setNamespace('success')->addMessage(
                     sprintf(
-                        _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
+                        $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
                         $doa->getAffiliation()->getOrganisation(),
                         $doa->getAffiliation()->getProject()
                     )
@@ -252,13 +277,13 @@ class DoaManagerController extends AffiliationAbstractController implements
 
                 $this->getDoaService()->removeEntity($doa);
 
-                return $this->redirect()->toRoute('zfcadmin/affiliation-manager/doa/list');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/doa/list');
             }
 
             $fileData = $this->params()->fromFiles();
 
             if ($fileData['doa']['file']['error'] === 0) {
-                /**
+                /*
                  * Replace the content of the object
                  */
                 if (!$doa->getObject()->isEmpty()) {
@@ -290,7 +315,7 @@ class DoaManagerController extends AffiliationAbstractController implements
             );
 
             return $this->redirect()->toRoute(
-                'zfcadmin/affiliation-manager/doa/view',
+                'zfcadmin/affiliation/doa/view',
                 ['id' => $doa->getId()]
             );
         }
@@ -304,7 +329,7 @@ class DoaManagerController extends AffiliationAbstractController implements
     }
 
     /**
-     * Dedicated action to approve DOAs via an AJAX call
+     * Dedicated action to approve DOAs via an AJAX call.
      *
      * @return JsonModel
      */
@@ -332,8 +357,8 @@ class DoaManagerController extends AffiliationAbstractController implements
             );
         }
 
-        /**
-         * @var $doa Doa
+        /*
+         * @var Doa
          */
         $doa = $this->getAffiliationService()->findEntityById('Doa', $doa);
         $doa->setContact($this->getContactService()->setContactId($contact)->getContact());

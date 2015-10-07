@@ -1,25 +1,26 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Navigation\Factory;
 
 use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Affiliation\Service\AffiliationService;
+use Project\Service\ReportService;
 use Zend\Navigation\Navigation;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * NodeService
+ * NodeService.
  *
  * this is a wrapper for node entity related services
- *
  */
 class AffiliationNavigationServiceFactory implements FactoryInterface
 {
@@ -33,20 +34,21 @@ class AffiliationNavigationServiceFactory implements FactoryInterface
         $affiliationNavigationService = new AffiliationNavigationService();
         $affiliationNavigationService->setTranslator($serviceLocator->get('viewhelpermanager')->get('translate'));
         /**
-         * @var $affiliationService AffiliationService
+         * @var AffiliationService $affiliationService
          */
         $affiliationService = $serviceLocator->get(AffiliationService::class);
         $affiliationNavigationService->setAffiliationService($affiliationService);
         /**
-         * @var $affiliationService AffiliationService
+         * @var ReportService $reportService
          */
-        $affiliationService = $serviceLocator->get(AffiliationService::class);
-        $affiliationNavigationService->setAffiliationService($affiliationService);
+        $reportService = $serviceLocator->get(ReportService::class);
+        $affiliationNavigationService->setReportService($reportService);
+
         $application = $serviceLocator->get('application');
         $affiliationNavigationService->setRouteMatch($application->getMvcEvent()->getRouteMatch());
         $affiliationNavigationService->setRouter($application->getMvcEvent()->getRouter());
         /**
-         * @var $navigation Navigation
+         * @var Navigation $navigation
          */
         $navigation = $serviceLocator->get('navigation');
         $affiliationNavigationService->setNavigation($navigation);

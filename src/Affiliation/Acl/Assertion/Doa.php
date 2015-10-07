@@ -1,13 +1,13 @@
 <?php
 /**
- * Debranova copyright message placeholder
+ * Debranova copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Acl
- * @subpackage  Assertion
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 Debranova
  */
+
 namespace Affiliation\Acl\Assertion;
 
 use Admin\Entity\Access;
@@ -17,14 +17,14 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
 use Zend\Permissions\Acl\Role\RoleInterface;
 
 /**
- * Class Affiliation
- * @package Affiliation\Acl\Assertion
- * @var object $routeMatch
+ * Class Affiliation.
+ *
+ * @var object
  */
 class Doa extends AssertionAbstract
 {
     /**
-     * Returns true if and only if the assertion conditions are met
+     * Returns true if and only if the assertion conditions are met.
      *
      * This method is passed the ACL, Role, Resource, and privilege to which the authorization query applies. If the
      * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
@@ -40,22 +40,22 @@ class Doa extends AssertionAbstract
     public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $resource = null, $privilege = null)
     {
         $id = $this->getRouteMatch()->getParam('id');
-        /**
+        /*
          * When the privilege is_null (not given by the isAllowed helper), get it from the routeMatch
          */
         if (is_null($privilege)) {
             $privilege = $this->getRouteMatch()->getParam('privilege');
         }
         if (!$resource instanceof DoaEntity && !is_null($id)) {
-            /**
-             * @var $resource DoaEntity
+            /*
+             * @var DoaEntity
              */
             $resource = $this->getAffiliationService()->findEntityById('Doa', $id);
         }
 
         switch ($privilege) {
             case 'upload':
-                /**
+                /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  * The affiliation can already be known, but if not grab it from the routeMatch
                  */
@@ -64,7 +64,7 @@ class Doa extends AssertionAbstract
                     $affiliation = $resource->getAffiliation();
                 }
                 if (is_null($affiliation)) {
-                    /**
+                    /*
                      * The id can originate from two different params
                      */
                     if (!is_null($this->getRouteMatch()->getParam('id'))) {
@@ -77,7 +77,7 @@ class Doa extends AssertionAbstract
 
                 return $this->getAffiliationAssert()->assert($acl, $role, $affiliation, 'edit-community');
             case 'replace':
-                /**
+                /*
                  * For the replace we need to see if the user has access on the editing of the affiliation
                  * and the acl should not be approved
                  */
@@ -85,7 +85,7 @@ class Doa extends AssertionAbstract
                 return is_null($resource->getDateApproved()) &&
                 $this->getAffiliationAssert()->assert($acl, $role, $resource->getAffiliation(), 'edit-community');
             case 'render':
-                /**
+                /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
                 if (!is_null($this->getRouteMatch()->getParam('id'))) {

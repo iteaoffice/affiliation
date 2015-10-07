@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Project
- * @package     Form
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
 use Zend\Form\Form;
@@ -20,13 +21,14 @@ use Zend\Validator\File\Size;
 class UploadLoi extends Form implements InputFilterProviderInterface
 {
     /**
-     * Class constructor
+     * Class constructor.
      */
     public function __construct()
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
+        $this->setAttribute('action', '');
         $this->setAttribute('enctype', 'multipart/form-data');
         $this->add(
             [
@@ -84,7 +86,7 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                         ]
                     ),
                 ],
-            ]
+            ],
         ];
     }
 }

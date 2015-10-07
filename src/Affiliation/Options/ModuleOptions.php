@@ -1,9 +1,10 @@
 <?php
+
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Options
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
@@ -12,28 +13,41 @@ namespace Affiliation\Options;
 use Zend\Stdlib\AbstractOptions;
 
 /**
- * Class ModuleOptions
- * @package Affiliation\Options
+ * Class ModuleOptions.
  */
 class ModuleOptions extends AbstractOptions implements
     AffiliationOptionsInterface
 {
     /**
-     * Turn off strict options mode
+     * Turn off strict options mode.
      */
     protected $__strictMode__ = false;
     /**
-     * Location of the PDF having the DOA template
+     * Location of the PDF having the DOA template.
      *
      * @var string
      */
     protected $doaTemplate = '';
     /**
-     * Location of the PDF having the LOI template
+     * Location of the PDF having the LOI template.
      *
      * @var string
      */
     protected $loiTemplate = '';
+    /**
+     * Location of the PDF having the payment sheet
+     *
+     * @var string
+     */
+    protected $paymentSheetTemplate = '';
+
+    /**
+     * @return string
+     */
+    public function getDoaTemplate()
+    {
+        return $this->doaTemplate;
+    }
 
     /**
      * @param $doaTemplate
@@ -50,9 +64,9 @@ class ModuleOptions extends AbstractOptions implements
     /**
      * @return string
      */
-    public function getDoaTemplate()
+    public function getLoiTemplate()
     {
-        return $this->doaTemplate;
+        return $this->loiTemplate;
     }
 
     /**
@@ -70,8 +84,19 @@ class ModuleOptions extends AbstractOptions implements
     /**
      * @return string
      */
-    public function getLoiTemplate()
+    public function getPaymentSheetTemplate()
     {
-        return $this->loiTemplate;
+        return $this->paymentSheetTemplate;
+    }
+
+    /**
+     * @param  string        $paymentSheetTemplate
+     * @return ModuleOptions
+     */
+    public function setPaymentSheetTemplate($paymentSheetTemplate)
+    {
+        $this->paymentSheetTemplate = $paymentSheetTemplate;
+
+        return $this;
     }
 }

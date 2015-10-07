@@ -1,14 +1,18 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Controller;
 
+use Affiliation\Controller\Plugin\RenderDoa;
+use Affiliation\Controller\Plugin\RenderLoi;
+use Affiliation\Controller\Plugin\RenderPaymentSheet;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Affiliation\Service\ConfigAwareInterface;
@@ -17,12 +21,16 @@ use Affiliation\Service\FormService;
 use Affiliation\Service\FormServiceAwareInterface;
 use Affiliation\Service\LoiService;
 use Contact\Service\ContactService;
+use Deeplink\Service\DeeplinkService;
 use General\Service\EmailService;
 use General\Service\GeneralService;
+use Invoice\Service\InvoiceService;
 use Mailing\Service\MailingService;
 use Organisation\Service\OrganisationService;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
+use Project\Service\ReportService;
+use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
@@ -30,10 +38,13 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 /**
  * @category    Affiliation
- * @package     Controller
+ *
  * @method      ZfcUserAuthentication zfcUserAuthentication()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
+ * @method       RenderPaymentSheet renderPaymentSheet()
+ * @method       RenderDoa renderDoa()
+ * @method       RenderLoi enderLoi()
  */
 abstract class AffiliationAbstractController extends AbstractActionController implements
     AffiliationServiceAwareInterface,
@@ -49,6 +60,14 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      */
     protected $affiliationService;
     /**
+     * @var InvoiceService
+     */
+    protected $invoiceService;
+    /**
+     * @var DeeplinkService
+     */
+    protected $deeplinkService;
+    /**
      * @var OrganisationService
      */
     protected $organisationService;
@@ -56,6 +75,14 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      * @var ProjectService
      */
     protected $projectService;
+    /**
+     * @var ReportService
+     */
+    protected $reportService;
+    /**
+     * @var VersionService
+     */
+    protected $versionService;
     /**
      * @var WorkpackageService
      */
@@ -158,7 +185,7 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      */
     public function getContactService()
     {
-        return $this->contactService;
+        return clone $this->contactService;
     }
 
     /**
@@ -349,6 +376,99 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     public function setEmailService(EmailService $emailService)
     {
         $this->emailService = $emailService;
+
+        return $this;
+    }
+
+    /**
+     * Proxy for the flash messenger helper to have the string translated earlier.
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    protected function translate($string)
+    {
+        /*
+         * @var Translate
+         */
+        $translate = $this->getServiceLocator()->get('ViewHelperManager')->get('translate');
+
+        return $translate($string);
+    }
+
+    /**
+     * @return DeeplinkService
+     */
+    public function getDeeplinkService()
+    {
+        return $this->deeplinkService;
+    }
+
+    /**
+     * @param  DeeplinkService               $deeplinkService
+     * @return AffiliationAbstractController
+     */
+    public function setDeeplinkService(DeeplinkService $deeplinkService)
+    {
+        $this->deeplinkService = $deeplinkService;
+
+        return $this;
+    }
+
+    /**
+     * @return VersionService
+     */
+    public function getVersionService()
+    {
+        return $this->versionService;
+    }
+
+    /**
+     * @param  VersionService                $versionService
+     * @return AffiliationAbstractController
+     */
+    public function setVersionService(VersionService $versionService)
+    {
+        $this->versionService = $versionService;
+
+        return $this;
+    }
+
+    /**
+     * @return InvoiceService
+     */
+    public function getInvoiceService()
+    {
+        return $this->invoiceService;
+    }
+
+    /**
+     * @param  InvoiceService                $invoiceService
+     * @return AffiliationAbstractController
+     */
+    public function setInvoiceService(InvoiceService $invoiceService)
+    {
+        $this->invoiceService = $invoiceService;
+
+        return $this;
+    }
+
+    /**
+     * @return ReportService
+     */
+    public function getReportService()
+    {
+        return $this->reportService;
+    }
+
+    /**
+     * @param  ReportService                 $reportService
+     * @return AffiliationAbstractController
+     */
+    public function setReportService(ReportService $reportService)
+    {
+        $this->reportService = $reportService;
 
         return $this;
     }

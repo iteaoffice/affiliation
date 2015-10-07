@@ -1,25 +1,27 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Loi
- * @package     Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Loi;
+use Doctrine\Common\Collections\ArrayCollection;
+use Organisation\Entity\Organisation;
 
 /**
- * LoiService
+ * LoiService.
  *
  * this is a generic wrapper service for all the other services
  *
  * First parameter of all methods (lowercase, underscore_separated)
  * will be used to fetch the correct model service, one exception is the 'linkModel'
  * method.
- *
  */
 class LoiService extends ServiceAbstract
 {
@@ -49,13 +51,23 @@ class LoiService extends ServiceAbstract
     }
 
     /**
-     * Get a list of not approved lois
+     * Get a list of not approved lois.
      *
-     * @return Loi[]
+     * @return Loi[]|ArrayCollection
      */
     public function findNotApprovedLoi()
     {
-        return $this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findNotApprovedLoi();
+        return new ArrayCollection($this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findNotApprovedLoi());
+    }
+
+    /**
+     * Get a list Loi's by organisation
+     *
+     * @return Loi[]
+     */
+    public function findLoiByOrganisation(Organisation $organisation)
+    {
+        return $this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findLoiByOrganisation($organisation);
     }
 
     /**

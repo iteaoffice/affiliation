@@ -1,14 +1,16 @@
 <?php
 /**
- * Japaveh Webdesign copyright message placeholder
+ * Japaveh Webdesign copyright message placeholder.
  *
  * @category    Admin
- * @package     Controller
+ *
  * @author      Johan van der Heide <info@japaveh.nl>
  * @copyright   2004-2014 Japaveh Webdesign
  * @license     http://solodb.net/license.txt proprietary
+ *
  * @link        http://solodb.net
  */
+
 namespace Affiliation\Controller;
 
 use Affiliation\Service\AffiliationService;
@@ -24,13 +26,14 @@ use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Japaveh Webdesign copyright message placeholder
+ * Japaveh Webdesign copyright message placeholder.
  *
  * @category    Admin
- * @package     Controller
+ *
  * @author      Johan van der Heide <info@japaveh.nl>
  * @copyright   2004-2014 Japaveh Webdesign
  * @license     http://solodb.net/license.txt proprietary
+ *
  * @link        http://solodb.net
  */
 class ControllerInitializer implements InitializerInterface
@@ -38,8 +41,6 @@ class ControllerInitializer implements InitializerInterface
     /**
      * @param                                           $instance
      * @param ServiceLocatorInterface|ControllerManager $controllerManager
-     *
-     * @return void
      */
     public function initialize($instance, ServiceLocatorInterface $controllerManager)
     {
@@ -52,11 +53,11 @@ class ControllerInitializer implements InitializerInterface
             DoaServiceAwareInterface::class         => DoaService::class,
             LoiServiceAwareInterface::class         => LoiService::class,
         ];
-        /**
+        /*
          * @var $controllerManager ControllerManager
          */
         $sm = $controllerManager->getServiceLocator();
-        /**
+        /*
          * Go over each interface to see if we should add an interface
          */
         foreach (class_implements($instance) as $interface) {

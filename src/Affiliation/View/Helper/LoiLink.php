@@ -1,14 +1,14 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Loi as LoiAssertion;
@@ -16,11 +16,9 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Loi;
 
 /**
- * Create a link to an loi
+ * Create a link to an loi.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
  */
 class LoiLink extends LinkAbstract
 {
@@ -34,9 +32,9 @@ class LoiLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Loi         $loi
-     * @param string      $action
-     * @param string      $show
+     * @param Loi $loi
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string
@@ -47,7 +45,7 @@ class LoiLink extends LinkAbstract
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
-        /**
+        /*
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
@@ -74,7 +72,7 @@ class LoiLink extends LinkAbstract
     }
 
     /**
-     * Extract the relevant parameters based on the action
+     * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
      */
@@ -122,19 +120,19 @@ class LoiLink extends LinkAbstract
                 );
                 break;
             case 'remind-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/remind');
+                $this->setRouter('zfcadmin/affiliation/loi/remind');
                 $this->setText($this->translate("txt-send-reminder"));
                 break;
             case 'approval-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/approval');
+                $this->setRouter('zfcadmin/affiliation/loi/approval');
                 $this->setText($this->translate("txt-approval-loi"));
                 break;
             case 'missing-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/missing');
+                $this->setRouter('zfcadmin/affiliation/loi/missing');
                 $this->setText($this->translate("txt-missing-loi"));
                 break;
             case 'reminders-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/reminders');
+                $this->setRouter('zfcadmin/affiliation/loi/reminders');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-see-reminders-%s-sent"),
@@ -143,7 +141,7 @@ class LoiLink extends LinkAbstract
                 );
                 break;
             case 'view-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/view');
+                $this->setRouter('zfcadmin/affiliation/loi/view');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-view-loi-for-organisation-%s-in-project-%s-link-title"),
@@ -153,7 +151,7 @@ class LoiLink extends LinkAbstract
                 );
                 break;
             case 'edit-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/loi/edit');
+                $this->setRouter('zfcadmin/affiliation/loi/edit');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-edit-loi-for-organisation-%s-in-project-%s-link-title"),
@@ -205,7 +203,7 @@ class LoiLink extends LinkAbstract
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
-        /**
+        /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
         if (!is_null($affiliation)) {

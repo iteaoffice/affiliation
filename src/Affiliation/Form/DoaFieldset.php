@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category  Content
- * @package   Form
+ *
  * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity;
@@ -19,8 +20,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Validator\File\Size;
 
 /**
- * Class DoaFieldset
- * @package Affiliation\Form
+ * Class DoaFieldset.
  */
 class DoaFieldset extends Fieldset implements InputFilterProviderInterface
 {
@@ -34,11 +34,11 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
         $doctrineHydrator = new DoctrineHydrator($entityManager, 'Affiliation\Entity\Doa');
         $this->setHydrator($doctrineHydrator)->setObject($doa);
         $builder = new AnnotationBuilder();
-        /**
+        /*
          * Go over the different form elements and add them to the form
          */
         foreach ($builder->createForm($doa)->getElements() as $element) {
-            /**
+            /*
              * Go over each element to add the objectManager to the EntitySelect
              */
             if ($element instanceof EntitySelect) {
@@ -112,7 +112,7 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
                         ]
                     ),
                 ],
-            ]
+            ],
         ];
     }
 }

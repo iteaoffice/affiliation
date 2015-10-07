@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Entity
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +16,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 
 /**
- * Entity for the Affiliation
+ * Entity for the Affiliation.
  *
  * @ORM\Table(name="affiliation_version")
  * @ORM\Entity
@@ -23,7 +24,6 @@ use Zend\InputFilter\InputFilterInterface;
  * @Annotation\Name("affiliation_version")
  *
  * @category    Affiliation
- * @package     Entity
  */
 class Version extends EntityAbstract
 {
@@ -40,7 +40,8 @@ class Version extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
-     * @var \Contact\Entity\Contact
+     *
+     * @var Affiliation
      */
     private $affiliation;
     /**
@@ -48,6 +49,7 @@ class Version extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * })
+     *
      * @var \Contact\Entity\Contact
      */
     private $contact;
@@ -56,16 +58,19 @@ class Version extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
      * })
+     *
      * @var \Project\Entity\Version\Version
      */
     private $version;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Version", cascade={"persist","remove"},  mappedBy="affiliationVersion")
+     *
      * @var \Project\Entity\Cost\Version
      */
     private $costVersion;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Version", cascade={"persist","remove"}, mappedBy="affiliationVersion")
+     *
      * @var \Project\Entity\Effort\Version
      */
     private $effortVersion;
@@ -83,8 +88,6 @@ class Version extends EntityAbstract
     /**
      * @param $property
      * @param $value
-     *
-     * @return void
      */
     public function __set($property, $value)
     {
@@ -94,7 +97,6 @@ class Version extends EntityAbstract
     /**
      * @param InputFilterInterface $inputFilter
      *
-     * @return void
      * @throws \Exception
      */
     public function setInputFilter(InputFilterInterface $inputFilter)
@@ -116,7 +118,8 @@ class Version extends EntityAbstract
     }
 
     /**
-     * Needed for the hydration of form elements
+     * Needed for the hydration of form elements.
+     *
      * @return array
      */
     public function getArrayCopy()
@@ -133,7 +136,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param \Contact\Entity\Contact $affiliation
+     * @param Affiliation $affiliation
      */
     public function setAffiliation($affiliation)
     {
@@ -141,7 +144,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @return Affiliation
      */
     public function getAffiliation()
     {

@@ -1,20 +1,21 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Project
- * @package     Form
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
+use Deeplink\Entity\Target;
+use DoctrineORMModule\Form\Element\EntitySelect;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
-use DoctrineORMModule\Form\Element\EntitySelect;
-use Deeplink\Entity\Target;
 
 /**
  *
@@ -31,6 +32,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
     ) {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
         $contactService->findContactsInAffiliation($affiliation);
@@ -85,7 +87,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                     'object_manager'  => $contactService->getEntityManager(),
                     'target_class'    => "Deeplink\Entity\Target",
                     'find_method'     => [
-                        'name'   => 'findBy',
+                        'name'   => 'findTargetsWithRoute',
                         'params' => [
                             'criteria' => [],
                             'orderBy'  => [

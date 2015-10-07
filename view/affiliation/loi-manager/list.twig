@@ -49,7 +49,7 @@
         var loiId = btn.attr('rel');
 
         $.ajax({
-            url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation-manager/loi/approve') }}',
+            url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation/loi/approve') }}',
             type: 'post',
             dataType: 'json',
             data: {

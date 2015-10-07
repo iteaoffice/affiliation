@@ -1,13 +1,14 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Service;
 
 use Zend\Form;
@@ -41,9 +42,9 @@ class FormService implements ServiceLocatorAwareInterface
         if (!$entity) {
             $entity = $this->getAffiliationService()->getEntity($className);
         }
-        $formName = 'affiliation_'.$entity->get('underscore_entity_name').'_form';
+        $formName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form';
         $form = $this->getServiceLocator()->get($formName);
-        $filterName = 'affiliation_'.$entity->get('underscore_entity_name').'_form_filter';
+        $filterName = 'affiliation_' . $entity->get('underscore_entity_name') . '_form_filter';
         $filter = $this->getServiceLocator()->get($filterName);
         $form->setInputFilter($filter);
         if ($bind) {
@@ -91,7 +92,7 @@ class FormService implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Set the service locator
+     * Set the service locator.
      *
      * @param ServiceLocatorInterface $serviceLocator
      */
@@ -101,7 +102,7 @@ class FormService implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Get the service locator
+     * Get the service locator.
      *
      * @return ServiceLocatorInterface
      */

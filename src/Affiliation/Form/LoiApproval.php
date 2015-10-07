@@ -1,16 +1,17 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Project
- * @package     Form
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
-use Affiliation\Entity\Loi;
 use Contact\Service\ContactService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -21,20 +22,21 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class LoiApproval extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Loi[]          $lois
-     * @param ContactService $contactService
+     * @param ArrayCollection $lois
+     * @param ContactService  $contactService
      */
-    public function __construct(array $lois, ContactService $contactService)
+    public function __construct(ArrayCollection $lois, ContactService $contactService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-        /**
+        /*
          * Create a fieldSet per LOI (and affiliation)
          */
         foreach ($lois as $loi) {
-            $affiliationFieldset = new Fieldset('affiliation_'.$loi->getAffiliation()->getId());
+            $affiliationFieldset = new Fieldset('affiliation_' . $loi->getAffiliation()->getId());
 
             $contactService->findContactsInAffiliation($loi->getAffiliation());
             $affiliationFieldset->add(
@@ -47,7 +49,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                     ],
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'contact-'.$loi->getId(),
+                        'id'       => 'contact-' . $loi->getId(),
                         'required' => true,
                     ],
                 ]
@@ -59,7 +61,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',
-                        'id'       => 'dateSigned-'.$loi->getId(),
+                        'id'       => 'dateSigned-' . $loi->getId(),
                         'required' => true,
                     ],
                 ]

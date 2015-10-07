@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Project
- * @package     Form
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
 use Affiliation\Service\AffiliationService;
@@ -27,13 +28,14 @@ class AddAssociate extends Form implements InputFilterProviderInterface
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
         $contacts = [];
         foreach ($contactService->findContactsInOrganisation(
             $affiliationService->getAffiliation()->getOrganisation()
         ) as $contact) {
-            $contacts[$contact->getId()] = $contact->getDisplayName();
+            $contacts[$contact->getId()] = $contact->getFormName();
         }
 
         $this->add(
@@ -84,7 +86,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
         return [
             'contact' => [
                 'required' => true,
-            ]
+            ],
         ];
     }
 }

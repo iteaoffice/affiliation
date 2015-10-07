@@ -1,19 +1,27 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Project
- * @package     View
- * @subpackage  Helper
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\View\Helper;
 
+use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\EntityAbstract;
+use Affiliation\Service\AffiliationService;
 use BjyAuthorize\Controller\Plugin\IsAllowed;
 use BjyAuthorize\Service\Authorize;
+use Contact\Entity\Contact;
+use Contact\Service\ContactService;
+use Invoice\Service\InvoiceService;
+use Organisation\Service\OrganisationService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -23,8 +31,7 @@ use Zend\View\Helper\Url;
 use Zend\View\HelperPluginManager;
 
 /**
- * Class LinkAbstract
- * @package Affiliation\View\Helper
+ * Class LinkAbstract.
  */
 abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwareInterface
 {
@@ -53,9 +60,21 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      */
     protected $show;
     /**
+     * @var int
+     */
+    protected $year;
+    /**
+     * @var int
+     */
+    protected $period;
+    /**
      * @var string
      */
     protected $alternativeShow;
+    /**
+     * @var array List of parameters needed to construct the URL from the router
+     */
+    protected $fragment = null;
     /**
      * @var array List of parameters needed to construct the URL from the router
      */
@@ -72,9 +91,17 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      * @var array
      */
     protected $showOptions = [];
+    /**
+     * @var Contact
+     */
+    protected $contact;
+    /**
+     * @var Affiliation
+     */
+    protected $affiliation;
 
     /**
-     * This function produces the link in the end
+     * This function produces the link in the end.
      *
      * @return string
      */
@@ -93,16 +120,23 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
         $this->parseAction();
         $this->parseShow();
         if ('social' === $this->getShow()) {
-            return $serverUrl->__invoke().$url($this->router, $this->routerParams);
+            return $serverUrl->__invoke() . $url($this->router, $this->routerParams);
         }
         $uri = '<a href="%s" title="%s" class="%s">%s</a>';
 
         return sprintf(
             $uri,
-            $serverUrl().$url($this->router, $this->routerParams),
-            $this->text,
+            $serverUrl() . $url(
+                $this->router,
+                $this->routerParams,
+                is_null($this->getFragment()) ?: ['fragment' => $this->getFragment()]
+            ),
+            htmlentities($this->text),
             implode(' ', $this->classes),
-            implode('', $this->linkContent)
+            in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode(
+                '',
+                $this->linkContent
+            ) : htmlentities(implode('', $this->linkContent))
         );
     }
 
@@ -127,11 +161,17 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                     case 'edit-description':
                     case 'edit-community':
                     case 'edit-financial':
+                    case 'update-effort-spent':
+                    case 'edit-admin':
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
                         break;
                     case 'download':
                         $this->addLinkContent('<i class="fa fa-download"></i>');
                         break;
+                    case 'payment-sheet-pdf':
+                        $this->addLinkContent('<i class="fa fa-file-pdf-o"></i>');
+                        break;
+
                     case 'replace':
                         $this->addLinkContent('<span class="glyphicon glyphicon-repeat"></span>');
                         break;
@@ -140,7 +180,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                         break;
                 }
                 if ($this->getShow() === 'button') {
-                    $this->addLinkContent(' '.$this->getText());
+                    $this->addLinkContent(' ' . $this->getText());
                     $this->addClasses("btn btn-primary");
                 }
                 break;
@@ -157,7 +197,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
                 $this->addLinkContent($this->getAlternativeShow());
                 break;
             case 'social':
-                /**
+                /*
                  * Social is treated in the createLink function, no content needs to be created
                  */
 
@@ -286,8 +326,8 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param EntityAbstract $entity
-     * @param string         $assertion
-     * @param string         $action
+     * @param string $assertion
+     * @param string $action
      *
      * @return bool
      */
@@ -349,7 +389,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * @param null|EntityAbstract $resource
-     * @param string              $privilege
+     * @param string $privilege
      *
      * @return bool
      */
@@ -364,11 +404,11 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     }
 
     /**
-     * Add a parameter to the list of parameters for the router
+     * Add a parameter to the list of parameters for the router.
      *
      * @param string $key
      * @param        $value
-     * @param bool   $allowNull
+     * @param bool $allowNull
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {
@@ -406,7 +446,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
 
     /**
      * RouteInterface match returned by the router.
-     * Use a test on is_null to have the possibility to overrule the serviceLocator lookup for unit tets reasons
+     * Use a test on is_null to have the possibility to overrule the serviceLocator lookup for unit tets reasons.
      *
      * @return RouteMatch.
      */
@@ -417,6 +457,54 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
         }
 
         return $this->routeMatch;
+    }
+
+    /**
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->getServiceLocator()->get(ProjectService::class);
+    }
+
+    /**
+     * @return AffiliationService
+     */
+    public function getAffiliationService()
+    {
+        return $this->getServiceLocator()->get(AffiliationService::class);
+    }
+
+    /**
+     * @return VersionService
+     */
+    public function getVersionService()
+    {
+        return $this->getServiceLocator()->get(VersionService::class);
+    }
+
+    /**
+     * @return ContactService
+     */
+    public function getContactService()
+    {
+        return clone $this->getServiceLocator()->get('contact_contact_service');
+    }
+
+    /**
+     * @return InvoiceService
+     */
+    public function getInvoiceService()
+    {
+        return $this->getServiceLocator()->get(InvoiceService::class);
+    }
+
+    /**
+     * @return OrganisationService
+     */
+    public function getOrganisationService()
+    {
+        return $this->getServiceLocator()->get(OrganisationService::class);
     }
 
     /**
@@ -435,5 +523,97 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
     public function translate($string)
     {
         return $this->serviceLocator->get('translate')->__invoke($string);
+    }
+
+    /**
+     * @return int
+     */
+    public function getYear()
+    {
+        return $this->year;
+    }
+
+    /**
+     * @param  int $year
+     * @return LinkAbstract
+     */
+    public function setYear($year)
+    {
+        $this->year = $year;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPeriod()
+    {
+        return $this->period;
+    }
+
+    /**
+     * @param  int $period
+     * @return LinkAbstract
+     */
+    public function setPeriod($period)
+    {
+        $this->period = $period;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFragment()
+    {
+        return $this->fragment;
+    }
+
+    /**
+     * @param string $fragment
+     */
+    public function setFragment($fragment)
+    {
+        $this->fragment = $fragment;
+    }
+
+    /**
+     * @return Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param Contact $contact
+     * @return LinkAbstract
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @return LinkAbstract
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
     }
 }

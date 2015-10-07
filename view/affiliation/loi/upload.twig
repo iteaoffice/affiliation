@@ -1,3 +1,5 @@
+{% do headTitle().append(translate("txt-upload-loi-title")) %}
+
 {% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
 
 <h1>{{ translate("txt-upload-loi-for-organisation-%s-for-project-%s")|

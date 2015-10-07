@@ -4,6 +4,7 @@
     <thead>
     <tr>
         <th>{{ translate("txt-organisation") }}</th>
+        <th>{{ translate("txt-organisation-type") }}</th>
         <th>{{ translate("txt-country") }}</th>
         <th>{{ translate("txt-project") }}</th>
         <th>{{ translate("txt-reminders") }}</th>
@@ -14,6 +15,7 @@
     {% for affiliation in affiliation %}
         <tr id="affiliation-{{ affiliation.id }}">
             <td>{{ affiliation }}</td>
+            <td>{{ affiliation.organisation.type }}</td>
             <td>{{ affiliation.organisation.country }}</td>
             <td>{{ affiliation.project }}</td>
             <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}<br>

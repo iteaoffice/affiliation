@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Project
- * @package     Form
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
 use Affiliation\Service\AffiliationService;
@@ -27,6 +28,7 @@ class Financial extends Form
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
         $countries = [];
         foreach ($generalService->findAll('country') as $country) {
@@ -87,7 +89,7 @@ class Financial extends Form
                 ],
             ]
         );
-        /**
+        /*
          * Collect the financial contacts
          */
         $financialContactValueOptions = [];

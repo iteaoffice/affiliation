@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Controller;
 
 use Affiliation\Entity;
@@ -18,12 +19,11 @@ use Zend\View\Model\ViewModel;
 
 /**
  * @category    Affiliation
- * @package     Controller
  */
 class LoiController extends AffiliationAbstractController implements GeneralServiceAwareInterface
 {
     /**
-     * Upload the LOI for a project (based on the affiliation)
+     * Upload the LOI for a project (based on the affiliation).
      *
      * @return ViewModel
      */
@@ -89,9 +89,10 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
     }
 
     /**
-     * Action to replace an mis-uploaded LoI
+     * Action to replace an mis-uploaded LoI.
      *
      * @return ViewModel
+     *
      * @throws \Zend\Form\Exception\InvalidArgumentException
      * @throws \InvalidArgumentException
      * @throws \Zend\Mvc\Exception\DomainException
@@ -99,8 +100,8 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
      */
     public function replaceAction()
     {
-        /**
-         * @var $loi Loi
+        /*
+         * @var Loi
          */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
@@ -128,7 +129,7 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
 
             if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
-                /**
+                /*
                  * Remove the current entity
                  */
                 foreach ($loi->getObject() as $object) {
@@ -186,12 +187,12 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         $renderProjectLoi = $this->renderLoi()->renderProjectLoi($programLoi);
         $response = $this->getResponse();
         $response->getHeaders()
-            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
             ->addHeaderLine("Pragma: public")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="'.$programLoi->parseFileName().'.pdf"'
+                'attachment; filename="' . $programLoi->parseFileName() . '.pdf"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderProjectLoi->getPDFData()));
@@ -206,8 +207,8 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
     public function downloadAction()
     {
         set_time_limit(0);
-        /**
-         * @var $loi Loi
+        /*
+         * @var Loi
          */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
@@ -216,23 +217,23 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
         if (is_null($loi) || sizeof($loi->getObject()) === 0) {
             return $this->notFoundAction();
         }
-        /**
+        /*
          * Due to the BLOB issue, we treat this as an array and we need to capture the first element
          */
         $object = $loi->getObject()->first()->getObject();
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()
-            ->addHeaderLine('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
+            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="'.$loi->parseFileName().'.'.
-                $loi->getContentType()->getExtension().'"'
+                'attachment; filename="' . $loi->parseFileName() . '.' .
+                $loi->getContentType()->getExtension() . '"'
             )
             ->addHeaderLine("Pragma: public")
-            ->addHeaderLine('Content-Type: '.$loi->getContentType()->getContentType())
-            ->addHeaderLine('Content-Length: '.$loi->getSize());
+            ->addHeaderLine('Content-Type: ' . $loi->getContentType()->getContentType())
+            ->addHeaderLine('Content-Length: ' . $loi->getSize());
 
         return $this->response;
     }

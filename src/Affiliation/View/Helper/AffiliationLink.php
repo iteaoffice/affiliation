@@ -1,25 +1,23 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Entity\Affiliation;
 
 /**
- * Create a link to an affiliation
+ * Create a link to an affiliation.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
  */
 class AffiliationLink extends LinkAbstract
 {
@@ -32,23 +30,37 @@ class AffiliationLink extends LinkAbstract
      * @param Affiliation $affiliation
      * @param             $action
      * @param             $show
+     * @param int $year
+     * @param int $period
+     * @param null $fragment
      *
      * @return string
+     *
      * @throws \RuntimeException
      * @throws \Exception
      */
-    public function __invoke(Affiliation $affiliation = null, $action = 'view', $show = 'name')
-    {
+    public function __invoke(
+        Affiliation $affiliation,
+        $action = 'view',
+        $show = 'name',
+        $year = null,
+        $period = null,
+        $fragment = null
+    ) {
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
-        /**
+        $this->setYear($year);
+        $this->setPeriod($period);
+        $this->setFragment($fragment);
+        /*
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
             [
                 'name'         => $this->getAffiliation(),
                 'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation(),
+                'organisation-branch' => $this->getAffiliation()->parseBranchedName()
             ]
         );
         if (!$this->hasAccess(
@@ -57,17 +69,38 @@ class AffiliationLink extends LinkAbstract
             $this->getAction()
         )
         ) {
-            return $this->getAction() !== 'view-community' ? '' : $this->getAffiliation()->getOrganisation(
-            )->getOrganisation();
+            return $this->getAction() !== 'view-community' ? '' : $this->getAffiliation()->getOrganisation()->getOrganisation();
         }
         $this->addRouterParam('entity', 'Affiliation');
+        $this->addRouterParam('year', $this->getYear());
+        $this->addRouterParam('period', $this->getPeriod());
         $this->addRouterParam('id', $this->getAffiliation()->getId());
 
         return $this->createLink();
     }
 
     /**
-     * Extract the relevant parameters based on the action
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
+        }
+
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
+
+    /**
+     * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
      */
@@ -96,28 +129,38 @@ class AffiliationLink extends LinkAbstract
                     sprintf($this->translate("txt-edit-description-affiliation-%s"), $this->getAffiliation())
                 );
                 break;
+            case 'view-admin':
+                $this->setRouter('zfcadmin/affiliation/view');
+                $this->setText(sprintf($this->translate("txt-view-affiliation-in-admin-%s"), $this->getAffiliation()));
+                break;
+            case 'edit-admin':
+                $this->setRouter('zfcadmin/affiliation/edit');
+                $this->setText(sprintf($this->translate("txt-edit-affiliation-in-admin-%s"), $this->getAffiliation()));
+                break;
+            case 'payment-sheet':
+                $this->setRouter('community/affiliation/payment-sheet');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->getAffiliation(),
+                        $this->getYear(),
+                        $this->getPeriod()
+                    )
+                );
+                break;
+            case 'payment-sheet-pdf':
+                $this->setRouter('community/affiliation/payment-sheet-pdf');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->getAffiliation(),
+                        $this->getPeriod(),
+                        $this->getYear()
+                    )
+                );
+                break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
         }
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
     }
 }

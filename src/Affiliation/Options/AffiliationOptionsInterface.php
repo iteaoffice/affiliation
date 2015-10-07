@@ -1,18 +1,17 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Options
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Options;
 
 /**
- * Interface AffiliationOptionsInterface
- *
- * @package Affiliation\Options
+ * Interface AffiliationOptionsInterface.
  */
 interface AffiliationOptionsInterface
 {
@@ -39,4 +38,15 @@ interface AffiliationOptionsInterface
      * @return string
      */
     public function getLoiTemplate();
+
+    /**
+     * @return string
+     */
+    public function getPaymentSheetTemplate();
+
+    /**
+     * @param  string        $paymentSheetTemplate
+     * @return ModuleOptions
+     */
+    public function setPaymentSheetTemplate($paymentSheetTemplate);
 }

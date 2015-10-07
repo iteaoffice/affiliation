@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Project
- * @package     Form
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Form;
 
 use Affiliation\Service\AffiliationService;
@@ -24,6 +25,7 @@ class Affiliation extends Form
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
+        $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
         $technicalContactValueOptions = [];
         $affiliationValueOptions = [];
@@ -39,7 +41,7 @@ class Affiliation extends Form
                 'options' => $groupOptions,
             ];
         }
-        /**
+        /*
          * Collect the technical contacts
          */
         $technicalContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()] =
@@ -48,7 +50,7 @@ class Affiliation extends Form
             $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         asort($technicalContactValueOptions);
-        /**
+        /*
          * Collect the financial contacts
          * This array starts from the technical contacts
          */
@@ -137,6 +139,7 @@ class Affiliation extends Form
                     'help-block' => _("txt-market-access-inline-help"),
                 ],
                 'attributes' => [
+                    'cols'  => 8,
                     'class' => 'form-control',
                 ],
             ]

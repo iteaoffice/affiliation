@@ -1,14 +1,14 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Doa as DoaAssertion;
@@ -16,11 +16,9 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 
 /**
- * Create a link to an doa
+ * Create a link to an doa.
  *
  * @category    Affiliation
- * @package     View
- * @subpackage  Helper
  */
 class DoaLink extends LinkAbstract
 {
@@ -34,9 +32,9 @@ class DoaLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Doa         $doa
-     * @param string      $action
-     * @param string      $show
+     * @param Doa $doa
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string
@@ -47,7 +45,7 @@ class DoaLink extends LinkAbstract
         $this->setAction($action);
         $this->setShow($show);
         $this->setAffiliation($affiliation);
-        /**
+        /*
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
@@ -74,7 +72,7 @@ class DoaLink extends LinkAbstract
     }
 
     /**
-     * Extract the relevant parameters based on the action
+     * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
      */
@@ -122,19 +120,19 @@ class DoaLink extends LinkAbstract
                 );
                 break;
             case 'approval-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/doa/approval');
+                $this->setRouter('zfcadmin/affiliation/doa/approval');
                 $this->setText($this->translate("txt-approval-doa"));
                 break;
             case 'missing-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/doa/missing');
+                $this->setRouter('zfcadmin/affiliation/doa/missing');
                 $this->setText($this->translate("txt-missing-doa"));
                 break;
             case 'remind-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/doa/remind');
+                $this->setRouter('zfcadmin/affiliation/doa/remind');
                 $this->setText($this->translate("txt-send-reminder"));
                 break;
             case 'reminders-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/doa/reminders');
+                $this->setRouter('zfcadmin/affiliation/doa/reminders');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-see-reminders-%s-sent"),
@@ -143,7 +141,7 @@ class DoaLink extends LinkAbstract
                 );
                 break;
             case 'view-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/doa/view');
+                $this->setRouter('zfcadmin/affiliation/doa/view');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-view-doa-for-organisation-%s-in-project-%s-link-title"),
@@ -153,7 +151,7 @@ class DoaLink extends LinkAbstract
                 );
                 break;
             case 'edit-admin':
-                $this->setRouter('zfcadmin/affiliation-manager/doa/edit');
+                $this->setRouter('zfcadmin/affiliation/doa/edit');
                 $this->setText(
                     sprintf(
                         $this->translate("txt-edit-doa-for-organisation-%s-in-project-%s-link-title"),
@@ -205,7 +203,7 @@ class DoaLink extends LinkAbstract
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
-        /**
+        /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
         if (!is_null($affiliation)) {

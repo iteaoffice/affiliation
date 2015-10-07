@@ -1,19 +1,20 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * PHP Version 5
  *
  * @category    Affiliation
- * @package     Controller
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   2004-2014 ITEA Office
  * @license     http://debranova.org/license.txt proprietary
+ *
  * @link        http://debranova.org
  */
+
 namespace Affiliation\Controller;
 
-use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
 use Affiliation\Entity\LoiReminder as LoiReminderEntity;
 use Affiliation\Form\LoiApproval;
@@ -31,13 +32,14 @@ use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
- * Affiliation controller
+ * Affiliation controller.
  *
  * @category   Affiliation
- * @package    Controller
+ *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright  2004-2014 ITEA Office
  * @license    http://debranova.org/license.txt proprietary
+ *
  * @link       http://debranova.org
  */
 class LoiManagerController extends AffiliationAbstractController implements
@@ -127,7 +129,7 @@ class LoiManagerController extends AffiliationAbstractController implements
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
+            /*
              * Send the email to the reminded user
              */
             $email = $this->getEmailService()->create();
@@ -170,7 +172,7 @@ class LoiManagerController extends AffiliationAbstractController implements
                 )
             );
 
-            return $this->redirect()->toRoute('zfcadmin/affiliation-manager/loi/missing');
+            return $this->redirect()->toRoute('zfcadmin/affiliation/loi/missing');
         }
 
         return new ViewModel(
@@ -236,15 +238,11 @@ class LoiManagerController extends AffiliationAbstractController implements
         $this->getContactService()->findContactsInAffiliation($loiService->getLoi()->getAffiliation());
         $form->get('loi')->get('contact')->setValueOptions($this->getContactService()->toFormValueOptions());
 
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            /**
-             * @var $loi Loi
-             */
-            $loi = $form->getData();
+        if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation-manager/loi/view',
-                    ['id' => $loi->getId()]
+                    'zfcadmin/affiliation/loi/view',
+                    ['id' => $loiService->getLoi()->getId()]
                 );
             }
 
@@ -252,54 +250,62 @@ class LoiManagerController extends AffiliationAbstractController implements
                 $this->flashMessenger()->setNamespace('success')->addMessage(
                     sprintf(
                         _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-removed"),
+                        $loiService->getLoi()->getAffiliation()->getOrganisation(),
+                        $loiService->getLoi()->getAffiliation()->getProject()
+                    )
+                );
+
+                $this->getLoiService()->removeEntity($loiService->getLoi());
+
+                return $this->redirect()->toRoute('zfcadmin/affiliation/loi/list');
+            }
+
+
+            if ($form->isValid()) {
+                /*
+                 * @var Loi
+                 */
+                $loi = $form->getData();
+
+                $fileData = $this->params()->fromFiles();
+
+                if ($fileData['loi']['file']['error'] === 0) {
+                    /*
+                     * Replace the content of the object
+                     */
+                    if (!$loi->getObject()->isEmpty()) {
+                        $loi->getObject()->first()->setObject(file_get_contents($fileData['loi']['file']['tmp_name']));
+                    } else {
+                        $loiObject = new LoiObject();
+                        $loiObject->setObject(file_get_contents($fileData['loi']['file']['tmp_name']));
+                        $loiObject->setLoi($loi);
+                        $this->getLoiService()->newEntity($loiObject);
+                    }
+
+                    //Create a article object element
+                    $fileSizeValidator = new FilesSize(PHP_INT_MAX);
+                    $fileSizeValidator->isValid($fileData['loi']['file']);
+                    $loi->setSize($fileSizeValidator->size);
+                    $loi->setContentType(
+                        $this->getGeneralService()->findContentTypeByContentTypeName($fileData['loi']['file']['type'])
+                    );
+                }
+
+                $this->getLoiService()->updateEntity($loi);
+
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(
+                        _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated"),
                         $loi->getAffiliation()->getOrganisation(),
                         $loi->getAffiliation()->getProject()
                     )
                 );
 
-                $this->getLoiService()->removeEntity($loi);
-
-                return $this->redirect()->toRoute('zfcadmin/affiliation-manager/loi/list');
-            }
-
-            $fileData = $this->params()->fromFiles();
-
-            if ($fileData['loi']['file']['error'] === 0) {
-                /**
-                 * Replace the content of the object
-                 */
-                if (!$loi->getObject()->isEmpty()) {
-                    $loi->getObject()->first()->setObject(file_get_contents($fileData['loi']['file']['tmp_name']));
-                } else {
-                    $loiObject = new LoiObject();
-                    $loiObject->setObject(file_get_contents($fileData['loi']['file']['tmp_name']));
-                    $loiObject->setLoi($loi);
-                    $this->getLoiService()->newEntity($loiObject);
-                }
-
-                //Create a article object element
-                $fileSizeValidator = new FilesSize(PHP_INT_MAX);
-                $fileSizeValidator->isValid($fileData['loi']['file']);
-                $loi->setSize($fileSizeValidator->size);
-                $loi->setContentType(
-                    $this->getGeneralService()->findContentTypeByContentTypeName($fileData['loi']['file']['type'])
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/loi/view',
+                    ['id' => $loi->getId()]
                 );
             }
-
-            $this->getLoiService()->updateEntity($loi);
-
-            $this->flashMessenger()->setNamespace('success')->addMessage(
-                sprintf(
-                    _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated"),
-                    $loi->getAffiliation()->getOrganisation(),
-                    $loi->getAffiliation()->getProject()
-                )
-            );
-
-            return $this->redirect()->toRoute(
-                'zfcadmin/affiliation-manager/loi/view',
-                ['id' => $loi->getId()]
-            );
         }
 
         return new ViewModel(
@@ -310,8 +316,9 @@ class LoiManagerController extends AffiliationAbstractController implements
         );
     }
 
+
     /**
-     * Dedicated action to approve LOIs via an AJAX call
+     * Dedicated action to approve LOIs via an AJAX call.
      *
      * @return JsonModel
      */
@@ -339,8 +346,8 @@ class LoiManagerController extends AffiliationAbstractController implements
             );
         }
 
-        /**
-         * @var $loi Loi
+        /*
+         * @var Loi
          */
         $loi = $this->getAffiliationService()->findEntityById('Loi', $loi);
         $loi->setContact($this->getContactService()->setContactId($contact)->getContact());

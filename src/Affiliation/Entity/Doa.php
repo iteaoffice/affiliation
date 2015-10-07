@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Entity
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +16,7 @@ use Zend\Form\Annotation;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
- * ProjectDoa
+ * ProjectDoa.
  *
  * @ORM\Table(name="project_doa")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Doa")
@@ -27,6 +28,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
+     *
      * @var integer
      */
     private $id;
@@ -35,6 +37,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @Annotation\Type("\Zend\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
+     *
      * @var \DateTime
      */
     private $dateSigned;
@@ -43,6 +46,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @Annotation\Type("\Zend\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
+     *
      * @var \DateTime
      */
     private $dateApproved;
@@ -50,18 +54,21 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="affiliationDoa")
      * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=true)
      * @Annotation\Exclude()
+     *
      * @var \General\Entity\ContentType
      */
     private $contentType;
     /**
      * @ORM\Column(name="size", type="integer", nullable=false, nullable=true)
      * @Annotation\Exclude()
+     *
      * @var integer
      */
     private $size;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist","remove"}, mappedBy="doa")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\DoaObject[]
      */
     private $object;
@@ -69,6 +76,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="date_updated", type="datetime", nullable=true)
      * @Gedmo\Timestampable(on="update")
      * @Annotation\Exclude()
+     *
      * @var \DateTime
      */
     private $dateUpdated;
@@ -76,6 +84,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="date_received", type="date", nullable=true)
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
+     *
      * @var \DateTime
      */
     private $dateCreated;
@@ -85,6 +94,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      *   @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
      * })
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
@@ -94,6 +104,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      *   @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * })
      * @Annotation\Exclude()
+     *
      * @var \Contact\Entity\Contact
      */
     private $contact;
@@ -111,8 +122,6 @@ class Doa extends EntityAbstract implements ResourceInterface
     /**
      * @param $property
      * @param $value
-     *
-     * @return void
      */
     public function __set($property, $value)
     {
@@ -128,7 +137,7 @@ class Doa extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Returns the string identifier of the Resource
+     * Returns the string identifier of the Resource.
      *
      * @return string
      */
@@ -138,7 +147,8 @@ class Doa extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Needed for the hydration of form elements
+     * Needed for the hydration of form elements.
+     *
      * @return array
      */
     public function getArrayCopy()
@@ -155,7 +165,7 @@ class Doa extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Parse a filename
+     * Parse a filename.
      *
      * @return string
      */

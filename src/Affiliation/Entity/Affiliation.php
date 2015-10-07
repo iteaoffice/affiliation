@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Project
- * @package     Entity
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Contact\Entity\Contact;
@@ -20,7 +21,7 @@ use Zend\InputFilter\InputFilterInterface;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
- * Entity for the Affiliation
+ * Entity for the Affiliation.
  *
  * @ORM\Table(name="affiliation")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Affiliation")
@@ -28,23 +29,23 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  * @Annotation\Name("affiliation")
  *
  * @category    Affiliation
- * @package     Entity
  */
 class Affiliation extends EntityAbstract implements ResourceInterface
 {
     /**
-     * Constant for mode = 0 (not self funded)
+     * Constant for mode = 0 (not self funded).
      */
     const NOT_SELF_FUNDED = 0;
     /**
-     * Constant for mode = 1 (self funded)
+     * Constant for mode = 1 (self funded).
      */
     const SELF_FUNDED = 1;
     /**
-     * Templates for the self funded parameter
+     * Templates for the self funded parameter.
+     *
      * @var array
      */
-    protected $selfFundedTemplates = [
+    protected static $selfFundedTemplates = [
         self::NOT_SELF_FUNDED => 'txt-not-self-funded',
         self::SELF_FUNDED     => 'txt-self-funded',
     ];
@@ -53,6 +54,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
+     *
      * @var integer
      */
     private $id;
@@ -60,6 +62,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="branch", type="string", length=40, nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-branch"})
+     *
      * @var string
      */
     private $branch;
@@ -67,6 +70,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="note", type="text", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-note"})
+     *
      * @var string
      */
     private $note;
@@ -74,6 +78,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="value_chain", type="string", length=60, nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-value-chain"})
+     *
      * @var string
      */
     private $valueChain;
@@ -81,6 +86,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="market_access", type="string", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-market-access"})
+     *
      * @var string
      */
     private $marketAccess;
@@ -88,6 +94,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="main_contribution", type="string", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-main-contribution"})
+     *
      * @var string
      */
     private $mainContribution;
@@ -97,6 +104,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @Annotation\Attributes({"array":"selfFundedTemplates"})
      * @Annotation\Attributes({"label":"txt-self-funded"})
      * @Annotation\Required(true)
+     *
      * @var integer
      */
     private $selfFunded;
@@ -104,6 +112,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="date_created", type="datetime", nullable=false)
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
+     *
      * @var \DateTime
      */
     private $dateCreated;
@@ -111,6 +120,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="date_end", type="datetime", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\DateTime")
      * @Annotation\Options({"label":"txt-date-end"})
+     *
      * @var \DateTime
      */
     private $dateEnd;
@@ -118,6 +128,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\Column(name="date_self_funded", type="datetime", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\DateTime")
      * @Annotation\Options({"label":"txt-date-self-funded"})
+     *
      * @var \DateTime
      */
     private $dateSelfFunded;
@@ -140,6 +151,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *      }
      * )
      * @Annotation\Attributes({"label":"txt-project-leader"})
+     *
      * @var \Contact\Entity\Contact
      */
     private $contact;
@@ -149,6 +161,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
      * })
      * @Annotation\Exclude()
+     *
      * @var \Organisation\Entity\Organisation
      */
     private $organisation;
@@ -158,6 +171,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\JoinColumn(name="project_id", referencedColumnName="project_id", nullable=true)
      * })
      * @Annotation\Exclude()
+     *
      * @var \Project\Entity\Project
      */
     private $project;
@@ -182,48 +196,56 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *      }
      * )
      * @Annotation\Attributes({"label":"txt-ict-organisation"})
+     *
      * @var \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
      */
     private $ictOrganisation;
     /**
      * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Description[]|Collections\ArrayCollection()
      */
     private $description;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Financial", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Financial
      */
     private $financial;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Invoice", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
      */
     private $invoice;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\InvoiceCmShare", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\InvoiceCmShare[]|Collections\ArrayCollection()
      */
     private $invoiceCmShare;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\InvoicePostCalc", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
      */
     private $invoicePostCalc;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Log[]|Collections\ArrayCollection()
      */
     private $log;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Version", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Version[]|Collections\ArrayCollection()
      */
     private $version;
@@ -248,42 +270,56 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *      }
      * )
      * @Annotation\Attributes({"label":"txt-associates"})
+     *
      * @var \Contact\Entity\Contact[]|Collections\ArrayCollection()
      */
     private $associate;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
      */
     private $cost;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Project\Entity\Funding\Funding[]|Collections\ArrayCollection()
      */
     private $funding;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
      */
     private $effort;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Spent", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Project\Entity\Effort\Spent[]|Collections\ArrayCollection()
      */
     private $spent;
     /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Report\EffortSpent", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Report\EffortSpent[]|Collections\ArrayCollection()
+     */
+    private $projectReportEffortSpent;
+    /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Loi
      */
     private $loi;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
+     *
      * @var \Affiliation\Entity\Doa
      */
     private $doa;
@@ -291,6 +327,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist"}, mappedBy="affiliation")
      * @ORM\OrderBy=({"DateCreated"="DESC"})
      * @Annotation\Exclude();
+     *
      * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
      */
     private $doaReminder;
@@ -298,12 +335,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist"}, mappedBy="affiliation")
      * @ORM\OrderBy=({"DateCreated"="DESC"})
      * @Annotation\Exclude();
+     *
      * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
      */
     private $loiReminder;
+    /**
+     * @ORM\ManyToMany(targetEntity="Project\Entity\Achievement", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Achievement[]
+     */
+    private $achievement;
 
     /**
-     * Class constructor
+     * Class constructor.
      */
     public function __construct()
     {
@@ -321,7 +366,9 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->spent = new Collections\ArrayCollection();
         $this->doaReminder = new Collections\ArrayCollection();
         $this->loiReminder = new Collections\ArrayCollection();
-        /**
+        $this->achievement = new Collections\ArrayCollection();
+        $this->projectReportEffortSpent = new Collections\ArrayCollection();
+        /*
          * Self-funded is default NOT
          */
         $this->selfFunded = self::NOT_SELF_FUNDED;
@@ -340,8 +387,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @param $property
      * @param $value
-     *
-     * @return void
      */
     public function __set($property, $value)
     {
@@ -349,7 +394,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * ToString
+     * ToString.
+     *
      * @return string
      */
     public function __toString()
@@ -358,7 +404,21 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Returns the string identifier of the Resource
+     * @return string
+     */
+    public function parseBranchedName()
+    {
+        return trim(
+            preg_replace(
+                '/^(([^\~]*)\~\s?)?\s?(.*)$/',
+                '${2}' . $this->getOrganisation()->getOrganisation() . ' ${3}',
+                $this->getBranch()
+            )
+        );
+    }
+
+    /**
+     * Returns the string identifier of the Resource.
      *
      * @return string
      */
@@ -367,18 +427,10 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         return sprintf("%s:%s", __CLASS__, $this->id);
     }
 
-    /**
-     * @return array
-     */
-    public function getSelfFundedTemplates()
-    {
-        return $this->selfFundedTemplates;
-    }
 
     /**
      * @param InputFilterInterface $inputFilter
      *
-     * @return void
      * @throws \Exception
      */
     public function setInputFilter(InputFilterInterface $inputFilter)
@@ -503,7 +555,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Needed for the hydration of form elements
+     * Needed for the hydration of form elements.
+     *
      * @return array
      */
     public function getArrayCopy()
@@ -524,6 +577,15 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @return array
      */
+    public static function getSelfFundedTemplates()
+    {
+        return self::$selfFundedTemplates;
+    }
+
+
+    /**
+     * @return array
+     */
     public function populate()
     {
         return $this->getArrayCopy();
@@ -537,6 +599,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         if (!$this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
+    }
+
+    /**
+     * @param Contact $contact
+     */
+    public function removeAssociate(Contact $contact)
+    {
+        $this->associate->removeElement($contact);
     }
 
     /**
@@ -804,10 +874,15 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @param bool|true $textual
      * @return int
      */
-    public function getSelfFunded()
+    public function getSelfFunded($textual = false)
     {
+        if ($textual) {
+            return self::$selfFundedTemplates[$this->selfFunded];
+        }
+
         return $this->selfFunded;
     }
 
@@ -1017,5 +1092,40 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setLoiReminder($loiReminder)
     {
         $this->loiReminder = $loiReminder;
+    }
+
+    /**
+     * @return \Project\Entity\Achievement[]
+     */
+    public function getAchievement()
+    {
+        return $this->achievement;
+    }
+
+    /**
+     * @param \Project\Entity\Achievement[] $achievement
+     */
+    public function setAchievement($achievement)
+    {
+        $this->achievement = $achievement;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[]
+     */
+    public function getProjectReportEffortSpent()
+    {
+        return $this->projectReportEffortSpent;
+    }
+
+    /**
+     * @param  Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
+     * @return Affiliation
+     */
+    public function setProjectReportEffortSpent($projectReportEffortSpent)
+    {
+        $this->projectReportEffortSpent = $projectReportEffortSpent;
+
+        return $this;
     }
 }

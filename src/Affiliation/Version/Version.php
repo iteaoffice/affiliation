@@ -1,32 +1,33 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Version
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Version;
 
 use Zend\Http;
 use Zend\Json\Json;
 
 /**
- * Class to store and retrieve the version of Project module
+ * Class to store and retrieve the version of Project module.
  */
 final class Version
 {
     /**
-     * Affiliation version identification - see compareVersion()
+     * Affiliation version identification - see compareVersion().
      */
     const VERSION = '1.1.3';
     /**
-     * Github Service Identifier for version information is retrieved from
+     * Github Service Identifier for version information is retrieved from.
      */
     const VERSION_SERVICE_GITHUB = 'GITHUB';
     /**
-     * The latest stable version Affiliation available
+     * The latest stable version Affiliation available.
      *
      * @var string
      */
@@ -46,14 +47,13 @@ final class Version
 
     /**
      * Compare the specified Affiliation version string $version
-     * with the current Zend\Version\Version::VERSION of Project module
+     * with the current Zend\Version\Version::VERSION of Project module.
      *
      * @param string $version A version string (e.g. "0.7.1").
      *
      * @return int -1 if the $version is older,
      *             0 if they are the same,
      *             and +1 if $version is newer.
-     *
      */
     public static function compareVersion($version)
     {
@@ -93,9 +93,9 @@ final class Version
         if (null === $httpClient && !ini_get('allow_url_fopen')) {
             trigger_error(
                 sprintf(
-                    'allow_url_fopen is not set, and no Zend\Http\Client '.
-                    'was passed. You must either set allow_url_fopen in '.
-                    'your PHP configuration or pass a configured '.
+                    'allow_url_fopen is not set, and no Zend\Http\Client ' .
+                    'was passed. You must either set allow_url_fopen in ' .
+                    'your PHP configuration or pass a configured ' .
                     'Zend\Http\Client as the second argument to %s.',
                     __METHOD__
                 ),
@@ -124,7 +124,7 @@ final class Version
     }
 
     /**
-     * Get the latest version from Github
+     * Get the latest version from Github.
      *
      * @param Http\Client $httpClient Configured HTTP client
      *
@@ -136,11 +136,11 @@ final class Version
         $url .= '?client_id=2b1088587b9820f33583&amp;client_secret=1738809f67b3fbf4198f2bc36ef54c52d6a3bb6c';
         if ($httpClient === null) {
             $context = stream_context_create(
-                array(
-                    'http' => array(
+                [
+                    'http' => [
                         'user_agent' => sprintf('debranova-version/%s', self::VERSION),
-                    ),
-                )
+                    ],
+                ]
             );
             $apiResponse = file_get_contents($url, false, $context);
         } else {
@@ -172,7 +172,7 @@ final class Version
     }
 
     /**
-     * Get the API response to a call from a configured HTTP client
+     * Get the API response to a call from a configured HTTP client.
      *
      * @param Http\Client $httpClient Configured HTTP client
      *

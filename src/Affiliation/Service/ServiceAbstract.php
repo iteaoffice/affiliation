@@ -1,31 +1,37 @@
 <?php
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office copyright message placeholder.
  *
  * @category    Affiliation
- * @package     Service
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Service;
 
 use Admin\Service\AdminService;
 use Admin\Service\AdminServiceAwareInterface;
-use Affiliation\Acl\Assertion\AssertionAbstract;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Loi;
 use BjyAuthorize\Service\Authorize;
+use Invoice\Service\InvoiceService;
+use Organisation\Service\OrganisationService;
+use Organisation\Service\OrganisationServiceAwareInterface;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
 use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * ServiceAbstract
+ * ServiceAbstract.
  */
 abstract class ServiceAbstract implements
     AdminServiceAwareInterface,
+    OrganisationServiceAwareInterface,
     ServiceLocatorAwareInterface,
     ServiceInterface
 {
@@ -38,9 +44,25 @@ abstract class ServiceAbstract implements
      */
     protected $adminService;
     /**
+     * @var OrganisationService;
+     */
+    protected $organisationService;
+    /**
+     * @var ProjectService;
+     */
+    protected $projectService;
+    /**
+     * @var VersionService;
+     */
+    protected $versionService;
+    /**
      * @var AuthenticationService;
      */
     protected $authenticationService;
+    /**
+     * @var InvoiceService
+     */
+    protected $invoiceService;
     /**
      * @var ServiceLocatorInterface
      */
@@ -77,7 +99,7 @@ abstract class ServiceAbstract implements
     {
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
-        /**
+        /*
          * Update the permissions
          */
         $this->getAdminService()->flushPermitsByEntityAndId(
@@ -97,7 +119,7 @@ abstract class ServiceAbstract implements
     {
         $this->getEntityManager()->persist($entity);
         $this->getEntityManager()->flush();
-        /**
+        /*
          * Update the permissions
          */
         $this->getAdminService()->flushPermitsByEntityAndId(
@@ -131,7 +153,7 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * Build dynamically a entity based on the full entity name
+     * Build dynamically a entity based on the full entity name.
      *
      * @param $entity
      *
@@ -145,7 +167,7 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * Create a full path to the entity for Doctrine
+     * Create a full path to the entity for Doctrine.
      *
      * @param $entity
      *
@@ -153,15 +175,15 @@ abstract class ServiceAbstract implements
      */
     public function getFullEntityName($entity)
     {
-        /**
+        /*
          * Convert a - to a camelCased situation
          */
         if (strpos($entity, '-') !== false) {
             $entity = explode('-', $entity);
-            $entity = $entity[0].ucfirst($entity[1]);
+            $entity = $entity[0] . ucfirst($entity[1]);
         }
 
-        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))).'\\'.'Entity'.'\\'.ucfirst(
+        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))) . '\\' . 'Entity' . '\\' . ucfirst(
             $entity
         );
     }
@@ -180,8 +202,8 @@ abstract class ServiceAbstract implements
      */
     public function addResource(EntityAbstract $entity, $assertion)
     {
-        /**
-         * @var $assertion AssertionAbstract
+        /*
+         * @var AssertionAbstract
          */
         $assertion = $this->getServiceLocator()->get($assertion);
         if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)
@@ -230,7 +252,7 @@ abstract class ServiceAbstract implements
     public function getEntityManager()
     {
         if (null === $this->entityManager) {
-            $this->setEntityManager($this->getServiceLocator()->get('doctrine.entitymanager.orm_default'));
+            $this->setEntityManager($this->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
         }
 
         return $this->entityManager;
@@ -254,5 +276,59 @@ abstract class ServiceAbstract implements
         $this->adminService = $adminService;
 
         return $this;
+    }
+
+    /**
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->serviceLocator->get(ProjectService::class);
+    }
+
+    /**
+     * @param  ProjectService  $projectService
+     * @return ServiceAbstract
+     */
+    public function setProjectService(ProjectService $projectService)
+    {
+        $this->projectService = $projectService;
+
+        return $this;
+    }
+
+    /**
+     * @return OrganisationService
+     */
+    public function getOrganisationService()
+    {
+        return $this->organisationService;
+    }
+
+    /**
+     * @param  OrganisationService $organisationService
+     * @return ServiceAbstract
+     */
+    public function setOrganisationService(OrganisationService $organisationService)
+    {
+        $this->organisationService = $organisationService;
+
+        return $this;
+    }
+
+    /**
+     * @return InvoiceService
+     */
+    public function getInvoiceService()
+    {
+        return $this->serviceLocator->get(InvoiceService::class);
+    }
+
+    /**
+     * @return VersionService
+     */
+    public function getVersionService()
+    {
+        return $this->serviceLocator->get(VersionService::class);
     }
 }

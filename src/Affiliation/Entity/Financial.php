@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA copyright message placeholder
+ * ITEA copyright message placeholder.
  *
  * @category    Project
- * @package     Entity
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
  */
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +17,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 
 /**
- * Entity for the Affiliation
+ * Entity for the Affiliation.
  *
  * @ORM\Table(name="affiliation_financial")
  * @ORM\Entity
@@ -24,7 +25,6 @@ use Zend\InputFilter\InputFilterInterface;
  * @Annotation\Name("affiliation_financial")
  *
  * @category    Affiliation
- * @package     Entity
  */
 class Financial extends EntityAbstract
 {
@@ -32,11 +32,13 @@ class Financial extends EntityAbstract
      * @ORM\Column(name="affiliation_financial_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
      * @var integer
      */
     private $id;
     /**
      * @ORM\Column(name="branch", type="string", length=40, nullable=true)
+     *
      * @var string
      */
     private $branch;
@@ -45,6 +47,7 @@ class Financial extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      * })
+     *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
@@ -53,6 +56,7 @@ class Financial extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * })
+     *
      * @var \Contact\Entity\Contact
      */
     private $contact;
@@ -61,12 +65,19 @@ class Financial extends EntityAbstract
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
      * })
+     *
      * @var \Organisation\Entity\Organisation
      */
     private $organisation;
+    /**
+     * @ORM\Column(name="email_cc", type="string", length=255, nullable=true)
+     *
+     * @var string
+     */
+    private $emailCC;
 
     /**
-     * Class constructor
+     * Class constructor.
      */
     public function __construct()
     {
@@ -85,8 +96,6 @@ class Financial extends EntityAbstract
     /**
      * @param $property
      * @param $value
-     *
-     * @return void
      */
     public function __set($property, $value)
     {
@@ -96,7 +105,6 @@ class Financial extends EntityAbstract
     /**
      * @param InputFilterInterface $inputFilter
      *
-     * @return void
      * @throws \Exception
      */
     public function setInputFilter(InputFilterInterface $inputFilter)
@@ -111,84 +119,11 @@ class Financial extends EntityAbstract
     {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
-            $factory     = new InputFactory();
+            $factory = new InputFactory();
             $this->inputFilter = $inputFilter;
         }
 
         return $this->inputFilter;
-    }
-
-    /**
-     * Needed for the hydration of form elements
-     * @return array
-     */
-    public function getArrayCopy()
-    {
-        return [];
-    }
-
-    /**
-     * @return array
-     */
-    public function populate()
-    {
-        return $this->getArrayCopy();
-    }
-
-    /**
-     * @param \Affiliation\Entity\Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param string $branch
-     */
-    public function setBranch($branch)
-    {
-        $this->branch = $branch;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBranch()
-    {
-        return $this->branch;
-    }
-
-    /**
-     * @param \Contact\Entity\Contact $contact
-     */
-    public function setContact($contact)
-    {
-        $this->contact = $contact;
-    }
-
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
-    {
-        return $this->contact;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
     }
 
     /**
@@ -200,11 +135,71 @@ class Financial extends EntityAbstract
     }
 
     /**
-     * @param \Organisation\Entity\Organisation $organisation
+     * @param int $id
+     * @return Financial
      */
-    public function setOrganisation($organisation)
+    public function setId($id)
     {
-        $this->organisation = $organisation;
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBranch()
+    {
+        return $this->branch;
+    }
+
+    /**
+     * @param string $branch
+     * @return Financial
+     */
+    public function setBranch($branch)
+    {
+        $this->branch = $branch;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @return Financial
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     * @return Financial
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
     }
 
     /**
@@ -213,5 +208,35 @@ class Financial extends EntityAbstract
     public function getOrganisation()
     {
         return $this->organisation;
+    }
+
+    /**
+     * @param \Organisation\Entity\Organisation $organisation
+     * @return Financial
+     */
+    public function setOrganisation($organisation)
+    {
+        $this->organisation = $organisation;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmailCC()
+    {
+        return $this->emailCC;
+    }
+
+    /**
+     * @param string $emailCC
+     * @return Financial
+     */
+    public function setEmailCC($emailCC)
+    {
+        $this->emailCC = $emailCC;
+
+        return $this;
     }
 }

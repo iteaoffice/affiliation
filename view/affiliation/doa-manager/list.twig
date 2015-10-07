@@ -49,7 +49,7 @@
         var doaId = btn.attr('rel');
 
         $.ajax({
-            url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation-manager/doa/approve') }}',
+            url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation/doa/approve') }}',
             type: 'post',
             dataType: 'json',
             data: {
