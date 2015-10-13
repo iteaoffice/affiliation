@@ -12,7 +12,6 @@ namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
-use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterInterface;
 
@@ -119,7 +118,6 @@ class Financial extends EntityAbstract
     {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
-            $factory = new InputFactory();
             $this->inputFilter = $inputFilter;
         }
 
@@ -136,6 +134,7 @@ class Financial extends EntityAbstract
 
     /**
      * @param int $id
+     *
      * @return Financial
      */
     public function setId($id)
@@ -155,6 +154,7 @@ class Financial extends EntityAbstract
 
     /**
      * @param string $branch
+     *
      * @return Financial
      */
     public function setBranch($branch)
@@ -174,6 +174,7 @@ class Financial extends EntityAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
      * @return Financial
      */
     public function setAffiliation($affiliation)
@@ -193,6 +194,7 @@ class Financial extends EntityAbstract
 
     /**
      * @param \Contact\Entity\Contact $contact
+     *
      * @return Financial
      */
     public function setContact($contact)
@@ -212,6 +214,7 @@ class Financial extends EntityAbstract
 
     /**
      * @param \Organisation\Entity\Organisation $organisation
+     *
      * @return Financial
      */
     public function setOrganisation($organisation)
@@ -231,6 +234,7 @@ class Financial extends EntityAbstract
 
     /**
      * @param string $emailCC
+     *
      * @return Financial
      */
     public function setEmailCC($emailCC)

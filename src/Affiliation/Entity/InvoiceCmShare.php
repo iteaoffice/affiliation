@@ -113,7 +113,8 @@ class InvoiceCmShare extends EntityAbstract
     }
 
     /**
-     * @param  int            $id
+     * @param  int $id
+     *
      * @return InvoiceCmShare
      */
     public function setId($id)
@@ -132,7 +133,8 @@ class InvoiceCmShare extends EntityAbstract
     }
 
     /**
-     * @param  int            $year
+     * @param  int $year
+     *
      * @return InvoiceCmShare
      */
     public function setYear($year)
@@ -151,7 +153,8 @@ class InvoiceCmShare extends EntityAbstract
     }
 
     /**
-     * @param  float          $amountInvoiced
+     * @param  float $amountInvoiced
+     *
      * @return InvoiceCmShare
      */
     public function setAmountInvoiced($amountInvoiced)
@@ -170,7 +173,8 @@ class InvoiceCmShare extends EntityAbstract
     }
 
     /**
-     * @param  Affiliation    $affiliation
+     * @param  Affiliation $affiliation
+     *
      * @return InvoiceCmShare
      */
     public function setAffiliation($affiliation)
@@ -190,6 +194,7 @@ class InvoiceCmShare extends EntityAbstract
 
     /**
      * @param  \Invoice\Entity\Invoice $invoice
+     *
      * @return InvoiceCmShare
      */
     public function setInvoice($invoice)
@@ -208,7 +213,8 @@ class InvoiceCmShare extends EntityAbstract
     }
 
     /**
-     * @param  int            $postCalculation
+     * @param  int $postCalculation
+     *
      * @return InvoiceCmShare
      */
     public function setPostCalculation($postCalculation)
