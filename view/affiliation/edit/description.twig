@@ -1,3 +1,8 @@
+{% do headTitle().append(translate("txt-edit-affiliation-description-%s-in-%s")|format(
+affiliationService.affiliation.organisation.organisation,
+projectService.parseFullName()
+)) %}
+
 <h1>{{ translate("txt-edit-affiliation-description-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
     projectService.parseFullName()
@@ -11,7 +16,6 @@ affiliationService.affiliation.organisation
 {% do form.setAttribute('class','form-horizontal') %}
 
 {{ form().openTag(form)|raw }}
-
 
 
 <div class="form-group">

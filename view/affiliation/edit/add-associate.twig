@@ -1,3 +1,8 @@
+{% do headTitle().append(translate("txt-add-contact-to-affiliation-%s-in-%s")|format(
+affiliationService.affiliation.organisation.organisation,
+projectService.parseFullName()
+) ) %}
+
 <h1>{{ translate("txt-add-contact-to-affiliation-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
     projectService.parseFullName()

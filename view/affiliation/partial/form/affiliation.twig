@@ -1,0 +1,37 @@
+{% do form.prepare() %}
+{% do form.setAttribute('class','form-horizontal') %}
+
+{{ form().openTag(form)|raw }}
+
+{% set affiliation = form.get('affiliation') %}
+
+<fieldset>
+    <legend>{{ translate("txt-affiliation-information") }}</legend>
+    {{ ztbformelement(affiliation.get('firstName')) }}
+    {{ ztbformelement(affiliation.get('middleName')) }}
+    {{ ztbformelement(affiliation.get('lastName')) }}
+    {{ ztbformelement(affiliation.get('email')) }}
+    {{ ztbformelement(affiliation.get('gender')) }}
+    {{ ztbformelement(affiliation.get('title')) }}
+</fieldset>
+
+<fieldset>
+    <legend>{{ translate("txt-organisation-information") }}</legend>
+    {{ organisationformelement(form.get('organisation')) }}
+    {{ ztbformelement(form.get('branch')) }}
+    {{ ztbformelement(affiliation.get('department')) }}
+    {{ ztbformelement(affiliation.get('position')) }}
+</fieldset>
+
+
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+        {% if form.has('deactivate') %}
+            {{ ztbformelement(form.get('deactivate')) }}
+        {% endif %}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

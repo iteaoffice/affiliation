@@ -1,7 +1,10 @@
-{% do headTitle().append(translate("txt-edit-affiliation-%s-in-%s")|format(
-affiliationService.affiliation.organisation.organisation,
-projectService.parseFullName()
-)) %}
+{% do headLink().appendStylesheet(
+'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
+) %}
+
+
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-edit-affiliation-%s")|format(affiliationService.affiliation.displayName)) %}
 
 <h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
@@ -41,12 +44,22 @@ affiliationService.affiliation.organisation
     </div>
 </div>
 
-{{ ztbformelement(form.get('affiliation')) }}
-{{ ztbformelement(form.get('technical')) }}
-{{ ztbformelement(form.get('financial')) }}
+
+{{ contactformelement(form.get('contact')) }}
+{{ ztbformelement(form.get('branch')) }}
+
+{{ ztbformelement(form.get('dateEnd')) }}
+{{ ztbformelement(form.get('dateSelfFunded')) }}
+
 {{ ztbformelement(form.get('valueChain')) }}
 {{ ztbformelement(form.get('mainContribution')) }}
 {{ ztbformelement(form.get('marketAccess')) }}
+
+
+{{ organisationformelement(form.get('financialOrganisation')) }}
+{{ contactformelement(form.get('financialContact')) }}
+{{ ztbformelement(form.get('financialBranch')) }}
+{{ ztbformelement(form.get('emailCC')) }}
 
 
 <hr>
@@ -64,3 +77,10 @@ affiliationService.affiliation.organisation
 </div>
 
 {{ form().closeTag()|raw }}
+
+<script type="text/javascript">
+    $('input[type=date]').datepicker({
+        sliderAccessArgs: {touchonly: false},
+        dateFormat: 'yy-mm-dd'
+    });
+</script>

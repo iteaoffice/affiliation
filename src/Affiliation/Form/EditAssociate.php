@@ -10,43 +10,69 @@
 
 namespace Affiliation\Form;
 
+use Affiliation\Service\AffiliationService;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Validator\File\Extension;
-use Zend\Validator\File\Size;
 
 /**
  *
  */
-class UploadDoa extends Form implements InputFilterProviderInterface
+class EditAssociate extends Form implements InputFilterProviderInterface
 {
     /**
-     * Class constructor.
+     * EditAssociate constructor.
+     * @param AffiliationService $affiliationService
      */
-    public function __construct()
+    public function __construct(AffiliationService $affiliationService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
-        $this->setAttribute('enctype', 'multipart/form-data');
+
+        //We can transfer the assocate to ohter affiliations in the project
+        $affiliations = [];
+
+        foreach ($affiliationService->getAffiliation()->getProject()->getAffiliation() as $affiliation) {
+            $affiliations[$affiliation->getId()] = sprintf(
+                "%s (%s) %s",
+                $affiliation->getOrganisation()->getOrganisation(),
+                $affiliation->getOrganisation()->getCountry(),
+                is_null($affiliation->getDateEnd()) ? '': ' (deactivated)'
+            );
+        }
+
+        asort($affiliations);
+
         $this->add(
             [
-                'type'    => '\Zend\Form\Element\File',
-                'name'    => 'file',
+                'type'    => 'Zend\Form\Element\Select',
+                'name'    => 'affiliation',
                 'options' => [
-                    "label"      => "txt-file",
-                    "help-block" => _("txt-a-signed-doa-is-required"),
+                    'value_options' => $affiliations,
+                    'label'         => _("txt-partner-name"),
                 ],
             ]
         );
+
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-upload-project-doa"),
+                    'value' => _("txt-update"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'delete',
+                'attributes' => [
+                    'class' => "btn btn-danger",
+                    'value' => _("txt-delete"),
                 ],
             ]
         );
@@ -71,21 +97,8 @@ class UploadDoa extends Form implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return [
-            'file' => [
-                'required'   => true,
-                'validators' => [
-                    new Size(
-                        [
-                            'min' => '5kB',
-                            'max' => '8MB',
-                        ]
-                    ),
-                    new Extension(
-                        [
-                            'extension' => ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
-                        ]
-                    ),
-                ],
+            'affiliation' => [
+                'required' => true,
             ],
         ];
     }

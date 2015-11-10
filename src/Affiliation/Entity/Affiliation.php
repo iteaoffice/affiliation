@@ -5,7 +5,7 @@
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
+ * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Entity;
@@ -45,10 +45,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @var array
      */
-    protected static $selfFundedTemplates = [
-        self::NOT_SELF_FUNDED => 'txt-not-self-funded',
-        self::SELF_FUNDED     => 'txt-self-funded',
-    ];
+    protected static $selfFundedTemplates
+        = [
+            self::NOT_SELF_FUNDED => 'txt-not-self-funded',
+            self::SELF_FUNDED     => 'txt-self-funded',
+        ];
     /**
      * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
      * @ORM\Id
@@ -343,9 +344,16 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\ManyToMany(targetEntity="Project\Entity\Achievement", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Achievement[]
+     * @var \Project\Entity\Achievement[]|Collections\ArrayCollection
      */
     private $achievement;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Changerequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Changerequest\CostChange[]|Collections\ArrayCollection
+     */
+    private $changerequestCostChange;
 
     /**
      * Class constructor.
@@ -368,6 +376,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->loiReminder = new Collections\ArrayCollection();
         $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
+        $this->changerequestCostChange = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -408,13 +417,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function parseBranchedName()
     {
-        return trim(
-            preg_replace(
-                '/^(([^\~]*)\~\s?)?\s?(.*)$/',
-                '${2}' . $this->getOrganisation()->getOrganisation() . ' ${3}',
-                $this->getBranch()
-            )
-        );
+        return trim(preg_replace(
+            '/^(([^\~]*)\~\s?)?\s?(.*)$/',
+            '${2}' . $this->getOrganisation()->getOrganisation() . ' ${3}',
+            $this->getBranch()
+        ));
     }
 
     /**
@@ -432,6 +439,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @param InputFilterInterface $inputFilter
      *
      * @throws \Exception
+     * @return void
      */
     public function setInputFilter(InputFilterInterface $inputFilter)
     {
@@ -446,108 +454,68 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
             $factory = new InputFactory();
-            $inputFilter->add(
-                $factory->createInput(
+            $inputFilter->add($factory->createInput([
+                'name'       => 'branch',
+                'required'   => false,
+                'filters'    => [
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
+                ],
+                'validators' => [
                     [
-                        'name'       => 'branch',
-                        'required'   => false,
-                        'filters'    => [
-                            ['name' => 'StripTags'],
-                            ['name' => 'StringTrim'],
+                        'name'    => 'StringLength',
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 1,
+                            'max'      => 40,
                         ],
-                        'validators' => [
-                            [
-                                'name'    => 'StringLength',
-                                'options' => [
-                                    'encoding' => 'UTF-8',
-                                    'min'      => 1,
-                                    'max'      => 40,
-                                ],
-                            ],
+                    ],
+                ],
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'note',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'valueChain',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'mainContribution',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'marketAccess',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'dateEnd',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'dateEnd',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'dateSelfFunded',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'     => 'contact',
+                'required' => false,
+            ]));
+            $inputFilter->add($factory->createInput([
+                'name'       => 'selfFunded',
+                'required'   => true,
+                'validators' => [
+                    [
+                        'name'    => 'InArray',
+                        'options' => [
+                            'haystack' => array_keys($this->getSelfFundedTemplates()),
                         ],
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'note',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'valueChain',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'mainContribution',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'marketAccess',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'dateEnd',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'dateEnd',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'dateSelfFunded',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'contact',
-                        'required' => false,
-                    ]
-                )
-            );
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'       => 'selfFunded',
-                        'required'   => true,
-                        'validators' => [
-                            [
-                                'name'    => 'InArray',
-                                'options' => [
-                                    'haystack' => array_keys($this->getSelfFundedTemplates()),
-                                ],
-                            ],
-                        ],
-                    ]
-                )
-            );
+                    ],
+                ],
+            ]));
             $this->inputFilter = $inputFilter;
         }
 
@@ -875,6 +843,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
 
     /**
      * @param bool|true $textual
+     *
      * @return int
      */
     public function getSelfFunded($textual = false)
@@ -1120,11 +1089,32 @@ class Affiliation extends EntityAbstract implements ResourceInterface
 
     /**
      * @param  Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
+     *
      * @return Affiliation
      */
     public function setProjectReportEffortSpent($projectReportEffortSpent)
     {
         $this->projectReportEffortSpent = $projectReportEffortSpent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Changerequest\CostChange[]
+     */
+    public function getChangerequestCostChange()
+    {
+        return $this->changerequestCostChange;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Changerequest\CostChange[] $changerequestCostChange
+     *
+     * @return Affiliation
+     */
+    public function setChangerequestCostChange($changerequestCostChange)
+    {
+        $this->changerequestCostChange = $changerequestCostChange;
 
         return $this;
     }

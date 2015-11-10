@@ -5,7 +5,7 @@
  * @category Affiliation
  *
  * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright Copyright (c) 2004-2014 ITEA Office (http://itea3.org)
+ * @copyright Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Service;
@@ -482,7 +482,7 @@ class AffiliationService extends ServiceAbstract
      * @param Project $project
      * @param int $which
      *
-     * @return \Generator
+     * @return \Generator|AffiliationService[]
      */
     public function findAffiliationByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {

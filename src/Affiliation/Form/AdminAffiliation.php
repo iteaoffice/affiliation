@@ -11,36 +11,29 @@
 namespace Affiliation\Form;
 
 use Affiliation\Service\AffiliationService;
+use Organisation\Service\OrganisationService;
 use Zend\Form\Form;
+use Zend\InputFilter\InputFilterProviderInterface;
 
 /**
  *
  */
-class Affiliation extends Form
+class AdminAffiliation extends Form implements InputFilterProviderInterface
 {
     /**
+     * AdminAffiliation constructor.
      * @param AffiliationService $affiliationService
+     * @param OrganisationService $organisationService
      */
-    public function __construct(AffiliationService $affiliationService)
+    public function __construct(AffiliationService $affiliationService, OrganisationService $organisationService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
+
         $technicalContactValueOptions = [];
-        $affiliationValueOptions = [];
-        foreach ($affiliationService->parseRenameOptions() as $country => $options) {
-            $groupOptions = [];
-            foreach ($options as $organisationId => $branchAndName) {
-                foreach ($branchAndName as $branch => $organisationWithBranch) {
-                    $groupOptions[sprintf("%s|%s", $organisationId, $branch)] = $organisationWithBranch;
-                }
-            }
-            $affiliationValueOptions[$country] = [
-                'label'   => $country,
-                'options' => $groupOptions,
-            ];
-        }
+
         /*
          * Collect the technical contacts
          */
@@ -67,43 +60,50 @@ class Affiliation extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Select',
-                'name'       => 'affiliation',
-                'options'    => [
-                    'value_options' => $affiliationValueOptions,
-                    'label'         => _("txt-change-affiliation"),
-                ],
-                'attributes' => [
-                    'class' => 'form-control',
+                'type'    => 'Zend\Form\Element\Text',
+                'name'    => 'branch',
+                'options' => [
+                    'label'      => _("txt-branch"),
+                    'help-block' => _("txt-branch-inline-help"),
                 ],
             ]
         );
+
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Select',
-                'name'       => 'technical',
-                'options'    => [
+                'type'    => 'Zend\Form\Element\Date',
+                'name'    => 'dateEnd',
+                'options' => [
+                    'label'      => _("txt-date-removed"),
+                    'help-block' => _("txt-date-removed-inline-help"),
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Date',
+                'name'    => 'dateSelfFunded',
+                'options' => [
+                    'label'      => _("txt-date-self-funded"),
+                    'help-block' => _("txt-date-self-funded-inline-help"),
+                ],
+            ]
+        );
+
+
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Select',
+                'name'    => 'contact',
+                'options' => [
                     'value_options' => $technicalContactValueOptions,
                     'label'         => _("txt-technical-contact"),
                 ],
-                'attributes' => [
-                    'class' => 'form-control',
-                ],
             ]
         );
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Select',
-                'name'       => 'financial',
-                'options'    => [
-                    'value_options' => $financialContactValueOptions,
-                    'label'         => _("txt-financial-contact"),
-                ],
-                'attributes' => [
-                    'class' => 'form-control',
-                ],
-            ]
-        );
+
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Text',
@@ -122,7 +122,7 @@ class Affiliation extends Form
                 'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'mainContribution',
                 'options'    => [
-                    'label'      => _("txt-main-contributions-and-added-value"),
+                    'label'      => _("txt-main-contribution-for-the-project"),
                     'help-block' => _("txt--main-contribution-for-the-project-inline-help"),
                 ],
                 'attributes' => [
@@ -144,6 +144,62 @@ class Affiliation extends Form
                 ],
             ]
         );
+
+
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Select',
+                'name'       => 'financialContact',
+                'options'    => [
+                    'value_options' => $financialContactValueOptions,
+                    'label'         => _("txt-financial-contact"),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Text',
+                'name'    => 'financialBranch',
+                'options' => [
+                    'label'      => _("txt-branch"),
+                    'help-block' => _("txt-branch-inline-help"),
+                ],
+            ]
+        );
+
+
+        $financialOrganisation = [];
+        if (!is_null($financial = $affiliationService->getAffiliation()->getFinancial())) {
+            $financialOrganisation[$financial->getOrganisation()->getId()] = $financial->getOrganisation()->getOrganisation();
+        }
+
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Select',
+                'name'    => 'financialOrganisation',
+                'options' => [
+                    'value_options' => $financialOrganisation,
+                    'label'         => _("txt-financial-organisation"),
+                    'help-block'    => _("txt-financial-organisation-help"),
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Email',
+                'name'    => 'emailCC',
+                'options' => [
+                    'label'      => _("txt-email-cc"),
+                    'help-block' => _("txt-email-cc-inline-help"),
+                ],
+            ]
+        );
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Submit',
@@ -190,5 +246,32 @@ class Affiliation extends Form
                 ],
             ]
         );
+    }
+
+    /**
+     * Should return an array specification compatible with
+     * {@link Zend\InputFilter\Factory::createInputFilter()}.
+     *
+     * @return array
+     */
+    public function getInputFilterSpecification()
+    {
+        return [
+            'dateEnd'               => [
+                'required' => false,
+            ],
+            'dateSelfFunded'        => [
+                'required' => false,
+            ],
+            'financialOrganisation' => [
+                'required' => false,
+            ],
+            'financialContact'      => [
+                'required' => false,
+            ],
+            'emailCC'               => [
+                'required' => false,
+            ],
+        ];
     }
 }

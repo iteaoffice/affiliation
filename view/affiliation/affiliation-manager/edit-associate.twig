@@ -1,12 +1,9 @@
-{% do headTitle().append(translate("txt-edit-affiliation-%s-in-%s")|format(
-affiliationService.affiliation.organisation.organisation,
-projectService.parseFullName()
-)) %}
-
-<h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
+<h1>{{ translate("txt-edit-contact-to-affiliation-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
     projectService.parseFullName()
     ) }}</h1>
+
+<p>{{ translate("txt-edit-contact-to-affiliation-explanation") }}</p>
 
 {% set organisationService = organisationServiceProxy(
 affiliationService.affiliation.organisation
@@ -21,7 +18,7 @@ affiliationService.affiliation.organisation
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-community', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(projectService,'view-admin', 'name') }}</p>
     </div>
 </div>
 
@@ -41,25 +38,22 @@ affiliationService.affiliation.organisation
     </div>
 </div>
 
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-contact") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ contactLink(contact,'view-admin', 'name') }}</p>
+    </div>
+</div>
+
+
 {{ ztbformelement(form.get('affiliation')) }}
-{{ ztbformelement(form.get('technical')) }}
-{{ ztbformelement(form.get('financial')) }}
-{{ ztbformelement(form.get('valueChain')) }}
-{{ ztbformelement(form.get('mainContribution')) }}
-{{ ztbformelement(form.get('marketAccess')) }}
-
-
-<hr>
 
 <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('delete')) }}
         {{ ztbformelement(form.get('cancel')) }}
-        {% if affiliationService.isActive() %}
-            {{ ztbformelement(form.get('deactivate')) }}
-        {% else %}
-            {{ ztbformelement(form.get('reactivate')) }}
-        {% endif %}
     </div>
 </div>
 
