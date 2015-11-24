@@ -110,7 +110,7 @@ class LoiManagerController extends AffiliationAbstractController implements
     public function remindAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+            $this->params('affiliation-id')
         );
 
         $form = new LoiReminder($affiliationService->getAffiliation(), $this->getContactService());
@@ -189,7 +189,7 @@ class LoiManagerController extends AffiliationAbstractController implements
     public function remindersAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+            $this->params('affiliation-id')
         );
 
         return new ViewModel(
@@ -205,7 +205,7 @@ class LoiManagerController extends AffiliationAbstractController implements
     public function viewAction()
     {
         $loi = $this->getLoiService()->setLoiId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         if (is_null($loi)) {
             return $this->notFoundAction();
@@ -220,7 +220,7 @@ class LoiManagerController extends AffiliationAbstractController implements
     public function editAction()
     {
         $loiService = $this->getLoiService()->setLoiId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
 
         if (is_null($loiService)) {

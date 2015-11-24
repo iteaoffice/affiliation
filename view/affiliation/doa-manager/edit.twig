@@ -1,3 +1,9 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-edit-doa-%s-in-%s")|format(
+doa.affiliation.organisation.organisation,
+projectService.parseFullname
+)) %}
+
 {% do headLink().appendStylesheet(
 '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
 ) %}

@@ -46,7 +46,7 @@ class CommunityController extends AffiliationAbstractController implements
     public function affiliationAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
@@ -149,7 +149,7 @@ class CommunityController extends AffiliationAbstractController implements
     public function editAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         $projectService = $this->getProjectService()->setProject(
             $affiliationService->getAffiliation()->getProject()
@@ -275,7 +275,7 @@ class CommunityController extends AffiliationAbstractController implements
     public function editFinancialAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         $projectService = $this->getProjectService()->setProject(
             $affiliationService->getAffiliation()->getProject()

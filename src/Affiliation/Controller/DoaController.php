@@ -30,7 +30,7 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
     public function uploadAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+            $this->params('affiliation-id')
         );
         $data = array_merge_recursive(
             $this->getRequest()->getPost()->toArray(),
@@ -104,7 +104,7 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
          */
         $doa = $this->getAffiliationService()->findEntityById(
             'Doa',
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         $this->getAffiliationService()->setAffiliation($doa->getAffiliation());
         if (is_null($doa) || sizeof($doa->getObject()) === 0) {
@@ -175,7 +175,7 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
     public function renderAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+            $this->params('affiliation-id')
         );
         //Create an empty Doa object
         $programDoa = new Doa();
@@ -209,7 +209,7 @@ class DoaController extends AffiliationAbstractController implements GeneralServ
          */
         $doa = $this->getAffiliationService()->findEntityById(
             'Doa',
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         if (is_null($doa) || sizeof($doa->getObject()) === 0) {
             return $this->notFoundAction();

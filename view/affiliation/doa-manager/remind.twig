@@ -1,3 +1,10 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append( translate("txt-remind-doa-%s-in-%s")|format(
+affiliationService.affiliation.organisation.organisation,
+projectService.parseFullname
+)) %}
+
+
 {% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
 
 <h1>{{ translate("txt-remind-doa-%s-in-%s")|format(

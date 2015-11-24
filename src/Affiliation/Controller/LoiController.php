@@ -30,7 +30,7 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
     public function uploadAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+            $this->params('affiliation-id')
         );
         $data = array_merge_recursive(
             $this->getRequest()->getPost()->toArray(),
@@ -105,7 +105,7 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
          */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         $this->getAffiliationService()->setAffiliation($loi->getAffiliation());
         if (is_null($loi) || sizeof($loi->getObject()) === 0) {
@@ -178,7 +178,7 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
     public function renderAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('affiliation-id')
+            $this->params('affiliation-id')
         );
         //Create an empty Loi object
         $programLoi = new Loi();
@@ -212,7 +212,7 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
          */
         $loi = $this->getAffiliationService()->findEntityById(
             'Loi',
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         if (is_null($loi) || sizeof($loi->getObject()) === 0) {
             return $this->notFoundAction();

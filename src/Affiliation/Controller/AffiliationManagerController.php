@@ -38,7 +38,7 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
     public function viewAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
@@ -73,7 +73,7 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
     public function editAction()
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId(
-            $this->getEvent()->getRouteMatch()->getParam('id')
+            $this->params('id')
         );
         if ($affiliationService->isEmpty()) {
             return $this->notFoundAction();
