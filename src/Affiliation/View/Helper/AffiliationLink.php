@@ -30,9 +30,9 @@ class AffiliationLink extends LinkAbstract
      * @param Affiliation $affiliation
      * @param             $action
      * @param             $show
-     * @param int $year
-     * @param int $period
-     * @param null $fragment
+     * @param int         $year
+     * @param int         $period
+     * @param null        $fragment
      *
      * @return string
      *
@@ -56,20 +56,14 @@ class AffiliationLink extends LinkAbstract
         /*
          * Set the non-standard options needed to give an other link value
          */
-        $this->setShowOptions(
-            [
-                'name'         => $this->getAffiliation(),
-                'organisation' => $this->getAffiliation()->getOrganisation()->getOrganisation(),
-                'organisation-branch' => $this->getAffiliation()->parseBranchedName()
-            ]
-        );
-        if (!$this->hasAccess(
-            $this->getAffiliation(),
-            AffiliationAssertion::class,
-            $this->getAction()
-        )
-        ) {
-            return $this->getAction() !== 'view-community' ? '' : $this->getAffiliation()->getOrganisation()->getOrganisation();
+        $this->setShowOptions([
+            'name'                => $this->getAffiliation(),
+            'organisation'        => $this->getAffiliation()->getOrganisation()->getOrganisation(),
+            'organisation-branch' => $this->getAffiliation()->parseBranchedName()
+        ]);
+        if (!$this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
+            return $this->getAction() !== 'view-community' ? ''
+                : $this->getAffiliation()->getOrganisation()->getOrganisation();
         }
         $this->addRouterParam('entity', 'Affiliation');
         $this->addRouterParam('year', $this->getYear());
@@ -125,9 +119,10 @@ class AffiliationLink extends LinkAbstract
                 break;
             case 'edit-description':
                 $this->setRouter('community/affiliation/edit/description');
-                $this->setText(
-                    sprintf($this->translate("txt-edit-description-affiliation-%s"), $this->getAffiliation())
-                );
+                $this->setText(sprintf(
+                    $this->translate("txt-edit-description-affiliation-%s"),
+                    $this->getAffiliation()
+                ));
                 break;
             case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation/view');
@@ -139,25 +134,21 @@ class AffiliationLink extends LinkAbstract
                 break;
             case 'payment-sheet':
                 $this->setRouter('community/affiliation/payment-sheet');
-                $this->setText(
-                    sprintf(
-                        $this->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"),
-                        $this->getAffiliation(),
-                        $this->getYear(),
-                        $this->getPeriod()
-                    )
-                );
+                $this->setText(sprintf(
+                    $this->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                    $this->getAffiliation(),
+                    $this->getYear(),
+                    $this->getPeriod()
+                ));
                 break;
             case 'payment-sheet-pdf':
                 $this->setRouter('community/affiliation/payment-sheet-pdf');
-                $this->setText(
-                    sprintf(
-                        $this->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"),
-                        $this->getAffiliation(),
-                        $this->getPeriod(),
-                        $this->getYear()
-                    )
-                );
+                $this->setText(sprintf(
+                    $this->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                    $this->getAffiliation(),
+                    $this->getYear(),
+                    $this->getPeriod()
+                ));
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));

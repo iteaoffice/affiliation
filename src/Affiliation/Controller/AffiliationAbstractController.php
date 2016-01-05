@@ -26,6 +26,7 @@ use General\Service\EmailService;
 use General\Service\GeneralService;
 use Invoice\Service\InvoiceService;
 use Mailing\Service\MailingService;
+use Member\Service\MemberService;
 use Organisation\Service\OrganisationService;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
@@ -46,10 +47,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method       RenderDoa renderDoa()
  * @method       RenderLoi enderLoi()
  */
-abstract class AffiliationAbstractController extends AbstractActionController implements
-    AffiliationServiceAwareInterface,
-    FormServiceAwareInterface,
-    ConfigAwareInterface
+abstract class AffiliationAbstractController extends AbstractActionController implements AffiliationServiceAwareInterface, FormServiceAwareInterface, ConfigAwareInterface
 {
     /**
      * @var FormService
@@ -115,6 +113,10 @@ abstract class AffiliationAbstractController extends AbstractActionController im
      * @var LoiService
      */
     protected $loiService;
+    /**
+     * @var MemberService
+     */
+    protected $memberService;
     /**
      * @var array
      */
@@ -406,7 +408,8 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param  DeeplinkService               $deeplinkService
+     * @param  DeeplinkService $deeplinkService
+     *
      * @return AffiliationAbstractController
      */
     public function setDeeplinkService(DeeplinkService $deeplinkService)
@@ -425,7 +428,8 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param  VersionService                $versionService
+     * @param  VersionService $versionService
+     *
      * @return AffiliationAbstractController
      */
     public function setVersionService(VersionService $versionService)
@@ -444,7 +448,8 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param  InvoiceService                $invoiceService
+     * @param  InvoiceService $invoiceService
+     *
      * @return AffiliationAbstractController
      */
     public function setInvoiceService(InvoiceService $invoiceService)
@@ -463,12 +468,33 @@ abstract class AffiliationAbstractController extends AbstractActionController im
     }
 
     /**
-     * @param  ReportService                 $reportService
+     * @param  ReportService $reportService
+     *
      * @return AffiliationAbstractController
      */
     public function setReportService(ReportService $reportService)
     {
         $this->reportService = $reportService;
+
+        return $this;
+    }
+
+    /**
+     * @return MemberService
+     */
+    public function getMemberService()
+    {
+        return $this->memberService;
+    }
+
+    /**
+     * @param MemberService $memberService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setMemberService(MemberService $memberService)
+    {
+        $this->memberService = $memberService;
 
         return $this;
     }

@@ -26,6 +26,7 @@
 <ul class="nav nav-tabs">
     <li class="active"><a href="#details" data-toggle="tab">{{ translate("txt-partner-details") }}</a></li>
     <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
+    <li><a href="#member" data-toggle="tab">{{ translate("txt-member") }}</a></li>
     <li><a href="#associates" data-toggle="tab">{{ translate("txt-associates") }}</a></li>
 
     <li><a href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a></li>
@@ -87,6 +88,17 @@
                 </dd>
             {% endif %}
 
+
+            <dt>{{ translate("txt-membership") }}</dt>
+            <dd>
+                {% if affiliationService.affiliation.organisation.member %}
+                    {{ memberLink(affiliationService.affiliation.organisation.member,'view','name') }}
+                {% else %}
+                    {{ applicantLink(null,'create','name', affiliationService.affiliation.organisation) }}
+                {% endif %}
+            </dd>
+
+
             {% if projectService.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}
                 <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
                 <dd>
@@ -147,6 +159,35 @@
         {% endfor %}
 
         {{ affiliationLink(affiliationService.affiliation, 'edit-description','button') }}
+    </div>
+    <div class="tab-pane" id="member">
+        <h3>{{ translate("txt-member-information") }}</h3>
+
+        {% if memberService.isMember(affiliationService.affiliation.organisation) %}
+            {% set member = affiliationService.affiliation.organisation.member %}
+            {% set organisationService = organisationServiceProxy(member.organisation) %}
+            <dl class="dl-horizontal">
+                <dt>{{ translate("txt-member-subtype") }}</dt>
+                <dd>{{ member.type.subType }}</dd>
+                <dt>{{ translate("txt-member-organisation") }}</dt>
+                <dd>{{ organisationLink(organisationService,'view-admin','name') }}</dd>
+                <dt>{{ translate("txt-member-representative") }}</dt>
+                <dd>{{ contactLink(member.contact,'view-admin','name') }}</dd>
+                <dt>{{ translate("txt-member-date-created") }}</dt>
+                <dd>{{ member.dateCreated|time_diff }}</dd>
+                {% if member.dateEnd %}
+                    <dt>{{ translate("txt-member-date-end") }}</dt>
+                    <dd>{{ member.dateEnd }}</dd>
+                {% endif %}
+            </dl>
+            {{ memberLink(member, 'view-admin','button') }}
+
+        {% else %}
+            {{ ztbalert().info(translate("txt-organisation-%s-is-no-member")|format(affiliationService.affiliation.organisation))|raw }}
+
+        {% endif %}
+
+
     </div>
     <div class="tab-pane" id="associates">
         <h3>{{ translate("txt-associates") }}</h3>

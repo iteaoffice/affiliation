@@ -70,6 +70,19 @@
         </dl>
 
         <dl class="dl-horizontal">
+
+            <dt>{{ translate("txt-membership") }}</dt>
+            <dd>
+                {% if affiliationService.affiliation.organisation.member %}
+                    {#{{ memberLink(affiliationService.affiliation.organisation.member,'view','name') }}#}
+                    {{ translate("txt-organsation-%s-is-member-type-%s-since-%s") }}
+                {% elseif (affiliationService.affiliation.organisation.applicant) %}
+                    {{ applicantLink(affiliationService.affiliation.organisation.applicant,'view','text') }}
+                {% else %}
+                    {{ applicantLink(null,'apply','text', null, null, null, affiliationService.affiliation.organisation) }}
+                {% endif %}
+            </dd>
+
             {% if projectService.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
                 <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
                 <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
