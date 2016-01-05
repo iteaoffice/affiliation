@@ -70,8 +70,7 @@ class CommunityController extends AffiliationAbstractController implements
             'requireMembership'     => $this->getProgramService()->getOptions()->getRequireMembership(),
             'reportService'         => $this->getReportService(),
             'versionService'        => $this->getVersionService(),
-            'invoiceService'        => $this->getInvoiceService()
-
+            'invoiceService'        => $this->getInvoiceService(),
         ]);
     }
 

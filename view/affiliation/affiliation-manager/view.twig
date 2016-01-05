@@ -93,8 +93,6 @@
             <dd>
                 {% if affiliationService.affiliation.organisation.member %}
                     {{ memberLink(affiliationService.affiliation.organisation.member,'view','name') }}
-                {% else %}
-                    {{ applicantLink(null,'create','name', affiliationService.affiliation.organisation) }}
                 {% endif %}
             </dd>
 
