@@ -451,10 +451,10 @@
                                     [{{ translate("txt-py") }}]
                                 </td>
                                 <td>
-                                    {% if not report.dateFinal and report.datePeriod|date('Y') >= "now"|date("Y") %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'update', report) }}{% endif %}</td>
+                                    {% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'update', report) }}{% endif %}</td>
                             {% else %}
                                 <td></td>
-                                <td>{% if not report.dateFinal and report.datePeriod|date('Y') >= "now"|date("Y") %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'button', report) }}{% endif %}</td>
+                                <td>{% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'button', report) }}{% endif %}</td>
                             {% endif %}
                         </tr>
                         {% if effortSpent %}
