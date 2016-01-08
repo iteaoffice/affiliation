@@ -37,8 +37,9 @@ class RenderPaymentSheet extends AbstractPlugin
 
     /**
      * @param Affiliation $affiliation
-     * @param $year
-     * @param $period
+     * @param             $year
+     * @param             $period
+     *
      * @return AffiliationPdf
      * @throws \Exception
      */
@@ -52,7 +53,8 @@ class RenderPaymentSheet extends AbstractPlugin
         $contactService = clone $this->getContactService()->setContact($affiliation->getContact());
 
         if (!is_null($this->getAffiliationService()->getFinancialContact($affiliation))) {
-            $financialContactService = clone $this->getContactService()->setContact($this->getAffiliationService()->getFinancialContact($affiliation));
+            $financialContactService = clone $this->getContactService()->setContact($this->getAffiliationService()
+                ->getFinancialContact($affiliation));
         } else {
             $financialContactService = null;
         }
@@ -60,13 +62,11 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $affiliationService = $this->getAffiliationService()->setAffiliation($affiliation);
 
-        $versionContributionInformation = $versionService->getProjectVersionContributionInformation(
-            $affiliation,
-            $latestVersion,
-            $year
-        );
+        $versionContributionInformation = $versionService->getProjectVersionContributionInformation($affiliation,
+            $latestVersion, $year);
 
-        $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod($projectService->getProject()->getCall()->getProgram());
+        $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod($projectService->getProject()->getCall()
+            ->getProgram());
 
 
         $pdf = new AffiliationPdf();
@@ -75,41 +75,16 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->SetFontSize(9);
         $pdf->SetTopMargin(55);
 
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h1 style="color: #00a651">' . sprintf(
-                $this->translate("txt-payment-sheet-year-%s-period-%s"),
-                $year,
-                $period
-            ) . '</h1>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '',
+            '<h1 style="color: #00a651">' . sprintf($this->translate("txt-payment-sheet-year-%s-period-%s"), $year,
+                $period) . '</h1>', 0, 1, 0, true, '', true);
         $pdf->Ln();
         $pdf->Line(10, 65, 190, 65, ['color' => [0, 166, 81]]);
 
 
         //Project information
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            sprintf("<h3>%s</h3>", $this->translate("txt-project-details")),
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '', sprintf("<h3>%s</h3>", $this->translate("txt-project-details")), 0, 1, 0,
+            true, '', true);
 
         $projectDetails = [
             [
@@ -138,7 +113,8 @@ class RenderPaymentSheet extends AbstractPlugin
             ],
             [
                 $this->translate("txt-version-date"),
-                (!is_null($versionService->getVersion()->getDateReviewed()) ? $versionService->getVersion()->getDateReviewed()->format("d-m-Y") : '')
+                (!is_null($versionService->getVersion()->getDateReviewed()) ? $versionService->getVersion()
+                    ->getDateReviewed()->format("d-m-Y") : '')
             ],
         ];
 
@@ -146,19 +122,8 @@ class RenderPaymentSheet extends AbstractPlugin
 
 
         //Partner information
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            sprintf("<h3>%s</h3>", $this->translate("txt-project-partner")),
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '', sprintf("<h3>%s</h3>", $this->translate("txt-project-partner")), 0, 1, 0,
+            true, '', true);
 
         $partnersDetails = [
             [
@@ -183,26 +148,17 @@ class RenderPaymentSheet extends AbstractPlugin
             ],
             [
                 $this->translate("txt-average-cost"),
-                ($versionContributionInformation->totalEffort > 0 ? $this->parseKiloCost($versionContributionInformation->totalCost / $versionContributionInformation->totalEffort) : '-') . '/PY'
+                ($versionContributionInformation->totalEffort > 0
+                    ? $this->parseKiloCost($versionContributionInformation->totalCost
+                        / $versionContributionInformation->totalEffort) : '-') . '/PY'
             ]
         ];
 
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
         //Technical contact
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            sprintf("<h3>%s</h3>", $this->translate("txt-technical-contact")),
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '', sprintf("<h3>%s</h3>", $this->translate("txt-technical-contact")), 0, 1, 0,
+            true, '', true);
         $partnersDetails = [
             [
                 $this->translate("txt-name"),
@@ -219,19 +175,8 @@ class RenderPaymentSheet extends AbstractPlugin
 
         if (!is_null($financialContactService)) {
             //Financial contact
-            $pdf->writeHTMLCell(
-                0,
-                0,
-                '',
-                '',
-                sprintf("<h3>%s</h3>", $this->translate("txt-financial-contact")),
-                0,
-                1,
-                0,
-                true,
-                '',
-                true
-            );
+            $pdf->writeHTMLCell(0, 0, '', '', sprintf("<h3>%s</h3>", $this->translate("txt-financial-contact")), 0, 1,
+                0, true, '', true);
 
 
             $financialAddress = $financialContactService->getFinancialAddress();
@@ -250,27 +195,23 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-billing-address"),
-                    sprintf(
-                        "%s \n %s\n%s\n%s %s\n%s",
-                        $this->getOrganisationService()->parseOrganisationWithBranch(
-                            $affiliationService->getAffiliation()->getFinancial()->getBranch(),
-                            $affiliationService->getAffiliation()->getFinancial()->getOrganisation()
-                        ),
-                        trim($financialContactService->parseAttention() . ' ' . $financialContactService->parseFullName()),
-                        $financialAddress->getAddress()->getAddress(),
-                        $financialAddress->getAddress()->getZipCode(),
-                        $financialAddress->getAddress()->getCity(),
-                        strtoupper($financialAddress->getAddress()->getCountry())
-                    )
+                    (!is_null($financialAddress->getAddress()) ? sprintf("%s \n %s\n%s\n%s %s\n%s",
+                        $this->getOrganisationService()
+                            ->parseOrganisationWithBranch($affiliationService->getAffiliation()->getFinancial()
+                                ->getBranch(),
+                                $affiliationService->getAffiliation()->getFinancial()->getOrganisation()),
+                        trim($financialContactService->parseAttention() . ' '
+                            . $financialContactService->parseFullName()), $financialAddress->getAddress()->getAddress(),
+                        $financialAddress->getAddress()->getZipCode(), $financialAddress->getAddress()->getCity(),
+                        strtoupper($financialAddress->getAddress()->getCountry()))
+                        : "No billing address could be found")
                 ],
                 [
                     $this->translate("txt-preferred-delivery"),
-                    ($affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial()->getEmail() === Financial::EMAIL_DELIVERY) ?
-                        sprintf(
-                            $this->translate("txt-by-email-to-%s"),
-                            $financialContactService->getContact()->getEmail()
-                        ) :
-                        $this->translate("txt-by-postal-mail")
+                    ($affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial()
+                            ->getEmail() === Financial::EMAIL_DELIVERY)
+                        ? sprintf($this->translate("txt-by-email-to-%s"),
+                        $financialContactService->getContact()->getEmail()) : $this->translate("txt-by-postal-mail")
 
                 ],
             ];
@@ -280,19 +221,8 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $pdf->addPage();
 
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h3>' . $this->translate("txt-contribution-overview") . '</h3>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '', '<h3>' . $this->translate("txt-contribution-overview") . '</h3>', 0, 1, 0,
+            true, '', true);
         $pdf->Ln();
 
 
@@ -328,7 +258,8 @@ class RenderPaymentSheet extends AbstractPlugin
 
             if ($invoiceMethod->getId() === Method::METHOD_PERCENTAGE) {
                 if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
-                    $dueInYear = $versionContributionInformation->cost[$projectYear] / 100 * $projectService->findProjectFeeByYear($projectYear)->getPercentage();
+                    $dueInYear = $versionContributionInformation->cost[$projectYear] / 100
+                        * $projectService->findProjectFeeByYear($projectYear)->getPercentage();
                     $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
                 } else {
                     $dueInYear = 0;
@@ -336,13 +267,15 @@ class RenderPaymentSheet extends AbstractPlugin
                 }
 
                 if ($affiliationService->isFundedInYear($projectYear)) {
-                    $yearData[] = $this->parsePercent($projectService->findProjectFeeByYear($projectYear)->getPercentage());
+                    $yearData[] = $this->parsePercent($projectService->findProjectFeeByYear($projectYear)
+                        ->getPercentage());
                 } else {
                     $yearData[] = $this->parsePercent(0);
                 }
             } else {
                 if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
-                    $dueInYear = $versionContributionInformation->effort[$projectYear] * $projectService->findProjectFeeByYear($projectYear)->getContribution();
+                    $dueInYear = $versionContributionInformation->effort[$projectYear]
+                        * $projectService->findProjectFeeByYear($projectYear)->getContribution();
                     $yearData[] = $this->parseEffort($versionContributionInformation->effort[$projectYear]);
                 } else {
                     $dueInYear = 0;
@@ -350,7 +283,8 @@ class RenderPaymentSheet extends AbstractPlugin
                 }
 
                 if ($affiliationService->isFundedInYear($projectYear)) {
-                    $yearData[] = $this->parseCost($projectService->findProjectFeeByYear($projectYear)->getContribution());
+                    $yearData[] = $this->parseCost($projectService->findProjectFeeByYear($projectYear)
+                        ->getContribution());
                 } else {
                     $yearData[] = $this->parseCost(0);
                 }
@@ -394,23 +328,9 @@ class RenderPaymentSheet extends AbstractPlugin
         $contribution = $affiliationService->parseContribution($versionService->getVersion(), $year, $period);
 
 
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h3>' . sprintf(
-                $this->translate("txt-already-sent-invoices-upto-year-%s-period-%s"),
-                $year,
-                $period
-            ) . '</h3>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '',
+            '<h3>' . sprintf($this->translate("txt-already-sent-invoices-upto-year-%s-period-%s"), $year, $period)
+            . '</h3>', 0, 1, 0, true, '', true);
         $pdf->Ln();
 
 
@@ -428,7 +348,9 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $previousInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if (!is_null($affiliationInvoice->getInvoice()->getDayBookNumber()) and ($affiliationInvoice->getYear() < $year or $affiliationInvoice->getYear() === $year and $affiliationInvoice->getPeriod() < $period)) {
+            if ($affiliationInvoice->getYear() < $year or $affiliationInvoice->getYear() === $year
+                and $affiliationInvoice->getPeriod() < $period and !is_null($affiliationInvoice->getI)
+            ) {
                 $previousInvoices[] = $affiliationInvoice;
             }
         }
@@ -450,7 +372,8 @@ class RenderPaymentSheet extends AbstractPlugin
                     sprintf("%s-%s", $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
                     $this->parseCost($this->getInvoiceService()->parseSumAmount()),
-                    (!is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()->getBookingDate()->format('d-m-Y') : ''),
+                    (!is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
+                        ->getBookingDate()->format('d-m-Y') : ''),
                     $this->parseCost($this->getInvoiceService()->parseTotal())
                 ];
             }
@@ -469,19 +392,8 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable($header, $currentInvoiceDetails, [40, 35, 25, 25, 25, 35], true);
 
 
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h3>' . $this->translate("txt-correction-calculation") . '</h3>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '', '<h3>' . $this->translate("txt-correction-calculation") . '</h3>', 0, 1, 0,
+            true, '', true);
 
 
         $correctionDetails = [
@@ -502,19 +414,9 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable([], $correctionDetails, [95, 85], true);
 
 
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h3>' . sprintf($this->translate("txt-invoice-for-year-%s-period-%s"), $year, $period) . '</h3>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+        $pdf->writeHTMLCell(0, 0, '', '',
+            '<h3>' . sprintf($this->translate("txt-invoice-for-year-%s-period-%s"), $year, $period) . '</h3>', 0, 1, 0,
+            true, '', true);
         $pdf->Ln();
 
         //Partner information
@@ -528,11 +430,8 @@ class RenderPaymentSheet extends AbstractPlugin
         $upcomingDetails = [
             [
                 sprintf("%s-%s", $year, $period),
-                sprintf(
-                    $this->translate("txt-%s-contribution-for-%s"),
-                    $this->parsePercent($affiliationService->parseContributionFactor($year, $period) * 100),
-                    $year
-                ),
+                sprintf($this->translate("txt-%s-contribution-for-%s"),
+                    $this->parsePercent($affiliationService->parseContributionFactor($year, $period) * 100), $year),
                 $this->parseCost($contribution)
             ],
             [
@@ -564,7 +463,9 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $upcomingInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if ($affiliationInvoice->getYear() > $year or $affiliationInvoice->getYear() === $year and $affiliationInvoice->getPeriod() > $period) {
+            if ($affiliationInvoice->getYear() > $year or $affiliationInvoice->getYear() === $year
+                and $affiliationInvoice->getPeriod() > $period
+            ) {
                 if (!is_null($affiliationInvoice->getInvoice()->getDateSent())) {
                     $upcomingInvoices[] = $affiliationInvoice;
                 }
@@ -574,23 +475,9 @@ class RenderPaymentSheet extends AbstractPlugin
         $upcomingInvoiceDetails = [];
 
         if (sizeof($upcomingInvoices) > 0) {
-            $pdf->writeHTMLCell(
-                0,
-                0,
-                '',
-                '',
-                '<h3>' . sprintf(
-                    $this->translate("txt-already-sent-invoices-after-year-%s-period-%s") . '</h3>',
-                    $year,
-                    $period
-                ),
-                0,
-                1,
-                0,
-                true,
-                '',
-                true
-            );
+            $pdf->writeHTMLCell(0, 0, '', '',
+                '<h3>' . sprintf($this->translate("txt-already-sent-invoices-after-year-%s-period-%s") . '</h3>', $year,
+                    $period), 0, 1, 0, true, '', true);
             $pdf->Ln();
 
             /**
@@ -602,7 +489,8 @@ class RenderPaymentSheet extends AbstractPlugin
                     $affiliationInvoice->getInvoice()->getInvoiceNr(),
                     sprintf("%s-%s", $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
-                    (!is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()->getBookingDate()->format('d-m-Y') : ''),
+                    (!is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
+                        ->getBookingDate()->format('d-m-Y') : ''),
                     $this->parseCost($this->getInvoiceService()->parseSumAmount()),
                     $this->parseCost($this->getInvoiceService()->parseTotal())
                 ];
@@ -617,6 +505,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
     /**
      * @param $effort
+     *
      * @return string
      */
     public function parseEffort($effort)
@@ -626,6 +515,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
     /**
      * @param $percent
+     *
      * @return string
      */
     public function parsePercent($percent)
@@ -635,6 +525,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
     /**
      * @param $cost
+     *
      * @return string
      */
     public function parseKiloCost($cost)
@@ -644,6 +535,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
     /**
      * @param $cost
+     *
      * @return string
      */
     public function parseCost($cost)
