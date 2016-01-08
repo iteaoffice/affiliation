@@ -288,6 +288,8 @@ class AffiliationService extends ServiceAbstract
         $year = (int)$year;
         $period = (int)$period;
 
+
+
         if (is_null($year) || is_null($period)) {
             throw new \InvalidArgumentException("Year and/or period cannot be null");
         }
@@ -302,7 +304,7 @@ class AffiliationService extends ServiceAbstract
 
                 foreach ($costsPerYear as $costsYear => $cost) {
                     //fee
-                    $fee = $this->getProjectService()->findProjectFeeByYear($year);
+                    $fee = $this->getProjectService()->findProjectFeeByYear($costsYear);
 
                     $factor = $this->parseContributionFactorDue($costsYear, $year, $period);
 
@@ -345,7 +347,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * Sum up the amount paid already by the affilation in the previous period
+     * Sum up the amount paid already by the affiliation in the previous period
      * Exclude of course the credit notes
      *
      * @param  $year
@@ -361,10 +363,9 @@ class AffiliationService extends ServiceAbstract
 
         //Sum the invoiced amount of all invoices for this affiliation
         foreach ($this->getAffiliation()->getInvoice() as $invoice) {
-            //Filter invoices of previous years or this year, but the previous period
-            if (is_null($invoice->getInvoice()->getCreditOriginal())
-                && (($invoice->getPeriod() < $period && $invoice->getYear() == $year)
-                    || $invoice->getYear() < $year)
+            //Filter invoices of previous years or this year, but the previous period and already sent to accounting
+            if (!is_null($invoice->getInvoice()->getDayBookNumber()) && is_null($invoice->getInvoice()->getCreditOriginal())
+                && (($invoice->getPeriod() < $period && $invoice->getYear() == $year) || $invoice->getYear() < $year)
             ) {
                 $countribitionPaid += $invoice->getAmountInvoiced();
             }
