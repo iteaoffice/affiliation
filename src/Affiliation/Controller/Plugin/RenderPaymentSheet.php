@@ -195,7 +195,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-billing-address"),
-                    (!is_null($financialAddress->getAddress()) ? sprintf("%s \n %s\n%s\n%s %s\n%s",
+                    (!is_null($financialAddress) ? sprintf("%s \n %s\n%s\n%s %s\n%s",
                         $this->getOrganisationService()
                             ->parseOrganisationWithBranch($affiliationService->getAffiliation()->getFinancial()
                                 ->getBranch(),
