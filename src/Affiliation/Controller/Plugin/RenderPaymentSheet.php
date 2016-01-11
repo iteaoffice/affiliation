@@ -463,8 +463,8 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $upcomingInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if ($affiliationInvoice->getYear() > $year or $affiliationInvoice->getYear() === $year
-                and $affiliationInvoice->getPeriod() > $period
+            if ($affiliationInvoice->getYear() > $year || $affiliationInvoice->getYear() === $year
+                && $affiliationInvoice->getPeriod() > $period
             ) {
                 if (!is_null($affiliationInvoice->getInvoice()->getDateSent())) {
                     $upcomingInvoices[] = $affiliationInvoice;
