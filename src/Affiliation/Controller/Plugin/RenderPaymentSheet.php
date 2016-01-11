@@ -195,11 +195,9 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-billing-address"),
-                    (!is_null($financialAddress) ? sprintf("%s \n %s\n%s\n%s %s\n%s",
-                        $this->getOrganisationService()
-                            ->parseOrganisationWithBranch($affiliationService->getAffiliation()->getFinancial()
-                                ->getBranch(),
-                                $affiliationService->getAffiliation()->getFinancial()->getOrganisation()),
+                    (!is_null($financialAddress) ? sprintf("%s \n %s\n%s\n%s %s\n%s", $this->getOrganisationService()
+                        ->parseOrganisationWithBranch($affiliationService->getAffiliation()->getFinancial()
+                            ->getBranch(), $affiliationService->getAffiliation()->getFinancial()->getOrganisation()),
                         trim($financialContactService->parseAttention() . ' '
                             . $financialContactService->parseFullName()), $financialAddress->getAddress()->getAddress(),
                         $financialAddress->getAddress()->getZipCode(), $financialAddress->getAddress()->getCity(),
@@ -348,8 +346,10 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $previousInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if ($affiliationInvoice->getYear() < $year or $affiliationInvoice->getYear() === $year
-                and $affiliationInvoice->getPeriod() < $period and !is_null($affiliationInvoice->getI)
+            if (!is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
+                && ($affiliationInvoice->getYear() < $year
+                    || ($affiliationInvoice->getYear() === $year
+                        && $affiliationInvoice->getPeriod() < $period))
             ) {
                 $previousInvoices[] = $affiliationInvoice;
             }
