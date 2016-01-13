@@ -126,7 +126,11 @@
     </tr>
     <tr>
         <td class="col-md-2">{{ translate("txt-preferred-delivery") }}</td>
-        {% if affiliationService.affiliation.financial.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+        {% if not affiliationService.affiliation.financial %}
+            <td class="col-md-4">{{ translate("txt-no-financial-information-for-this-partner") }}</td>
+        {% elseif not affiliationService.affiliation.financial.organisation.financial %}
+            <td class="col-md-4">{{ translate("txt-no-financial-information-for-the-billing-organisation") }}</td>
+        {% elseif affiliationService.affiliation.financial.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
             <td class="col-md-4">{{ translate("txt-by-email-to-%s")|format(financialContactService.contact.email) }}</td>
         {% else %}
             <td class="col-md-4">{{ translate("txt-by-postal-mail") }}</td>

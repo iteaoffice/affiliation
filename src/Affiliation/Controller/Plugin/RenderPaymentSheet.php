@@ -284,12 +284,15 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-preferred-delivery"),
-                    ($affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial()
+                    is_null($affiliationService->getAffiliation()->getFinancial()) || is_null($affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial())
+                        ? 'No billing organisation known'
+                        : (($affiliationService->getAffiliation()->getFinancial()->getOrganisation()->getFinancial()
                             ->getEmail() === Financial::EMAIL_DELIVERY)
                         ? sprintf(
                             $this->translate("txt-by-email-to-%s"),
                             $financialContactService->getContact()->getEmail()
-                        ) : $this->translate("txt-by-postal-mail")
+                        )
+                        : $this->translate("txt-by-postal-mail"))
 
                 ],
             ];
