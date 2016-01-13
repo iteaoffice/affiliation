@@ -179,7 +179,7 @@ class AffiliationService extends ServiceAbstract
                 $errors[] = sprintf('No invoice is needed for %s', $affiliation->getOrganisation()->getType()->getDescription());
                 break;
             case is_null($affiliation->getFinancial()):
-                $errors[] = 'No financial organisation set for this partner';
+                $errors[] = 'No financial organisation (affiliation financial) set for this partner';
                 break;
             case !is_null($affiliation->getDateEnd()):
                 $errors[] = 'Partner is de-activated';

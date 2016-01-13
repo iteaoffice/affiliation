@@ -551,20 +551,25 @@
                             <dd>{{ financialAddress.address.address }}</dd>
                             <dd>{{ financialAddress.address.zipcode }} {{ financialAddress.address.city }}</dd>
                             <dd>{{ financialAddress.address.country|upper }}</dd>
-
-                            <dt>{{ translate('txt-vat-number') }}</dt>
-                            <dd>{{ organisationService.organisation.financial.vat }}</dd>
-
-                            <dt>{{ translate("txt-preferred-delivery") }}</dt>
-                            {% if organisationService.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-                                <dd>{{ translate("txt-by-email-to-%s")|format(contactService.contact.email) }}</dd>
-                            {% else %}
-                                <dd>{{ translate("txt-by-postal-mail") }}</dd>
-                            {% endif %}
                         </dl>
 
                     {% else %}
                         {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliationService.affiliation))|raw }}
+                    {% endif %}
+
+
+                    {% if organisationService.organisation.financial %}
+                        <dt>{{ translate('txt-vat-number') }}</dt>
+                        <dd>{{ organisationService.organisation.financial.vat }}</dd>
+
+                        <dt>{{ translate("txt-preferred-delivery") }}</dt>
+                        {% if organisationService.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+                            <dd>{{ translate("txt-by-email-to-%s")|format(contactService.contact.email) }}</dd>
+                        {% else %}
+                            <dd>{{ translate("txt-by-postal-mail") }}</dd>
+                        {% endif %}
+                    {%  else %}
+                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-the-organisation-%s")|format(affiliationService.affiliation.organisation))|raw }}
                     {% endif %}
 
                     {{ affiliationLink(affiliationService.affiliation, 'edit-financial','button') }}

@@ -276,7 +276,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $associate;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
@@ -290,7 +290,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $funding;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
@@ -311,14 +311,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $projectReportEffortSpent;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Affiliation\Entity\Loi
      */
     private $loi;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Affiliation\Entity\Doa
