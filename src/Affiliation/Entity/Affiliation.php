@@ -202,14 +202,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $ictOrganisation;
     /**
-     * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Affiliation\Entity\Description[]|Collections\ArrayCollection()
      */
     private $description;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Financial", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Financial", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Affiliation\Entity\Financial
@@ -251,7 +251,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $version;
     /**
-     * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", inversedBy="associate", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", inversedBy="associate", cascade={"persist","remove"})
      * @ORM\OrderBy=({"Lastname"="ASC"})
      * @ORM\JoinTable(name="associate",
      *    joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
