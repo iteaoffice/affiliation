@@ -1,6 +1,15 @@
 imports:
     - php
 
+build:
+    tests:
+        override:
+            -
+                command: 'phpunit --coverage-clover=coverage'
+                coverage:
+                    file: 'coverage'
+                    format: 'php-clover'
+
 tools:
     php_changetracking: true
     php_sim:
@@ -11,5 +20,4 @@ tools:
     php_analyzer: true
     php_cs_fixer: true
     sensiolabs_security_checker: true
-    external_code_coverage:
-        timeout: 600 # Timeout in seconds.
+
