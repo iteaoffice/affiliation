@@ -51,7 +51,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
             self::SELF_FUNDED     => 'txt-self-funded',
         ];
     /**
-     * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_id", length=10, type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
@@ -354,6 +354,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var \Project\Entity\Changerequest\CostChange[]|Collections\ArrayCollection
      */
     private $changerequestCostChange;
+    /**
+     * @ORM\ManyToMany(targetEntity="Project\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Log[]|Collections\ArrayCollection
+     */
+    private $projectLog;
 
     /**
      * Class constructor.
@@ -377,6 +384,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
         $this->changerequestCostChange = new Collections\ArrayCollection();
+        $this->projectLog = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -1115,6 +1123,26 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setChangerequestCostChange($changerequestCostChange)
     {
         $this->changerequestCostChange = $changerequestCostChange;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Log[]
+     */
+    public function getProjectLog()
+    {
+        return $this->projectLog;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Log[] $projectLog
+     *
+     * @return Affiliation
+     */
+    public function setProjectLog($projectLog)
+    {
+        $this->projectLog = $projectLog;
 
         return $this;
     }

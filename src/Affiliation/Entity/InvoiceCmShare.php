@@ -35,7 +35,7 @@ class InvoiceCmShare extends EntityAbstract
     const POST_CALCULATION = 0;
 
     /**
-     * @ORM\Column(name="cmshare_id", type="integer", nullable=false)
+     * @ORM\Column(name="cmshare_id", length=10, type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -43,7 +43,7 @@ class InvoiceCmShare extends EntityAbstract
      */
     private $id;
     /**
-     * @ORM\Column(name="year", type="integer", nullable=false)
+     * @ORM\Column(name="year", length=10, type="integer", nullable=false)
      *
      * @var integer
      */

@@ -559,16 +559,18 @@
 
 
                     {% if organisationService.organisation.financial %}
-                        <dt>{{ translate('txt-vat-number') }}</dt>
-                        <dd>{{ organisationService.organisation.financial.vat }}</dd>
+                        <dl class="dl-horizontal">
+                            <dt>{{ translate('txt-vat-number') }}</dt>
+                            <dd>{{ organisationService.organisation.financial.vat }}</dd>
 
-                        <dt>{{ translate("txt-preferred-delivery") }}</dt>
-                        {% if organisationService.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-                            <dd>{{ translate("txt-by-email-to-%s")|format(contactService.contact.email) }}</dd>
-                        {% else %}
-                            <dd>{{ translate("txt-by-postal-mail") }}</dd>
-                        {% endif %}
-                    {%  else %}
+                            <dt>{{ translate("txt-preferred-delivery") }}</dt>
+                            {% if organisationService.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+                                <dd>{{ translate("txt-by-email-to-%s")|format(contactService.contact.email) }}</dd>
+                            {% else %}
+                                <dd>{{ translate("txt-by-postal-mail") }}</dd>
+                            {% endif %}
+                        </dl>
+                    {% else %}
                         {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-the-organisation-%s")|format(affiliationService.affiliation.organisation))|raw }}
                     {% endif %}
 

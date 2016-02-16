@@ -28,7 +28,7 @@ use Zend\InputFilter\InputFilterInterface;
 class Financial extends EntityAbstract
 {
     /**
-     * @ORM\Column(name="affiliation_financial_id", type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_financial_id", length=10, type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *

@@ -66,7 +66,7 @@
 
             {% if affiliationService.isSelfFunded() %}
                 <dt>{{ translate("txt-self-funded") }}</dt>
-                <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliationService.affiliation.dateSelfFunded|time_diff) }}</dd>
+                <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliationService.affiliation.dateSelfFunded|string_date) }}</dd>
             {% endif %}
         </dl>
 
@@ -172,7 +172,7 @@
                 <dt>{{ translate("txt-member-representative") }}</dt>
                 <dd>{{ contactLink(member.contact,'view-admin','name') }}</dd>
                 <dt>{{ translate("txt-member-date-created") }}</dt>
-                <dd>{{ member.dateCreated|time_diff }}</dd>
+                <dd>{{ member.dateCreated|string_date }}</dd>
                 {% if member.dateEnd %}
                     <dt>{{ translate("txt-member-date-end") }}</dt>
                     <dd>{{ member.dateEnd }}</dd>
@@ -313,7 +313,7 @@
                 <tr>
                     <td>{{ versionLink(versionService,'view-admin','name') }}</td>
                     <td>{{ versionService.parseStatus() }}</td>
-                    <td>{{ versionService.version.dateReviewed|time_diff }}</td>
+                    <td>{{ versionService.version.dateReviewed|string_date }}</td>
                     <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, versionService.version)|parse_effort }}</td>
                     <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, versionService.version)|parse_cost }}</td>
                 </tr>
