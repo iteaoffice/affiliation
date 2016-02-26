@@ -48,20 +48,38 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
         );
 
         return new ViewModel([
-                'affiliationService' => $affiliationService,
-                'memberService' => $this->getMemberService(),
-                'contactsInAffiliation' => $this->getContactService()
-                    ->findContactsInAffiliation($affiliationService->getAffiliation()),
-                'projectService' => $this->getProjectService(),
-                'workpackageService' => $this->getWorkpackageService(),
-                'latestVersion' => $this->getProjectService()->getLatestProjectVersion(),
-                'versionType' => $this->getProjectService()->getNextMode()->versionType,
-                'reportService' => $this->getReportService(),
-                'versionService' => $this->getVersionService(),
-                'invoiceService' => $this->getInvoiceService(),
-                'organisationService' => $this->getOrganisationService()
-                    ->setOrganisation($affiliationService->getAffiliation()->getOrganisation())
-            ]);
+            'affiliationService'    => $affiliationService,
+            'memberService'         => $this->getMemberService(),
+            'contactsInAffiliation' => $this->getContactService()
+                ->findContactsInAffiliation($affiliationService->getAffiliation()),
+            'projectService'        => $this->getProjectService(),
+            'workpackageService'    => $this->getWorkpackageService(),
+            'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(),
+            'versionType'           => $this->getProjectService()->getNextMode()->versionType,
+            'reportService'         => $this->getReportService(),
+            'versionService'        => $this->getVersionService(),
+            'invoiceService'        => $this->getInvoiceService(),
+            'organisationService'   => $this->getOrganisationService()
+                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation())
+        ]);
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function mergeAction()
+    {
+        $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
+        $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+
+        
+
+        return new ViewModel([
+            'affiliationService'  => $affiliationService,
+            'projectService'      => $this->getProjectService(),
+            'organisationService' => $this->getOrganisationService()
+                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation())
+        ]);
     }
 
     /**
@@ -121,6 +139,7 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
         $form->setData($formData);
 
         $form->get('contact')->setDisableInArrayValidator(true);
+        $form->get('organisation')->setDisableInArrayValidator(true);
         $form->get('financialOrganisation')->setDisableInArrayValidator(true);
         $form->get('financialContact')->setDisableInArrayValidator(true);
 
@@ -133,6 +152,7 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
              * Update the affiliation based on the form information
              */
             $affiliation->setContact($this->getContactService()->setContactId($formData['contact'])->getContact());
+            $affiliation->setOrganisation($this->getOrganisationService()->setOrganisationId($formData['organisation'])->getOrganisation());
             $affiliation->setBranch($formData['branch']);
             if (empty($formData['dateSelfFunded'])) {
                 $affiliation->setSelfFunded(Affiliation::NOT_SELF_FUNDED);
@@ -180,15 +200,15 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
                 ));
 
             return $this->redirect()->toRoute('zfcadmin/affiliation/view', [
-                    'id' => $affiliationService->getAffiliation()->getId(),
-                ]);
+                'id' => $affiliationService->getAffiliation()->getId(),
+            ]);
         }
 
         return new ViewModel([
-                'affiliationService' => $affiliationService,
-                'projectService'     => $projectService,
-                'form'               => $form,
-            ]);
+            'affiliationService' => $affiliationService,
+            'projectService'     => $projectService,
+            'form'               => $form,
+        ]);
     }
 
 
@@ -278,10 +298,10 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
         }
 
         return new ViewModel([
-                'affiliationService' => $affiliationService,
-                'projectService'     => $projectService,
-                'contact'            => $contact,
-                'form'               => $form,
-            ]);
+            'affiliationService' => $affiliationService,
+            'projectService'     => $projectService,
+            'contact'            => $contact,
+            'form'               => $form,
+        ]);
     }
 }

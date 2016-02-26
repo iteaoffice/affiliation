@@ -7,6 +7,7 @@ return array(
     'affiliation/partial/payment-sheet-email'        => __DIR__ . '//view/affiliation/partial/payment-sheet-email.twig',
     'affiliation/doa/replace'                        => __DIR__ . '//view/affiliation/doa/replace.twig',
     'affiliation/doa/upload'                         => __DIR__ . '//view/affiliation/doa/upload.twig',
+    'affiliation/affiliation-manager/merge'          => __DIR__ . '//view/affiliation/affiliation-manager/merge.twig',
     'affiliation/affiliation-manager/payment-sheet'  => __DIR__ . '//view/affiliation/affiliation-manager/payment-sheet.twig',
     'affiliation/affiliation-manager/edit-associate' => __DIR__ . '//view/affiliation/affiliation-manager/edit-associate.twig',
     'affiliation/affiliation-manager/view'           => __DIR__ . '//view/affiliation/affiliation-manager/view.twig',

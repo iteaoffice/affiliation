@@ -29,6 +29,36 @@ return [
                         'label' => _("txt-missing-loi"),
                         'route' => 'zfcadmin/affiliation/loi/missing',
                     ],
+                    'affiliation'  => [
+                        'label'   => _("txt-nav-project-partner"),
+                        'route'   => 'zfcadmin/affiliation/view',
+                        'visible' => false,
+                        'params'  => [
+                            'setters' => [
+                                'label' => Affiliation\Navigation\Invokable\AffiliationLabel::class
+                            ],
+                            'entity'  => \Affiliation\Entity\Affiliation::class,
+                        ],
+                        'pages'   => [
+                            'edit' => [
+                                'label'   => _('txt-nav-edit'),
+                                'route'   => 'zfcadmin/affiliation/edit',
+                                'visible' => false,
+                                'params'  => [
+                                    'entity' => \Affiliation\Entity\Affiliation::class,
+                                ],
+                            ],
+                            'merge' => [
+                                'label'   => _('txt-merge-with-other'),
+                                'route'   => 'zfcadmin/affiliation/merge',
+                                'visible' => false,
+                                'params'  => [
+                                    'entity' => \Affiliation\Entity\Affiliation::class,
+                                ],
+                            ],
+                        ],
+
+                    ],
                 ],
             ],
         ],

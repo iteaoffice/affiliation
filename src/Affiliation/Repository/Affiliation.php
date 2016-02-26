@@ -2,7 +2,7 @@
 /**
  * ITEA Office copyright message placeholder.
  *
- * @category Affiliation
+ * @category  Affiliation
  *
  * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
@@ -294,7 +294,7 @@ class Affiliation extends EntityRepository
         $qb->addOrderBy('o.organisation', 'ASC');
         $qb->addGroupBy('a.project');
 
-        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
     /**
@@ -372,7 +372,7 @@ class Affiliation extends EntityRepository
 
         $qb->addGroupBy('a.project');
 
-        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
     /**
@@ -399,6 +399,22 @@ class Affiliation extends EntityRepository
         $qb->setParameter(2, $country);
         $qb->addGroupBy('o.country');
 
-        return (int) $qb->getQuery()->getOneOrNullResult()['amount'];
+        return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
+    }
+
+    /**
+     * @return array
+     */
+    public function findAffiliationInProjectLog()
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder->select('a', 'p', 'o');
+        $queryBuilder->from(Entity\Affiliation::class, 'a');
+
+        $queryBuilder->innerJoin("a.projectLog", 'l');
+        $queryBuilder->innerJoin("a.project", 'p');
+        $queryBuilder->innerJoin("a.organisation", 'o');
+
+        return $queryBuilder->getQuery()->getArrayResult();
     }
 }

@@ -19,8 +19,10 @@ use Affiliation\Form\Financial as FinancialForm;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Service\ContactServiceAwareInterface;
+use DragonBe\Vies\Vies;
 use General\Service\GeneralServiceAwareInterface;
 use Organisation\Entity\Organisation;
+use Organisation\Entity\Type;
 use Organisation\Service\OrganisationServiceAwareInterface;
 use Project\Entity\Report\EffortSpent as ReportEffortSpent;
 use Project\Service\ProjectService;
@@ -234,52 +236,42 @@ class EditController extends AffiliationAbstractController implements
         ) {
             $formData = $form->getData();
 
-
+            //We need to find the organisation, first by tring the VAT, then via the name and country and then just create it
             $organisation = null;
+
             //Check if an organisation with the given VAT is already found
             $organisationFinancial = $this->getOrganisationService()
                 ->findFinancialOrganisationWithVAT($formData['vat']);
+
 
             //If the organisation is found, it has by default an organiation
             if (!is_null($organisationFinancial)) {
                 $organisation = $organisationFinancial->getOrganisation();
             }
 
-            /*
-             * If the organisation or country has changed or is not set and we didn't find an organisation yet, find the new
-             */
-            if ((!is_null($organisation)
-                    && !(strpos($organisation->getOrganisation(), $formData['organisation']) !== false))
-                && ($formData['organisation'] !== $organisationService->parseOrganisationWithBranch($branch)
-                    || is_null($financialAddress)
-                    || intval($formData['country']) !== $financialAddress->getCountry()->getId()
-                    || intval($formData['contact']) !== $financialAddress->getContact()->getId())
-            ) {
-                /*
-                 * The organisation, or country has changed, so try to find this country in the database
-                 */
+            //try to find the organisation based on te country and name
+            if (is_null($organisation)) {
                 $organisation = $this->getOrganisationService()
                     ->findOrganisationByNameCountry(
                         trim($formData['organisation']),
                         $this->getGeneralService()->findEntityById('Country', $formData['country'])
                     );
-                /*
-                 * If the organisation is not found, create it
-                 */
-                if (is_null($organisation)) {
-                    $organisation = new Organisation();
-                    $organisation->setOrganisation($formData['organisation']);
-                    $organisation->setCountry($this->getGeneralService()
-                        ->findEntityById('Country', $formData['country']));
-                    /*
-                     * @var OrganisationType
-                     */
-                    $organisationType = $this->getOrganisationService()->getEntityManager()
-                        ->getReference('Organisation\Entity\Type', 0);
-                    $organisation->setType($organisationType);
-                }
             }
 
+            /**
+             * If the organisation is still not found, create it
+             */
+            if (is_null($organisation)) {
+                $organisation = new Organisation();
+                $organisation->setOrganisation($formData['organisation']);
+                $organisation->setCountry($this->getGeneralService()->findEntityById('Country', $formData['country']));
+                /**
+                 * @var $organisationType Type
+                 */
+                $organisationType = $this->getOrganisationService()->getEntityManager()
+                    ->getReference('Organisation\Entity\Type', 0);
+                $organisation->setType($organisationType);
+            }
 
             /**
              *
@@ -300,28 +292,72 @@ class EditController extends AffiliationAbstractController implements
             $this->getAffiliationService()->updateEntity($affiliationFinancial);
 
 
+            if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
+                $organisationFinancial = $affiliationService->getAffiliation()->getFinancial()->getOrganisation()
+                    ->getFinancial();
+            } else {
+                $organisationFinancial = $affiliationService->getAffiliation()->getOrganisation()->getFinancial();
+            }
+
+            if (is_null($organisationFinancial)) {
+                $organisationFinancial = new \Organisation\Entity\Financial();
+            }
+
+            $organisationFinancial->setOrganisation($organisation);
             /**
              * The presence of a VAT number triggers the creation of a financial organisation
              */
             if (!empty($formData['vat'])) {
-                if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
-                    $organisationFinancial = $affiliationService->getAffiliation()->getFinancial()->getOrganisation()
-                        ->getFinancial();
-                } else {
-                    $organisationFinancial = $affiliationService->getAffiliation()->getOrganisation()->getFinancial();
-                }
-
-                if (is_null($organisationFinancial)) {
-                    $organisationFinancial = new \Organisation\Entity\Financial();
-                }
-
-
-                $organisationFinancial->setOrganisation($organisation);
                 $organisationFinancial->setVat($formData['vat']);
-                $organisationFinancial->setEmail($formData['preferredDelivery']);
-                $organisationFinancial->setOmitContact($formData['omitContact']);
-                $this->getOrganisationService()->updateEntity($organisationFinancial);
+
+                //Do an in-situ vat check
+                $vies = new Vies();
+
+                try {
+                    $result = $vies->validateVat(
+                        $organisationFinancial->getOrganisation()->getCountry()->getCd(),
+                        trim(str_replace(
+                            $organisationFinancial->getOrganisation()->getCountry()->getCd(),
+                            '',
+                            $formData['vat']
+                        ))
+                    );
+
+                    if ($result->isValid()) {
+                        $this->flashMessenger()->setNamespace('success')
+                            ->addMessage(sprintf(
+                                $this->translate("txt-vat-number-is-valid"),
+                                $affiliationService->getAffiliation()
+                            ));
+
+
+                        //Update the financial
+                        $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_VALID);
+                        $organisationFinancial->setDateVat(new \DateTime());
+                    } else {
+                        //Update the financial
+                        $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_INVALID);
+                        $organisationFinancial->setDateVat(new \DateTime());
+                        $this->flashMessenger()->setNamespace('error')
+                            ->addMessage(sprintf(
+                                $this->translate("txt-vat-number-is-invalid"),
+                                $affiliationService->getAffiliation()
+                            ));
+                    }
+                } catch (\Exception $e) {
+                    $this->flashMessenger()->setNamespace('danger')
+                        ->addMessage(sprintf(
+                            $this->translate("txt-vat-information-could-not-be-verified"),
+                            $affiliationService->getAffiliation()
+                        ));
+                }
+            } else {
+                $organisationFinancial->setVat(null);
             }
+
+            $organisationFinancial->setEmail($formData['preferredDelivery']);
+            $organisationFinancial->setOmitContact($formData['omitContact']);
+            $this->getOrganisationService()->updateEntity($organisationFinancial);
 
 
             /*
@@ -358,7 +394,9 @@ class EditController extends AffiliationAbstractController implements
 
             return $this->redirect()->toRoute('community/affiliation/affiliation', [
                 'id' => $affiliationService->getAffiliation()->getId(),
-            ]);
+            ], [
+                    'fragment' => 'invoicing'
+                ]);
         }
 
         return new ViewModel([

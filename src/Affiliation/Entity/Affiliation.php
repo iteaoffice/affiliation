@@ -237,7 +237,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $invoicePostCalc;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Log", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Affiliation\Entity\Log[]|Collections\ArrayCollection()
@@ -251,7 +251,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $version;
     /**
-     * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", inversedBy="associate", cascade={"persist","remove"})
+     * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", inversedBy="associate", cascade={"persist"})
      * @ORM\OrderBy=({"Lastname"="ASC"})
      * @ORM\JoinTable(name="associate",
      *    joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
@@ -276,14 +276,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $associate;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
      */
     private $cost;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Funding\Funding[]|Collections\ArrayCollection()
@@ -325,7 +325,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $doa;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist","remove"}, mappedBy="affiliation")
      * @ORM\OrderBy=({"DateCreated"="DESC"})
      * @Annotation\Exclude();
      *
@@ -333,7 +333,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $doaReminder;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist","remove"}, mappedBy="affiliation")
      * @ORM\OrderBy=({"DateCreated"="DESC"})
      * @Annotation\Exclude();
      *

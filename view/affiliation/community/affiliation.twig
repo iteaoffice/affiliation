@@ -76,7 +76,7 @@
                 <dd>
                     {% if affiliationService.affiliation.organisation.member %}
                         {#{{ memberLink(affiliationService.affiliation.organisation.member,'view','name') }}#}
-                        {{ translate("txt-organsation-%s-is-member-type-%s-since-%s") }}
+                        {{ translate("txt-organsation-%s-is-member-type-%s-since-%s")|format(affiliationService.affiliation.organisation,affiliationService.affiliation.organisation.member.type,affiliationService.affiliation.organisation.member.dateCreated|time_diff) }}
                     {% elseif (affiliationService.affiliation.organisation.applicant) %}
                         {{ applicantLink(affiliationService.affiliation.organisation.applicant,'view','text') }}
                     {% else %}

@@ -1,0 +1,111 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-merge-affiliation-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName)) %}
+
+<h1>{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName) }}</h1>
+
+<h2>{{ translate("txt-project-information") }}</h2>
+
+<dl class="dl-horizontal">
+    <dt>{{ translate("txt-project-name") }}</dt>
+    <dd>{{ projectLink(projectService,'view-admin', 'name') }}
+        {{ projectLink(projectService,'view-community', 'icon') }}
+    </dd>
+    <dt>{{ translate("txt-program-call") }}</dt>
+    <dd>{{ callLink(affiliationService.affiliation.project.call,'view-admin','name') }}</dd>
+    <dt>{{ translate("txt-status") }}</dt>
+    <dd>{{ projectService.parseStatus() }}</dd>
+    <dt>{{ translate("txt-project-leader") }}</dt>
+    <dd>{{ contactLink(projectService.project.contact,'view-admin','name') }} <a
+                href="mailto:{{ projectService.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+    </dd>
+</dl>
+
+<h2>{{ translate("txt-main-affiliation") }}</h2>
+
+{% set effortVersionTableAmount = 0 %}
+    {% for affiliationVersion in affiliationService.affiliation.version %}
+        {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}
+    {% endfor %}
+ {% set costVersionTableAmount = 0 %}
+    {% for affiliationVersion in affiliationService.affiliation.version %}
+        {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
+    {% endfor %}
+
+<table class="table table-hover table-striped">
+    <thead>
+    <tr>
+        <th class="col-md-2">{{ translate("txt-organisation-name") }}</th>
+        <th>{{ translate("txt-country") }}</th>
+        <th>{{ translate("txt-effort-table") }}</th>
+        <th>{{ translate("txt-cost-table") }}</th>
+        <th>{{ translate("txt-versions") }}</th>
+        <th>{{ translate("txt-effort-version-table") }}</th>
+        <th>{{ translate("txt-cost-version-table") }}</th>
+        <th>{{ translate("txt-effort-spent-table") }}</th>
+        <th>{{ translate("txt-effort-cost-change-table") }}</th>
+        <th>{{ translate("txt-associates") }}</th>
+        <th>{{ translate("txt-invoices") }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="success">
+        <td>{{ affiliationLink(affiliationService.affiliation,'view-admin', 'name') }} {{ affiliationLink(affiliationService.affiliation,'view-community', 'icon') }}</td>
+        <td>{{ countryLink(affiliationService.affiliation.organisation.country,'view-admin','name') }}</td>
+        <td>{{ affiliationService.affiliation.effort.count() }}</td>
+        <td>{{ affiliationService.affiliation.cost.count() }}</td>
+        <td>{{ affiliationService.affiliation.version.count() }}</td>
+        <td>{{ effortVersionTableAmount }}</td>
+        <td>{{ costVersionTableAmount }}</td>
+        <td>{{ affiliationService.affiliation.spent.count() }}</td>
+        <td>{{ affiliationService.affiliation.projectReportEffortSpent.count() }}</td>
+        <td>{{ affiliationService.affiliation.associate.count() }}</td>
+        <td>{{ affiliationService.affiliation.invoice.count() }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>{{ translate("txt-merge-with") }}</h2>
+
+
+<table class="table table-hover table-striped">
+    <thead>
+    <tr>
+        <th class="col-md-2">{{ translate("txt-organisation-name") }}</th>
+        <th>{{ translate("txt-country") }}</th>
+        <th>{{ translate("txt-effort-table") }}</th>
+        <th>{{ translate("txt-cost-table") }}</th>
+        <th>{{ translate("txt-versions") }}</th>
+        <th>{{ translate("txt-effort-version-table") }}</th>
+        <th>{{ translate("txt-cost-version-table") }}</th>
+        <th>{{ translate("txt-effort-spent-table") }}</th>
+        <th>{{ translate("txt-effort-cost-change-table") }}</th>
+        <th>{{ translate("txt-associates") }}</th>
+        <th>{{ translate("txt-invoices") }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for affiliationService in projectService.getAffiliation(constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) %}
+        {% set effortVersionTableAmount = 0 %}
+        {% for affiliationVersion in affiliationService.affiliation.version %}
+            {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}
+        {% endfor %}
+        {% set costVersionTableAmount = 0 %}
+        {% for affiliationVersion in affiliationService.affiliation.version %}
+            {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
+        {% endfor %}
+        <tr>
+            <td>{{ affiliationLink(affiliationService.affiliation,'merge-admin', 'name') }} {{ affiliationLink(affiliationService.affiliation,'view-community', 'icon') }}</td>
+            <td>{{ countryLink(affiliationService.affiliation.organisation.country,'view-admin','name') }}</td>
+            <td>{{ affiliationService.affiliation.effort.count() }}</td>
+            <td>{{ affiliationService.affiliation.cost.count() }}</td>
+            <td>{{ affiliationService.affiliation.version.count() }}</td>
+            <td>{{ effortVersionTableAmount }}</td>
+            <td>{{ costVersionTableAmount }}</td>
+            <td>{{ affiliationService.affiliation.spent.count() }}</td>
+            <td>{{ affiliationService.affiliation.projectReportEffortSpent.count() }}</td>
+            <td>{{ affiliationService.affiliation.associate.count() }}</td>
+            <td>{{ affiliationService.affiliation.invoice.count() }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

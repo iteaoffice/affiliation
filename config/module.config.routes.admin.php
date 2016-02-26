@@ -58,6 +58,16 @@ return [
                                     ]
                                 ]
                             ],
+                            'merge'          => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/merge/[:id].html',
+                                    'defaults' => [
+                                        'action'    => 'merge',
+                                        'privilege' => 'merge-admin',
+                                    ]
+                                ]
+                            ],
                             'edit-associate' => [
                                 'type'    => 'Segment',
                                 'options' => [

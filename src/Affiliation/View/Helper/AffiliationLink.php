@@ -87,10 +87,14 @@ class AffiliationLink extends LinkAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
+     * @return $this
      */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
+
+        return $this;
     }
 
     /**
@@ -131,6 +135,10 @@ class AffiliationLink extends LinkAbstract
             case 'edit-admin':
                 $this->setRouter('zfcadmin/affiliation/edit');
                 $this->setText(sprintf($this->translate("txt-edit-affiliation-in-admin-%s"), $this->getAffiliation()));
+                break;
+            case 'merge-admin':
+                $this->setRouter('zfcadmin/affiliation/merge');
+                $this->setText(sprintf($this->translate("txt-merge-affiliation-in-admin-%s"), $this->getAffiliation()));
                 break;
             case 'payment-sheet':
                 $this->setRouter('community/affiliation/payment-sheet');

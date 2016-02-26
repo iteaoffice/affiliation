@@ -22,7 +22,8 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
 {
     /**
      * AdminAffiliation constructor.
-     * @param AffiliationService $affiliationService
+     *
+     * @param AffiliationService  $affiliationService
      * @param OrganisationService $organisationService
      */
     public function __construct(AffiliationService $affiliationService, OrganisationService $organisationService)
@@ -32,13 +33,26 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
+
+        $this->add([
+                'type'    => 'Zend\Form\Element\Select',
+                'name'    => 'organisation',
+                'options' => [
+                    'value_options' => [
+                        $affiliationService->getAffiliation()->getOrganisation()
+                            ->getId() => $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
+                    ],
+                    'label'         => _("txt-organisation"),
+                ],
+            ]);
+
         $technicalContactValueOptions = [];
 
         /*
          * Collect the technical contacts
          */
-        $technicalContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()] =
-            $affiliationService->getAffiliation()->getContact()->getFormName();
+        $technicalContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()]
+            = $affiliationService->getAffiliation()->getContact()->getFormName();
         foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
             $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
@@ -51,61 +65,52 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
         $organisation = $affiliationService->getAffiliation()->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
             if (!is_null($affiliation->getFinancial())) {
-                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()] =
-                    $affiliation->getFinancial()->getContact()->getFormName();
+                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
+                    = $affiliation->getFinancial()->getContact()->getFormName();
             }
         }
 
         asort($financialContactValueOptions);
 
-        $this->add(
-            [
+        $this->add([
                 'type'    => 'Zend\Form\Element\Text',
                 'name'    => 'branch',
                 'options' => [
                     'label'      => _("txt-branch"),
                     'help-block' => _("txt-branch-inline-help"),
                 ],
-            ]
-        );
+            ]);
 
-        $this->add(
-            [
+        $this->add([
                 'type'    => 'Zend\Form\Element\Date',
                 'name'    => 'dateEnd',
                 'options' => [
                     'label'      => _("txt-date-removed"),
                     'help-block' => _("txt-date-removed-inline-help"),
                 ],
-            ]
-        );
+            ]);
 
-        $this->add(
-            [
+        $this->add([
                 'type'    => 'Zend\Form\Element\Date',
                 'name'    => 'dateSelfFunded',
                 'options' => [
                     'label'      => _("txt-date-self-funded"),
                     'help-block' => _("txt-date-self-funded-inline-help"),
                 ],
-            ]
-        );
+            ]);
 
 
-        $this->add(
-            [
+        $this->add([
                 'type'    => 'Zend\Form\Element\Select',
                 'name'    => 'contact',
                 'options' => [
                     'value_options' => $technicalContactValueOptions,
                     'label'         => _("txt-technical-contact"),
                 ],
-            ]
-        );
+            ]);
 
 
-        $this->add(
-            [
+        $this->add([
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'valueChain',
                 'options'    => [
@@ -115,10 +120,8 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'mainContribution',
                 'options'    => [
@@ -128,10 +131,8 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'marketAccess',
                 'options'    => [
@@ -142,12 +143,10 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                     'cols'  => 8,
                     'class' => 'form-control',
                 ],
-            ]
-        );
+            ]);
 
 
-        $this->add(
-            [
+        $this->add([
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'financialContact',
                 'options'    => [
@@ -157,28 +156,25 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
+            ]);
 
-        $this->add(
-            [
+        $this->add([
                 'type'    => 'Zend\Form\Element\Text',
                 'name'    => 'financialBranch',
                 'options' => [
                     'label'      => _("txt-branch"),
                     'help-block' => _("txt-branch-inline-help"),
                 ],
-            ]
-        );
+            ]);
 
 
         $financialOrganisation = [];
         if (!is_null($financial = $affiliationService->getAffiliation()->getFinancial())) {
-            $financialOrganisation[$financial->getOrganisation()->getId()] = $financial->getOrganisation()->getOrganisation();
+            $financialOrganisation[$financial->getOrganisation()->getId()] = $financial->getOrganisation()
+                ->getOrganisation();
         }
 
-        $this->add(
-            [
+        $this->add([
                 'type'    => 'Zend\Form\Element\Select',
                 'name'    => 'financialOrganisation',
                 'options' => [
@@ -186,42 +182,34 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                     'label'         => _("txt-financial-organisation"),
                     'help-block'    => _("txt-financial-organisation-help"),
                 ],
-            ]
-        );
+            ]);
 
-        $this->add(
-            [
+        $this->add([
                 'type'    => 'Zend\Form\Element\Email',
                 'name'    => 'emailCC',
                 'options' => [
                     'label'      => _("txt-email-cc"),
                     'help-block' => _("txt-email-cc-inline-help"),
                 ],
-            ]
-        );
+            ]);
 
-        $this->add(
-            [
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
                     'value' => _("txt-update"),
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
                     'value' => _("txt-cancel"),
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'deactivate',
                 'attributes' => [
@@ -231,10 +219,8 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
                     ),
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'reactivate',
                 'attributes' => [
@@ -244,8 +230,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                         $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
                     ),
                 ],
-            ]
-        );
+            ]);
     }
 
     /**
