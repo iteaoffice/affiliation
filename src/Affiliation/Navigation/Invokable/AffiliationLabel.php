@@ -30,16 +30,15 @@ class AffiliationLabel extends AbstractNavigationInvokable
      * Parse a Affiliation navigation label
      *
      * @param AbstractPage $page
-     * @param Affiliation  $affiliation
      *
-     * @return string
+     * @return void
      */
-    public function __invoke(AbstractPage $page, $affiliation = null)
+    public function __invoke(AbstractPage $page)
     {
-        if ($affiliation instanceof Affiliation) {
-            return sprintf("%s in %s", $affiliation->getOrganisation(), $affiliation->getProject());
-        } else { // Generic fallback
-            return $this->translate('txt-nav-view');
-        }
+        $affiliation = $this->getEntities()->get(Affiliation::class);
+        $label = ($affiliation instanceof Affiliation) 
+            ? sprintf("%s in %s", $affiliation->getOrganisation(), $affiliation->getProject())  
+            : $this->translate('txt-nav-view');
+        $page->set('label', $label);
     }
 }

@@ -5,12 +5,11 @@
  * @category    Affiliation
  * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2016 ITEA Office (https://itea3.org)
  */
 return [
     'navigation' => [
         'admin' => [
-            // And finally, here is where we define our page hierarchy
             'organisation' => [
                 'pages' => [
                     'doa-approval' => [
@@ -34,10 +33,13 @@ return [
                         'route'   => 'zfcadmin/affiliation/view',
                         'visible' => false,
                         'params'  => [
-                            'setters' => [
-                                'label' => Affiliation\Navigation\Invokable\AffiliationLabel::class
+                            'entities' => [
+                                'id' => Affiliation\Entity\Affiliation::class
                             ],
-                            'entity'  => \Affiliation\Entity\Affiliation::class,
+                            'invokables' => [
+                                Affiliation\Navigation\Invokable\AffiliationLabel::class
+                            ],
+                            
                         ],
                         'pages'   => [
                             'edit' => [
@@ -45,7 +47,9 @@ return [
                                 'route'   => 'zfcadmin/affiliation/edit',
                                 'visible' => false,
                                 'params'  => [
-                                    'entity' => \Affiliation\Entity\Affiliation::class,
+                                    'entities' => [
+                                        'id' => Affiliation\Entity\Affiliation::class
+                                    ],
                                 ],
                             ],
                             'merge' => [
@@ -53,7 +57,9 @@ return [
                                 'route'   => 'zfcadmin/affiliation/merge',
                                 'visible' => false,
                                 'params'  => [
-                                    'entity' => \Affiliation\Entity\Affiliation::class,
+                                    'entities' => [
+                                        'id' => Affiliation\Entity\Affiliation::class
+                                    ],
                                 ],
                             ],
                         ],
@@ -64,5 +70,3 @@ return [
         ],
     ],
 ];
-
-//
