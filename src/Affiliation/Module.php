@@ -25,11 +25,9 @@ use Zend\Mvc\MvcEvent;
 /**
  *
  */
-class Module implements
-    Feature\AutoloaderProviderInterface,
-    Feature\ServiceProviderInterface,
-    Feature\ConfigProviderInterface,
-    Feature\BootstrapListenerInterface
+class Module
+    implements Feature\AutoloaderProviderInterface, Feature\ServiceProviderInterface, Feature\ConfigProviderInterface,
+               Feature\BootstrapListenerInterface
 {
     public function getAutoloaderConfig()
     {
@@ -71,7 +69,7 @@ class Module implements
     public function getControllerPluginConfig()
     {
         return [
-            'factories' => [
+            'factories'  => [
                 'renderPaymentSheet' => function (PluginManager $sm) {
                     $renderPaymentSheet = new RenderPaymentSheet();
                     $renderPaymentSheet->setServiceLocator($sm->getServiceLocator());
@@ -91,6 +89,9 @@ class Module implements
                     return $renderLoi;
                 },
             ],
+            'invokables' => [
+                'mergeAffiliation' => Controller\Plugin\MergeAffiliation::class
+            ]
         ];
     }
 
@@ -106,8 +107,7 @@ class Module implements
         $app = $e->getParam('application');
         $em = $app->getEventManager();
         $em->attach(MvcEvent::EVENT_DISPATCH, function (MvcEvent $event) {
-            $event->getApplication()->getServiceManager()
-                ->get(AffiliationNavigationService::class)->update();
+            $event->getApplication()->getServiceManager()->get(AffiliationNavigationService::class)->update();
         });
     }
 }

@@ -69,6 +69,15 @@
                 <dt>{{ translate("txt-self-funded") }}</dt>
                 <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliationService.affiliation.dateSelfFunded|string_date) }}</dd>
             {% endif %}
+
+            <dl class="dl-horizontal">
+                <dt>{{ translate("txt-position-on-value-chain") }}</dt>
+                <dd>{{ affiliationService.affiliation.valueChain|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+                <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
+                <dd>{{ affiliationService.affiliation.mainContribution|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+                <dt>{{ translate("txt-market-access") }}</dt>
+                <dd>{{ affiliationService.affiliation.marketAccess|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+            </dl>
         </dl>
 
         <dl class="dl-horizontal">
@@ -303,6 +312,7 @@
             <thead>
             <tr>
                 <th>{{ translate("txt-version") }}</th>
+                <th>{{ translate("txt-id") }}</th>
                 <th>{{ translate("txt-status") }}</th>
                 <th>{{ translate("txt-date-submitted") }}</th>
                 <th>{{ translate("txt-total-effort") }}</th>
@@ -314,6 +324,7 @@
                 {% set versionService = versionService.setVersion(affiliationVersion.version) %}
                 <tr>
                     <td>{{ versionLink(versionService,'view-admin','name') }}</td>
+                    <td>{{ affiliationVersion.id }}</td>
                     <td>{{ versionService.parseStatus() }}</td>
                     <td>{{ versionService.version.dateReviewed|string_date }}</td>
                     <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, versionService.version)|parse_effort }}</td>

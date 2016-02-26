@@ -10,6 +10,7 @@
 
 namespace Affiliation\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 use Zend\InputFilter\InputFilter;
@@ -74,6 +75,15 @@ class Version extends EntityAbstract
      * @var \Project\Entity\Effort\Version
      */
     private $effortVersion;
+
+    /**
+     * Version constructor.
+     */
+    public function __construct()
+    {
+        $this->costVersion = new ArrayCollection();
+        $this->effortVersion = new ArrayCollection();
+    }
 
     /**
      * @param $property
@@ -168,7 +178,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param \Project\Entity\Cost\Version $costVersion
+     * @param \Project\Entity\Cost\Version[] $costVersion
      */
     public function setCostVersion($costVersion)
     {
@@ -176,7 +186,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return \Project\Entity\Cost\Version
+     * @return \Project\Entity\Cost\Version[]|ArrayCollection
      */
     public function getCostVersion()
     {
@@ -184,7 +194,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param \Project\Entity\Effort\Version $effortVersion
+     * @param \Project\Entity\Effort\Version[]|ArrayCollection $effortVersion
      */
     public function setEffortVersion($effortVersion)
     {
@@ -192,7 +202,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return \Project\Entity\Effort\Version
+     * @return \Project\Entity\Effort\Version[]|ArrayCollection
      */
     public function getEffortVersion()
     {

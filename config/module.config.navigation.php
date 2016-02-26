@@ -33,6 +33,7 @@ return [
                         'route'   => 'zfcadmin/affiliation/view',
                         'visible' => false,
                         'params'  => [
+<<<<<<< Updated upstream
                             'entities' => [
                                 'id' => Affiliation\Entity\Affiliation::class
                             ],
@@ -40,15 +41,27 @@ return [
                                 Affiliation\Navigation\Invokable\AffiliationLabel::class
                             ],
                             
+=======
+                            'entities'   => [
+                                'id' => \Affiliation\Entity\Affiliation::class,
+                            ],
+                            'invokables' => [
+                                Affiliation\Navigation\Invokable\AffiliationLabel::class
+                            ]
+>>>>>>> Stashed changes
                         ],
                         'pages'   => [
-                            'edit' => [
+                            'edit'  => [
                                 'label'   => _('txt-nav-edit'),
                                 'route'   => 'zfcadmin/affiliation/edit',
                                 'visible' => false,
                                 'params'  => [
                                     'entities' => [
+<<<<<<< Updated upstream
                                         'id' => Affiliation\Entity\Affiliation::class
+=======
+                                        'id' => \Affiliation\Entity\Affiliation::class,
+>>>>>>> Stashed changes
                                     ],
                                 ],
                             ],
@@ -58,7 +71,11 @@ return [
                                 'visible' => false,
                                 'params'  => [
                                     'entities' => [
+<<<<<<< Updated upstream
                                         'id' => Affiliation\Entity\Affiliation::class
+=======
+                                        'id' => \Affiliation\Entity\Affiliation::class,
+>>>>>>> Stashed changes
                                     ],
                                 ],
                             ],

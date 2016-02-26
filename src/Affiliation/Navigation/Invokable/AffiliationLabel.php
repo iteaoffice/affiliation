@@ -35,10 +35,18 @@ class AffiliationLabel extends AbstractNavigationInvokable
      */
     public function __invoke(AbstractPage $page)
     {
+<<<<<<< Updated upstream
         $affiliation = $this->getEntities()->get(Affiliation::class);
         $label = ($affiliation instanceof Affiliation) 
             ? sprintf("%s in %s", $affiliation->getOrganisation(), $affiliation->getProject())  
             : $this->translate('txt-nav-view');
         $page->set('label', $label);
+=======
+        $label = $this->getEntities()->containsKey(Affiliation::class) ? sprintf("%s in %s",
+            $this->getEntities()->get(Affiliation::class)->getOrganisation(),
+            $this->getEntities()->get(Affiliation::class)->getProject()) : $this->translate('txt-nav-view');
+        $page->set('label', $label);
+
+>>>>>>> Stashed changes
     }
 }
