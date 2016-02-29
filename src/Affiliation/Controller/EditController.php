@@ -344,8 +344,8 @@ class EditController extends AffiliationAbstractController
             } else {
                 $financialAddress = new Address();
                 $financialAddress->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
-                /*
-                 * @var AddressType
+                /**
+                 * @var $addressType AddressType
                  */
                 $addressType = $this->getContactService()->getEntityManager()
                     ->getReference('Contact\Entity\AddressType', AddressType::ADDRESS_TYPE_FINANCIAL);
@@ -368,8 +368,8 @@ class EditController extends AffiliationAbstractController
             return $this->redirect()->toRoute('community/affiliation/affiliation', [
                 'id' => $affiliationService->getAffiliation()->getId(),
             ], [
-                    'fragment' => 'invoicing'
-                ]);
+                'fragment' => 'invoicing'
+            ]);
         }
 
         return new ViewModel([
@@ -449,6 +449,7 @@ class EditController extends AffiliationAbstractController
         $form = $this->getFormService()->prepare('description', $description, $data);
         if ($this->getRequest()->isPost() && $form->isValid()) {
             if (array_key_exists('submit', $data)) {
+                /** @var Description $description */
                 $description = $form->getData();
                 $description->setAffiliation([
                     $affiliationService->getAffiliation(),

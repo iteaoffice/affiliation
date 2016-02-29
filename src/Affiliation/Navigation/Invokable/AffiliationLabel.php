@@ -27,15 +27,13 @@ use Zend\Navigation\Page\AbstractPage;
 class AffiliationLabel extends AbstractNavigationInvokable
 {
     /**
-     * Parse a Affiliation navigation label
-     *
      * @param AbstractPage $page
-     * @param Affiliation  $affiliation
      *
      * @return void
      */
     public function __invoke(AbstractPage $page)
     {
+
         $label = $this->getEntities()->containsKey(Affiliation::class) ? sprintf("%s in %s",
             $this->getEntities()->get(Affiliation::class)->getOrganisation(),
             $this->getEntities()->get(Affiliation::class)->getProject()) : $this->translate('txt-nav-view');

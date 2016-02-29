@@ -32,6 +32,11 @@ return [
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/merge',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'assertion' => AffiliationAssertion::class
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/edit-associate',
                     'roles'     => [strtolower(Access::ACCESS_OFFICE)],
                     'assertion' => AffiliationAssertion::class
