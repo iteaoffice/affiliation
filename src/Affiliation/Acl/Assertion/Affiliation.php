@@ -28,10 +28,10 @@ class Affiliation extends AssertionAbstract
      * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl $acl
-     * @param RoleInterface $role
+     * @param Acl                                 $acl
+     * @param RoleInterface                       $role
      * @param ResourceInterface|AffiliationEntity $resource
-     * @param string $privilege
+     * @param string                              $privilege
      *
      * @return bool
      */
@@ -105,6 +105,7 @@ class Affiliation extends AssertionAbstract
 
             case 'view-admin':
             case 'edit-admin':
+            case 'merge-admin':
             case 'payment-sheet-admin':
                 return $this->rolesHaveAccess(strtolower(Access::ACCESS_OFFICE));
         }

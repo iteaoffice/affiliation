@@ -10,9 +10,7 @@
 
 namespace Affiliation\Controller;
 
-use Affiliation\Controller\Plugin\RenderDoa;
-use Affiliation\Controller\Plugin\RenderLoi;
-use Affiliation\Controller\Plugin\RenderPaymentSheet;
+use Affiliation\Controller\Plugin;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Affiliation\Service\ConfigAwareInterface;
@@ -43,11 +41,14 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      ZfcUserAuthentication zfcUserAuthentication()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
- * @method       RenderPaymentSheet renderPaymentSheet()
- * @method       RenderDoa renderDoa()
- * @method       RenderLoi enderLoi()
+ * @method      Plugin\RenderPaymentSheet renderPaymentSheet()
+ * @method      Plugin\RenderDoa renderDoa()
+ * @method      Plugin\RenderLoi enderLoi()
+ * @method      Plugin\MergeAffiliation mergeAffiliation($mainAffiliation, $affiliation)
+ *
  */
-abstract class AffiliationAbstractController extends AbstractActionController implements AffiliationServiceAwareInterface, FormServiceAwareInterface, ConfigAwareInterface
+abstract class AffiliationAbstractController extends AbstractActionController
+    implements AffiliationServiceAwareInterface, FormServiceAwareInterface, ConfigAwareInterface
 {
     /**
      * @var FormService

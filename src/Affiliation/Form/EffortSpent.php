@@ -5,7 +5,7 @@
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2014 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Form;
@@ -154,10 +154,8 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                         'name'    => 'Callback',
                         'options' => [
                             'messages' => [
-                                Callback::INVALID_VALUE => sprintf(
-                                    "Please give a comment to explain the strong descripency (> 20 percent) between the real and planned value (%s)",
-                                    $this->effortPlanned
-                                ),
+                                Callback::INVALID_VALUE => sprintf("Please give a comment to explain the strong descripency (> 20 percent) between the real and planned value (%s)",
+                                    $this->effortPlanned),
                             ],
                             'callback' => function ($value, $context = []) {
 

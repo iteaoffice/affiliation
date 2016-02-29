@@ -1,3 +1,4 @@
+{% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-affiliation")) %}
 {% do headTitle().append(translate("txt-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName)) %}
 
@@ -53,7 +54,7 @@
                 {{ projectLink(projectService,'view-community', 'icon') }}
             </dd>
             <dt>{{ translate("txt-program-call") }}</dt>
-            <dd>{{ affiliationService.affiliation.project.call }}</dd>
+            <dd>{{ callLink(affiliationService.affiliation.project.call,'view-admin','name') }}</dd>
             <dt>{{ translate("txt-status") }}</dt>
             <dd>{{ projectService.parseStatus() }}</dd>
             <dt>{{ translate("txt-project-leader") }}</dt>
@@ -62,12 +63,21 @@
             </dd>
 
             <dt>{{ translate("txt-project-country") }}</dt>
-            <dd>{{ projectService.project.contact.contactOrganisation.organisation.country }}</dd>
+            <dd>{{ countryLink(projectService.project.contact.contactOrganisation.organisation.country,'view-admin','name') }}</dd>
 
             {% if affiliationService.isSelfFunded() %}
                 <dt>{{ translate("txt-self-funded") }}</dt>
                 <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliationService.affiliation.dateSelfFunded|string_date) }}</dd>
             {% endif %}
+
+            <dl class="dl-horizontal">
+                <dt>{{ translate("txt-position-on-value-chain") }}</dt>
+                <dd>{{ affiliationService.affiliation.valueChain|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+                <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
+                <dd>{{ affiliationService.affiliation.mainContribution|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+                <dt>{{ translate("txt-market-access") }}</dt>
+                <dd>{{ affiliationService.affiliation.marketAccess|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+            </dl>
         </dl>
 
         <dl class="dl-horizontal">
@@ -92,7 +102,7 @@
             <dt>{{ translate("txt-membership") }}</dt>
             <dd>
                 {% if affiliationService.affiliation.organisation.member %}
-                    {{ memberLink(affiliationService.affiliation.organisation.member,'view','name') }}
+                    {{ memberLink(affiliationService.affiliation.organisation.member,'view-admin','name') }}
                 {% endif %}
             </dd>
 
@@ -141,6 +151,7 @@
         </dl>
 
         {{ affiliationLink|raw }}
+        {{ affiliationLink(affiliationService.affiliation, 'merge-admin','button') }}
     </div>
     <div class="tab-pane" id="description">
         <h3>{{ translate("txt-partner-description") }}</h3>
@@ -301,6 +312,7 @@
             <thead>
             <tr>
                 <th>{{ translate("txt-version") }}</th>
+                <th>{{ translate("txt-id") }}</th>
                 <th>{{ translate("txt-status") }}</th>
                 <th>{{ translate("txt-date-submitted") }}</th>
                 <th>{{ translate("txt-total-effort") }}</th>
@@ -312,6 +324,7 @@
                 {% set versionService = versionService.setVersion(affiliationVersion.version) %}
                 <tr>
                     <td>{{ versionLink(versionService,'view-admin','name') }}</td>
+                    <td>{{ affiliationVersion.id }}</td>
                     <td>{{ versionService.parseStatus() }}</td>
                     <td>{{ versionService.version.dateReviewed|string_date }}</td>
                     <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, versionService.version)|parse_effort }}</td>
@@ -321,59 +334,93 @@
             </tbody>
         </table>
 
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-        <script type="text/javascript">
-            google.load('visualization', '1.1', {packages: ['line']});
-            google.setOnLoadCallback(drawChart);
+        <h4>{{ translate("txt-costs-and-effort-overview") }}</h4>
+        <table class="table table-hover table-striped table-condensed">
+            <thead>
+            <tr>
 
-            function drawChart() {
+                <th></th>
+                <th>{{ translate("txt-type") }}</th>
 
-                var data = new google.visualization.DataTable();
-                data.addColumn('string', 'Version type');
-                data.addColumn('number', 'Effort (PY)');
-                data.addColumn('number', 'Costs (MEUR)');
+                {% for year in projectService.parseYearRange %}
+                    <th>{{ year }}</th>
+                {% endfor %}
+                <th>{{ translate("txt-total") }}</th>
 
-                data.addRows([
-                    {% for affiliationVersion in affiliationService.affiliation.version %}
-                    {% set versionService = versionService.setVersion(affiliationVersion.version) %}
-                    ['{{ versionService.version.versionType.type }}', {{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, versionService.version)|parse_effort }}, {{ (versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, versionService.version) / 1000000)|number_format(1,'.','') }}],
+            </tr>
+            </thead>
+            <tbody>
+            {% for affiliationVersion in affiliationService.affiliation.version %}
+                {% set versionService = versionService.setVersion(affiliationVersion.version) %}
+                <tr>
+                    <th colspan="{{ 4 + projectService.parseYearRange|length }}">{{ versionLink(versionService,'view-admin','description') }}</th>
+                </tr>
+                <tr>
+
+                    <td>{{ versionService.parseStatus() }}</td>
+                    <td>{{ translate("txt-effort") }}</td>
+
+                    {% for year in projectService.parseYearRange %}
+
+
+                        {% set yearTotal = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliationService.affiliation, versionService.getVersion())[year] %}
+
+                        <td>{{ yearTotal|parse_effort }}</td>
                     {% endfor %}
-                ]);
+                    <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationService.affiliation, versionService.getVersion())|parse_effort }}</td>
+
+                </tr>
+
+                <tr>
+
+                    <td></td>
+                    <td>{{ translate("txt-costs") }}</td>
+
+                    {% for year in projectService.parseYearRange %}
+
+                        {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliationService.affiliation, versionService.getVersion(), 'objects')[year] %}
+
+                        <td>{{ yearTotal.costs|parse_cost }}</td>
+                    {% endfor %}
+                    <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationService.affiliation, versionService.getVersion())|parse_cost }}</td>
+                </tr>
+
+            {% endfor %}
+
+            <tr>
+                <th colspan="{{ 4 + projectService.parseYearRange|length }}">{{ translate("txt-draft") }}</th>
+            </tr>
+            <tr>
+
+                <td></td>
+                <td>{{ translate("txt-effort") }}</td>
+
+                {% for year in projectService.parseYearRange %}
 
 
-                var options = {
-                    chart: {
-                        title: 'Overview costs and efforts',
-                    },
-                    height: 600,
-                    series: {
-                        // Gives each series an axis name that matches the Y-axis below.
-                        0: {axis: 'Effort'},
-                        1: {axis: 'Cost'}
-                    },
-                    axes: {
-                        x: {
-                            0: {
-                                side: 'bottom'
-                            }
-                        },
-                        y: {
-                            Effort: {
-                                label: 'Effort (PY)',
-                            },
-                            Cost: {label: 'Costs (MEUR)'}
-                        }
+                    {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliationService.affiliation)[year] %}
 
-                    },
-                };
+                    <td>{{ yearTotal|parse_effort }}</td>
+                {% endfor %}
+                <td>{{ projectService.findTotalEffortByAffiliation(affiliationService.affiliation)|parse_effort }}</td>
 
-                var chart = new google.charts.Line(document.getElementById('line_top_x'));
+            </tr>
 
-                chart.draw(data, options);
-            }
-        </script>
+            <tr>
 
-        <div id="line_top_x"></div>
+                <td></td>
+                <td>{{ translate("txt-costs") }}</td>
+
+                {% for year in projectService.parseYearRange %}
+
+                    {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliationService.affiliation)[year] %}
+
+                    <td>{{ yearTotal|parse_cost }}</td>
+                {% endfor %}
+                <td>{{ projectService.findTotalCostByAffiliation(affiliationService.affiliation)|parse_cost }}</td>
+            </tr>
+            </tbody>
+        </table>
 
         <h4>{{ translate("txt-funding") }}</h4>
 

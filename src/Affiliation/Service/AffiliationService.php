@@ -182,10 +182,8 @@ class AffiliationService extends ServiceAbstract
             case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE
                 && !($affiliation->getProject()->getCall()->getProgram()->getId() === 3
                     && $affiliation->getOrganisation()->getType()->getId() === Type::TYPE_UNIVERSITY):
-                $errors[] = sprintf(
-                    'No invoice is needed for %s',
-                    $affiliation->getOrganisation()->getType()->getDescription()
-                );
+                $errors[] = sprintf('No invoice is needed for %s',
+                    $affiliation->getOrganisation()->getType()->getDescription());
                 break;
             case is_null($affiliation->getFinancial()):
                 $errors[] = 'No financial organisation (affiliation financial) set for this partner';
@@ -447,10 +445,8 @@ class AffiliationService extends ServiceAbstract
             ->getId()) {
             case Method::METHOD_PERCENTAGE:
                 $costsPerYear
-                    = $versionService->findTotalCostVersionByAffiliationAndVersionPerYear(
-                        $this->getAffiliation(),
-                        $version
-                    );
+                    = $versionService->findTotalCostVersionByAffiliationAndVersionPerYear($this->getAffiliation(),
+                    $version);
                 if (array_key_exists($year, $costsPerYear)) {
                     $base = $costsPerYear[$year];
                 }
@@ -458,10 +454,8 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_CONTRIBUTION:
                 $effortPerYear
-                    = $versionService->findTotalEffortVersionByAffiliationAndVersionPerYear(
-                        $this->getAffiliation(),
-                        $version
-                    );
+                    = $versionService->findTotalEffortVersionByAffiliationAndVersionPerYear($this->getAffiliation(),
+                    $version);
                 if (array_key_exists($year, $effortPerYear)) {
                     $base = $effortPerYear[$year];
                 }
@@ -630,10 +624,8 @@ class AffiliationService extends ServiceAbstract
 
         $result = new ArrayCollection();
         foreach ($countries as $country) {
-            $result->set(
-                $country->getId(),
-                $this->findAffiliationByProjectAndCountryAndWhich($project, $country, $which)
-            );
+            $result->set($country->getId(),
+                $this->findAffiliationByProjectAndCountryAndWhich($project, $country, $which));
         }
 
         return $result;

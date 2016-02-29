@@ -83,11 +83,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             ],
                             'pages'  => [
                                 'edit' => [
-                                    'label'  => sprintf(
-                                        $this->translate("txt-edit-affiliation-%s-in-%s"),
+                                    'label'  => sprintf($this->translate("txt-edit-affiliation-%s-in-%s"),
                                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                        $this->getProjectService()->parseFullName()
-                                    ),
+                                        $this->getProjectService()->parseFullName()),
                                     'active' => true,
                                     'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                     'router' => $this->getRouter(),
@@ -121,11 +119,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             ],
                             'pages'  => [
                                 'edit' => [
-                                    'label'  => sprintf(
-                                        $this->translate("txt-edit-financial-%s-in-%s"),
+                                    'label'  => sprintf($this->translate("txt-edit-financial-%s-in-%s"),
                                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                        $this->getProjectService()->parseFullName()
-                                    ),
+                                        $this->getProjectService()->parseFullName()),
                                     'active' => true,
                                     'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                     'router' => $this->getRouter(),
@@ -159,11 +155,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             ],
                             'pages'  => [
                                 'edit' => [
-                                    'label'  => sprintf(
-                                        $this->translate("txt-edit-description-of-affiliation-%s-in-%s"),
+                                    'label'  => sprintf($this->translate("txt-edit-description-of-affiliation-%s-in-%s"),
                                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                        $this->getProjectService()->parseFullName()
-                                    ),
+                                        $this->getProjectService()->parseFullName()),
                                     'active' => true,
                                     'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                     'router' => $this->getRouter(),
@@ -203,10 +197,8 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             ],
                             'pages'  => [
                                 'edit' => [
-                                    'label'  => sprintf(
-                                        $this->translate("txt-update-effort-spent-for-report-%s"),
-                                        $this->getReportService()->getReport()
-                                    ),
+                                    'label'  => sprintf($this->translate("txt-update-effort-spent-for-report-%s"),
+                                        $this->getReportService()->getReport()),
                                     'active' => true,
                                     'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                     'router' => $this->getRouter(),
@@ -241,11 +233,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             ],
                             'pages'  => [
                                 'edit' => [
-                                    'label'  => sprintf(
-                                        $this->translate("txt-add-associates-to-affiliation-%s-in-%s"),
+                                    'label'  => sprintf($this->translate("txt-add-associates-to-affiliation-%s-in-%s"),
                                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                        $this->getProjectService()->parseFullName()
-                                    ),
+                                        $this->getProjectService()->parseFullName()),
                                     'active' => true,
                                     'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                     'router' => $this->getRouter(),
@@ -262,11 +252,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('affiliation-id'));
                 $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage([
-                    'label'  => sprintf(
-                        $this->translate("txt-affiliation-%s-in-%s"),
+                    'label'  => sprintf($this->translate("txt-affiliation-%s-in-%s"),
                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                        $this->getProjectService()->parseFullName()
-                    ),
+                        $this->getProjectService()->parseFullName()),
                     'active' => false,
                     'route'  => 'community/affiliation/affiliation',
                     'router' => $this->getRouter(),
@@ -275,11 +263,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                     ],
                     'pages'  => [
                         'upload' => [
-                            'label'  => sprintf(
-                                $this->translate("txt-upload-doa-for-organisation-%s-for-project-%s"),
+                            'label'  => sprintf($this->translate("txt-upload-doa-for-organisation-%s-for-project-%s"),
                                 $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                $this->getAffiliationService()->getAffiliation()->getProject()
-                            ),
+                                $this->getAffiliationService()->getAffiliation()->getProject()),
                             'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                             'active' => true,
                             'router' => $this->getRouter(),
@@ -295,11 +281,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $this->getAffiliationService()->setAffiliation($doa->getAffiliation());
                 $this->getProjectService()->setProject($doa->getAffiliation()->getProject());
                 $communityNavigation->addPage([
-                    'label'  => sprintf(
-                        $this->translate("txt-affiliation-%s-in-%s"),
+                    'label'  => sprintf($this->translate("txt-affiliation-%s-in-%s"),
                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                        $this->getProjectService()->parseFullName()
-                    ),
+                        $this->getProjectService()->parseFullName()),
                     'active' => false,
                     'route'  => 'community/affiliation/affiliation',
                     'router' => $this->getRouter(),
@@ -308,11 +292,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                     ],
                     'pages'  => [
                         'replace' => [
-                            'label'  => sprintf(
-                                $this->translate("txt-replace-doa-for-organisation-%s-for-project-%s"),
+                            'label'  => sprintf($this->translate("txt-replace-doa-for-organisation-%s-for-project-%s"),
                                 $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                $this->getAffiliationService()->getAffiliation()->getProject()
-                            ),
+                                $this->getAffiliationService()->getAffiliation()->getProject()),
                             'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                             'active' => true,
                             'router' => $this->getRouter(),
@@ -325,11 +307,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $this->getAffiliationService()->setAffiliationId($this->getRouteMatch()->getParam('affiliation-id'));
                 $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage([
-                    'label'  => sprintf(
-                        $this->translate("txt-affiliation-%s-in-%s"),
+                    'label'  => sprintf($this->translate("txt-affiliation-%s-in-%s"),
                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                        $this->getProjectService()->parseFullName()
-                    ),
+                        $this->getProjectService()->parseFullName()),
                     'active' => false,
                     'route'  => 'community/affiliation/affiliation',
                     'router' => $this->getRouter(),
@@ -338,11 +318,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                     ],
                     'pages'  => [
                         'upload' => [
-                            'label'  => sprintf(
-                                $this->translate("txt-upload-loi-for-organisation-%s-for-project-%s"),
+                            'label'  => sprintf($this->translate("txt-upload-loi-for-organisation-%s-for-project-%s"),
                                 $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                $this->getAffiliationService()->getAffiliation()->getProject()
-                            ),
+                                $this->getAffiliationService()->getAffiliation()->getProject()),
                             'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                             'active' => true,
                             'router' => $this->getRouter(),
@@ -358,11 +336,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                 $this->getAffiliationService()->setAffiliation($loi->getAffiliation());
                 $this->getProjectService()->setProject($this->getAffiliationService()->getAffiliation()->getProject());
                 $communityNavigation->addPage([
-                    'label'  => sprintf(
-                        $this->translate("txt-affiliation-%s-in-%s"),
+                    'label'  => sprintf($this->translate("txt-affiliation-%s-in-%s"),
                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                        $this->getProjectService()->parseFullName()
-                    ),
+                        $this->getProjectService()->parseFullName()),
                     'active' => false,
                     'route'  => 'community/affiliation/affiliation',
                     'router' => $this->getRouter(),
@@ -371,11 +347,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                     ],
                     'pages'  => [
                         'replace' => [
-                            'label'  => sprintf(
-                                $this->translate("txt-replace-loi-for-organisation-%s-for-project-%s"),
+                            'label'  => sprintf($this->translate("txt-replace-loi-for-organisation-%s-for-project-%s"),
                                 $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                $this->getAffiliationService()->getAffiliation()->getProject()
-                            ),
+                                $this->getAffiliationService()->getAffiliation()->getProject()),
                             'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                             'active' => true,
                             'router' => $this->getRouter(),
@@ -405,11 +379,9 @@ class AffiliationNavigationService extends NavigationServiceAbstract
                             ],
                             'pages'  => [
                                 'edit' => [
-                                    'label'  => sprintf(
-                                        $this->translate("txt-payment-sheet-for-affiliation-%s-in-%s"),
+                                    'label'  => sprintf($this->translate("txt-payment-sheet-for-affiliation-%s-in-%s"),
                                         $this->getAffiliationService()->getAffiliation()->getOrganisation(),
-                                        $this->getProjectService()->parseFullName()
-                                    ),
+                                        $this->getProjectService()->parseFullName()),
                                     'active' => true,
                                     'route'  => $this->getRouteMatch()->getMatchedRouteName(),
                                     'router' => $this->getRouter(),

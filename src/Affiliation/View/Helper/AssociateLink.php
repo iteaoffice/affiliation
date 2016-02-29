@@ -6,7 +6,7 @@
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2014 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\View\Helper;
@@ -67,11 +67,8 @@ class AssociateLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/edit-associate');
                 break;
             default:
-                throw new \Exception(sprintf(
-                    "%s is an incorrect action for %s",
-                    $this->getAction(),
-                    __CLASS__
-                ));
+                throw new \Exception(sprintf("%s is an incorrect action for %s",
+                    $this->getAction(), __CLASS__));
         }
     }
 }

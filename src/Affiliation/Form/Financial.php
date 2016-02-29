@@ -65,8 +65,7 @@ class Financial extends Form
                 'label' => _("txt-vat-number"),
             ],
             'attributes' => [
-                'class'    => 'form-control',
-                'required' => true,
+                'class' => 'form-control',
             ],
         ]);
         $this->add([
