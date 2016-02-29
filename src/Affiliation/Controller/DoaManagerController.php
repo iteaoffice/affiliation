@@ -44,10 +44,14 @@ use Zend\View\Model\ViewModel;
  *
  * @link       https://itea3.org
  */
-class DoaManagerController extends AffiliationAbstractController
-    implements DoaServiceAwareInterface, ProjectServiceAwareInterface, EmailServiceAwareInterface,
-               GeneralServiceAwareInterface, MailingServiceAwareInterface, ContactServiceAwareInterface,
-               DeeplinkServiceAwareInterface
+class DoaManagerController extends AffiliationAbstractController implements
+    DoaServiceAwareInterface,
+    ProjectServiceAwareInterface,
+    EmailServiceAwareInterface,
+    GeneralServiceAwareInterface,
+    MailingServiceAwareInterface,
+    ContactServiceAwareInterface,
+    DeeplinkServiceAwareInterface
 {
     /**
      * @return ViewModel
@@ -102,8 +106,10 @@ class DoaManagerController extends AffiliationAbstractController
 
         $form = new DoaReminder($affiliationService->getAffiliation(), $this->getContactService());
 
-        $data = array_merge_recursive($this->getRequest()->getPost()->toArray(),
-            $this->getRequest()->getFiles()->toArray());
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
 
         //Get the corresponding template
         $webInfo = $this->getGeneralService()->findWebInfoByInfo('/affiliation/doa:reminder');
@@ -122,8 +128,11 @@ class DoaManagerController extends AffiliationAbstractController
             $email = $this->getEmailService()->create();
             $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
             $email->addTo($receiver);
-            $email->setSubject(str_replace(['[project]'], [$affiliationService->getAffiliation()->getProject()],
-                $form->getData()['subject']));
+            $email->setSubject(str_replace(
+                ['[project]'],
+                [$affiliationService->getAffiliation()->getProject()],
+                $form->getData()['subject']
+            ));
 
             $email->setHtmlLayoutName('signature_twig');
             $email->setReceiver($receiver->getDisplayName());
@@ -159,10 +168,12 @@ class DoaManagerController extends AffiliationAbstractController
             $this->getDoaService()->newEntity($doaReminder);
 
             $this->flashMessenger()->setNamespace('success')
-                ->addMessage(sprintf($this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                ->addMessage(sprintf(
+                    $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
                     $affiliationService->getAffiliation()->getOrganisation(),
                     $affiliationService->getAffiliation()->getProject(),
-                    $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()));
+                    $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])->getEmail()
+                ));
 
             return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
         }
@@ -210,8 +221,10 @@ class DoaManagerController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $data = array_merge_recursive($this->getRequest()->getPost()->toArray(),
-            $this->getRequest()->getFiles()->toArray());
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
 
         $form = $this->getFormService()->prepare('doa', $doaService->getDoa(), $data);
 
@@ -225,16 +238,17 @@ class DoaManagerController extends AffiliationAbstractController
          *
          */
         if ($this->getRequest()->isPost()) {
-
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute('zfcadmin/affiliation/doa/view', ['id' => $this->params('id')]);
             }
 
             if (isset($data['delete'])) {
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf($this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
+                    ->addMessage(sprintf(
+                        $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
                         $doaService->getDoa()->getAffiliation()->getOrganisation(),
-                        $doaService->getDoa()->getAffiliation()->getProject()));
+                        $doaService->getDoa()->getAffiliation()->getProject()
+                    ));
 
                 $this->getDoaService()->removeEntity($doaService->getDoa());
 
@@ -270,8 +284,11 @@ class DoaManagerController extends AffiliationAbstractController
                 $this->getDoaService()->updateEntity($doa);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf($this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated"),
-                        $doa->getAffiliation()->getOrganisation(), $doa->getAffiliation()->getProject()));
+                    ->addMessage(sprintf(
+                        $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated"),
+                        $doa->getAffiliation()->getOrganisation(),
+                        $doa->getAffiliation()->getProject()
+                    ));
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/doa/view', ['id' => $doa->getId()]);
             }

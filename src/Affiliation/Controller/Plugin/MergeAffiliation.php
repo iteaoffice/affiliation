@@ -71,7 +71,6 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
             $found = false;
 
             foreach ($mainAffiliation->getCost() as $mainCost) {
-
                 if ($cost->getDateStart() == $mainCost->getDateStart()
                     && $cost->getDateEnd() == $mainCost->getDateEnd()
                 ) {
@@ -81,7 +80,6 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
                     $this->getProjectService()->removeEntity($cost);
                     $found = true;
                 }
-
             }
 
 
@@ -109,10 +107,13 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
                     $this->getProjectService()->removeEntity($effort);
                     $found = true;
 
-                    $this->debug[] = sprintf("effort found and added %s + %s = %s", $originalEffort,
-                        $effort->getEffort(), $mainEffort->getEffort());
+                    $this->debug[] = sprintf(
+                        "effort found and added %s + %s = %s",
+                        $originalEffort,
+                        $effort->getEffort(),
+                        $mainEffort->getEffort()
+                    );
                 }
-
             }
 
             //Not found in the original table, do a move
@@ -122,8 +123,11 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
                 $this->getProjectService()->updateEntity($effort);
 
 
-                $this->debug[] = sprintf("effort not found and added moved from %s to %s", $affiliation->getId(),
-                    $mainAffiliation->getId());
+                $this->debug[] = sprintf(
+                    "effort not found and added moved from %s to %s",
+                    $affiliation->getId(),
+                    $mainAffiliation->getId()
+                );
             }
         }
 
@@ -168,7 +172,6 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
                 //We need to check if the $mainAffiliation has already a cost in the given period
                 $found = false;
                 foreach ($mainAffiliationVersion->getCostVersion() as $mainCost) {
-
                     if ($cost->getDateStart() == $mainCost->getDateStart()
                         && $cost->getDateEnd() == $mainCost->getDateEnd()
                     ) {
@@ -211,8 +214,12 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
                         $this->getProjectService()->removeEntity($effort);
                         $found = true;
 
-                        $this->debug[] = sprintf("version-effort found and added %s + %s = %s", $originalEffort,
-                            $effort->getEffort(), $mainEffort->getEffort());
+                        $this->debug[] = sprintf(
+                            "version-effort found and added %s + %s = %s",
+                            $originalEffort,
+                            $effort->getEffort(),
+                            $mainEffort->getEffort()
+                        );
                     }
                 }
 
@@ -221,10 +228,12 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
                     $effort->setAffiliationVersion($mainAffiliationVersion);
                     $this->getProjectService()->updateEntity($effort);
 
-                    $this->debug[] = sprintf("version-effort not found and added moved from %s to %s",
-                        $effort->getAffiliationVersion()->getId(), $mainAffiliationVersion->getId());
+                    $this->debug[] = sprintf(
+                        "version-effort not found and added moved from %s to %s",
+                        $effort->getAffiliationVersion()->getId(),
+                        $mainAffiliationVersion->getId()
+                    );
                 }
-
             }
         }
 
@@ -280,8 +289,6 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
         }
 
         $this->getAffiliationService()->removeEntity($affiliation);
-
-
     }
 
     /**
@@ -373,6 +380,4 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
 
         return $this;
     }
-
-
 }

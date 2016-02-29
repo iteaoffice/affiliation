@@ -25,9 +25,11 @@ use Zend\Mvc\MvcEvent;
 /**
  *
  */
-class Module
-    implements Feature\AutoloaderProviderInterface, Feature\ServiceProviderInterface, Feature\ConfigProviderInterface,
-               Feature\BootstrapListenerInterface
+class Module implements
+    Feature\AutoloaderProviderInterface,
+    Feature\ServiceProviderInterface,
+    Feature\ConfigProviderInterface,
+    Feature\BootstrapListenerInterface
 {
     public function getAutoloaderConfig()
     {

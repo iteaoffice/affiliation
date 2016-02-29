@@ -214,8 +214,10 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'name'       => 'deactivate',
                 'attributes' => [
                     'class' => "btn btn-danger",
-                    'value' => sprintf(_("Deactivate %s"),
-                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()),
+                    'value' => sprintf(
+                        _("Deactivate %s"),
+                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
+                    ),
                 ],
             ]);
         $this->add([
@@ -223,8 +225,10 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'name'       => 'reactivate',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => sprintf(_("Reactivate %s"),
-                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()),
+                    'value' => sprintf(
+                        _("Reactivate %s"),
+                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
+                    ),
                 ],
             ]);
     }

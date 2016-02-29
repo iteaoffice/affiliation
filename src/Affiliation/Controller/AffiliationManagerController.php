@@ -26,9 +26,13 @@ use Zend\View\Model\ViewModel;
 /**
  *
  */
-class AffiliationManagerController extends AffiliationAbstractController
-    implements ContactServiceAwareInterface, ProjectServiceAwareInterface, VersionServiceAwareInterface,
-               OrganisationServiceAwareInterface, InvoiceServiceAwareInterface, MemberServiceAwareInterface
+class AffiliationManagerController extends AffiliationAbstractController implements
+    ContactServiceAwareInterface,
+    ProjectServiceAwareInterface,
+    VersionServiceAwareInterface,
+    OrganisationServiceAwareInterface,
+    InvoiceServiceAwareInterface,
+    MemberServiceAwareInterface
 {
     /**
      * @return ViewModel
@@ -38,8 +42,10 @@ class AffiliationManagerController extends AffiliationAbstractController
         $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
         $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
 
-        $this->getProjectService()->addResource($affiliationService->getAffiliation()->getProject(),
-            ProjectAssertion::class);
+        $this->getProjectService()->addResource(
+            $affiliationService->getAffiliation()->getProject(),
+            ProjectAssertion::class
+        );
 
         return new ViewModel([
             'affiliationService'    => $affiliationService,
@@ -69,7 +75,6 @@ class AffiliationManagerController extends AffiliationAbstractController
         $data = array_merge($this->getRequest()->getPost()->toArray());
 
         if ($this->getRequest()->isPost()) {
-
             if (isset($data['merge']) && isset($data['submit'])) {
                 //Find the second affiliation
                 $affiliation = $this->getAffiliationService()->findEntityById('affiliation', $data['merge']);
@@ -77,9 +82,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $this->mergeAffiliation($affiliationService->getAffiliation(), $affiliation);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf($this->translate("txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful"),
-                        $affiliationService->getAffiliation()->getOrganisation(), $affiliation->getOrganisation(),
-                        $affiliationService->getAffiliation()->getProject()));
+                    ->addMessage(sprintf(
+                        $this->translate("txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful"),
+                        $affiliationService->getAffiliation()->getOrganisation(),
+                        $affiliation->getOrganisation(),
+                        $affiliationService->getAffiliation()->getProject()
+                    ));
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/view', [
                     'id' => $affiliationService->getAffiliation()->getId(),
@@ -114,8 +122,11 @@ class AffiliationManagerController extends AffiliationAbstractController
         }
 
         $formData = [];
-        $formData['affiliation'] = sprintf("%s|%s", $affiliationService->getAffiliation()->getOrganisation()->getId(),
-            $affiliationService->getAffiliation()->getBranch());
+        $formData['affiliation'] = sprintf(
+            "%s|%s",
+            $affiliationService->getAffiliation()->getOrganisation()->getId(),
+            $affiliationService->getAffiliation()->getBranch()
+        );
         $formData['contact'] = $affiliationService->getAffiliation()->getContact()->getId();
         $formData['branch'] = $affiliationService->getAffiliation()->getBranch();
         $formData['valueChain'] = $affiliationService->getAffiliation()->getValueChain();
@@ -207,8 +218,10 @@ class AffiliationManagerController extends AffiliationAbstractController
             }
 
             $this->flashMessenger()->setNamespace('success')
-                ->addMessage(sprintf($this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                    $affiliationService->getAffiliation()));
+                ->addMessage(sprintf(
+                    $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                    $affiliationService->getAffiliation()
+                ));
 
             return $this->redirect()->toRoute('zfcadmin/affiliation/view', [
                 'id' => $affiliationService->getAffiliation()->getId(),
@@ -254,8 +267,11 @@ class AffiliationManagerController extends AffiliationAbstractController
         if ($this->getRequest()->isPost()) {
             if (!empty($data['cancel'])) {
                 return $this->redirect()
-                    ->toRoute('zfcadmin/affiliation/view', ['id' => $affiliationService->getAffiliation()->getId()],
-                        ['fragment' => 'associates']);
+                    ->toRoute(
+                        'zfcadmin/affiliation/view',
+                        ['id' => $affiliationService->getAffiliation()->getId()],
+                        ['fragment' => 'associates']
+                    );
             }
 
             if (!empty($data['delete'])) {
@@ -263,12 +279,17 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf($this->translate("txt-associate-%s-has-successfully-been-removed"),
-                        $contact->getDisplayName()));
+                    ->addMessage(sprintf(
+                        $this->translate("txt-associate-%s-has-successfully-been-removed"),
+                        $contact->getDisplayName()
+                    ));
 
                 return $this->redirect()
-                    ->toRoute('zfcadmin/affiliation/view', ['id' => $affiliationService->getAffiliation()->getId()],
-                        ['fragment' => 'associates']);
+                    ->toRoute(
+                        'zfcadmin/affiliation/view',
+                        ['id' => $affiliationService->getAffiliation()->getId()],
+                        ['fragment' => 'associates']
+                    );
             }
 
 
@@ -286,12 +307,17 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf($this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                        $affiliationService->getAffiliation()));
+                    ->addMessage(sprintf(
+                        $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                        $affiliationService->getAffiliation()
+                    ));
 
                 return $this->redirect()
-                    ->toRoute('zfcadmin/affiliation/view', ['id' => $affiliationService->getAffiliation()->getId()],
-                        ['fragment' => 'associates']);
+                    ->toRoute(
+                        'zfcadmin/affiliation/view',
+                        ['id' => $affiliationService->getAffiliation()->getId()],
+                        ['fragment' => 'associates']
+                    );
             }
         }
 

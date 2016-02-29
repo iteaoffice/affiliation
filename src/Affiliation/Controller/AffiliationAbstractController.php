@@ -47,8 +47,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      Plugin\MergeAffiliation mergeAffiliation($mainAffiliation, $affiliation)
  *
  */
-abstract class AffiliationAbstractController extends AbstractActionController
-    implements AffiliationServiceAwareInterface, FormServiceAwareInterface, ConfigAwareInterface
+abstract class AffiliationAbstractController extends AbstractActionController implements AffiliationServiceAwareInterface, FormServiceAwareInterface, ConfigAwareInterface
 {
     /**
      * @var FormService
