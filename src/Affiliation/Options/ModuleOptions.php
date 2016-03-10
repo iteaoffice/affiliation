@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ITEA Office copyright message placeholder.
  *
@@ -15,8 +14,7 @@ use Zend\Stdlib\AbstractOptions;
 /**
  * Class ModuleOptions.
  */
-class ModuleOptions extends AbstractOptions implements
-    AffiliationOptionsInterface
+class ModuleOptions extends AbstractOptions implements AffiliationOptionsInterface
 {
     /**
      * Turn off strict options mode.
@@ -90,7 +88,8 @@ class ModuleOptions extends AbstractOptions implements
     }
 
     /**
-     * @param  string        $paymentSheetTemplate
+     * @param  string $paymentSheetTemplate
+     *
      * @return ModuleOptions
      */
     public function setPaymentSheetTemplate($paymentSheetTemplate)

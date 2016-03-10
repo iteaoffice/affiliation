@@ -13,7 +13,6 @@ namespace Affiliation\Navigation\Service;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\AffiliationServiceAwareInterface;
 use Project\Service\ProjectService;
-use Project\Service\ProjectServiceAwareInterface;
 use Project\Service\ReportService;
 use Zend\I18n\View\Helper\Translate;
 use Zend\Mvc\Router\Http\RouteMatch;
@@ -23,9 +22,7 @@ use Zend\Navigation\Navigation;
 /**
  * Factory for the Affiliation admin navigation.
  */
-class NavigationServiceAbstract implements
-    AffiliationServiceAwareInterface,
-    ProjectServiceAwareInterface
+class NavigationServiceAbstract
 {
     /**
      * @var RouteMatch

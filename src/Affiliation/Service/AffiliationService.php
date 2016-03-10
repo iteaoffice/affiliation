@@ -42,10 +42,7 @@ class AffiliationService extends ServiceAbstract
     const WHICH_ALL = 1;
     const WHICH_ONLY_ACTIVE = 2;
     const WHICH_ONLY_INACTIVE = 3;
-    /**
-     * @var Affiliation
-     */
-    protected $affiliation;
+
 
     /**
      * @param int $id
@@ -182,10 +179,8 @@ class AffiliationService extends ServiceAbstract
             case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE
                 && !($affiliation->getProject()->getCall()->getProgram()->getId() === 3
                     && $affiliation->getOrganisation()->getType()->getId() === Type::TYPE_UNIVERSITY):
-                $errors[] = sprintf(
-                    'No invoice is needed for %s',
-                    $affiliation->getOrganisation()->getType()->getDescription()
-                );
+                $errors[] = sprintf('No invoice is needed for %s',
+                    $affiliation->getOrganisation()->getType()->getDescription());
                 break;
             case is_null($affiliation->getFinancial()):
                 $errors[] = 'No financial organisation (affiliation financial) set for this partner';
@@ -447,10 +442,8 @@ class AffiliationService extends ServiceAbstract
             ->getId()) {
             case Method::METHOD_PERCENTAGE:
                 $costsPerYear
-                    = $versionService->findTotalCostVersionByAffiliationAndVersionPerYear(
-                        $this->getAffiliation(),
-                        $version
-                    );
+                    = $versionService->findTotalCostVersionByAffiliationAndVersionPerYear($this->getAffiliation(),
+                    $version);
                 if (array_key_exists($year, $costsPerYear)) {
                     $base = $costsPerYear[$year];
                 }
@@ -458,10 +451,8 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_CONTRIBUTION:
                 $effortPerYear
-                    = $versionService->findTotalEffortVersionByAffiliationAndVersionPerYear(
-                        $this->getAffiliation(),
-                        $version
-                    );
+                    = $versionService->findTotalEffortVersionByAffiliationAndVersionPerYear($this->getAffiliation(),
+                    $version);
                 if (array_key_exists($year, $effortPerYear)) {
                     $base = $effortPerYear[$year];
                 }
@@ -483,7 +474,7 @@ class AffiliationService extends ServiceAbstract
         $year = (int)$year;
 
         /**
-         * Based on the invoiceMethod we return or a percentage or the contriubtion
+         * Based on the invoiceMethod we return or a percentage or the contribution
          */
         $fee = $this->getProjectService()->findProjectFeeByYear($year);
 
@@ -630,10 +621,8 @@ class AffiliationService extends ServiceAbstract
 
         $result = new ArrayCollection();
         foreach ($countries as $country) {
-            $result->set(
-                $country->getId(),
-                $this->findAffiliationByProjectAndCountryAndWhich($project, $country, $which)
-            );
+            $result->set($country->getId(),
+                $this->findAffiliationByProjectAndCountryAndWhich($project, $country, $which));
         }
 
         return $result;
@@ -679,7 +668,7 @@ class AffiliationService extends ServiceAbstract
          * If the contact has no contact organisation, return null because we will not have a affiliation
          */
         if (is_null($contact->getContactOrganisation())) {
-            return;
+            return null;
         }
         foreach ($project->getAffiliation() as $affiliation) {
             if ($which === self::WHICH_ONLY_ACTIVE && !is_null($affiliation->getDateEnd())) {
@@ -695,7 +684,7 @@ class AffiliationService extends ServiceAbstract
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -857,25 +846,5 @@ class AffiliationService extends ServiceAbstract
         $affiliationService->setAffiliation($affiliation);
 
         return $affiliationService;
-    }
-
-    /**
-     * @param \Affiliation\Entity\Affiliation $affiliation
-     *
-     * @return $this;
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-
-        return $this;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
     }
 }

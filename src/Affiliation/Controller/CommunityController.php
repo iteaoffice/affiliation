@@ -15,32 +15,18 @@ use Affiliation\Form\Affiliation;
 use Affiliation\Form\Financial;
 use Contact\Entity\Address;
 use Contact\Entity\AddressType;
-use Contact\Service\ContactServiceAwareInterface;
-use Invoice\Service\InvoiceServiceAwareInterface;
-use Member\Service\MemberServiceAwareInterface;
+use Contact\Service\ContactService;
+use General\Entity\Country;
 use Organisation\Entity\Organisation;
-use Organisation\Service\OrganisationServiceAwareInterface;
-use Program\Service\ProgramServiceAwareInterface;
+use Organisation\Entity\Type;
+use Organisation\Service\OrganisationService;
 use Project\Acl\Assertion\Project as ProjectAssertion;
-use Project\Service\ProjectServiceAwareInterface;
-use Project\Service\ReportServiceAwareInterface;
-use Project\Service\VersionServiceAwareInterface;
-use Project\Service\WorkpackageServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
 /**
  * @category    Affiliation
  */
-class CommunityController extends AffiliationAbstractController implements
-    ProjectServiceAwareInterface,
-    WorkpackageServiceAwareInterface,
-    OrganisationServiceAwareInterface,
-    ReportServiceAwareInterface,
-    ContactServiceAwareInterface,
-    ProgramServiceAwareInterface,
-    VersionServiceAwareInterface,
-    InvoiceServiceAwareInterface,
-    MemberServiceAwareInterface
+class CommunityController extends AffiliationAbstractController
 {
     /**
      * Show the details of 1 affiliation.
@@ -67,7 +53,7 @@ class CommunityController extends AffiliationAbstractController implements
             'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(),
             'versionType'           => $this->getProjectService()->getNextMode()->versionType,
             'hasProjectEditRights'  => $hasProjectEditRights,
-            'requireMembership'     => $this->getProgramService()->getOptions()->getRequireMembership(),
+            'requireMembership'     => $this->getProgramModuleOptions()->getRequireMembership(),
             'reportService'         => $this->getReportService(),
             'versionService'        => $this->getVersionService(),
             'invoiceService'        => $this->getInvoiceService(),
@@ -83,23 +69,6 @@ class CommunityController extends AffiliationAbstractController implements
 
         $year = (int)$this->params('year');
         $period = (int)$this->params('period');
-
-//        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
-//
-//        $latestVersion = $projectService->getLatestProjectVersion();
-//        $versionService = $this->getVersionService()->setVersion($latestVersion);
-//
-//        $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
-//
-//        /**
-//         * The financial contact can be the billing organsisation (organisationFinancial) or the technical contact if not provided
-//         */
-//        if (!is_null($affiliationService->getAffiliation()->getFinancial())) {
-//            $financialContactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
-//        } else {
-//            $financialContactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
-//        }
-
 
         return new ViewModel([
             'year'               => $year,
@@ -122,11 +91,11 @@ class CommunityController extends AffiliationAbstractController implements
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
             ->addHeaderLine('Content-Disposition', 'attachment; filename="' . sprintf(
-                "payment_sheet_%s_%s_%sH.pdf",
-                $affiliation->getOrganisation()->getDocRef(),
-                $year,
-                $period
-            ) . '"')
+                    "payment_sheet_%s_%s_%sH.pdf",
+                    $affiliation->getOrganisation()->getDocRef(),
+                    $year,
+                    $period
+                ) . '"')
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
         $response->setContent($renderPaymentSheet->getPDFData());
@@ -258,11 +227,13 @@ class CommunityController extends AffiliationAbstractController implements
     {
         $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
         $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+        /** @var OrganisationService $organisationService */
         $organisationService = $this->getOrganisationService()->setOrganisation($affiliationService->getAffiliation()
             ->getOrganisation());
         $formData = [];
         $branch = $affiliationService->getAffiliation()->getFinancial()->getBranch();
         $formData['attention'] = $affiliationService->getAffiliation()->getFinancial()->getContact()->getDisplayName();
+        /** @var ContactService $contactService */
         $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getFinancial()
             ->getContact());
         if (!is_null($financialAddress = $contactService->getFinancialAddress())) {
@@ -311,8 +282,8 @@ class CommunityController extends AffiliationAbstractController implements
                     $organisation->setOrganisation($formData['organisation']);
                     $organisation->setCountry($this->getGeneralService()
                         ->findEntityById('Country', $formData['country']));
-                    /*
-                     * @var OrganisationType
+                    /**
+                     * @var Type $organisationType
                      */
                     $organisationType = $this->getOrganisationService()->getEntityManager()
                         ->getReference('Organisation\Entity\Type', 0);
@@ -350,8 +321,8 @@ class CommunityController extends AffiliationAbstractController implements
             } else {
                 $financialAddress = new Address();
                 $financialAddress->setContact($affiliationService->getAffiliation()->getFinancial()->getContact());
-                /*
-                 * @var AddressType
+                /**
+                 * @var AddressType $addressType
                  */
                 $addressType = $this->getContactService()->getEntityManager()
                     ->getReference('Contact\Entity\AddressType', AddressType::ADDRESS_TYPE_FINANCIAL);
@@ -360,8 +331,8 @@ class CommunityController extends AffiliationAbstractController implements
             $financialAddress->setAddress($formData['address']);
             $financialAddress->setZipCode($formData['zipCode']);
             $financialAddress->setCity($formData['city']);
-            /*
-             * @var Country
+            /**
+             * @var Country $country
              */
             $country = $this->getContactService()->getEntityManager()
                 ->getReference('General\Entity\Country', $formData['country']);

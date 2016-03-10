@@ -13,14 +13,13 @@ namespace Affiliation\Controller;
 use Affiliation\Entity;
 use Affiliation\Entity\Loi;
 use Affiliation\Form\UploadLoi;
-use General\Service\GeneralServiceAwareInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\View\Model\ViewModel;
 
 /**
  * @category    Affiliation
  */
-class LoiController extends AffiliationAbstractController implements GeneralServiceAwareInterface
+class LoiController extends AffiliationAbstractController
 {
     /**
      * Upload the LOI for a project (based on the affiliation).
@@ -207,13 +206,10 @@ class LoiController extends AffiliationAbstractController implements GeneralServ
     public function downloadAction()
     {
         set_time_limit(0);
-        /*
-         * @var Loi
+        /**
+         * @var Loi $loi
          */
-        $loi = $this->getAffiliationService()->findEntityById(
-            'Loi',
-            $this->params('id')
-        );
+        $loi = $this->getAffiliationService()->findEntityById('Loi', $this->params('id'));
         if (is_null($loi) || sizeof($loi->getObject()) === 0) {
             return $this->notFoundAction();
         }

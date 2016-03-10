@@ -488,7 +488,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
      */
     public function getContactService()
     {
-        return clone $this->getServiceLocator()->get('contact_contact_service');
+        return clone $this->getServiceLocator()->get(ContactService::class);
     }
 
     /**

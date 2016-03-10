@@ -2,28 +2,30 @@
 /**
  * ITEA Office copyright message placeholder.
  *
+ * PHP Version 5
+ *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright   2004-2016 ITEA Office
+ * @license     https://itea3.org/license.txt proprietary
+ *
+ * @link        http://github.com/iteaoffice/main for the canonical source repository
  */
-
-namespace Affiliation\Service;
+namespace Affiliation\Factory;
 
 use Affiliation\Options\ModuleOptions;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Factory responsible of retrieving an array containing the program configuration.
+ * Class GeneralServiceFactory
  *
- * @author Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @package General\Factory
  */
-class OptionServiceFactory implements FactoryInterface
+class ModuleOptionsFactory implements FactoryInterface
 {
     /**
-     * {@inheritDoc}
-     *
      * @param ServiceLocatorInterface $serviceLocator
      *
      * @return ModuleOptions
@@ -32,6 +34,6 @@ class OptionServiceFactory implements FactoryInterface
     {
         $config = $serviceLocator->get('Config');
 
-        return new ModuleOptions($config['affiliation_option']);
+        return new ModuleOptions(isset($config['affiliation_option']) ? $config['affiliation_option'] : []);
     }
 }

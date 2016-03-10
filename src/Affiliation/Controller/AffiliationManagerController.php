@@ -14,25 +14,13 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Financial;
 use Affiliation\Form\AdminAffiliation;
 use Affiliation\Form\EditAssociate;
-use Contact\Service\ContactServiceAwareInterface;
-use Invoice\Service\InvoiceServiceAwareInterface;
-use Member\Service\MemberServiceAwareInterface;
-use Organisation\Service\OrganisationServiceAwareInterface;
 use Project\Acl\Assertion\Project as ProjectAssertion;
-use Project\Service\ProjectServiceAwareInterface;
-use Project\Service\VersionServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
 /**
  *
  */
-class AffiliationManagerController extends AffiliationAbstractController implements
-    ContactServiceAwareInterface,
-    ProjectServiceAwareInterface,
-    VersionServiceAwareInterface,
-    OrganisationServiceAwareInterface,
-    InvoiceServiceAwareInterface,
-    MemberServiceAwareInterface
+class AffiliationManagerController extends AffiliationAbstractController
 {
     /**
      * @return ViewModel
@@ -60,7 +48,7 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
             'versionService'        => $this->getVersionService(),
             'invoiceService'        => $this->getInvoiceService(),
             'organisationService'   => $this->getOrganisationService()
-                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation())
+                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation()),
         ]);
     }
 
@@ -101,7 +89,7 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
             'merge'               => isset($data['merge']) ? $data['merge'] : null,
             'projectService'      => $this->getProjectService(),
             'organisationService' => $this->getOrganisationService()
-                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation())
+                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation()),
         ]);
     }
 
@@ -258,7 +246,7 @@ class AffiliationManagerController extends AffiliationAbstractController impleme
         //Find the associate
 
         $data = array_merge([
-            'affiliation' => $affiliation->getId()
+            'affiliation' => $affiliation->getId(),
         ], $this->getRequest()->getPost()->toArray());
 
         $form = new EditAssociate($affiliationService);

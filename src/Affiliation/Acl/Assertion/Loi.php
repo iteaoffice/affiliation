@@ -56,15 +56,12 @@ class Loi extends AssertionAbstract
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
-                $affiliation = $this->getAffiliationService()->setAffiliationId(
-                    !is_null($this->getRouteMatch()->getParam('id')) ? $this->getRouteMatch()->getParam(
-                        'id'
-                    ) : $this->getRouteMatch()->getParam(
-                        'affiliation-id'
-                    )
-                )->getAffiliation();
+                $affiliation = $this->getAffiliationService()->setAffiliationId(!is_null($this->getRouteMatch()
+                    ->getParam('id'))
+                    ? $this->getRouteMatch()->getParam('id') : $this->getRouteMatch()->getParam('affiliation-id'))
+                    ->getAffiliation();
 
-                return $this->getAffiliationAssert()->assert($acl, $role, $affiliation, 'edit-community');
+                return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'edit-community');
             case 'render':
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
@@ -75,35 +72,24 @@ class Loi extends AssertionAbstract
                     $affiliation = $resource->getAffiliation();
                 }
                 if (is_null($affiliation)) {
-                    $affiliation = $this->getAffiliationService()->setAffiliationId(
-                        !is_null($this->getRouteMatch()->getParam('id')) ? $this->getRouteMatch()->getParam(
-                            'id'
-                        ) : $this->getRouteMatch()->getParam(
-                            'affiliation-id'
-                        )
-                    )->getAffiliation();
+                    $affiliation = $this->getAffiliationService()->setAffiliationId(!is_null($this->getRouteMatch()
+                        ->getParam('id'))
+                        ? $this->getRouteMatch()->getParam('id') : $this->getRouteMatch()->getParam('affiliation-id'))
+                        ->getAffiliation();
                 }
 
-                return $this->getAffiliationAssert()->assert($acl, $role, $affiliation, 'view-community');
+                return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'view-community');
             case 'replace':
                 /*
                  * For the replace we need to see if the user has access on the editing of the affiliation
                  * and the acl should not be approved
                  */
 
-                return is_null($resource->getDateApproved()) && $this->getAffiliationAssert()->assert(
-                    $acl,
-                    $role,
-                    $resource->getAffiliation(),
-                    'edit-community'
-                );
+                return is_null($resource->getDateApproved())
+                && $this->getAffiliationAssertion()->assert($acl, $role, $resource->getAffiliation(), 'edit-community');
             case 'download':
-                return $this->getAffiliationAssert()->assert(
-                    $acl,
-                    $role,
-                    $resource->getAffiliation(),
-                    'view-community'
-                );
+                return $this->getAffiliationAssertion()
+                    ->assert($acl, $role, $resource->getAffiliation(), 'view-community');
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':

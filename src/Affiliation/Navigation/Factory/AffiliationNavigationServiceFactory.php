@@ -12,6 +12,7 @@ namespace Affiliation\Navigation\Factory;
 
 use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Affiliation\Service\AffiliationService;
+use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Zend\Navigation\Navigation;
 use Zend\ServiceManager\FactoryInterface;
@@ -38,6 +39,9 @@ class AffiliationNavigationServiceFactory implements FactoryInterface
          */
         $affiliationService = $serviceLocator->get(AffiliationService::class);
         $affiliationNavigationService->setAffiliationService($affiliationService);
+
+        $affiliationNavigationService->setProjectService($serviceLocator->get(ProjectService::class));
+
         /**
          * @var ReportService $reportService
          */

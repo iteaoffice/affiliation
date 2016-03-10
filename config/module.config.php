@@ -7,50 +7,51 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c] 2004-2015 ITEA Office (https://itea3.org]
  */
-use Affiliation\Acl\Assertion;
+use Affiliation\Acl;
 use Affiliation\Controller;
+use Affiliation\Factory;
 use Affiliation\Navigation\Factory\AffiliationNavigationServiceFactory;
 use Affiliation\Navigation\Service\AffiliationNavigationService;
+use Affiliation\Options;
 use Affiliation\Service;
 use Affiliation\View\Helper;
 
 $config = [
     'controllers'     => [
-        'initializers' => [
-            Controller\ControllerInitializer::class
+        'invokables'         => [
+            //Controller\AffiliationManagerController::class,
+            //Controller\AffiliationController::class       ,
+            //Controller\DoaManagerController::class        ,
+            //Controller\LoiManagerController::class        ,
+            //Controller\CommunityController::class         ,
+            //Controller\DoaController::class               ,
+            //Controller\LoiController::class               ,
+            //Controller\EditController::class              ,
         ],
-        'invokables'   => [
-            Controller\AffiliationManagerController::class => Controller\AffiliationManagerController::class,
-            Controller\AffiliationController::class        => Controller\AffiliationController::class,
-            Controller\DoaManagerController::class         => Controller\DoaManagerController::class,
-            Controller\LoiManagerController::class         => Controller\LoiManagerController::class,
-            Controller\CommunityController::class          => Controller\CommunityController::class,
-            Controller\DoaController::class                => Controller\DoaController::class,
-            Controller\LoiController::class                => Controller\LoiController::class,
-            Controller\EditController::class               => Controller\EditController::class,
-
+        'abstract_factories' => [
+            Controller\Factory\ControllerInvokableAbstractFactory::class,
         ],
     ],
     'service_manager' => [
-        'initializers' => [
-            Service\ServiceInitializer::class
-        ],
-        'invokables'   => [
-            Service\AffiliationService::class     => Service\AffiliationService::class,
-            Service\DoaService::class             => Service\DoaService::class,
-            Service\LoiService::class             => Service\LoiService::class,
-            Service\FormService::class            => Service\FormService::class,
-            Assertion\Affiliation::class          => Assertion\Affiliation::class,
-            Assertion\Doa::class                  => Assertion\Doa::class,
-            Assertion\Loi::class                  => Assertion\Loi::class,
+        'invokables'         => [
             'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
             'affiliation_description_form_filter' => 'Affiliation\Form\FilterCreateObject',
             'affiliation_loi_form_filter'         => 'Affiliation\Form\FilterCreateObject',
             'affiliation_doa_form_filter'         => 'Affiliation\Form\FilterCreateObject',
         ],
-        'factories'    => [
-            'affiliation_module_options'        => 'Affiliation\Service\OptionServiceFactory',
+        'factories'          => [
+            //Acl\Assertion\Affiliation::class,
+            //Acl\Assertion\Doa::class,
+            //Acl\Assertion\Loi::class,
+            Service\AffiliationService::class   => Factory\AffiliationServiceFactory::class,
+            Service\DoaService::class           => Factory\DoaServiceFactory::class,
+            Service\LoiService::class           => Factory\LoiServiceFactory::class,
+            Service\FormService::class          => Factory\FormServiceFactory::class,
+            Options\ModuleOptions::class        => Factory\ModuleOptionsFactory::class,
             AffiliationNavigationService::class => AffiliationNavigationServiceFactory::class,
+        ],
+        'abstract_factories' => [
+            Acl\Factory\AssertionInvokableAbstractFactory::class,
         ],
     ],
     'view_helpers'    => [
@@ -61,7 +62,7 @@ $config = [
             'doaLink'                    => Helper\DoaLink::class,
             'loiLink'                    => Helper\LoiLink::class,
             'paymentSheet'               => Helper\PaymentSheet::class,
-        ]
+        ],
     ],
     'view_manager'    => [
         'template_map' => include __DIR__ . '/../template_map.php',
@@ -71,24 +72,24 @@ $config = [
             'affiliation_annotation_driver' => [
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'paths' => [
-                    __DIR__ . '/../src/Affiliation/Entity/'
-                ]
+                    __DIR__ . '/../src/Affiliation/Entity/',
+                ],
             ],
             'orm_default'                   => [
                 'drivers' => [
                     'Affiliation\Entity' => 'affiliation_annotation_driver',
-                ]
-            ]
+                ],
+            ],
         ],
         'eventmanager' => [
             'orm_default' => [
                 'subscribers' => [
                     'Gedmo\Timestampable\TimestampableListener',
                     'Gedmo\Sluggable\SluggableListener',
-                ]
+                ],
             ],
         ],
-    ]
+    ],
 ];
 $configFiles = [
     __DIR__ . '/module.config.routes.php',

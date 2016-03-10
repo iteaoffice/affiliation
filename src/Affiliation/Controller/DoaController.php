@@ -13,14 +13,13 @@ namespace Affiliation\Controller;
 use Affiliation\Entity;
 use Affiliation\Entity\Doa;
 use Affiliation\Form\UploadDoa;
-use General\Service\GeneralServiceAwareInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\View\Model\ViewModel;
 
 /**
  * @category    Affiliation
  */
-class DoaController extends AffiliationAbstractController implements GeneralServiceAwareInterface
+class DoaController extends AffiliationAbstractController
 {
     /**
      * Upload a DOA for a project (based on the affiliation).

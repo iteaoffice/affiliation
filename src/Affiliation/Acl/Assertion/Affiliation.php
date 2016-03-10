@@ -28,10 +28,10 @@ class Affiliation extends AssertionAbstract
      * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl                                 $acl
-     * @param RoleInterface                       $role
+     * @param Acl $acl
+     * @param RoleInterface $role
      * @param ResourceInterface|AffiliationEntity $resource
-     * @param string                              $privilege
+     * @param string $privilege
      *
      * @return bool
      */
@@ -51,14 +51,16 @@ class Affiliation extends AssertionAbstract
             $resource = $this->getAffiliationService()->setAffiliationId($id)->getAffiliation();
         }
 
+
+
         switch ($privilege) {
             case 'view-community':
-                if ($this->getContactService()->hasPermit('view', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'view', $resource)) {
                     return true;
                 }
 
                 //whe the person has view rights on the project, the affiliation can also be viewed
-                return $this->getProjectAssert()->assert($acl, $role, $resource->getProject(), 'view-community');
+                return $this->getProjectAssertion()->assert($acl, $role, $resource->getProject(), 'view-community');
             case 'add-associate':
             case 'edit-affiliation':
             case 'edit-description':
@@ -67,10 +69,10 @@ class Affiliation extends AssertionAbstract
                 if ($this->getProjectService()->isStopped()) {
                     return false;
                 }
-                if ($this->getContactService()->hasPermit('edit', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $resource)) {
                     return true;
                 }
-                if ($this->getContactService()->hasPermit('financial', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $resource)) {
                     return true;
                 }
                 break;
@@ -89,7 +91,7 @@ class Affiliation extends AssertionAbstract
                 if ($this->getProjectService()->isStopped()) {
                     return false;
                 }
-                if ($this->getContactService()->hasPermit('edit', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $resource)) {
                     return true;
                 }
 
@@ -97,7 +99,7 @@ class Affiliation extends AssertionAbstract
             case 'edit-financial':
             case 'payment-sheet':
             case 'payment-sheet-pdf':
-                if ($this->getContactService()->hasPermit('financial', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $resource)) {
                     return true;
                 }
 

@@ -10,22 +10,12 @@
 
 namespace Affiliation\Controller;
 
-use Contact\Service\ContactServiceAwareInterface;
-use Invoice\Service\InvoiceServiceAwareInterface;
-use Organisation\Service\OrganisationServiceAwareInterface;
-use Project\Service\ProjectServiceAwareInterface;
-use Project\Service\VersionServiceAwareInterface;
 use Zend\View\Model\ViewModel;
 
 /**
  *
  */
-class AffiliationController extends AffiliationAbstractController implements
-    ContactServiceAwareInterface,
-    ProjectServiceAwareInterface,
-    VersionServiceAwareInterface,
-    OrganisationServiceAwareInterface,
-    InvoiceServiceAwareInterface
+class AffiliationController extends AffiliationAbstractController
 {
     /**
      * @return ViewModel

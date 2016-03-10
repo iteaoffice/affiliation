@@ -45,6 +45,7 @@ class RenderPaymentSheet extends AbstractPlugin
      */
     public function render(Affiliation $affiliation, $year, $period)
     {
+        /** @var ProjectService $projectService */
         $projectService = $this->getProjectService()->setProject($affiliation->getProject());
 
         $latestVersion = $projectService->getLatestProjectVersion();
@@ -744,7 +745,7 @@ class RenderPaymentSheet extends AbstractPlugin
      */
     public function getContactService()
     {
-        return $this->getServiceLocator()->get('contact_contact_service');
+        return $this->getServiceLocator()->get(ContactService::class);
     }
 
     /**
@@ -752,7 +753,7 @@ class RenderPaymentSheet extends AbstractPlugin
      */
     public function getModuleOptions()
     {
-        return $this->getServiceLocator()->get('affiliation_module_options');
+        return $this->getServiceLocator()->get(ModuleOptions::class);
     }
 
 

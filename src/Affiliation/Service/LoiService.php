@@ -26,11 +26,6 @@ use Organisation\Entity\Organisation;
 class LoiService extends ServiceAbstract
 {
     /**
-     * @var Loi
-     */
-    protected $loi;
-
-    /**
      * @param int $id
      *
      * @return LoiService;
@@ -57,7 +52,7 @@ class LoiService extends ServiceAbstract
      */
     public function findNotApprovedLoi()
     {
-        return new ArrayCollection($this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findNotApprovedLoi());
+        return new ArrayCollection($this->getEntityManager()->getRepository(Loi::class)->findNotApprovedLoi());
     }
 
     /**
@@ -67,26 +62,6 @@ class LoiService extends ServiceAbstract
      */
     public function findLoiByOrganisation(Organisation $organisation)
     {
-        return $this->getEntityManager()->getRepository($this->getFullEntityName('loi'))->findLoiByOrganisation($organisation);
-    }
-
-    /**
-     * @param \Affiliation\Entity\Loi $loi
-     *
-     * @return $this;
-     */
-    public function setLoi($loi)
-    {
-        $this->loi = $loi;
-
-        return $this;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Loi
-     */
-    public function getLoi()
-    {
-        return $this->loi;
+        return $this->getEntityManager()->getRepository(Loi::class)->findLoiByOrganisation($organisation);
     }
 }

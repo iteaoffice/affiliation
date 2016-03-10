@@ -25,10 +25,7 @@ use Organisation\Entity\Organisation;
  */
 class DoaService extends ServiceAbstract
 {
-    /**
-     * @var Doa
-     */
-    protected $doa;
+   
 
     /**
      * @param int $id

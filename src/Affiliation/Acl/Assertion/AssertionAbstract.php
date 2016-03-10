@@ -16,6 +16,7 @@ namespace Affiliation\Acl\Assertion;
 use Admin\Service\AdminService;
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Service\AffiliationService;
+use Contact\Entity\Contact;
 use Contact\Service\ContactService;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectService;
@@ -23,7 +24,6 @@ use Project\Service\ReportService;
 use Zend\Http\Request;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\Permissions\Acl\Assertion\AssertionInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -37,7 +37,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @link       https://itea3.org
  */
-abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAwareInterface
+abstract class AssertionAbstract implements AssertionInterface
 {
     /**
      * @var ServiceLocatorInterface
@@ -47,6 +47,35 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
      * @var ContactService
      */
     protected $contactService;
+    /**
+     * @var Contact
+     */
+    protected $contact;
+    /**
+     * @var AffiliationService
+     */
+    protected $affiliationService;
+    /**
+     * @var ProjectService
+     */
+    protected $projectService;
+    /**
+     * @var ReportService
+     */
+    protected $reportService;
+    /**
+     * @var ProjectAssertion
+     */
+    protected $projectAssertion;
+    /**
+     * @var AffiliationAssertion
+     */
+    protected $affiliationAssertion;
+    /**
+     * @var AdminService
+     */
+    protected $adminService;
+
     /**
      * @var array
      */
@@ -71,78 +100,11 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
     }
 
     /**
-     * Get the service locator.
-     *
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     *
-     * @return AssertionAbstract
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-
-        return $this;
-    }
-
-    /**
-     * Gateway to the Affiliation Service.
-     *
-     * @return AffiliationService
-     */
-    public function getAffiliationService()
-    {
-        return $this->getServiceLocator()->get(AffiliationService::class);
-    }
-
-    /**
-     * @return ProjectService
-     */
-    public function getProjectService()
-    {
-        return $this->getServiceLocator()->get(ProjectService::class);
-    }
-
-
-    /**
-     * @return ReportService
-     */
-    public function getReportService()
-    {
-        return $this->getServiceLocator()->get(ReportService::class);
-    }
-
-    /**
-     * @return AffiliationAssertion
-     */
-    public function getAffiliationAssert()
-    {
-        return $this->getServiceLocator()->get(AffiliationAssertion::class);
-    }
-
-    /**
-     * @return AffiliationAssertion
-     */
-    public function getProjectAssert()
-    {
-        return $this->getServiceLocator()->get(ProjectAssertion::class);
-    }
-
-    /**
      * @return bool
      */
     public function hasContact()
     {
-        return !$this->getContactService()->isEmpty();
+        return !$this->getContact()->isEmpty();
     }
 
     /**
@@ -150,24 +112,43 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
      */
     public function getContactService()
     {
-        if (is_null($this->contactService)) {
-            $this->contactService = $this->getServiceLocator()->get('contact_contact_service');
-            if ($this->getServiceLocator()->get('zfcuser_auth_service')->hasIdentity()) {
-                $this->contactService->setContact(
-                    $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity()
-                );
-            }
-        }
-
         return $this->contactService;
     }
 
     /**
-     * @return AdminService
+     * @param ContactService $contactService
+     *
+     * @return AssertionAbstract
      */
-    public function getAdminService()
+    public function setContactService($contactService)
     {
-        return $this->getServiceLocator()->get(AdminService::class);
+        $this->contactService = $contactService;
+
+        return $this;
+    }
+
+    /**
+     * @return Contact
+     */
+    public function getContact()
+    {
+        if (is_null($this->contact)) {
+            $this->contact = new Contact();
+        }
+
+        return $this->contact;
+    }
+
+    /**
+     * @param Contact $contact
+     *
+     * @return AssertionAbstract
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
     }
 
     /**
@@ -199,12 +180,153 @@ abstract class AssertionAbstract implements AssertionInterface, ServiceLocatorAw
      */
     public function getAccessRoles()
     {
-        if (empty($this->accessRoles) && !$this->getContactService()->isEmpty()) {
-            $this->accessRoles = $this->getAdminService()->findAccessRolesByContactAsArray(
-                $this->getContactService()->getContact()
-            );
+        if (empty($this->accessRoles) && !$this->getContact()->isEmpty()) {
+            $this->accessRoles = $this->getAdminService()->findAccessRolesByContactAsArray($this->getContact());
         }
 
         return $this->accessRoles;
+    }
+
+    /**
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * @param ServiceLocatorInterface $serviceLocator
+     *
+     * @return AssertionAbstract
+     */
+    public function setServiceLocator($serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+
+        return $this;
+    }
+
+    /**
+     * @return AffiliationService
+     */
+    public function getAffiliationService()
+    {
+        return $this->affiliationService;
+    }
+
+    /**
+     * @param AffiliationService $affiliationService
+     *
+     * @return AssertionAbstract
+     */
+    public function setAffiliationService($affiliationService)
+    {
+        $this->affiliationService = $affiliationService;
+
+        return $this;
+    }
+
+    /**
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->projectService;
+    }
+
+    /**
+     * @param ProjectService $projectService
+     *
+     * @return AssertionAbstract
+     */
+    public function setProjectService($projectService)
+    {
+        $this->projectService = $projectService;
+
+        return $this;
+    }
+
+    /**
+     * @return ReportService
+     */
+    public function getReportService()
+    {
+        return $this->reportService;
+    }
+
+    /**
+     * @param ReportService $reportService
+     *
+     * @return AssertionAbstract
+     */
+    public function setReportService($reportService)
+    {
+        $this->reportService = $reportService;
+
+        return $this;
+    }
+
+    /**
+     * @return ProjectAssertion
+     */
+    public function getProjectAssertion()
+    {
+        return $this->projectAssertion;
+    }
+
+    /**
+     * @param ProjectAssertion $projectAssertion
+     *
+     * @return AssertionAbstract
+     */
+    public function setProjectAssertion($projectAssertion)
+    {
+        $this->projectAssertion = $projectAssertion;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliationAssertion()
+    {
+        if (is_null($this->affiliationAssertion)) {
+            $this->affiliationAssertion = $this->getServiceLocator()->get(Affiliation::class);
+        }
+        return $this->affiliationAssertion;
+    }
+
+    /**
+     * @param Affiliation $affiliationAssertion
+     *
+     * @return AssertionAbstract
+     */
+    public function setAffiliationAssertion($affiliationAssertion)
+    {
+        $this->affiliationAssertion = $affiliationAssertion;
+
+        return $this;
+    }
+
+    /**
+     * @return AdminService
+     */
+    public function getAdminService()
+    {
+        return $this->adminService;
+    }
+
+    /**
+     * @param AdminService $adminService
+     *
+     * @return AssertionAbstract
+     */
+    public function setAdminService($adminService)
+    {
+        $this->adminService = $adminService;
+
+        return $this;
     }
 }

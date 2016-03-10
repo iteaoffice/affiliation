@@ -11,7 +11,6 @@
 namespace Affiliation\Service;
 
 use Admin\Service\AdminService;
-use Admin\Service\AdminServiceAwareInterface;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\EntityAbstract;
@@ -19,21 +18,14 @@ use Affiliation\Entity\Loi;
 use BjyAuthorize\Service\Authorize;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
-use Organisation\Service\OrganisationServiceAwareInterface;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use Zend\Authentication\AuthenticationService;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * ServiceAbstract.
  */
-abstract class ServiceAbstract implements
-    AdminServiceAwareInterface,
-    OrganisationServiceAwareInterface,
-    ServiceLocatorAwareInterface,
-    ServiceInterface
+abstract class ServiceAbstract implements ServiceInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -43,6 +35,10 @@ abstract class ServiceAbstract implements
      * @var AdminService;
      */
     protected $adminService;
+    /**
+     * @var Authorize
+     */
+    protected $authorizeService;
     /**
      * @var OrganisationService;
      */
@@ -56,10 +52,6 @@ abstract class ServiceAbstract implements
      */
     protected $versionService;
     /**
-     * @var AuthenticationService;
-     */
-    protected $authenticationService;
-    /**
      * @var InvoiceService
      */
     protected $invoiceService;
@@ -67,6 +59,18 @@ abstract class ServiceAbstract implements
      * @var ServiceLocatorInterface
      */
     protected $serviceLocator;
+    /**
+     * @var Affiliation
+     */
+    protected $affiliation;
+    /**
+     * @var Doa
+     */
+    protected $doa;
+    /**
+     * @var Loi
+     */
+    protected $loi;
 
     /**
      * @param      $entity
@@ -81,7 +85,7 @@ abstract class ServiceAbstract implements
 
     /**
      * @param string $entity
-     * @param $id
+     * @param        $id
      *
      * @return null|Affiliation|Doa|Loi
      */
@@ -102,10 +106,8 @@ abstract class ServiceAbstract implements
         /*
          * Update the permissions
          */
-        $this->getAdminService()->flushPermitsByEntityAndId(
-            $entity->get('underscore_full_entity_name'),
-            $entity->getId()
-        );
+        $this->getAdminService()
+            ->flushPermitsByEntityAndId($entity->get('underscore_full_entity_name'), $entity->getId());
 
         return $entity;
     }
@@ -122,18 +124,14 @@ abstract class ServiceAbstract implements
         /*
          * Update the permissions
          */
-        $this->getAdminService()->flushPermitsByEntityAndId(
-            $entity->get('underscore_full_entity_name'),
-            $entity->getId()
-        );
+        $this->getAdminService()
+            ->flushPermitsByEntityAndId($entity->get('underscore_full_entity_name'), $entity->getId());
 
         //When an an invite is updated, we need to flush the permissions for the project. Later we will use
         //The dependencies for this, but for now we can use this trick
         if ($entity->get('underscore_full_entity_name') === 'affiliation_entity_affiliation') {
-            $this->getAdminService()->flushPermitsByEntityAndId(
-                'project_entity_project',
-                $entity->getProject()->getId()
-            );
+            $this->getAdminService()
+                ->flushPermitsByEntityAndId('project_entity_project', $entity->getProject()->getId());
         }
 
         return $entity;
@@ -183,17 +181,8 @@ abstract class ServiceAbstract implements
             $entity = $entity[0] . ucfirst($entity[1]);
         }
 
-        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))) . '\\' . 'Entity' . '\\' . ucfirst(
-            $entity
-        );
-    }
-
-    /**
-     * @return Authorize
-     */
-    public function getAuthorizeService()
-    {
-        return $this->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
+        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))) . '\\' . 'Entity' . '\\'
+        . ucfirst($entity);
     }
 
     /**
@@ -206,44 +195,10 @@ abstract class ServiceAbstract implements
          * @var AssertionAbstract
          */
         $assertion = $this->getServiceLocator()->get($assertion);
-        if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)
-        ) {
+        if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
-            $this->getAuthorizeService()->getAcl()->allow(
-                [],
-                $entity,
-                [],
-                $assertion
-            );
+            $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }
-    }
-
-    /**
-     * @param ServiceLocatorInterface $serviceLocator
-     *
-     * @return ServiceAbstract
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-
-        return $this;
-    }
-
-    /**
-     * @return \Zend\ServiceManager\ServiceManager
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * @param \Doctrine\ORM\EntityManager $entityManager
-     */
-    public function setEntityManager($entityManager)
-    {
-        $this->entityManager = $entityManager;
     }
 
     /**
@@ -251,11 +206,17 @@ abstract class ServiceAbstract implements
      */
     public function getEntityManager()
     {
-        if (null === $this->entityManager) {
-            $this->setEntityManager($this->getServiceLocator()->get('Doctrine\ORM\EntityManager'));
-        }
-
         return $this->entityManager;
+    }
+
+    /**
+     * @param \Doctrine\ORM\EntityManager $entityManager
+     * @return ServiceAbstract
+     */
+    public function setEntityManager($entityManager)
+    {
+        $this->entityManager = $entityManager;
+        return $this;
     }
 
     /**
@@ -268,32 +229,29 @@ abstract class ServiceAbstract implements
 
     /**
      * @param AdminService $adminService
-     *
      * @return ServiceAbstract
      */
-    public function setAdminService(AdminService $adminService)
+    public function setAdminService($adminService)
     {
         $this->adminService = $adminService;
-
         return $this;
     }
 
     /**
-     * @return ProjectService
+     * @return Authorize
      */
-    public function getProjectService()
+    public function getAuthorizeService()
     {
-        return $this->serviceLocator->get(ProjectService::class);
+        return $this->authorizeService;
     }
 
     /**
-     * @param  ProjectService  $projectService
+     * @param Authorize $authorizeService
      * @return ServiceAbstract
      */
-    public function setProjectService(ProjectService $projectService)
+    public function setAuthorizeService($authorizeService)
     {
-        $this->projectService = $projectService;
-
+        $this->authorizeService = $authorizeService;
         return $this;
     }
 
@@ -306,13 +264,52 @@ abstract class ServiceAbstract implements
     }
 
     /**
-     * @param  OrganisationService $organisationService
+     * @param OrganisationService $organisationService
      * @return ServiceAbstract
      */
-    public function setOrganisationService(OrganisationService $organisationService)
+    public function setOrganisationService($organisationService)
     {
         $this->organisationService = $organisationService;
+        return $this;
+    }
 
+    /**
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        if (is_null($this->projectService)) {
+            $this->projectService = $this->getServiceLocator()->get(ProjectService::class);
+        }
+
+        return $this->projectService;
+    }
+
+    /**
+     * @param ProjectService $projectService
+     * @return ServiceAbstract
+     */
+    public function setProjectService($projectService)
+    {
+        $this->projectService = $projectService;
+        return $this;
+    }
+
+    /**
+     * @return VersionService
+     */
+    public function getVersionService()
+    {
+        return $this->versionService;
+    }
+
+    /**
+     * @param VersionService $versionService
+     * @return ServiceAbstract
+     */
+    public function setVersionService($versionService)
+    {
+        $this->versionService = $versionService;
         return $this;
     }
 
@@ -321,14 +318,88 @@ abstract class ServiceAbstract implements
      */
     public function getInvoiceService()
     {
-        return $this->serviceLocator->get(InvoiceService::class);
+        return $this->invoiceService;
     }
 
     /**
-     * @return VersionService
+     * @param InvoiceService $invoiceService
+     * @return ServiceAbstract
      */
-    public function getVersionService()
+    public function setInvoiceService($invoiceService)
     {
-        return $this->serviceLocator->get(VersionService::class);
+        $this->invoiceService = $invoiceService;
+        return $this;
+    }
+
+    /**
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * @param ServiceLocatorInterface $serviceLocator
+     * @return ServiceAbstract
+     */
+    public function setServiceLocator($serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @return ServiceAbstract
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+        return $this;
+    }
+
+    /**
+     * @return Doa
+     */
+    public function getDoa()
+    {
+        return $this->doa;
+    }
+
+    /**
+     * @param Doa $doa
+     * @return ServiceAbstract
+     */
+    public function setDoa($doa)
+    {
+        $this->doa = $doa;
+        return $this;
+    }
+
+    /**
+     * @return Loi
+     */
+    public function getLoi()
+    {
+        return $this->loi;
+    }
+
+    /**
+     * @param Loi $loi
+     * @return ServiceAbstract
+     */
+    public function setLoi($loi)
+    {
+        $this->loi = $loi;
+        return $this;
     }
 }

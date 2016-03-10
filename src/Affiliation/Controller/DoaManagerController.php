@@ -20,15 +20,8 @@ use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\DoaReminder as DoaReminderEntity;
 use Affiliation\Form\DoaApproval;
 use Affiliation\Form\DoaReminder;
-use Affiliation\Service\DoaServiceAwareInterface;
-use Contact\Service\ContactServiceAwareInterface;
 use Deeplink\Entity\Target;
-use Deeplink\Service\DeeplinkServiceAwareInterface;
 use Deeplink\View\Helper\DeeplinkLink;
-use General\Service\EmailServiceAwareInterface;
-use General\Service\GeneralServiceAwareInterface;
-use Mailing\Service\MailingServiceAwareInterface;
-use Project\Service\ProjectServiceAwareInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
@@ -44,14 +37,7 @@ use Zend\View\Model\ViewModel;
  *
  * @link       https://itea3.org
  */
-class DoaManagerController extends AffiliationAbstractController implements
-    DoaServiceAwareInterface,
-    ProjectServiceAwareInterface,
-    EmailServiceAwareInterface,
-    GeneralServiceAwareInterface,
-    MailingServiceAwareInterface,
-    ContactServiceAwareInterface,
-    DeeplinkServiceAwareInterface
+class DoaManagerController extends AffiliationAbstractController
 {
     /**
      * @return ViewModel
