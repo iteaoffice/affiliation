@@ -91,11 +91,11 @@ class CommunityController extends AffiliationAbstractController
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
             ->addHeaderLine('Content-Disposition', 'attachment; filename="' . sprintf(
-                    "payment_sheet_%s_%s_%sH.pdf",
-                    $affiliation->getOrganisation()->getDocRef(),
-                    $year,
-                    $period
-                ) . '"')
+                "payment_sheet_%s_%s_%sH.pdf",
+                $affiliation->getOrganisation()->getDocRef(),
+                $year,
+                $period
+            ) . '"')
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
         $response->setContent($renderPaymentSheet->getPDFData());

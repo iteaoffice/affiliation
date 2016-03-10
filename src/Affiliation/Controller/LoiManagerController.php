@@ -97,8 +97,10 @@ class LoiManagerController extends AffiliationAbstractController
 
         $form = new LoiReminder($affiliationService->getAffiliation(), $this->getContactService());
 
-        $data = array_merge_recursive($this->getRequest()->getPost()->toArray(),
-            $this->getRequest()->getFiles()->toArray());
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
 
         //Get the corresponding template
         $webInfo = $this->getGeneralService()->findWebInfoByInfo('/affiliation/loi:reminder');
@@ -115,8 +117,11 @@ class LoiManagerController extends AffiliationAbstractController
             $email = $this->getEmailService()->create();
             $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
             $email->addTo($this->zfcUserAuthentication()->getIdentity());
-            $email->setSubject(str_replace(['[project]'], [$affiliationService->getAffiliation()->getProject()],
-                    $form->getData()['subject']));
+            $email->setSubject(str_replace(
+                ['[project]'],
+                [$affiliationService->getAffiliation()->getProject()],
+                $form->getData()['subject']
+            ));
 
             $email->setHtmlLayoutName('signature_twig');
             $email->setReceiver($this->getContactService()->findEntityById('contact', $form->getData()['receiver'])
@@ -137,11 +142,13 @@ class LoiManagerController extends AffiliationAbstractController
             $this->getLoiService()->newEntity($loiReminder);
 
             $this->flashMessenger()->setNamespace('success')
-                ->addMessage(sprintf(_("txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
-                        $affiliationService->getAffiliation()->getOrganisation(),
-                        $affiliationService->getAffiliation()->getProject(),
-                        $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])
-                            ->getEmail()));
+                ->addMessage(sprintf(
+                    _("txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                    $affiliationService->getAffiliation()->getOrganisation(),
+                    $affiliationService->getAffiliation()->getProject(),
+                    $this->getContactService()->findEntityById('contact', $form->getData()['receiver'])
+                    ->getEmail()
+                ));
 
             return $this->redirect()->toRoute('zfcadmin/affiliation/loi/missing');
         }
@@ -188,8 +195,10 @@ class LoiManagerController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $data = array_merge_recursive($this->getRequest()->getPost()->toArray(),
-            $this->getRequest()->getFiles()->toArray());
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
 
         $form = $this->getFormService()->prepare('loi', $loiService->getLoi(), $data);
 
@@ -205,9 +214,11 @@ class LoiManagerController extends AffiliationAbstractController
 
             if (isset($data['delete'])) {
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf(_("txt-project-loi-for-organisation-%s-in-project-%s-has-been-removed"),
-                            $loiService->getLoi()->getAffiliation()->getOrganisation(),
-                            $loiService->getLoi()->getAffiliation()->getProject()));
+                    ->addMessage(sprintf(
+                        _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-removed"),
+                        $loiService->getLoi()->getAffiliation()->getOrganisation(),
+                        $loiService->getLoi()->getAffiliation()->getProject()
+                    ));
 
                 $this->getLoiService()->removeEntity($loiService->getLoi());
 
@@ -247,8 +258,11 @@ class LoiManagerController extends AffiliationAbstractController
                 $this->getLoiService()->updateEntity($loi);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf(_("txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated"),
-                            $loi->getAffiliation()->getOrganisation(), $loi->getAffiliation()->getProject()));
+                    ->addMessage(sprintf(
+                        _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated"),
+                        $loi->getAffiliation()->getOrganisation(),
+                        $loi->getAffiliation()->getProject()
+                    ));
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/loi/view', ['id' => $loi->getId()]);
             }
