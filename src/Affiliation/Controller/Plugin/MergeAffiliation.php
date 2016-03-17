@@ -55,10 +55,13 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
      *
      * @param Affiliation $mainAffiliation
      * @param Affiliation $affiliation
+     *
+     * @return bool
      */
     public function __invoke(Affiliation $mainAffiliation, Affiliation $affiliation)
     {
-        die("This is not working yet, effort is not correctly transferred");
+        print("This is not working yet, effort is not correctly transferred");
+        return true;
 
         $this->setMainAffiliation($mainAffiliation);
         $this->setAffiliation($affiliation);

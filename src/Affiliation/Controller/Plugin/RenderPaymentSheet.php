@@ -51,7 +51,8 @@ class RenderPaymentSheet extends AbstractPlugin
         $latestVersion = $projectService->getLatestProjectVersion();
         $versionService = $this->getVersionService()->setVersion($latestVersion);
 
-        $contactService = clone $this->getContactService()->setContact($affiliation->getContact());
+        /** @var ContactService $contactService */
+        $contactService = $this->getContactService()->setContact($affiliation->getContact());
 
         if (!is_null($this->getAffiliationService()->getFinancialContact($affiliation))) {
             $financialContactService = clone $this->getContactService()->setContact($this->getAffiliationService()
@@ -60,7 +61,7 @@ class RenderPaymentSheet extends AbstractPlugin
             $financialContactService = null;
         }
 
-
+        /** @var AffiliationService $affiliationService */
         $affiliationService = $this->getAffiliationService()->setAffiliation($affiliation);
 
         $versionContributionInformation = $versionService->getProjectVersionContributionInformation(
@@ -592,8 +593,8 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $upcomingInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if ($affiliationInvoice->getYear() > $year or $affiliationInvoice->getYear() === $year
-                and $affiliationInvoice->getPeriod() > $period
+            if ($affiliationInvoice->getYear() > $year || $affiliationInvoice->getYear() === $year
+                && $affiliationInvoice->getPeriod() > $period
             ) {
                 if (!is_null($affiliationInvoice->getInvoice()->getDateSent())) {
                     $upcomingInvoices[] = $affiliationInvoice;
