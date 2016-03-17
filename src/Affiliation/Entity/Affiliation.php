@@ -348,10 +348,10 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $achievement;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Changerequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\ChangeRequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Changerequest\CostChange[]|Collections\ArrayCollection
+     * @var \Project\Entity\ChangeRequest\CostChange[]|Collections\ArrayCollection
      */
     private $changerequestCostChange;
     /**
@@ -1108,19 +1108,19 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return Collections\ArrayCollection|\Project\Entity\Changerequest\CostChange[]
+     * @return Collections\ArrayCollection|\Project\Entity\ChangeRequest\CostChange[]
      */
-    public function getChangerequestCostChange()
+    public function getChangeRequestCostChange()
     {
         return $this->changerequestCostChange;
     }
 
     /**
-     * @param Collections\ArrayCollection|\Project\Entity\Changerequest\CostChange[] $changerequestCostChange
+     * @param Collections\ArrayCollection|\Project\Entity\ChangeRequest\CostChange[] $changerequestCostChange
      *
      * @return Affiliation
      */
-    public function setChangerequestCostChange($changerequestCostChange)
+    public function setChangeRequestCostChange($changerequestCostChange)
     {
         $this->changerequestCostChange = $changerequestCostChange;
 

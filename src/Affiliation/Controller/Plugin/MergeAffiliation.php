@@ -253,7 +253,7 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
         }
 
         //move the cost changes
-        foreach ($affiliation->getChangerequestCostChange() as $costChange) {
+        foreach ($affiliation->getChangeRequestCostChange() as $costChange) {
             $costChange->setAffiliation($mainAffiliation);
             $this->getProjectService()->updateEntity($costChange);
         }

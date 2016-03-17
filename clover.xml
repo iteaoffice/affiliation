@@ -3486,9 +3486,9 @@
         <line num="1103" type="method" name="setProjectReportEffortSpent" visibility="public" complexity="1" crap="2" count="0"/>
         <line num="1105" type="stmt" count="0"/>
         <line num="1107" type="stmt" count="0"/>
-        <line num="1113" type="method" name="getChangerequestCostChange" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="1113" type="method" name="getChangeRequestCostChange" visibility="public" complexity="1" crap="2" count="0"/>
         <line num="1115" type="stmt" count="0"/>
-        <line num="1123" type="method" name="setChangerequestCostChange" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="1123" type="method" name="setChangeRequestCostChange" visibility="public" complexity="1" crap="2" count="0"/>
         <line num="1125" type="stmt" count="0"/>
         <line num="1127" type="stmt" count="0"/>
         <line num="1133" type="method" name="getProjectLog" visibility="public" complexity="1" crap="2" count="0"/>
