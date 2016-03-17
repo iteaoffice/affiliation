@@ -78,7 +78,7 @@ affiliationService.affiliation.organisation
 <script type="text/javascript">
     $('select[name="contact"]').change(function () {
         $.ajax({
-            url: '{{ url('contact/get-address-by-type') }}',
+            url: '{{ url('community/contact/get-address-by-type') }}',
             type: 'get',
             dataType: 'json',
             data: {

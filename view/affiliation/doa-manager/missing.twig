@@ -6,7 +6,7 @@
 <table class="table table-hover table-consended table-striped">
     <thead>
     <tr>
-        <th>{{ translate("txt-organisation") }}</th>
+        <th>{{ translate("txt-partner") }}</th>
         <th>{{ translate("txt-organisation-type") }}</th>
         <th>{{ translate("txt-country") }}</th>
         <th>{{ translate("txt-project") }}</th>
@@ -17,10 +17,11 @@
     <tbody>
     {% for affiliation in affiliation %}
         <tr id="affiliation-{{ affiliation.id }}">
-            <td>{{ affiliation }}</td>
+            <td>{{ affiliationLink(affiliation,'view-admin','name') }}</td>
             <td>{{ affiliation.organisation.type }}</td>
             <td>{{ affiliation.organisation.country }}</td>
-            <td>{{ affiliation.project }}</td>
+            {% set projectService = projectServiceProxy(affiliation.project) %}
+            <td>{{ projectLink(projectService,'view-admin','name') }}</td>
             <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}<br>
                 {% if affiliation.doaReminder.last.dateCreated %}
                     <small>{{ affiliation.doaReminder.last.dateCreated|string_date }}</small>

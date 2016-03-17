@@ -129,7 +129,7 @@ abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwar
             $serverUrl() . $url(
                 $this->router,
                 $this->routerParams,
-                is_null($this->getFragment()) ?: ['fragment' => $this->getFragment()]
+                is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
             ),
             htmlentities($this->text),
             implode(' ', $this->classes),

@@ -9,17 +9,9 @@
          backupGlobals="false"
          syntaxCheck="true"
 >
-    <testsuite name="debranova/affiliation Test Suite">
+    <testsuite name="iteaoffice/affiliation">
         <directory>./tests/AffiliationTest</directory>
     </testsuite>
-
-    <php>
-        <const name="DEBRANOVA_HOST" value="test"/>
-        <const name="DEBRANOVA_APP" value="test"/>
-        <const name="DEBRANOVA_APPLICATION" value="test"/>
-        <const name="DEBRANOVA_ENV" value="development"/>
-        <const name="TEST_SUITE" value="quick"/>
-    </php>
 
     <filter>
         <whitelist>
@@ -29,5 +21,6 @@
 
     <logging>
         <log type="coverage-clover" target="./clover.xml"/>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
     </logging>
 </phpunit>

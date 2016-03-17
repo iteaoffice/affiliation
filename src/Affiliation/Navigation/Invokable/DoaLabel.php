@@ -4,7 +4,7 @@
  *
  * PHP Version 5
  *
- * @category    Affiliation
+ * @category    Doa
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   2004-2016 ITEA Office
@@ -17,15 +17,16 @@ namespace Affiliation\Navigation\Invokable;
 
 use Admin\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Doa;
 use Project\Entity\Project;
 use Zend\Navigation\Page\Mvc;
 
 /**
- * Class AffiliationLabel
+ * Class DoaLabel
  *
- * @package Affiliation\Navigation\Invokable
+ * @package Doa\Navigation\Invokable
  */
-class AffiliationLabel extends AbstractNavigationInvokable
+class DoaLabel extends AbstractNavigationInvokable
 {
     /**
      * @param Mvc $page
@@ -34,14 +35,15 @@ class AffiliationLabel extends AbstractNavigationInvokable
      */
     public function __invoke(Mvc $page)
     {
-        if ($this->getEntities()->containsKey(Affiliation::class)) {
-            /** @var Affiliation $affiliation */
-            $affiliation = $this->getEntities()->get(Affiliation::class);
-            $this->getEntities()->set(Project::class, $affiliation->getProject());
+        if ($this->getEntities()->containsKey(Doa::class)) {
+            /** @var Doa $doa */
+            $doa = $this->getEntities()->get(Doa::class);
+            $this->getEntities()->set(Affiliation::class, $doa->getAffiliation());
+            $this->getEntities()->set(Project::class, $doa->getAffiliation()->getProject());
             $page->setParams(array_merge($page->getParams(), [
-                'id' => $affiliation->getId(),
+                'id' => $doa->getId(),
             ]));
-            $label = (string)$affiliation;
+            $label = $this->translate('txt-doa');
         } else {
             $label = $this->translate('txt-nav-view');
         }

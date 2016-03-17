@@ -15,21 +15,14 @@ namespace Affiliation;
 use Affiliation\Controller\Plugin\RenderDoa;
 use Affiliation\Controller\Plugin\RenderLoi;
 use Affiliation\Controller\Plugin\RenderPaymentSheet;
-use Affiliation\Navigation\Service\AffiliationNavigationService;
-use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature;
 use Zend\Mvc\Controller\PluginManager;
-use Zend\Mvc\MvcEvent;
 
 //Makes the module class more strict
 /**
  *
  */
-class Module implements
-    Feature\AutoloaderProviderInterface,
-    Feature\ServiceProviderInterface,
-    Feature\ConfigProviderInterface,
-    Feature\BootstrapListenerInterface
+class Module implements Feature\AutoloaderProviderInterface, Feature\ServiceProviderInterface, Feature\ConfigProviderInterface
 {
     public function getAutoloaderConfig()
     {
@@ -95,21 +88,5 @@ class Module implements
                 'mergeAffiliation' => Controller\Plugin\MergeAffiliation::class
             ]
         ];
-    }
-
-    /**
-     * Listen to the bootstrap event.
-     *
-     * @param EventInterface $e
-     *
-     * @return array
-     */
-    public function onBootstrap(EventInterface $e)
-    {
-        $app = $e->getParam('application');
-        $em = $app->getEventManager();
-        $em->attach(MvcEvent::EVENT_DISPATCH, function (MvcEvent $event) {
-            $event->getApplication()->getServiceManager()->get(AffiliationNavigationService::class)->update();
-        });
     }
 }
