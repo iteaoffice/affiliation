@@ -4,7 +4,6 @@ cd "`dirname "$0"`"
 cd ".."
 
 git push origin develop --tags
-git push origin master
 
 REV="`git rev-parse HEAD`"
 
