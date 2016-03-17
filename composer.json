@@ -37,6 +37,12 @@
   "config": {
     "secure-http": false
   },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0-dev",
+      "dev-develop": "2.1-dev"
+    }
+  },
   "autoload": {
     "psr-0": {
       "Affiliation\\": "src/",
