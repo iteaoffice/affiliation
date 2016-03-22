@@ -22,8 +22,7 @@ use Zend\Mvc\Controller\PluginManager;
 /**
  *
  */
-class Module
-    implements Feature\AutoloaderProviderInterface, Feature\ServiceProviderInterface, Feature\ConfigProviderInterface
+class Module implements Feature\AutoloaderProviderInterface, Feature\ServiceProviderInterface, Feature\ConfigProviderInterface
 {
     public function getAutoloaderConfig()
     {

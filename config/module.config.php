@@ -10,24 +10,12 @@
 use Affiliation\Acl;
 use Affiliation\Controller;
 use Affiliation\Factory;
-use Affiliation\Navigation\Factory\AffiliationNavigationServiceFactory;
-use Affiliation\Navigation\Service\AffiliationNavigationService;
 use Affiliation\Options;
 use Affiliation\Service;
 use Affiliation\View\Helper;
 
 $config = [
     'controllers'     => [
-        'invokables'         => [
-            //Controller\AffiliationManagerController::class,
-            //Controller\AffiliationController::class       ,
-            //Controller\DoaManagerController::class        ,
-            //Controller\LoiManagerController::class        ,
-            //Controller\CommunityController::class         ,
-            //Controller\DoaController::class               ,
-            //Controller\LoiController::class               ,
-            //Controller\EditController::class              ,
-        ],
         'abstract_factories' => [
             Controller\Factory\ControllerInvokableAbstractFactory::class,
         ],
@@ -40,9 +28,6 @@ $config = [
             'affiliation_doa_form_filter'         => 'Affiliation\Form\FilterCreateObject',
         ],
         'factories'          => [
-            //Acl\Assertion\Affiliation::class,
-            //Acl\Assertion\Doa::class,
-            //Acl\Assertion\Loi::class,
             Service\AffiliationService::class => Factory\AffiliationServiceFactory::class,
             Service\DoaService::class         => Factory\DoaServiceFactory::class,
             Service\LoiService::class         => Factory\LoiServiceFactory::class,
@@ -71,7 +56,7 @@ $config = [
             'affiliation_annotation_driver' => [
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'paths' => [
-                    __DIR__ . '/../src/Affiliation/Entity/',
+                    __DIR__ . '/../src/Entity/',
                 ],
             ],
             'orm_default'                   => [
