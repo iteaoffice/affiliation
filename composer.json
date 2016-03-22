@@ -44,9 +44,9 @@
     }
   },
   "autoload": {
-    "psr-0": {
-      "Affiliation\\": "src/",
-      "AffiliationTest\\": "tests/"
+    "psr-4": {
+      "Affiliation\\": "src",
+      "AffiliationTest\\": "tests"
     }
   }
 }

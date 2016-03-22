@@ -1,4 +1,4 @@
-<phpunit bootstrap="tests/AffiliationTest/Bootstrap.php"
+<phpunit bootstrap="tests/Bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -10,7 +10,7 @@
          syntaxCheck="true"
 >
     <testsuite name="iteaoffice/affiliation">
-        <directory>./tests/AffiliationTest</directory>
+        <directory>./tests</directory>
     </testsuite>
 
     <filter>

@@ -223,20 +223,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $invoice;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\InvoiceCmShare", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
-     *
-     * @var \Affiliation\Entity\InvoiceCmShare[]|Collections\ArrayCollection()
-     */
-    private $invoiceCmShare;
-    /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\InvoicePostCalc", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
-     *
-     * @var \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
-     */
-    private $invoicePostCalc;
-    /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Log", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
