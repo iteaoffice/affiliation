@@ -33,6 +33,7 @@ return array(
     'Affiliation\Service\DoaService'                                    => __DIR__ . '/src/Service/DoaService.php',
     'Affiliation\Service\ServiceAbstract'                               => __DIR__ . '/src/Service/ServiceAbstract.php',
     'Affiliation\Service\AffiliationService'                            => __DIR__ . '/src/Service/AffiliationService.php',
+    'Affiliation\View\Factory\LinkInvokableFactory'                     => __DIR__ . '/src/View/Factory/LinkInvokableFactory.php',
     'Affiliation\View\Helper\LoiLink'                                   => __DIR__ . '/src/View/Helper/LoiLink.php',
     'Affiliation\View\Helper\PaymentSheet'                              => __DIR__ . '/src/View/Helper/PaymentSheet.php',
     'Affiliation\View\Helper\AffiliationLink'                           => __DIR__ . '/src/View/Helper/AffiliationLink.php',

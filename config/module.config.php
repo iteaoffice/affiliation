@@ -10,9 +10,10 @@
 use Affiliation\Acl;
 use Affiliation\Controller;
 use Affiliation\Factory;
+use Affiliation\Form;
 use Affiliation\Options;
 use Affiliation\Service;
-use Affiliation\View\Helper;
+use Affiliation\View;
 
 $config = [
     'controllers'     => [
@@ -22,10 +23,9 @@ $config = [
     ],
     'service_manager' => [
         'invokables'         => [
-            'affiliation_affiliation_form_filter' => 'Affiliation\Form\FilterCreateAffiliation',
-            'affiliation_description_form_filter' => 'Affiliation\Form\FilterCreateObject',
-            'affiliation_loi_form_filter'         => 'Affiliation\Form\FilterCreateObject',
-            'affiliation_doa_form_filter'         => 'Affiliation\Form\FilterCreateObject',
+            'affiliation_description_form_filter' => Form\FilterCreateObject::class,
+            'affiliation_loi_form_filter'         => Form\FilterCreateObject::class,
+            'affiliation_doa_form_filter'         => Form\FilterCreateObject::class,
         ],
         'factories'          => [
             Service\AffiliationService::class => Factory\AffiliationServiceFactory::class,
@@ -39,14 +39,22 @@ $config = [
         ],
     ],
     'view_helpers'    => [
-        'invokables' => [
-            'affiliationLink'            => Helper\AffiliationLink::class,
-            'associateLink'              => Helper\AssociateLink::class,
-            'affiliationEffortSpentLink' => Helper\EffortSpentLink::class,
-            'doaLink'                    => Helper\DoaLink::class,
-            'loiLink'                    => Helper\LoiLink::class,
-            'paymentSheet'               => Helper\PaymentSheet::class,
+        'aliases'   => [
+            'doaLink'                    => View\Helper\DoaLink::class,
+            'associateLink'              => View\Helper\AssociateLink::class,
+            'affiliationLink'            => View\Helper\AffiliationLink::class,
+            'loiLink'                    => View\Helper\LoiLink::class,
+            'paymentSheet'               => View\Helper\PaymentSheet::class,
+            'affiliationEffortSpentLink' => View\Helper\EffortSpentLink::class,
         ],
+        'factories' => [
+            View\Helper\AffiliationLink::class => View\Factory\LinkInvokableFactory::class,
+            View\Helper\AssociateLink::class   => View\Factory\LinkInvokableFactory::class,
+            View\Helper\EffortSpentLink::class => View\Factory\LinkInvokableFactory::class,
+            View\Helper\DoaLink::class         => View\Factory\LinkInvokableFactory::class,
+            View\Helper\LoiLink::class         => View\Factory\LinkInvokableFactory::class,
+            View\Helper\PaymentSheet::class    => View\Factory\LinkInvokableFactory::class,
+        ]
     ],
     'view_manager'    => [
         'template_map' => include __DIR__ . '/../template_map.php',

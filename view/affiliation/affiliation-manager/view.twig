@@ -46,7 +46,7 @@
 
         <dl class="dl-horizontal">
             <dt>{{ translate("txt-organisation-name") }}</dt>
-            <dd>{{ organisationLink(organisationService,'view-admin', 'name') }}
+            <dd>{{ organisationLink(organisationService.organisation,'view-admin', 'name') }}
                 {{ affiliationLink(affiliationService.affiliation,'view-community', 'icon') }}
             </dd>
             <dt>{{ translate("txt-project-name") }}</dt>
@@ -174,12 +174,11 @@
 
         {% if memberService.isMember(affiliationService.affiliation.organisation) %}
             {% set member = affiliationService.affiliation.organisation.member %}
-            {% set organisationService = organisationServiceProxy(member.organisation) %}
             <dl class="dl-horizontal">
                 <dt>{{ translate("txt-member-subtype") }}</dt>
                 <dd>{{ member.type.subType }}</dd>
                 <dt>{{ translate("txt-member-organisation") }}</dt>
-                <dd>{{ organisationLink(organisationService,'view-admin','name') }}</dd>
+                <dd>{{ organisationLink(member.organisation,'view-admin','name') }}</dd>
                 <dt>{{ translate("txt-member-representative") }}</dt>
                 <dd>{{ contactLink(member.contact,'view-admin','name') }}</dd>
                 <dt>{{ translate("txt-member-date-created") }}</dt>
@@ -234,9 +233,6 @@
 
                 {% if affiliationService.affiliation.financial %}
 
-                    {% set organisationService = organisationServiceProxy(
-                    affiliationService.affiliation.financial.organisation
-                    ) %}
 
                     {% set contactService = contactServiceProxy(
                     affiliationService.affiliation.financial.contact
@@ -244,7 +240,7 @@
 
                     <dl class="dl-horizontal">
                         <dt>{{ translate("txt-billing-organisation") }}</dt>
-                        <dd>{{ organisationLink(organisationService,'view-admin','name') }}</dd>
+                        <dd>{{ organisationLink(affiliationService.affiliation.financial.organisation,'view-admin','name') }}</dd>
                         <dt>{{ translate("txt-country") }}</dt>
                         <dd>{{ organisationService.organisation.country }}</dd>
                         <dt>{{ translate("txt-financial-contact") }}</dt>

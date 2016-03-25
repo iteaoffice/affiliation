@@ -33,7 +33,7 @@ use Zend\View\HelperPluginManager;
 /**
  * Class LinkAbstract.
  */
-abstract class LinkAbstract extends AbstractHelper implements ServiceLocatorAwareInterface
+abstract class LinkAbstract extends AbstractHelper
 {
     /**
      * @var HelperPluginManager
