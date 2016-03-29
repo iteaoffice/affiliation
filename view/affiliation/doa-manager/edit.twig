@@ -8,11 +8,9 @@ projectService.parseFullname
 '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
 ) %}
 
-{% set projectService = projectServiceProxy(doa.affiliation.project) %}
-
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
     doa.affiliation.organisation.organisation,
-    projectService.parseFullname
+    doa.affiliation.project
     ) }}</h1>
 
 {% do form.prepare() %}
@@ -24,7 +22,7 @@ projectService.parseFullname
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-admin', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(doa.affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 

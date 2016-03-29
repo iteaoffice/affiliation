@@ -1,16 +1,11 @@
 {% do headTitle().append(translate("txt-upload-loi-title")) %}
 
-{% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
+{% set project = affiliationService.affiliation.project %}
 
 <h1>{{ translate("txt-upload-loi-for-organisation-%s-for-project-%s")|
     format(
     affiliationService.affiliation.organisation,
     affiliationService.affiliation.project)|raw }}</h1>
-
-{#<p class="lead">{{ translate("txt-upload-loi-for-organisation-%s-for-project-%s-explanation")|#}
-    {#format(#}
-    {#affiliationService.affiliation.organisation,#}
-    {#affiliationService.affiliation.project)|raw }}</p>#}
 
 {% do form.prepare() %}
 {% do form.setAttribute('class','form-horizontal') %}
@@ -21,8 +16,8 @@
     <label class="col-sm-3 control-label">{{ translate("txt-project") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-community','name') }}
-            ({{ projectService.project.call.program }})</p>
+        <p class="form-control-static">{{ projectLink(project,'view-community','name') }}
+            ({{ project.call.program }})</p>
     </div>
 </div>
 

@@ -1,15 +1,13 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-edit-doa-%s-in-%s")|format(
 affiliationService.affiliation.organisation.organisation,
-projectService.parseFullname
+affiliationService.affiliation.project
 )) %}
 
 
-{% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
-
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
-    projectService.parseFullname
+    affiliationService.affiliation.project
     ) }}</h1>
 
 {% if affiliationService.affiliation.doaReminder.count() > 0 %}

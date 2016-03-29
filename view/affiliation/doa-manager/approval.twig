@@ -7,7 +7,7 @@
 
 <h1>{{ translate("txt-unapproved-affiliation-doa") }}</h1>
 
-<table class="table table-hover table-consended table-striped">
+<table class="table table-hover table-condensed table-striped">
     <thead>
     <tr>
         <th>{{ translate("txt-organisation") }}</th>
@@ -21,11 +21,10 @@
     </thead>
     <tbody>
     {% for doa in doa %}
-        {% set projectService = projectServiceProxy(doa.affiliation.project) %}
         <tr id="doa-{{ doa.id }}">
             <td>{{ affiliationLink(doa.affiliation,'view-community','name') }}</td>
             <td>{{ doa.affiliation.organisation.country }}</td>
-            <td>{{ projectLink(projectService,'view-admin','name') }}</td>
+            <td>{{ projectLink(doa.affiliation.project,'view-admin','name') }}</td>
             <td>{{ doaLink(doa,'view-admin','icon') }} {{ doaLink(doa,'download','icon') }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('contact').setValue(doa.contact.id)) }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('dateSigned')) }}</td>

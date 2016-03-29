@@ -4,8 +4,7 @@
     <dt>{{ translate("txt-loi-id") }}</dt>
     <dd>{{ loi.id }}</dd>
     <dt>{{ translate("txt-project") }}</dt>
-    {% set projectService = projectServiceProxy(loi.affiliation.project) %}
-    <dd>{{ projectLink(projectService, 'view-admin', 'name') }}</dd>
+    <dd>{{ projectLink(loi.affiliation.project, 'view-admin', 'name') }}</dd>
     <dt>{{ translate("txt-project-partner") }}</dt>
     <dd>{{ loi.affiliation.organisation }}</dd>
     <dt>{{ translate("txt-partner") }}</dt>

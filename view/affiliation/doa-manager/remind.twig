@@ -1,15 +1,12 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append( translate("txt-remind-doa-%s-in-%s")|format(
 affiliationService.affiliation.organisation.organisation,
-projectService.parseFullname
+affiliationService.affiliation.project
 )) %}
-
-
-{% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
 
 <h1>{{ translate("txt-remind-doa-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
-    projectService.parseFullname
+    affiliationService.affiliation.project
     ) }}</h1>
 
 {% do form.prepare() %}
@@ -21,7 +18,7 @@ projectService.parseFullname
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-admin', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(affiliationService.affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 

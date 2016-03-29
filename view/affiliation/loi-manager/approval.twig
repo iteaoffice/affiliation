@@ -18,11 +18,10 @@
     </thead>
     <tbody>
     {% for loi in loi %}
-        {% set projectService = projectServiceProxy(loi.affiliation.project) %}
         <tr id="loi-{{ loi.id }}">
             <td>{{ affiliationLink(loi.affiliation,'view-community','name') }}</td>
             <td>{{ loi.affiliation.organisation.country }}</td>
-            <td>{{ projectLink(projectService,'view-admin','name') }}</td>
+            <td>{{ projectLink(loi.affiliation.project,'view-admin','name') }}</td>
             <td>{{ loiLink(loi,'view-admin','icon') }} {{ loiLink(loi,'download','icon') }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact').setValue(loi.contact.id)) }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('dateSigned')) }}</td>

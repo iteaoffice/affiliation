@@ -1,13 +1,13 @@
-{% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
+{% set project = affiliationService.affiliation.project %}
 
 <h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
-    projectService.parseFullname
+    project
     ) }}</h1>
 
 {% if affiliationService.affiliation.loiReminder.count() > 0 %}
 
-    <table class="table table-hover table-consended table-striped">
+    <table class="table table-hover table-condensed table-striped">
         <thead>
         <tr>
             <th>{{ translate("txt-reminder-date") }}</th>

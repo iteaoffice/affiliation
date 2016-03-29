@@ -2,11 +2,9 @@
 '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
 ) %}
 
-{% set projectService = projectServiceProxy(loi.affiliation.project) %}
-
 <h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
     loi.affiliation.organisation.organisation,
-    projectService.parseFullname
+    loi.affiliation.project
     ) }}</h1>
 
 {% do form.prepare() %}
@@ -18,7 +16,7 @@
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-admin', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(loi.affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 

@@ -1,8 +1,8 @@
-{% set projectService = projectServiceProxy(affiliationService.affiliation.project) %}
+{% set project = affiliationService.affiliation.project %}
 
 <h1>{{ translate("txt-remind-loi-%s-in-%s")|format(
     affiliationService.affiliation.organisation.organisation,
-    projectService.parseFullname
+    project
     ) }}</h1>
 
 {% do form.prepare() %}
@@ -14,7 +14,7 @@
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-admin', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
