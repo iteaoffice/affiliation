@@ -22,6 +22,10 @@ return [
              */
             'BjyAuthorize\Guard\Route' => [
                 [
+                    'route'     => 'zfcadmin/affiliation/list',
+                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/view',
                     'roles'     => [strtolower(Access::ACCESS_OFFICE)],
                     'assertion' => AffiliationAssertion::class

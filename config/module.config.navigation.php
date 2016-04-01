@@ -154,7 +154,10 @@ return [
                         'label' => _("txt-missing-loi"),
                         'route' => 'zfcadmin/affiliation/loi/missing',
                     ],
-
+                    'affiliation-list'  => [
+                        'label' => _("txt-affiliations"),
+                        'route' => 'zfcadmin/affiliation/list',
+                    ],
                 ],
             ],
             'project'     => [

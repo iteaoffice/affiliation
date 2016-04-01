@@ -14,6 +14,7 @@ use Affiliation\Form;
 use Affiliation\Options;
 use Affiliation\Service;
 use Affiliation\View;
+use Affiliation\Search;
 
 $config = [
     'controllers'     => [
@@ -28,11 +29,12 @@ $config = [
             'affiliation_doa_form_filter'         => Form\FilterCreateObject::class,
         ],
         'factories'          => [
-            Service\AffiliationService::class => Factory\AffiliationServiceFactory::class,
-            Service\DoaService::class         => Factory\DoaServiceFactory::class,
-            Service\LoiService::class         => Factory\LoiServiceFactory::class,
-            Service\FormService::class        => Factory\FormServiceFactory::class,
-            Options\ModuleOptions::class      => Factory\ModuleOptionsFactory::class,
+            Service\AffiliationService::class               => Factory\AffiliationServiceFactory::class,
+            Service\DoaService::class                       => Factory\DoaServiceFactory::class,
+            Service\LoiService::class                       => Factory\LoiServiceFactory::class,
+            Service\FormService::class                      => Factory\FormServiceFactory::class,
+            Options\ModuleOptions::class                    => Factory\ModuleOptionsFactory::class,
+            Search\Service\AffiliationSearchService::class  => Search\Factory\AffiliationSearchFactory::class,
         ],
         'abstract_factories' => [
             Acl\Factory\AssertionInvokableAbstractFactory::class,
@@ -88,6 +90,7 @@ $configFiles = [
     __DIR__ . '/module.config.routes.admin.php',
     __DIR__ . '/module.config.navigation.php',
     __DIR__ . '/module.config.authorize.php',
+    __DIR__ . '/module.config.search.php',
     __DIR__ . '/module.option.affiliation.php',
 ];
 foreach ($configFiles as $configFile) {

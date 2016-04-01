@@ -1,0 +1,94 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-affiliation-list")) %}
+
+{% do form.prepare() %}
+{{ form().openTag(form)|raw }}
+
+<div class="row">
+    <div class="col-md-10">
+
+        <h1>{{ translate("txt-affiliation-list") }}</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
+            </div>
+            <div class="input-group">
+                {{ formelement(form.get('query')) }}
+                <span class="input-group-btn">
+                {{ formelement(form.get('search')) }}
+                    {{ formelement(form.get('reset')) }}
+            </span>
+            </div>
+            <p class="text-muted">{{ translate("txt-%s-items-on-%s-pages")|format(paginator.adapter.count, paginator.pageRange) }}</p>
+        </div>
+
+        {% if paginator.pageRange > 0 %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'organisation', 'text': translate('txt-affiliation')} %}</th>
+                    <th>{% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'version_latest', 'text': translate('txt-lastest-version')} %}</th>
+                    <th>{% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'effort_latest', 'text': translate('txt-latest-version-effort')} %}</th>
+                    <th>{% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'cost_latest', 'text': translate('txt-latest-version-cost')} %}</th>
+                    <th>{% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project', 'text': translate('txt-project')} %}</th>
+                    <th>{% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'call', 'text': translate('txt-call')} %}</th>
+                    <th>{% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'contact', 'text': translate('txt-contact')} %}</th>
+                </thead>
+                <tbody>
+                {% for result in paginator.getCurrentItems() %}
+                    {% set organisationService = organisationService.setOrganisationId(result.fields.organisation_id) %}
+                    <tr>
+                        <td>
+                            <a href="{{ url("zfcadmin/affiliation/view",{'id':result.fields.affiliation_id }) }}">{{ organisationService.parseOrganisationWithBranch(result.fields.branch) }}</a>
+                        </td>
+                        <td>
+                            {% if result.fields.project_latest_version_type|length > 0 %}
+                                <a href="{{ url("zfcadmin/project/version/view",{'id':result.fields.project_latest_version_id }) }}">{{ result.fields.project_latest_version_type }}</a>
+                            {%  else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ result.fields.effort_latest|parse_effort }} {{ translate("txt-py") }}</td>
+                        <td>{{ result.fields.cost_latest|parse_cost }} k&euro;</td>
+                        <td>{{ result.fields.project }}</td>
+                        <td>{{ result.fields.project_call }}</td>
+                        <td>{{ result.fields.contact }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+
+            {% include 'affiliation/partial/pagination-control' with {'paginator': paginator} %}
+        {% else %}
+            {{ ztbalert().info(translate("txt-no-affiliations-found"))|raw }}
+        {% endif %}
+    </div>
+    <div class="col-md-2">
+        <div class="well well-sm">
+            {% set facets = form.get('facet') %}
+            {% for facet in facets %}
+                {{ ztbformelement(facet) }}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}
+
+<script type="text/javascript">
+    $(function () {
+        var checkBoxes = $('input[type="checkbox"]');
+        checkBoxes.add('#searchButton, #resetButton').on('click', function () {
+            if ($(this).is('#resetButton')) {
+                checkBoxes.each(function () {
+                    this.removeAttribute('checked');
+                });
+                $('input[name="query"]').val('');
+            }
+            $('#search').submit();
+        });
+    });
+</script>

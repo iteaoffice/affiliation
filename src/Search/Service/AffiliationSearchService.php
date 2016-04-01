@@ -71,13 +71,18 @@ class AffiliationSearchService extends AbstractSearchService
      * <field name="date_self_funded" type="date" indexed="true" stored="true"/>
      *
      * <field name="organisation" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="organisation_type" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
      * <field name="organisation_country" type="c_text" indexed="true" stored="true" omitNorms="true"/>
      *
      * <field name="project" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_title" type="text_en_splitting" indexed="true" stored="true"/>
      * <field name="project_status" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_call" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_program" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_latest_version_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_latest_version_type" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
      *
@@ -108,11 +113,16 @@ class AffiliationSearchService extends AbstractSearchService
         // Affiliation
         $affiliationDocument = $update->createDocument();
         $affiliationDocument->id = $affiliation->getResourceId();
+        $affiliationDocument->affiliation_id = $affiliation->getId();
         $affiliationDocument->date_created = $affiliation->getDateCreated()->format(self::DATE_SOLR);
         if (!is_null($affiliation->getDateEnd())) {
             $affiliationDocument->date_end = $affiliation->getDateEnd()->format(self::DATE_SOLR);
         }
-        $affiliationDocument->description = $affiliation->getDescription();
+        $descriptionMerged = '';
+        foreach ($affiliation->getDescription() as $description) {
+            $descriptionMerged .= $description->getDescription()."\n\n";
+        }
+        $affiliationDocument->description = $descriptionMerged;
         $affiliationDocument->branch = $affiliation->getBranch();
         $affiliationDocument->value_chain = $affiliation->getValueChain();
         $affiliationDocument->market_access = $affiliation->getMarketAccess();
@@ -123,6 +133,7 @@ class AffiliationSearchService extends AbstractSearchService
 
         // Organisation
         $affiliationDocument->organisation = (string) $affiliation->getOrganisation();
+        $affiliationDocument->organisation_id = $affiliation->getOrganisation()->getId();
         $affiliationDocument->organisation_type = (string) $affiliation->getOrganisation()->getType();
         $affiliationDocument->organisation_country = (string) $affiliation->getOrganisation()->getCountry();
 
@@ -130,9 +141,14 @@ class AffiliationSearchService extends AbstractSearchService
         /** @var ProjectService $projectService */
         $projectService = $this->getProjectService()->setProject($affiliation->getProject());
         $affiliationDocument->project = $projectService->getProject()->getProject();
+        $affiliationDocument->project_id = $projectService->getProject()->getId();
         $affiliationDocument->project_number = $projectService->getProject()->getNumber();
         $affiliationDocument->project_title = $projectService->getProject()->getTitle();
         $affiliationDocument->project_status = $projectService->parseStatus();
+        $affiliationDocument->project_call = (string) $projectService->getProject()->getCall();
+        $affiliationDocument->project_call_id = $projectService->getProject()->getCall()->getId();
+        $affiliationDocument->project_program = (string) $projectService->getProject()->getCall()->getProgram();
+
         $latestApprovedVersion = $projectService->getLatestProjectVersion(null, null, false, true);
         if (!is_null($latestApprovedVersion)) {
             $affiliationDocument->project_latest_version_id = $latestApprovedVersion->getId();
@@ -182,11 +198,14 @@ class AffiliationSearchService extends AbstractSearchService
         $contactService = $this->getContactService()->setContact($affiliation->getContact());
         $affiliationDocument->contact = $contactService->parseFullName();
         $affiliationDocument->contact_email = $contactService->getContact()->getEmail();
-        $contactAddress = $contactService->getVisitAddress()->getAddress();
-        $affiliationDocument->contact_address = $contactAddress->getAddress();
-        $affiliationDocument->contact_zip = $contactAddress->getZipCode();
-        $affiliationDocument->contact_city = $contactAddress->getCity();
-        $affiliationDocument->contact_country = (string) $contactAddress->getCountry();
+        $contactVisitAddress = $contactService->getVisitAddress();
+        if (!is_null($contactVisitAddress)) {
+            $contactAddress = $contactVisitAddress->getAddress();
+            $affiliationDocument->contact_address = $contactAddress->getAddress();
+            $affiliationDocument->contact_zip = $contactAddress->getZipCode();
+            $affiliationDocument->contact_city = $contactAddress->getCity();
+            $affiliationDocument->contact_country = (string) $contactAddress->getCountry();
+        }
 
         $update->addDocument($affiliationDocument);
 
@@ -214,33 +233,49 @@ class AffiliationSearchService extends AbstractSearchService
     {
         $this->setQuery($this->getSolrClient()->createSelect());
 
-        /*$this->getQuery()->setQuery(static::parseQuery($searchTerm, [
-            'affiliation_title',
-            'short_description',
-            'affiliation_leader',
-            'key_selling_points',
-            'already_involved',
-            'looking_for',
-            'keyword'
+        $this->getQuery()->setQuery(static::parseQuery($searchTerm, [
+            'organisation',
+            'branch',
+            'contact',
+            'project',
         ]));
 
         switch ($order) {
-            case 'title':
-                $this->getQuery()->addSort('affiliation_title', $direction);
+            case 'organisation':
+                $this->getQuery()->addSort('organisation', $direction);
+                break;
+            case 'version_latest':
+                $this->getQuery()->addSort('project_latest_version_type', $direction);
+                break;
+            case 'cost_latest':
+                $this->getQuery()->addSort('cost_latest', $direction);
+                break;
+            case 'effort_latest':
+                $this->getQuery()->addSort('effort_latest', $direction);
+                break;
+            case 'project':
+                $this->getQuery()->addSort('project', $direction);
+                break;
+            case 'call':
+                $this->getQuery()->addSort('project_call', $direction);
                 break;
             case 'contact':
-                $this->getQuery()->addSort('affiliation_leader', $direction);
+                $this->getQuery()->addSort('contact', $direction);
                 break;
-
             default:
-                $this->getQuery()->addSort('affiliation_id', Query::SORT_DESC);
+                $this->getQuery()->addSort('id', Query::SORT_DESC);
                 break;
         }
 
         $facetSet = $this->getQuery()->getFacetSet();
-        $facetSet->createFacetField('keyword')->setField('keyword')->setMinCount(1)->setExcludes(['keyword']);
-        $facetSet->createFacetField('programcall')->setField('programcall')->setMinCount(1)
-            ->setExcludes(['programcall']);*/
+        $facetSet->createFacetField('project_program')->setField('project_program')->setMinCount(1)
+            ->setExcludes(['project_program']);
+        $facetSet->createFacetField('project_call')->setField('project_call')->setMinCount(1)
+            ->setExcludes(['project_call']);
+        $facetSet->createFacetField('organisation_type')->setField('organisation_type')->setMinCount(1)
+            ->setExcludes(['organisation_type']);
+        $facetSet->createFacetField('organisation_country')->setField('organisation_country')->setMinCount(1)
+            ->setExcludes(['organisation_country']);
 
         return $this;
     }
@@ -276,7 +311,7 @@ class AffiliationSearchService extends AbstractSearchService
      * @param ProjectService $projectService
      * @return AffiliationSearchService
      */
-    public function setProjectService($projectService)
+    public function setProjectService(ProjectService $projectService)
     {
         $this->projectService = $projectService;
         return $this;
@@ -294,7 +329,7 @@ class AffiliationSearchService extends AbstractSearchService
      * @param VersionService $versionService
      * @return AffiliationSearchService
      */
-    public function setVersionService($versionService)
+    public function setVersionService(VersionService $versionService)
     {
         $this->versionService = $versionService;
         return $this;
@@ -312,7 +347,7 @@ class AffiliationSearchService extends AbstractSearchService
      * @param ContactService $contactService
      * @return AffiliationSearchService
      */
-    public function setContactService($contactService)
+    public function setContactService(ContactService $contactService)
     {
         $this->contactService = $contactService;
         return $this;
