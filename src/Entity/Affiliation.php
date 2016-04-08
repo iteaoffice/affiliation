@@ -390,6 +390,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @param $property
      * @param $value
+     *
+     * @return void
      */
     public function __set($property, $value)
     {
@@ -419,138 +421,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Returns the string identifier of the Resource.
-     *
-     * @return string
-     */
-    public function getResourceId()
-    {
-        return sprintf("%s:%s", __CLASS__, $this->id);
-    }
-
-
-    /**
-     * @param InputFilterInterface $inputFilter
-     *
-     * @throws \Exception
-     * @return void
-     */
-    public function setInputFilter(InputFilterInterface $inputFilter)
-    {
-        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $factory = new InputFactory();
-            $inputFilter->add($factory->createInput([
-                'name'       => 'branch',
-                'required'   => false,
-                'filters'    => [
-                    ['name' => 'StripTags'],
-                    ['name' => 'StringTrim'],
-                ],
-                'validators' => [
-                    [
-                        'name'    => 'StringLength',
-                        'options' => [
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 40,
-                        ],
-                    ],
-                ],
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'note',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'valueChain',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'mainContribution',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'marketAccess',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'dateEnd',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'dateEnd',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'dateSelfFunded',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'     => 'contact',
-                'required' => false,
-            ]));
-            $inputFilter->add($factory->createInput([
-                'name'       => 'selfFunded',
-                'required'   => true,
-                'validators' => [
-                    [
-                        'name'    => 'InArray',
-                        'options' => [
-                            'haystack' => array_keys($this->getSelfFundedTemplates()),
-                        ],
-                    ],
-                ],
-            ]));
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
-    }
-
-    /**
-     * Needed for the hydration of form elements.
-     *
-     * @return array
-     */
-    public function getArrayCopy()
-    {
-        return [
-            'branch'           => $this->branch,
-            'note'             => $this->note,
-            'valueChain'       => $this->valueChain,
-            'selfFunded'       => $this->selfFunded,
-            'dateEnd'          => $this->dateEnd,
-            'dateSelfFunded'   => $this->dateSelfFunded,
-            'contact'          => $this->contact,
-            'marketAccess'     => $this->marketAccess,
-            'mainContribution' => $this->mainContribution,
-        ];
-    }
-
-    /**
      * @return array
      */
     public static function getSelfFundedTemplates()
     {
         return self::$selfFundedTemplates;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function populate()
-    {
-        return $this->getArrayCopy();
     }
 
     /**

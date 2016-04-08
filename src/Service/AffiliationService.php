@@ -43,80 +43,80 @@ class AffiliationService extends ServiceAbstract
     const WHICH_ONLY_ACTIVE = 2;
     const WHICH_ONLY_INACTIVE = 3;
 
-
     /**
-     * @param int $id
+     * @param $id
      *
-     * @return AffiliationService;
+     * @return null|Affiliation
      */
-    public function setAffiliationId($id)
+    public function findAffiliationById($id)
     {
-        $this->setAffiliation($this->findEntityById('affiliation', $id));
-
-        return $this;
+        return $this->getEntityManager()->getRepository(Affiliation::class)->find($id);
     }
 
     /**
+     * @param Affiliation $affiliation
+     *
      * @return bool
      */
-    public function isEmpty()
+    public function isActive(Affiliation $affiliation)
     {
-        return is_null($this->affiliation) || is_null($this->affiliation->getId());
+        return is_null($affiliation->getDateEnd());
     }
 
     /**
+     * @param Affiliation $affiliation
+     *
      * @return bool
      */
-    public function isActive()
+    public function isSelfFunded(Affiliation $affiliation)
     {
-        return is_null($this->affiliation->getDateEnd());
-    }
-
-    public function isSelfFunded()
-    {
-        return $this->affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
-        && !is_null($this->affiliation->getDateSelfFunded());
+        return $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
+        && !is_null($affiliation->getDateSelfFunded());
     }
 
     /**
      * Checks if the affiliation has a DOA.
      *
+     * @param Affiliation $affiliation
+     *
      * @return bool
      */
-    public function hasDoa()
+    public function hasDoa(Affiliation $affiliation)
     {
-        return !is_null($this->affiliation->getDoa());
+        return !is_null($affiliation->getDoa());
     }
 
     /**
+     * @param Affiliation $affiliation
+     *
      * @return bool
      */
-    public function hasLoi()
+    public function hasLoi(Affiliation $affiliation)
     {
-        return !is_null($this->affiliation->getLoi());
+        return !is_null($affiliation->getLoi());
     }
 
     /**
      * This function calculates the factor to which the contribution should be calculated.
      * We removed the switch on office to facilitate the contribution based invoicing
      *
-     * @param  int $year
-     * @param  int $period
+     * @param Affiliation $affiliation
+     * @param  int        $year
+     * @param  int        $period
      *
      * @return float|int
      */
-    public function parseContributionFactor($year, $period)
+    public function parseContributionFactor(Affiliation $affiliation, $year, $period)
     {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
         $period = (int)$period;
 
-        $projectService = $this->getProjectService()->setProject($this->affiliation->getProject());
-
         switch (true) {
-            case !$this->isFundedInYear($year):
+            case !$this->isFundedInYear($affiliation, $year):
                 return 0;
-            case $projectService->parseEndYear() == $year && $projectService->parseEndMonth() <= 6:
+            case $this->getProjectService()->parseEndYear($affiliation->getProject()) == $year
+                && $this->getProjectService()->parseEndMonth($affiliation->getProject()) <= 6:
                 return $period === 1 ? 1 : 0;
             default:
                 return 0.5;
@@ -206,43 +206,45 @@ class AffiliationService extends ServiceAbstract
      * This function calculates the factor to which the contribution should be calculated.
      * We removed the switch on office to facilitate the contribution based invoicing
      *
-     * @param  int $projectYear
-     * @param  int $year
-     * @param  int $period
+     * @param Affiliation $affiliation
+     * @param  int        $projectYear
+     * @param  int        $year
+     * @param  int        $period
      *
      * @return float|int
      */
-    public function parseContributionFactorDue($projectYear, $year, $period)
+    public function parseContributionFactorDue(Affiliation $affiliation, $projectYear, $year, $period)
     {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
         $period = (int)$period;
 
         switch (true) {
-            case !$this->isFundedInYear($projectYear):
+            case !$this->isFundedInYear($affiliation, $projectYear):
                 return 0;
             case $projectYear < $year:
                 return 1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
-                return 1 - ($this->parseContributionFactor($year, $period));
+                return 1 - ($this->parseContributionFactor($affiliation, $year, $period));
             default:
                 return 0;
         }
     }
 
     /**
-     * @param $year
-     * @param $source
+     * @param Affiliation $affiliation
+     * @param             $year
+     * @param int         $source
      *
-     * @return Funding|null
+     * @return null|Funding
      */
-    public function getFundingInYear($year, $source = Source::SOURCE_OFFICE)
+    public function getFundingInYear(Affiliation $affiliation, $year, $source = Source::SOURCE_OFFICE)
     {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
 
-        foreach ($this->getAffiliation()->getFunding() as $funding) {
+        foreach ($affiliation->getFunding() as $funding) {
             if ((int)$funding->getDateStart()->format("Y") === $year && $funding->getSource()->getId() === $source) {
                 return $funding;
             }
@@ -252,15 +254,18 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * @param Affiliation $affiliation
+     * @param             $year
      *
+     * @return bool
      */
-    public function isFundedInYear($year)
+    public function isFundedInYear(Affiliation $affiliation, $year)
     {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
 
-        return is_null($this->getFundingInYear($year)) ? false
-            : $this->getFundingInYear($year)->getStatus()->getId() === Status::STATUS_ALL_GOOD;
+        return is_null($this->getFundingInYear($affiliation, $year)) ? false
+            : $this->getFundingInYear($affiliation, $year)->getStatus()->getId() === Status::STATUS_ALL_GOOD;
     }
 
     /**
@@ -282,14 +287,15 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Version $version
-     * @param         $year
-     * @param         $period
+     * @param Affiliation $affiliation
+     * @param Version     $version
+     * @param             $year
+     * @param             $period
      *
      * @return float|int
      * @throws \Exception
      */
-    public function parseContributionDue(Version $version, $year, $period)
+    public function parseContributionDue(Affiliation $affiliation, Version $version, $year, $period)
     {
         $contributionDue = 0;
         //Cast to ints as some values can originate form templates (== twig > might be string)
@@ -306,16 +312,16 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_PERCENTAGE:
                 //Fix the versionService
                 $costsPerYear = $this->getVersionService()
-                    ->findTotalCostVersionByAffiliationAndVersionPerYear($this->getAffiliation(), $version);
+                    ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
 
                 foreach ($costsPerYear as $costsYear => $cost) {
                     //fee
                     $fee = $this->getProjectService()->findProjectFeeByYear($costsYear);
 
-                    $factor = $this->parseContributionFactorDue($costsYear, $year, $period);
+                    $factor = $this->parseContributionFactorDue($affiliation, $costsYear, $year, $period);
 
                     //Only add the value to the contribution if the partner is funded in that year
-                    if ($this->isFundedInYear($costsYear)) {
+                    if ($this->isFundedInYear($affiliation, $costsYear)) {
                         $contributionDue += $factor * $cost * ($fee->getPercentage() / 100);
                     }
                 }
@@ -325,7 +331,7 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_CONTRIBUTION:
                 //Fix the versionService
                 $effortPerYear = $this->getVersionService()
-                    ->findTotalEffortVersionByAffiliationAndVersionPerYear($this->getAffiliation(), $version);
+                    ->findTotalEffortVersionByAffiliationAndVersionPerYear($affiliation, $version);
 
                 foreach ($effortPerYear as $effortYear => $effort) {
                     $fee = $this->getProjectService()->findProjectFeeByYear($year);
@@ -336,10 +342,10 @@ class AffiliationService extends ServiceAbstract
                             $factor = 1;
                             break;
                         default:
-                            $factor = $this->parseContributionFactor($year, $period);
+                            $factor = $this->parseContributionFactor($affiliation, $year, $period);
                     }
 
-                    if ($this->isFundedInYear($year)) {
+                    if ($this->isFundedInYear($affiliation, $year)) {
                         $contributionDue += $factor * $effort * $fee->getContribution();
                     }
                 }
@@ -354,12 +360,13 @@ class AffiliationService extends ServiceAbstract
      * Sum up the amount paid already by the affiliation in the previous period
      * Exclude of course the credit notes
      *
-     * @param  $year
-     * @param  $period
+     * @param Affiliation $affiliation
+     * @param             $year
+     * @param             $period
      *
      * @return float|int
      */
-    public function parseContributionPaid($year, $period)
+    public function parseContributionPaid(Affiliation $affiliation, $year, $period)
     {
         $countribitionPaid = 0;
         //Cast to ints as some values can originate form templates (== twig > might be string)
@@ -367,7 +374,7 @@ class AffiliationService extends ServiceAbstract
         $period = (int)$period;
 
         //Sum the invoiced amount of all invoices for this affiliation
-        foreach ($this->getAffiliation()->getInvoice() as $invoice) {
+        foreach ($affiliation->getInvoice() as $invoice) {
 
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
             if (!is_null($invoice->getInvoice()->getDayBookNumber())
@@ -381,40 +388,52 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param  Version $version
-     * @param          $year
-     * @param          $period
+     * @param Affiliation $affiliation
+     * @param  Version    $version
+     * @param             $year
+     * @param             $period
      *
      * @return float|int
      */
-    public function parseBalance(Version $version, $year, $period)
+    public function parseBalance(Affiliation $affiliation, Version $version, $year, $period)
     {
-        return $this->parseContributionDue($version, $year, $period) - $this->parseContributionPaid($year, $period);
+        return $this->parseContributionDue($affiliation, $version, $year, $period)
+        - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
     /**
-     * @param  Version $version
-     * @param          $year
-     * @param          $period
+     * @param Affiliation $affiliation
+     * @param  Version    $version
+     * @param             $year
+     * @param             $period
      *
      * @return float
      */
-    public function parseTotal(Version $version, $year, $period)
+    public function parseTotal(Affiliation $affiliation, Version $version, $year, $period)
     {
-        return $this->parseContribution($version, $year, $period) + $this->parseBalance($version, $year, $period);
+        return $this->parseContribution($affiliation, $version, $year, $period) + $this->parseBalance(
+            $affiliation,
+            $version,
+            $year,
+            $period
+        );
     }
 
     /**
-     * @param  Version $version
-     * @param          $year
-     * @param          $period
+     * @param Affiliation $affiliation
+     * @param  Version    $version
+     * @param             $year
+     * @param             $period
      *
      * @return float
      */
-    public function parseContribution(Version $version, $year, $period)
+    public function parseContribution(Affiliation $affiliation, Version $version, $year, $period)
     {
-        $contribution = $this->parseContributionBase($version, $year) * $this->parseContributionFactor($year, $period)
-            * $this->parseContributionFee($version, $year);
+        $contribution = $this->parseContributionBase($affiliation, $version, $year)
+            * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
+                $version,
+                $year
+            );
 
         return $contribution;
     }
@@ -422,17 +441,14 @@ class AffiliationService extends ServiceAbstract
     /**
      * This function counts the effort or costs per affiliaton and returns the total per year. We pick the total amount out per given ear
      *
-     * @param  Version $version
-     * @param  int     $year
+     * @param Affiliation $affiliation
+     * @param  Version    $version
+     * @param  int        $year
      *
      * @return float
      */
-    public function parseContributionBase(Version $version, $year)
+    public function parseContributionBase(Affiliation $affiliation, Version $version, $year)
     {
-        /**
-         * We need the versionService to calculate the costs or efforts
-         */
-        $versionService = $this->getVersionService()->setVersion($version);
         $base = 0;
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
@@ -444,10 +460,8 @@ class AffiliationService extends ServiceAbstract
             ->getId()) {
             case Method::METHOD_PERCENTAGE:
                 $costsPerYear
-                    = $versionService->findTotalCostVersionByAffiliationAndVersionPerYear(
-                        $this->getAffiliation(),
-                        $version
-                    );
+                    = $this->getVersionService()
+                    ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
                 if (array_key_exists($year, $costsPerYear)) {
                     $base = $costsPerYear[$year];
                 }
@@ -455,10 +469,8 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_CONTRIBUTION:
                 $effortPerYear
-                    = $versionService->findTotalEffortVersionByAffiliationAndVersionPerYear(
-                        $this->getAffiliation(),
-                        $version
-                    );
+                    = $this->getVersionService()
+                    ->findTotalEffortVersionByAffiliationAndVersionPerYear($affiliation, $version);
                 if (array_key_exists($year, $effortPerYear)) {
                     $base = $effortPerYear[$year];
                 }
@@ -497,14 +509,14 @@ class AffiliationService extends ServiceAbstract
      * @param Project $project
      * @param int     $which
      *
-     * @return \Generator|AffiliationService[]
+     * @return \Generator|Affiliation[]
      */
     public function findAffiliationByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {
         $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
             ->findAffiliationByProjectAndWhich($project, $which);
         foreach ($affiliations as $affiliation) {
-            yield $this->createServiceElement($affiliation);
+            yield $affiliation;
         }
     }
 
@@ -512,7 +524,7 @@ class AffiliationService extends ServiceAbstract
      * @param Version $version
      * @param int     $which
      *
-     * @return ArrayCollection
+     * @return ArrayCollection|Affiliation[]
      */
     public function findAffiliationByProjectVersionAndWhich(Version $version, $which = self::WHICH_ALL)
     {
@@ -543,7 +555,7 @@ class AffiliationService extends ServiceAbstract
         $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
             ->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
         foreach ($affiliations as $affiliation) {
-            yield $this->createServiceElement($affiliation);
+            yield $affiliation;
         }
     }
 
@@ -591,7 +603,7 @@ class AffiliationService extends ServiceAbstract
         $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
             ->findAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
         foreach ($affiliations as $affiliation) {
-            yield $this->createServiceElement($affiliation);
+            yield $affiliation;
         }
     }
 
@@ -722,10 +734,9 @@ class AffiliationService extends ServiceAbstract
      */
     public function deactivateAffiliation(Affiliation $affiliation)
     {
-        $projectService = $this->getProjectService()->setProject($affiliation->getProject());
         $affiliation->setDateEnd(new \DateTime());
         $this->updateEntity($affiliation);
-        $editYearRange = $projectService->parseEditYearRange();
+        $editYearRange = $this->getProjectService()->parseEditYearRange($affiliation->getProject());
         $minEditYear = array_shift($editYearRange);
         /*
          * Remove the current cost and effort of the affiliation
@@ -759,21 +770,25 @@ class AffiliationService extends ServiceAbstract
     /**
      * This function creates an array of organisations with branches which are optional when a user wants to change
      * his affiliation.
+     *
+     * @param Affiliation $affiliation
+     *
+     * @return array
      */
-    public function parseRenameOptions()
+    public function parseRenameOptions(Affiliation $baseAffiliation)
     {
         $options = [];
-        $organisation = $this->getAffiliation()->getOrganisation();
-        $contact = $this->getAffiliation()->getContact();
+        $organisation = $baseAffiliation->getOrganisation();
+        $contact = $baseAffiliation->getContact();
         /**
          * Go over the organisation and grab all its affiliations
          */
         foreach ($organisation->getAffiliation() as $affiliation) {
-            $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
             $options[$affiliation->getOrganisation()->getCountry()->getCountry()]
             [$affiliation->getOrganisation()->getId()]
             [$affiliation->getBranch()]
-                = $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+                = $this->getOrganisationService()
+                ->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation());
         }
         /**
          * Go over the organisation and join the clusters and grab all its affiliations
@@ -781,10 +796,10 @@ class AffiliationService extends ServiceAbstract
         foreach ($organisation->getCluster() as $cluster) {
             foreach ($cluster->getMember() as $clusterMember) {
                 foreach ($clusterMember->getAffiliation() as $affiliation) {
-                    $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
                     $options[$affiliation->getOrganisation()->getCountry()
                         ->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()]
-                        = $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+                        = $this->getOrganisationService()
+                        ->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation());
                 }
             }
         }
@@ -792,22 +807,21 @@ class AffiliationService extends ServiceAbstract
          * Go over the contact and grab all its affiliations
          */
         foreach ($contact->getAffiliation() as $affiliation) {
-            $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
             $options[$affiliation->getOrganisation()->getCountry()->getCountry()]
             [$affiliation->getOrganisation()->getId()]
             [$affiliation->getBranch()]
-                = $this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch());
+                = $this->getOrganisationService()
+                ->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation());
         }
         /**
          * Add the contact organisation (from the contact)
          */
         if (!is_null($contact->getContactOrganisation())) {
-            $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch($contact->getContactOrganisation()
-                ->getBranch());
+                ->getBranch(), $contact->getContactOrganisation()->getOrganisation());
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -816,12 +830,11 @@ class AffiliationService extends ServiceAbstract
             /**
              * Add the contact organisation
              */
-            $this->getOrganisationService()->setOrganisation($contact->getContactOrganisation()->getOrganisation());
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch($contact->getContactOrganisation()
-                ->getBranch());
+                ->getBranch(), $contact->getContactOrganisation()->getOrganisation());
             /**
              * Go over the clusters
              */
@@ -829,11 +842,13 @@ class AffiliationService extends ServiceAbstract
                 foreach ($contactOrganisation->getOrganisation()->getCluster() as $cluster) {
                     foreach ($cluster->getMember() as $clusterMember) {
                         foreach ($clusterMember->getAffiliation() as $affiliation) {
-                            $this->getOrganisationService()->setOrganisation($affiliation->getOrganisation());
                             $options[$affiliation->getOrganisation()->getCountry()
                                 ->getCountry()][$affiliation->getOrganisation()->getId()][$affiliation->getBranch()]
                                 = $this->getOrganisationService()
-                                ->parseOrganisationWithBranch($affiliation->getBranch());
+                                ->parseOrganisationWithBranch(
+                                    $affiliation->getBranch(),
+                                    $affiliation->getOrganisation()
+                                );
                         }
                     }
                 }
@@ -841,18 +856,5 @@ class AffiliationService extends ServiceAbstract
         }
 
         return $options;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return $this
-     */
-    private function createServiceElement(Affiliation $affiliation)
-    {
-        $affiliationService = clone $this;
-        $affiliationService->setAffiliation($affiliation);
-
-        return $affiliationService;
     }
 }

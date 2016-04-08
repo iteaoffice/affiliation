@@ -10,7 +10,8 @@
 
 namespace Affiliation\Form;
 
-use Affiliation\Service\AffiliationService;
+use Affiliation\Entity\Affiliation;
+use General\Entity\Country;
 use General\Service\GeneralService;
 use Organisation\Entity\Financial as FinancialOrganisation;
 use Zend\Form\Form;
@@ -21,17 +22,17 @@ use Zend\Form\Form;
 class Financial extends Form
 {
     /**
-     * @param AffiliationService $affiliationService
-     * @param GeneralService     $generalService
+     * @param Affiliation    $affiliation
+     * @param GeneralService $generalService
      */
-    public function __construct(AffiliationService $affiliationService, GeneralService $generalService)
+    public function __construct(Affiliation $affiliation, GeneralService $generalService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
         $countries = [];
-        foreach ($generalService->findAll('country') as $country) {
+        foreach ($generalService->findAll(Country::class) as $country) {
             $countries[$country->getId()] = $country->getCountry();
         }
         asort($countries);
@@ -85,15 +86,15 @@ class Financial extends Form
          */
         $financialContactValueOptions = [];
 
-        $financialContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()]
-            = $affiliationService->getAffiliation()->getContact()->getFormName();
+        $financialContactValueOptions[$affiliation->getContact()->getId()]
+            = $affiliation->getContact()->getFormName();
         /**
          * Add the associates
          */
-        foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
+        foreach ($affiliation->getAssociate() as $contact) {
             $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
-        $organisation = $affiliationService->getAffiliation()->getOrganisation();
+        $organisation = $affiliation->getOrganisation();
         /**
          * Add the contacts in the organisation
          */

@@ -14,8 +14,6 @@
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
-use Affiliation\Service\AffiliationService;
-use Project\Service\ProjectService;
 use ZfcTwig\View\TwigRenderer;
 
 /**
@@ -41,13 +39,7 @@ class PaymentSheet extends LinkAbstract
      */
     public function __invoke(Affiliation $affiliation, $year, $period)
     {
-        /** @var AffiliationService $affiliationService */
-        $affiliationService = $this->getAffiliationService()->setAffiliation($affiliation);
-
-        /** @var ProjectService $projectService */
-        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
-
-        $latestVersion = $projectService->getLatestProjectVersion();
+        $latestVersion = $this->getProjectService()->getLatestProjectVersion($affiliation->getProject());
 
         /**
          * We don't need a payment sheet, when we have no versions
@@ -56,34 +48,22 @@ class PaymentSheet extends LinkAbstract
             return '';
         }
 
-        $versionService = $this->getVersionService()->setVersion($latestVersion);
-
-        $contactService = $this->getContactService()->setContact($affiliationService->getAffiliation()->getContact());
-
-        if (!is_null($affiliationService->getFinancialContact($affiliationService->getAffiliation()))) {
-            $financialContactService = $this->getContactService()
-                ->setContact($affiliationService->getFinancialContact($affiliationService->getAffiliation()));
-        } else {
-            $financialContactService = null;
-        }
-
         return $this->getZfcTwigRenderer()->render('affiliation/partial/payment-sheet', [
             'year'                           => $year,
             'period'                         => $period,
-            'affiliationService'             => $affiliationService,
-            'projectService'                 => $projectService,
-            'contactService'                 => $contactService,
-            'financialContactService'        => $financialContactService,
+            'affiliation'                    => $affiliation,
+            'affiliationService'             => $this->getAffiliationService(),
+            'version'                        => $latestVersion,
+            'projectService'                 => $this->getProjectService(),
+            'contactService'                 => $this->getContactService(),
+            'financialContact'               => $this->getAffiliationService()->getFinancialContact($affiliation),
             'organisationService'            => $this->getOrganisationService(),
-            'invoiceMethod'                  => $this->getInvoiceService()
-                ->findInvoiceMethod($projectService->getProject()->getCall()->getProgram()),
-            'invoiceService'                 => clone $this->getInvoiceService(),
-            'versionService'                 => $versionService,
-            'versionContributionInformation' => $versionService->getProjectVersionContributionInformation(
-                $affiliationService->getAffiliation(),
-                $latestVersion,
-                $year
-            )
+            'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod($affiliation->getProject()
+                ->getCall()->getProgram()),
+            'invoiceService'                 => $this->getInvoiceService(),
+            'versionService'                 => $this->getVersionService(),
+            'versionContributionInformation' => $this->getVersionService()
+                ->getProjectVersionContributionInformation($affiliation, $latestVersion)
         ]);
     }
 

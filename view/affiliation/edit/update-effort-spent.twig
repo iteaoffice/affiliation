@@ -1,11 +1,11 @@
 {% do headTitle().append(translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
-affiliationService.affiliation.organisation.organisation,
+affiliation.organisation.organisation,
 report.parseName()
 )) %}
 
 
 <h1>{{ translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
-    affiliationService.affiliation.organisation.organisation,
+    affiliation.organisation.organisation,
     report.parseName()
     ) }}</h1>
 
@@ -19,7 +19,7 @@ report.parseName()
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-community', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(project,'view-community', 'name') }}</p>
     </div>
 </div>
 
@@ -27,7 +27,7 @@ report.parseName()
     <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(affiliationService.affiliation,'view-community') }}</p>
+        <p class="form-control-static">{{ affiliationLink(affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -61,11 +61,11 @@ report.parseName()
     <label class="col-sm-3 control-label">{{ translate("txt-exploitation-related-achievement") }}</label>
 
     <div class="col-sm-9">
-        {% for achievement in affiliationService.affiliation.achievement %}
+        {% for achievement in affiliation.achievement %}
             <p class="form-control-static">{{ achievementLink(achievement,'view-community', 'name') }}</p>
         {% else %}
             <p class="form-control-static"><i
-                        class="fa fa-exclamation-circle warning"></i> {{ translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(projectService.parseFullname()) }}
+                        class="fa fa-exclamation-circle warning"></i> {{ translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()) }}
             </p>
         {% endfor %}
     </div>

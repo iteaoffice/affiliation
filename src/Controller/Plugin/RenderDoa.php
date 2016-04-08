@@ -36,17 +36,16 @@ class RenderDoa extends AbstractPlugin
     {
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
-        $pdf->addPage();
+        $pdf->AddPage();
         $pdf->SetFontSize(9);
         $twig = $this->getServiceLocator()->get('ZfcTwigRenderer');
         /*
          * Write the contact details
          */
-        $contactService = $this->getContactService()->setContact($doa->getContact());
         $pdf->SetXY(14, 55);
-        $pdf->Write(0, $contactService->parseFullName());
+        $pdf->Write(0, $doa->getContact()->parseFullName());
         $pdf->SetXY(14, 60);
-        $pdf->Write(0, $contactService->parseOrganisation());
+        $pdf->Write(0, $this->getContactService()->parseOrganisation($doa->getContact()));
         /*
          * Write the current date
          */
@@ -60,14 +59,12 @@ class RenderDoa extends AbstractPlugin
          * Use the NDA object to render the filename
          */
         $pdf->Write(0, $doa->parseFileName());
-        $ndaContent = $twig->render(
-            'affiliation/pdf/doa-project',
-            [
-                'contact'      => $doa->getContact(),
-                'project'      => $doa->getAffiliation()->getProject(),
-                'organisation' => $doa->getAffiliation()->getOrganisation(),
-            ]
-        );
+        $ndaContent = $twig->render('affiliation/pdf/doa-project', [
+            'contact'        => $doa->getContact(),
+            'project'        => $doa->getAffiliation()->getProject(),
+            'organisation'   => $doa->getAffiliation()->getOrganisation(),
+            'contactService' => $this->getContactService(),
+        ]);
         $pdf->writeHTMLCell(0, 0, 14, 85, $ndaContent);
         /*
          * Signage block

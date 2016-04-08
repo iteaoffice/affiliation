@@ -10,6 +10,7 @@
 
 namespace Affiliation\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
@@ -69,7 +70,7 @@ class Doa extends EntityAbstract implements ResourceInterface
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist","remove"}, mappedBy="doa")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\DoaObject[]
+     * @var \Affiliation\Entity\DoaObject[]|ArrayCollection
      */
     private $object;
     /**
@@ -110,6 +111,14 @@ class Doa extends EntityAbstract implements ResourceInterface
     private $contact;
 
     /**
+     * Doa constructor.
+     */
+    public function __construct()
+    {
+        $this->object = new ArrayCollection();
+    }
+
+    /**
      * @param $property
      *
      * @return mixed
@@ -122,6 +131,8 @@ class Doa extends EntityAbstract implements ResourceInterface
     /**
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
@@ -137,34 +148,6 @@ class Doa extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Returns the string identifier of the Resource.
-     *
-     * @return string
-     */
-    public function getResourceId()
-    {
-        return sprintf("%s:%s", __CLASS__, $this->id);
-    }
-
-    /**
-     * Needed for the hydration of form elements.
-     *
-     * @return array
-     */
-    public function getArrayCopy()
-    {
-        return [];
-    }
-
-    /**
-     * @return array
-     */
-    public function populate()
-    {
-        return $this->getArrayCopy();
-    }
-
-    /**
      * Parse a filename.
      *
      * @return string
@@ -172,126 +155,6 @@ class Doa extends EntityAbstract implements ResourceInterface
     public function parseFileName()
     {
         return sprintf("DOA_%s_%s", $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
-    }
-
-    /**
-     * @param \Affiliation\Entity\Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param \Contact\Entity\Contact $contact
-     */
-    public function setContact($contact)
-    {
-        $this->contact = $contact;
-    }
-
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
-    {
-        return $this->contact;
-    }
-
-    /**
-     * @param \General\Entity\ContentType $contentType
-     */
-    public function setContentType($contentType)
-    {
-        $this->contentType = $contentType;
-    }
-
-    /**
-     * @return \General\Entity\ContentType
-     */
-    public function getContentType()
-    {
-        return $this->contentType;
-    }
-
-    /**
-     * @param \DateTime $dateApproved
-     */
-    public function setDateApproved($dateApproved)
-    {
-        $this->dateApproved = $dateApproved;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDateApproved()
-    {
-        return $this->dateApproved;
-    }
-
-    /**
-     * @param \DateTime $dateCreated
-     */
-    public function setDateCreated($dateCreated)
-    {
-        $this->dateCreated = $dateCreated;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDateCreated()
-    {
-        return $this->dateCreated;
-    }
-
-    /**
-     * @param \DateTime $dateSigned
-     */
-    public function setDateSigned($dateSigned)
-    {
-        $this->dateSigned = $dateSigned;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDateSigned()
-    {
-        return $this->dateSigned;
-    }
-
-    /**
-     * @param \DateTime $dateUpdated
-     */
-    public function setDateUpdated($dateUpdated)
-    {
-        $this->dateUpdated = $dateUpdated;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDateUpdated()
-    {
-        return $this->dateUpdated;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
     }
 
     /**
@@ -303,27 +166,75 @@ class Doa extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\DoaObject[] $object
+     * @param int $id
+     *
+     * @return Doa
      */
-    public function setObject($object)
+    public function setId($id)
     {
-        $this->object = $object;
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
-     * @return \Affiliation\Entity\DoaObject[]
+     * @return \DateTime
      */
-    public function getObject()
+    public function getDateSigned()
     {
-        return $this->object;
+        return $this->dateSigned;
     }
 
     /**
-     * @param int $size
+     * @param \DateTime $dateSigned
+     *
+     * @return Doa
      */
-    public function setSize($size)
+    public function setDateSigned($dateSigned)
     {
-        $this->size = $size;
+        $this->dateSigned = $dateSigned;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateApproved()
+    {
+        return $this->dateApproved;
+    }
+
+    /**
+     * @param \DateTime $dateApproved
+     *
+     * @return Doa
+     */
+    public function setDateApproved($dateApproved)
+    {
+        $this->dateApproved = $dateApproved;
+
+        return $this;
+    }
+
+    /**
+     * @return \General\Entity\ContentType
+     */
+    public function getContentType()
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * @param \General\Entity\ContentType $contentType
+     *
+     * @return Doa
+     */
+    public function setContentType($contentType)
+    {
+        $this->contentType = $contentType;
+
+        return $this;
     }
 
     /**
@@ -332,5 +243,117 @@ class Doa extends EntityAbstract implements ResourceInterface
     public function getSize()
     {
         return $this->size;
+    }
+
+    /**
+     * @param int $size
+     *
+     * @return Doa
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+
+        return $this;
+    }
+
+    /**
+     * @return DoaObject[]|ArrayCollection
+     */
+    public function getObject()
+    {
+        return $this->object;
+    }
+
+    /**
+     * @param DoaObject[]|ArrayCollection $object
+     *
+     * @return Doa
+     */
+    public function setObject($object)
+    {
+        $this->object = $object;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateUpdated()
+    {
+        return $this->dateUpdated;
+    }
+
+    /**
+     * @param \DateTime $dateUpdated
+     *
+     * @return Doa
+     */
+    public function setDateUpdated($dateUpdated)
+    {
+        $this->dateUpdated = $dateUpdated;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateCreated()
+    {
+        return $this->dateCreated;
+    }
+
+    /**
+     * @param \DateTime $dateCreated
+     *
+     * @return Doa
+     */
+    public function setDateCreated($dateCreated)
+    {
+        $this->dateCreated = $dateCreated;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     *
+     * @return Doa
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     *
+     * @return Doa
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
     }
 }

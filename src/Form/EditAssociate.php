@@ -10,82 +10,77 @@
 
 namespace Affiliation\Form;
 
-use Affiliation\Service\AffiliationService;
+use Affiliation\Entity\Affiliation;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 /**
+ * Class EditAssociate
  *
+ * @package Affiliation\Form
  */
 class EditAssociate extends Form implements InputFilterProviderInterface
 {
     /**
      * EditAssociate constructor.
-     * @param AffiliationService $affiliationService
+     *
+     * @param Affiliation $affiliation
      */
-    public function __construct(AffiliationService $affiliationService)
+    public function __construct(Affiliation $affiliation)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-        //We can transfer the assocate to ohter affiliations in the project
+        //We can transfer the assocate to other affiliations in the project
         $affiliations = [];
 
-        foreach ($affiliationService->getAffiliation()->getProject()->getAffiliation() as $affiliation) {
-            $affiliations[$affiliation->getId()] = sprintf(
+        foreach ($affiliation->getProject()->getAffiliation() as $otherAffiliation) {
+            $affiliations[$otherAffiliation->getId()] = sprintf(
                 "%s (%s) %s",
-                $affiliation->getOrganisation()->getOrganisation(),
-                $affiliation->getOrganisation()->getCountry(),
-                is_null($affiliation->getDateEnd()) ? '': ' (deactivated)'
+                $otherAffiliation->getOrganisation()->getOrganisation(),
+                $otherAffiliation->getOrganisation()->getCountry(),
+                is_null($otherAffiliation->getDateEnd()) ? '' : ' (deactivated)'
             );
         }
 
         asort($affiliations);
 
-        $this->add(
-            [
-                'type'    => 'Zend\Form\Element\Select',
-                'name'    => 'affiliation',
-                'options' => [
-                    'value_options' => $affiliations,
-                    'label'         => _("txt-partner-name"),
-                ],
-            ]
-        );
+        $this->add([
+            'type'    => 'Zend\Form\Element\Select',
+            'name'    => 'affiliation',
+            'options' => [
+                'value_options' => $affiliations,
+                'label'         => _("txt-partner-name"),
+            ],
+        ]);
 
 
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Submit',
-                'name'       => 'submit',
-                'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
-                ],
-            ]
-        );
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Submit',
-                'name'       => 'delete',
-                'attributes' => [
-                    'class' => "btn btn-danger",
-                    'value' => _("txt-delete"),
-                ],
-            ]
-        );
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Submit',
-                'name'       => 'cancel',
-                'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
-                ],
-            ]
-        );
+        $this->add([
+            'type'       => 'Zend\Form\Element\Submit',
+            'name'       => 'submit',
+            'attributes' => [
+                'class' => "btn btn-primary",
+                'value' => _("txt-update"),
+            ],
+        ]);
+        $this->add([
+            'type'       => 'Zend\Form\Element\Submit',
+            'name'       => 'delete',
+            'attributes' => [
+                'class' => "btn btn-danger",
+                'value' => _("txt-delete"),
+            ],
+        ]);
+        $this->add([
+            'type'       => 'Zend\Form\Element\Submit',
+            'name'       => 'cancel',
+            'attributes' => [
+                'class' => "btn btn-warning",
+                'value' => _("txt-cancel"),
+            ],
+        ]);
     }
 
     /**

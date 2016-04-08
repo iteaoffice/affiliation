@@ -13,8 +13,6 @@ namespace Affiliation\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 
 /**
  * Entity for the Affiliation.
@@ -98,6 +96,8 @@ class Version extends EntityAbstract
     /**
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
@@ -105,116 +105,16 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param InputFilterInterface $inputFilter
-     *
-     * @throws \Exception
+     * @return string
      */
-    public function setInputFilter(InputFilterInterface $inputFilter)
+    public function __toString()
     {
-        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
-    }
-
-    /**
-     * Needed for the hydration of form elements.
-     *
-     * @return array
-     */
-    public function getArrayCopy()
-    {
-        return [];
-    }
-
-    /**
-     * @return array
-     */
-    public function populate()
-    {
-        return $this->getArrayCopy();
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param \Contact\Entity\Contact $contact
-     */
-    public function setContact($contact)
-    {
-        $this->contact = $contact;
-    }
-
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
-    {
-        return $this->contact;
-    }
-
-    /**
-     * @param \Project\Entity\Cost\Version[] $costVersion
-     */
-    public function setCostVersion($costVersion)
-    {
-        $this->costVersion = $costVersion;
-    }
-
-    /**
-     * @return \Project\Entity\Cost\Version[]|ArrayCollection
-     */
-    public function getCostVersion()
-    {
-        return $this->costVersion;
-    }
-
-    /**
-     * @param \Project\Entity\Effort\Version[]|ArrayCollection $effortVersion
-     */
-    public function setEffortVersion($effortVersion)
-    {
-        $this->effortVersion = $effortVersion;
-    }
-
-    /**
-     * @return \Project\Entity\Effort\Version[]|ArrayCollection
-     */
-    public function getEffortVersion()
-    {
-        return $this->effortVersion;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
+        return sprintf(
+            "%s in %s (%s)",
+            $this->getAffiliation()->getOrganisation(),
+            $this->getAffiliation()->getProject(),
+            $this->getVersion()->getVersionType()->getDescription()
+        );
     }
 
     /**
@@ -226,11 +126,55 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param \Project\Entity\Version\Version $version
+     * @param int $id
+     *
+     * @return Version
      */
-    public function setVersion($version)
+    public function setId($id)
     {
-        $this->version = $version;
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     *
+     * @return Version
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     *
+     * @return Version
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
     }
 
     /**
@@ -239,5 +183,57 @@ class Version extends EntityAbstract
     public function getVersion()
     {
         return $this->version;
+    }
+
+    /**
+     * @param \Project\Entity\Version\Version $version
+     *
+     * @return Version
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return \Project\Entity\Cost\Version
+     */
+    public function getCostVersion()
+    {
+        return $this->costVersion;
+    }
+
+    /**
+     * @param \Project\Entity\Cost\Version $costVersion
+     *
+     * @return Version
+     */
+    public function setCostVersion($costVersion)
+    {
+        $this->costVersion = $costVersion;
+
+        return $this;
+    }
+
+    /**
+     * @return \Project\Entity\Effort\Version
+     */
+    public function getEffortVersion()
+    {
+        return $this->effortVersion;
+    }
+
+    /**
+     * @param \Project\Entity\Effort\Version $effortVersion
+     *
+     * @return Version
+     */
+    public function setEffortVersion($effortVersion)
+    {
+        $this->effortVersion = $effortVersion;
+
+        return $this;
     }
 }

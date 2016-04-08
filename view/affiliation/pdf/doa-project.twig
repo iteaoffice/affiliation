@@ -1,13 +1,12 @@
-{% set contactService = contactServiceProxy(contact) %}
-{% set mailAddress = contactService.getMailAddress() %}
+{% set mailAddress = contactService.getMailAddress(contact) %}
 
 <h1>Annex B to ITEA 3 Frame Agreement</h1>
 
 <br>
-{{ contactService.parseFullName() }}<br>
-{{ mailAddress.address.address }}<br>
-{{ mailAddress.address.zipCode }} {{ mailAddress.address.city }}<br>
-{{ mailAddress.address.country|upper }}
+{{ contact.parseFullName() }}<br>
+{{ mailAddress.address }}<br>
+{{ mailAddress.zipCode }} {{ mailAddress.city }}<br>
+{{ mailAddress.country|upper }}
 <br>
 
 

@@ -88,10 +88,20 @@ class DoaReminder extends EntityAbstract
     /**
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
         $this->$property = $value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __toString()
+    {
+        return (string)$this->getId();
     }
 
     /**
@@ -104,10 +114,14 @@ class DoaReminder extends EntityAbstract
 
     /**
      * @param int $id
+     *
+     * @return DoaReminder
      */
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -120,10 +134,14 @@ class DoaReminder extends EntityAbstract
 
     /**
      * @param string $email
+     *
+     * @return DoaReminder
      */
     public function setEmail($email)
     {
         $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -136,10 +154,14 @@ class DoaReminder extends EntityAbstract
 
     /**
      * @param \DateTime $dateCreated
+     *
+     * @return DoaReminder
      */
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
+
+        return $this;
     }
 
     /**
@@ -152,10 +174,14 @@ class DoaReminder extends EntityAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
+     * @return DoaReminder
      */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
+
+        return $this;
     }
 
     /**
@@ -168,10 +194,14 @@ class DoaReminder extends EntityAbstract
 
     /**
      * @param \Contact\Entity\Contact $receiver
+     *
+     * @return DoaReminder
      */
     public function setReceiver($receiver)
     {
         $this->receiver = $receiver;
+
+        return $this;
     }
 
     /**
@@ -184,9 +214,13 @@ class DoaReminder extends EntityAbstract
 
     /**
      * @param \Contact\Entity\Contact $sender
+     *
+     * @return DoaReminder
      */
     public function setSender($sender)
     {
         $this->sender = $sender;
+
+        return $this;
     }
 }

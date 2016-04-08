@@ -1,9 +1,9 @@
 {% do headTitle().append(translate("txt-upload-doa-title")) %}
 
-{% set project = affiliationService.affiliation.project %}
+{% set project = affiliation.project %}
 
 <h1>{{ translate("txt-upload-doa-for-organisation-%s-for-project-%s")|
-    format(affiliationService.affiliation.organisation, project)|raw }}</h1>
+    format(affiliation.organisation, project)|raw }}</h1>
 
 {% do form.prepare() %}
 {% do form.setAttribute('class','form-horizontal') %}
@@ -23,7 +23,7 @@
     <label class="col-sm-3 control-label">{{ translate("txt-organisation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationService.affiliation.organisation }}</p>
+        <p class="form-control-static">{{ affiliation.organisation }}</p>
     </div>
 </div>
 

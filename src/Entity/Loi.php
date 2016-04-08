@@ -10,6 +10,7 @@
 
 namespace Affiliation\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
@@ -18,7 +19,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
 /**
  * ProjectLoi.
  *
- * @ORM\Table(name="project_loi")
+ * @ORM\Table(name="affiliation_loi")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Loi")
  */
 class Loi extends EntityAbstract implements ResourceInterface
@@ -67,7 +68,7 @@ class Loi extends EntityAbstract implements ResourceInterface
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist","remove"}, mappedBy="loi")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\LoiObject[]
+     * @var \Affiliation\Entity\LoiObject[]|ArrayCollection
      */
     private $object;
     /**
@@ -107,6 +108,14 @@ class Loi extends EntityAbstract implements ResourceInterface
     private $contact;
 
     /**
+     * Loi constructor.
+     */
+    public function __construct()
+    {
+        $this->object = new ArrayCollection();
+    }
+
+    /**
      * @param $property
      *
      * @return mixed
@@ -119,20 +128,12 @@ class Loi extends EntityAbstract implements ResourceInterface
     /**
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
         $this->$property = $value;
-    }
-
-    /**
-     * Returns the string identifier of the Resource.
-     *
-     * @return string
-     */
-    public function getResourceId()
-    {
-        return sprintf("%s:%s", __CLASS__, $this->id);
     }
 
     /**
@@ -154,109 +155,23 @@ class Loi extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * Needed for the hydration of form elements.
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
      *
-     * @return array
+     * @return Loi
      */
-    public function getArrayCopy()
+    public function setId($id)
     {
-        return [];
-    }
+        $this->id = $id;
 
-    /**
-     * @return array
-     */
-    public function populate()
-    {
-        return $this->getArrayCopy();
-    }
-
-    /**
-     * @param \Affiliation\Entity\Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param \Contact\Entity\Contact $contact
-     */
-    public function setContact($contact)
-    {
-        $this->contact = $contact;
-    }
-
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
-    {
-        return $this->contact;
-    }
-
-    /**
-     * @param \General\Entity\ContentType $contentType
-     */
-    public function setContentType($contentType)
-    {
-        $this->contentType = $contentType;
-    }
-
-    /**
-     * @return \General\Entity\ContentType
-     */
-    public function getContentType()
-    {
-        return $this->contentType;
-    }
-
-    /**
-     * @param \DateTime $dateApproved
-     */
-    public function setDateApproved($dateApproved)
-    {
-        $this->dateApproved = $dateApproved;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDateApproved()
-    {
-        return $this->dateApproved;
-    }
-
-    /**
-     * @param \DateTime $dateCreated
-     */
-    public function setDateCreated($dateCreated)
-    {
-        $this->dateCreated = $dateCreated;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDateCreated()
-    {
-        return $this->dateCreated;
-    }
-
-    /**
-     * @param \DateTime $dateSigned
-     */
-    public function setDateSigned($dateSigned)
-    {
-        $this->dateSigned = $dateSigned;
+        return $this;
     }
 
     /**
@@ -268,11 +183,95 @@ class Loi extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \DateTime $dateUpdated
+     * @param \DateTime $dateSigned
+     *
+     * @return Loi
      */
-    public function setDateUpdated($dateUpdated)
+    public function setDateSigned($dateSigned)
     {
-        $this->dateUpdated = $dateUpdated;
+        $this->dateSigned = $dateSigned;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateApproved()
+    {
+        return $this->dateApproved;
+    }
+
+    /**
+     * @param \DateTime $dateApproved
+     *
+     * @return Loi
+     */
+    public function setDateApproved($dateApproved)
+    {
+        $this->dateApproved = $dateApproved;
+
+        return $this;
+    }
+
+    /**
+     * @return \General\Entity\ContentType
+     */
+    public function getContentType()
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * @param \General\Entity\ContentType $contentType
+     *
+     * @return Loi
+     */
+    public function setContentType($contentType)
+    {
+        $this->contentType = $contentType;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    /**
+     * @param int $size
+     *
+     * @return Loi
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+
+        return $this;
+    }
+
+    /**
+     * @return LoiObject[]|ArrayCollection
+     */
+    public function getObject()
+    {
+        return $this->object;
+    }
+
+    /**
+     * @param LoiObject[]|ArrayCollection $object
+     *
+     * @return Loi
+     */
+    public function setObject($object)
+    {
+        $this->object = $object;
+
+        return $this;
     }
 
     /**
@@ -284,50 +283,74 @@ class Loi extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param int $id
+     * @param \DateTime $dateUpdated
+     *
+     * @return Loi
      */
-    public function setId($id)
+    public function setDateUpdated($dateUpdated)
     {
-        $this->id = $id;
+        $this->dateUpdated = $dateUpdated;
+
+        return $this;
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getId()
+    public function getDateCreated()
     {
-        return $this->id;
+        return $this->dateCreated;
     }
 
     /**
-     * @param \Affiliation\Entity\LoiObject[] $object
+     * @param \DateTime $dateCreated
+     *
+     * @return Loi
      */
-    public function setObject($object)
+    public function setDateCreated($dateCreated)
     {
-        $this->object = $object;
+        $this->dateCreated = $dateCreated;
+
+        return $this;
     }
 
     /**
-     * @return \Affiliation\Entity\LoiObject[]
+     * @return Affiliation
      */
-    public function getObject()
+    public function getAffiliation()
     {
-        return $this->object;
+        return $this->affiliation;
     }
 
     /**
-     * @param int $size
+     * @param Affiliation $affiliation
+     *
+     * @return Loi
      */
-    public function setSize($size)
+    public function setAffiliation($affiliation)
     {
-        $this->size = $size;
+        $this->affiliation = $affiliation;
+
+        return $this;
     }
 
     /**
-     * @return int
+     * @return \Contact\Entity\Contact
      */
-    public function getSize()
+    public function getContact()
     {
-        return $this->size;
+        return $this->contact;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     *
+     * @return Loi
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
     }
 }

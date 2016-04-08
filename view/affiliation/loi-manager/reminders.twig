@@ -1,11 +1,11 @@
-{% set project = affiliationService.affiliation.project %}
+{% set project = affiliation.project %}
 
 <h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
-    affiliationService.affiliation.organisation.organisation,
+    affiliation.organisation.organisation,
     project
     ) }}</h1>
 
-{% if affiliationService.affiliation.loiReminder.count() > 0 %}
+{% if affiliation.loiReminder.count() > 0 %}
 
     <table class="table table-hover table-condensed table-striped">
         <thead>
@@ -17,7 +17,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for reminder in affiliationService.affiliation.loiReminder %}
+        {% for reminder in affiliation.loiReminder %}
             <tr>
                 <td>{{ reminder.dateCreated|string_date }}</td>
                 <td>{{ reminder.email|raw }}</td>
@@ -31,6 +31,6 @@
     {{ ztbalert().info(translate("txt-no-reminders-have-been-send-yet"))|raw }}
 {% endif %}
 
-{{ loiLink(null, 'remind-admin', 'button', affiliationService.affiliation) }}
+{{ loiLink(null, 'remind-admin', 'button', affiliation) }}
 {{ loiLink(null, 'approval-admin', 'button') }}
 {{ loiLink(null, 'missing-admin', 'button') }}

@@ -25,26 +25,14 @@ use Organisation\Entity\Organisation;
  */
 class DoaService extends ServiceAbstract
 {
-   
-
     /**
-     * @param int $id
+     * @param $id
      *
-     * @return DoaService;
+     * @return null|Doa
      */
-    public function setDoaId($id)
+    public function findDoaById($id)
     {
-        $this->setDoa($this->findEntityById('doa', $id));
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmpty()
-    {
-        return is_null($this->doa) || is_null($this->doa->getId());
+        return $this->getEntityManager()->getRepository(Doa::class)->find($id);
     }
 
     /**
@@ -54,7 +42,7 @@ class DoaService extends ServiceAbstract
      */
     public function findNotApprovedDoa()
     {
-        return new ArrayCollection($this->getEntityManager()->getRepository($this->getFullEntityName('doa'))->findNotApprovedDoa());
+        return new ArrayCollection($this->getEntityManager()->getRepository(Doa::class)->findNotApprovedDoa());
     }
 
     /**
@@ -64,26 +52,6 @@ class DoaService extends ServiceAbstract
      */
     public function findDoaByOrganisation(Organisation $organisation)
     {
-        return $this->getEntityManager()->getRepository($this->getFullEntityName('doa'))->findDoaByOrganisation($organisation);
-    }
-
-    /**
-     * @param \Affiliation\Entity\Doa $doa
-     *
-     * @return $this;
-     */
-    public function setDoa($doa)
-    {
-        $this->doa = $doa;
-
-        return $this;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Doa
-     */
-    public function getDoa()
-    {
-        return $this->doa;
+        return $this->getEntityManager()->getRepository(Doa::class)->findDoaByOrganisation($organisation);
     }
 }

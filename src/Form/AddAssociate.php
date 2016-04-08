@@ -10,21 +10,23 @@
 
 namespace Affiliation\Form;
 
-use Affiliation\Service\AffiliationService;
+use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 /**
+ * Class AddAssociate
  *
+ * @package Affiliation\Form
  */
 class AddAssociate extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param AffiliationService $affiliationService
-     * @param ContactService     $contactService
+     * @param Affiliation    $affiliation
+     * @param ContactService $contactService
      */
-    public function __construct(AffiliationService $affiliationService, ContactService $contactService)
+    public function __construct(Affiliation $affiliation, ContactService $contactService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -32,47 +34,39 @@ class AddAssociate extends Form implements InputFilterProviderInterface
         $this->setAttribute('class', 'form-horizontal');
 
         $contacts = [];
-        foreach ($contactService->findContactsInOrganisation(
-            $affiliationService->getAffiliation()->getOrganisation()
-        ) as $contact) {
+        foreach ($contactService->findContactsInOrganisation($affiliation->getOrganisation()) as $contact) {
             $contacts[$contact->getId()] = $contact->getFormName();
         }
 
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Select',
-                'name'       => 'contact',
-                'options'    => [
-                    'value_options' => $contacts,
-                    'label'         => _("txt-contact-name"),
-                ],
-                'attributes' => [
-                    'class'    => 'form-control',
-                    'required' => true,
-                ],
-            ]
-        );
+        $this->add([
+            'type'       => 'Zend\Form\Element\Select',
+            'name'       => 'contact',
+            'options'    => [
+                'value_options' => $contacts,
+                'label'         => _("txt-contact-name"),
+            ],
+            'attributes' => [
+                'class'    => 'form-control',
+                'required' => true,
+            ],
+        ]);
 
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Submit',
-                'name'       => 'submit',
-                'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
-                ],
-            ]
-        );
-        $this->add(
-            [
-                'type'       => 'Zend\Form\Element\Submit',
-                'name'       => 'cancel',
-                'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
-                ],
-            ]
-        );
+        $this->add([
+            'type'       => 'Zend\Form\Element\Submit',
+            'name'       => 'submit',
+            'attributes' => [
+                'class' => "btn btn-primary",
+                'value' => _("txt-update"),
+            ],
+        ]);
+        $this->add([
+            'type'       => 'Zend\Form\Element\Submit',
+            'name'       => 'cancel',
+            'attributes' => [
+                'class' => "btn btn-warning",
+                'value' => _("txt-cancel"),
+            ],
+        ]);
     }
 
     /**

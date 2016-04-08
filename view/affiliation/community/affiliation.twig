@@ -1,25 +1,24 @@
 {% do headTitle().append(translate("txt-affiliation")) %}
-{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName)) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.organisation.organisation, affiliation.project.parseFullName())) %}
 
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
 
-{% set years = projectService.parseYearRange(false, affiliationService.affiliation) %}
-
+{% set years = projectService.parseYearRange(affiliation.project, false, affiliation) %}
 {% set projectYears = projectService.parseYearRange(true) %}
 
 {# Produce the link first to have the resource :) #}
-{% set affiliationLink = affiliationLink(affiliationService.affiliation, 'edit-community','button') %}
+{% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
 
-<h1>{{ affiliationService.affiliation.organisation.organisation }}</h1>
+<h1>{{ affiliation.organisation.organisation }}</h1>
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
-    projectService.parseFullName()
-    ) }} {{ affiliationLink(affiliationService.affiliation,'view-admin','icon') }}</p>
+    affiliation.project.parseFullName()
+    ) }} {{ affiliationLink(affiliation,'view-admin','icon') }}</p>
 
-{% if affiliationService.affiliation.dateEnd %}
+{% if affiliation.dateEnd %}
     {{ ztbalert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(
-    affiliationService.affiliation,
-    affiliationService.affiliation.dateEnd|string_date
+    affiliation,
+    affiliation.dateEnd|string_date
     )|raw }}
 {% endif %}
 
@@ -28,10 +27,10 @@
     <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
     <li><a href="#cost-and-effort" data-toggle="tab">{{ translate("txt-cost-and-effort") }}</a></li>
     <li><a href="#contact" data-toggle="tab">{{ translate("txt-contacts") }}</a></li>
-    {% if projectService.isLabelled() %}
+    {% if projectService.isLabelled(affiliation.project) %}
         <li><a href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
     {% endif %}
-    {% if isAllowed(affiliationService.affiliation,'edit-affiliation') or isAllowed(affiliationService.affiliation,'edit-financial') %}
+    {% if isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial') %}
         <li><a href="#invoicing" data-toggle="tab">{{ translate("txt-invoicing") }}</a></li>
     {% endif %}
 </ul>
@@ -43,30 +42,30 @@
 
         <dl class="dl-horizontal">
             <dt>{{ translate("txt-project-name") }}</dt>
-            <dd>{{ projectLink(projectService,'view-community', 'name') }}</dd>
+            <dd>{{ projectLink(project,'view-community', 'name') }}</dd>
             <dt>{{ translate("txt-project-title") }}</dt>
-            <dd>{{ projectService.project.title }}</dd>
+            <dd>{{ project.title }}</dd>
             <dt>{{ translate("txt-status") }}</dt>
-            <dd>{{ projectService.parseStatus() }}</dd>
+            <dd>{{ projectService.parseStatus(affiliation.project) }}</dd>
             <dt>{{ translate("txt-project-leader") }}</dt>
-            <dd>{{ projectService.project.contact.displayName() }}
-                ({{ projectService.project.contact.contactOrganisation.organisation }}) <a
-                        href="mailto:{{ projectService.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
-                {{ contactLink(projectService.project.contact,'view-admin','icon') }}
+            <dd>{{ affiliation.project.contact.displayName() }}
+                ({{ affiliation.project.contact.contactOrganisation.organisation }}) <a
+                        href="mailto:{{ affiliation.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+                {{ contactLink(affiliation.project.contact,'view-admin','icon') }}
             </dd>
             {#<dt>{{ translate("txt-call-name") }}</dt>#}
-            {#<dd>{{ projectService.project.call }}</dd>#}
+            {#<dd>{{ project.call }}</dd>#}
             <dt>{{ translate("txt-project-country") }}</dt>
-            <dd>{{ projectService.project.contact.contactOrganisation.organisation.country }}</dd>
+            <dd>{{ affiliation.project.contact.contactOrganisation.organisation.country }}</dd>
         </dl>
 
         <dl class="dl-horizontal">
             <dt>{{ translate("txt-position-on-value-chain") }}</dt>
-            <dd>{{ affiliationService.affiliation.valueChain|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+            <dd>{{ affiliation.valueChain|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
             <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
-            <dd>{{ affiliationService.affiliation.mainContribution|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+            <dd>{{ affiliation.mainContribution|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
             <dt>{{ translate("txt-market-access") }}</dt>
-            <dd>{{ affiliationService.affiliation.marketAccess|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
+            <dd>{{ affiliation.marketAccess|default('<i class="fa fa-exclamation-circle warning"></i>')|raw }}</dd>
         </dl>
 
         <dl class="dl-horizontal">
@@ -74,20 +73,20 @@
             {% if (requireMembership) %}
                 <dt>{{ translate("txt-membership") }}</dt>
                 <dd>
-                    {% if affiliationService.affiliation.organisation.member %}
-                        {#{{ memberLink(affiliationService.affiliation.organisation.member,'view','name') }}#}
-                        {{ translate("txt-organsation-%s-is-member-type-%s-since-%s")|format(affiliationService.affiliation.organisation,affiliationService.affiliation.organisation.member.type,affiliationService.affiliation.organisation.member.dateCreated|time_diff) }}
-                    {% elseif (affiliationService.affiliation.organisation.applicant) %}
-                        {{ applicantLink(affiliationService.affiliation.organisation.applicant,'view','text') }}
+                    {% if affiliation.organisation.member %}
+                        {#{{ memberLink(affiliation.organisation.member,'view','name') }}#}
+                        {{ translate("txt-organsation-%s-is-member-type-%s-since-%s")|format(affiliation.organisation,affiliation.organisation.member.type,affiliation.organisation.member.dateCreated|time_diff) }}
+                    {% elseif (affiliation.organisation.applicant) %}
+                        {{ applicantLink(affiliation.organisation.applicant,'view','text') }}
                     {% else %}
-                        {{ applicantLink(null,'apply','text', null, null, null, affiliationService.affiliation.organisation) }}
+                        {{ applicantLink(null,'apply','text', null, null, null, affiliation.organisation) }}
                     {% endif %}
                 </dd>
             {% endif %}
 
-            {% if projectService.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
+            {% if affiliation.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
                 <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
-                <dd>{% for programDoa in affiliationService.affiliation.organisation.programDoa if programDoa.program.id == projectService.project.call.program.id %}
+                <dd>{% for programDoa in affiliation.organisation.programDoa if programDoa.program.id == project.call.program.id %}
                         {% if programDoa.dateApproved is null %}
                             {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
                             {{ programDoaLink(programDoa,'replace','icon') }}
@@ -97,54 +96,54 @@
                             {{ programDoaLink(programDoa,'download','icon') }}
                         {% endif %}
                     {% else %}
-                        {{ programDoaLink(null,'upload','text', affiliationService.affiliation.organisation, projectService.project.call.program) }}
+                        {{ programDoaLink(null,'upload','text', affiliation.organisation, project.call.program) }}
                     {% endfor %}
                 </dd>
             {% endif %}
 
-            {% if projectService.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}
+            {% if affiliation.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}
                 <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
                 <dd>
-                    {% if not affiliationService.hasDoa() %}
-                        {{ doaLink(null,'upload','text', affiliationService.affiliation) }}
-                    {% elseif affiliationService.affiliation.doa.dateApproved is null %}
+                    {% if not affiliationService.hasDoa(affiliation) %}
+                        {{ doaLink(null,'upload','text', affiliation) }}
+                    {% elseif affiliation.doa.dateApproved is null %}
                         {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
-                        format(affiliationService.affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
-                        {{ doaLink(affiliationService.affiliation.doa,'replace','icon') }}
-                        {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
+                        format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
+                        {{ doaLink(affiliation.doa,'replace','icon') }}
+                        {{ doaLink(affiliation.doa,'download','icon') }}
                     {% else %}
-                        {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliationService.affiliation.doa.dateApproved|string_date)|raw }}
-                        {{ doaLink(affiliationService.affiliation.doa,'download','icon') }}
+                        {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date)|raw }}
+                        {{ doaLink(affiliation.doa,'download','icon') }}
                     {% endif %}
                 </dd>
             {% endif %}
 
             <dt>{{ translate("txt-letter-of-intent") }}</dt>
             <dd>
-                {% if not affiliationService.hasLoi() %}
-                    {{ loiLink(null,'upload','text', affiliationService.affiliation) }}
-                {% elseif affiliationService.affiliation.loi.dateApproved is null %}
+                {% if not affiliationService.hasLoi(affiliation) %}
+                    {{ loiLink(null,'upload','text', affiliation) }}
+                {% elseif affiliation.loi.dateApproved is null %}
                     {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
-                    format(affiliationService.affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
-                    {{ loiLink(affiliationService.affiliation.loi,'replace','icon') }}
-                    {{ loiLink(affiliationService.affiliation.loi,'download','icon') }}
+                    format(affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
+                    {{ loiLink(affiliation.loi,'replace','icon') }}
+                    {{ loiLink(affiliation.loi,'download','icon') }}
                 {% else %}
-                    {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliationService.affiliation.loi.dateApproved|string_date) }}
-                    {{ loiLink(affiliationService.affiliation.loi,'download','icon') }}
+                    {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliation.loi.dateApproved|string_date) }}
+                    {{ loiLink(affiliation.loi,'download','icon') }}
                 {% endif %}
             </dd>
             <dt>{{ translate("txt-technical-contact") }}</dt>
-            <dd>{{ affiliationService.affiliation.contact.displayName() }}
-                <a href="mailto:{{ affiliationService.affiliation.contact.email }}"><i class="fa fa-envelope-o"></i></a>
-                {{ contactLink(affiliationService.affiliation.contact,'view-admin','icon') }}
+            <dd>{{ affiliation.contact.displayName() }}
+                <a href="mailto:{{ affiliation.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+                {{ contactLink(affiliation.contact,'view-admin','icon') }}
             </dd>
-            {% if affiliationService.affiliation.financial %}
+            {% if affiliation.financial %}
                 <dt>{{ translate("txt-financial-contact") }}</dt>
                 <dd>
-                    {{ affiliationService.affiliation.financial.contact.displayName }} <a
-                            href="mailto:{{ affiliationService.affiliation.financial.contact.email }}"><i
+                    {{ affiliation.financial.contact.displayName }} <a
+                            href="mailto:{{ affiliation.financial.contact.email }}"><i
                                 class="fa fa-envelope-o"></i></a>
-                    {{ contactLink(affiliationService.affiliation.contact,'view-admin','icon') }}
+                    {{ contactLink(affiliation.contact,'view-admin','icon') }}
                 </dd>
             {% endif %}
         </dl>
@@ -154,18 +153,18 @@
     <div class="tab-pane" id="description">
         <h3>{{ translate("txt-partner-description") }}</h3>
 
-        {% for description in affiliationService.affiliation.description %}
+        {% for description in affiliation.description %}
             <dl class="dl-horizontal">
                 <dt>{{ translate("txt-description") }}</dt>
                 <dd>{{ description.description|raw|nl2br }}</dd>
             </dl>
         {% else %}
             {{ ztbalert().warning(translate("txt-no-description-found-for-%s")|format(
-            affiliationService.affiliation.organisation.organisation
+            affiliation.organisation.organisation
             ))|raw }}
         {% endfor %}
 
-        {{ affiliationLink(affiliationService.affiliation, 'edit-description','button') }}
+        {{ affiliationLink(affiliation, 'edit-description','button') }}
     </div>
     <div class="tab-pane" id="cost-and-effort">
 
@@ -175,9 +174,7 @@
                 Currently we take the draft-cost and effort based year distrubion to see the effect of that.
                 Later we can take here the project duraction pased year distribution
             #}
-
-            {% set versionService = versionServiceProxy(latestVersion) %}
-            <h3>{{ translate("txt-latest-%s-version-of-type-%s")|format(versionService.parseStatus()|lower, latestVersion.versionType) }}</h3>
+            <h3>{{ translate("txt-latest-%s-version-of-type-%s")|format(versionService.parseStatus(latestVersion)|lower, latestVersion.versionType) }}</h3>
 
             <p>{{ translate("txt-latest-submitted-version-of-type-%s-explanation")|format(latestVersion.versionType) }}</p>
 
@@ -197,7 +194,7 @@
                 </thead>
                 <tbody>
                 {% set costPerYear = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(
-                affiliationService.affiliation,
+                affiliation,
                 latestVersion
                 ) %}
                 {% set totalPerYear = 0 %}
@@ -226,10 +223,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(projectService.project) %}
+                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(project) %}
                     {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                     workpackage,
-                    affiliationService.affiliation,
+                    affiliation,
                     latestVersion,
                     'object'
                     ) %}
@@ -239,7 +236,7 @@
                         <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                         {% for year in years %}
                             <td class="effort_version_value"
-                                rel="effort_version_{{ affiliationService.affiliation.id }}_{{ workpackage.id }}_{{ year }}">{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
+                                rel="effort_version_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}">{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
                             {% set totalPerWP = totalPerWP + effortPerYear[year].effort %}
                         {% endfor %}
                         <th id="effort_version_total_{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
@@ -251,7 +248,7 @@
             <hr>
         {% endif %}
 
-        {% if projectService.isPrepareMode() %}
+        {% if projectService.isPrepareMode(project) %}
             <h3>{{ translate("txt-latest-unsubmitted-version") }}</h3>
 
             {{ ztbalert().info(translate("txt-explanation-cost-and-effort-edit-in-place"))|raw }}
@@ -271,12 +268,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% set costPerYear = projectService.findTotalCostByAffiliationPerYear(affiliationService.affiliation) %}
+                {% set costPerYear = projectService.findTotalCostByAffiliationPerYear(affiliation) %}
 
                 {# do a second iteration over the previous version to highlight the difference#}
                 {% if latestVersion %}
                     {% set costPerYearInVersion = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(
-                    affiliationService.affiliation,
+                    affiliation,
                     latestVersion
                     ) %}
                 {% endif %}
@@ -291,12 +288,12 @@
                             year in projectService.parseEditYearRange() and
                             (
                             hasProjectEditRights or
-                            isAllowed(affiliationService.affiliation, 'edit-affiliation')
+                            isAllowed(affiliation, 'edit-affiliation')
                             ) %}
                                 <i class="fa pull-left"></i>
                                 <a id="cost_{{ year }}"
                                    href="#" class="affiliation workpackage" data-type="text"
-                                   data-pk="{{ affiliationService.affiliation.id }},{{ year }}"
+                                   data-pk="{{ affiliation.id }},{{ year }}"
                                    data-url="{{ url('json/update-cost') }}"
                                    data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost_edit }}</a>
                             {% else %}
@@ -326,10 +323,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(projectService.project) %}
+                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(project) %}
                     {% set effortPerYear = projectService.findTotalEffortByWorkpackageAndAffiliationPerYear(
                     workpackage,
-                    affiliationService.affiliation,
+                    affiliation,
                     'object') %}
                     {% set totalPerWP = 0 %}
 
@@ -338,7 +335,7 @@
                         {% set effortPerYearInVersion =
                         versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                         workpackage,
-                        affiliationService.affiliation,
+                        affiliation,
                         latestVersion
                         ) %}
                     {% endif %}
@@ -352,21 +349,21 @@
 
                         <td>
                             {% if
-                            year in projectService.parseEditYearRange() and
+                            year in projectService.parseEditYearRange(affiliation.project) and
                             (
                             hasProjectEditRights or
                             isAllowed(workpackage, 'edit-community') or
-                            isAllowed(affiliationService.affiliation, 'edit-affiliation')
+                            isAllowed(affiliation, 'edit-affiliation')
                             ) %}
                                 <i class="fa pull-left"></i>
-                                <a id="effort_{{ affiliationService.affiliation.id }}_{{ workpackage.id }}_{{ year }}"
+                                <a id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
                                    href="#" class="affiliation workpackage" data-type="text"
-                                   data-pk="{{ affiliationService.affiliation.id }},{{ workpackage.id }},{{ year }}"
+                                   data-pk="{{ affiliation.id }},{{ workpackage.id }},{{ year }}"
                                    data-url="{{ url('json/update-effort') }}"
                                    data-title="{{ translate("txt-update-effort") }}">{{ effortInCurrentYear|parse_effort }}</a>
                             {% else %}
                                 <i class="fa pull-left"></i>
-                                <span id="effort_{{ affiliationService.affiliation.id }}_{{ workpackage.id }}_{{ year }}"
+                                <span id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
                                       class="workpackage"
                                       rel="{{ year }}">{{ effortInCurrentYear|parse_effort }}</span>
                             {% endif %}
@@ -379,7 +376,7 @@
                 </tbody>
             </table>
 
-            {{ projectLink(projectService, 'edit-cost-and-effort-community', 'button') }}
+            {{ projectLink(project, 'edit-cost-and-effort-community', 'button') }}
         {% endif %}
 
     </div>
@@ -411,7 +408,7 @@
             {{ ztbalert().info(translate("txt-no-associates-in-this-affiliation"))|raw }}
         {% endif %}
 
-        {{ affiliationLink(affiliationService.affiliation,'add-associate','button') }}
+        {{ affiliationLink(affiliation,'add-associate','button') }}
     </div>
 
     {% if projectService.isLabelled() %}
@@ -419,7 +416,7 @@
 
             <h4>{{ translate("txt-progress-report-information") }}</h4>
 
-            {% if affiliationService.affiliation.project.report.count() > 0 %}
+            {% if affiliation.project.report.count() > 0 %}
                 <table class="table table table-hover table-striped">
                     <thead>
                     <tr>
@@ -431,13 +428,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for report in affiliationService.affiliation.project.report %}
+                    {% for report in affiliation.project.report %}
 
-                        {% set effortSpent = reportService.findEffortSpentByReportAndAffiliation(report, affiliationService.affiliation) %}
+                        {% set effortSpent = reportService.findEffortSpentByReportAndAffiliation(report, affiliation) %}
 
                         {% if latestVersion %}
                             {% set totalPlannedEffort = versionService.findTotalEffortByAffiliationAndVersionUpToReportingPeriod(
-                            affiliationService.affiliation,
+                            affiliation,
                             latestVersion,
                             report) %}
                         {% endif %}
@@ -451,10 +448,10 @@
                                     [{{ translate("txt-py") }}]
                                 </td>
                                 <td>
-                                    {% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'update', report) }}{% endif %}</td>
+                                    {% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliation, 'update-effort-spent', 'update', report) }}{% endif %}</td>
                             {% else %}
                                 <td></td>
-                                <td>{% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliationService.affiliation, 'update-effort-spent', 'button', report) }}{% endif %}</td>
+                                <td>{% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliation, 'update-effort-spent', 'button', report) }}{% endif %}</td>
                             {% endif %}
                         </tr>
                         {% if effortSpent %}
@@ -470,12 +467,12 @@
                 </table>
             {% else %}
                 <br>
-                {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(projectService.parseFullname()))|raw }}
+                {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(projectService.parseFullname(affiliation.project)))|raw }}
             {% endif %}
 
             <h4>{{ translate("txt-exploitation-related-achievement") }}</h4>
 
-            {% if affiliationService.affiliation.achievement.count > 0 %}
+            {% if affiliation.achievement.count > 0 %}
                 <table class="table table-hover table-striped">
                     <thead>
                     <tr>
@@ -488,7 +485,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for achievement in affiliationService.affiliation.achievement %}
+                    {% for achievement in affiliation.achievement %}
                         <tr>
                             <td>
                                 {{ achievementLink(achievement,'view-community', 'name') }}
@@ -506,17 +503,17 @@
 
             {% else %}
                 <br>
-                {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(projectService.parseFullname()))|raw }}
+                {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()))|raw }}
             {% endif %}
 
-            {{ achievementLink(null, 'create', 'button', affiliationService.affiliation) }}
+            {{ achievementLink(null, 'create', 'button', affiliation) }}
 
 
         </div>
     {% endif %}
 
 
-    {% if isAllowed(affiliationService.affiliation,'edit-affiliation') or isAllowed(affiliationService.affiliation,'edit-financial') %}
+    {% if isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial') %}
         <br>
         <div class="tab-pane" id="invoicing">
 
@@ -525,67 +522,60 @@
 
                     <h3>{{ translate("txt-invoicing-details") }}</h3>
 
-                    {% if affiliationService.affiliation.financial %}
-
-                        {% set organisationService = organisationServiceProxy(
-                        affiliationService.affiliation.financial.organisation
-                        ) %}
-
-                        {% set contactService = contactServiceProxy(
-                        affiliationService.affiliation.financial.contact
-                        ) %}
-
+                    {% if affiliation.financial %}
                         <dl class="dl-horizontal">
                             <dt>{{ translate("txt-address-label") }}</dt>
-                            <dd>{{ organisationService.parseOrganisationWithBranch(affiliationService.affiliation.financial.branch) }}</dd>
+                            <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch, affiliation.financial.organisation) }}</dd>
 
-                            {% if organisationService.organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
-                                <dd>{{ contactService.parseAttention() }} {{ contactService.parseFullName() }}</dd>
+
+                            {% if contact.department %}
+                                <dd>{{ contact.department }}</dd>
                             {% endif %}
 
-                            {% if contactService.contact.department %}
-                                <dd>{{ contactService.contact.department }}</dd>
-                            {% endif %}
-
-                            {% set financialAddress = contactService.getFinancialAddress() %}
-                            <dd>{{ financialAddress.address.address }}</dd>
-                            <dd>{{ financialAddress.address.zipcode }} {{ financialAddress.address.city }}</dd>
-                            <dd>{{ financialAddress.address.country|upper }}</dd>
+                            {% set financialAddress = contactService.getFinancialAddress(affiliation.financial.contact) %}
+                            <dd>{{ financialAddress }}</dd>
+                            <dd>{{ financialAddress.zipcode }} {{ financialAddress.city }}</dd>
+                            <dd>{{ financialAddress.country|upper }}</dd>
                         </dl>
 
                     {% else %}
-                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliationService.affiliation))|raw }}
+                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliation))|raw }}
                     {% endif %}
 
 
-                    {% if organisationService.organisation.financial %}
+                    {% if organisation.financial %}
                         <dl class="dl-horizontal">
                             <dt>{{ translate('txt-vat-number') }}</dt>
-                            <dd>{{ organisationService.organisation.financial.vat }}</dd>
+                            <dd>{{ organisation.financial.vat }}</dd>
+
+                            {% if organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
+                                <dd>{{ contactService.parseAttention(organisation.financial.contact) }} {{ organisation.financial.contact.parseFullName() }}</dd>
+                            {% endif %}
+
 
                             <dt>{{ translate("txt-preferred-delivery") }}</dt>
-                            {% if organisationService.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-                                <dd>{{ translate("txt-by-email-to-%s")|format(contactService.contact.email) }}</dd>
+                            {% if organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+                                <dd>{{ translate("txt-by-email-to-%s")|format(contact.email) }}</dd>
                             {% else %}
                                 <dd>{{ translate("txt-by-postal-mail") }}</dd>
                             {% endif %}
                         </dl>
                     {% else %}
-                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-the-organisation-%s")|format(affiliationService.affiliation.organisation))|raw }}
+                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-the-organisation-%s")|format(affiliation.organisation))|raw }}
                     {% endif %}
 
-                    {{ affiliationLink(affiliationService.affiliation, 'edit-financial','button') }}
+                    {{ affiliationLink(affiliation, 'edit-financial','button') }}
                 </tab>
-                {% if isAllowed(affiliationService.affiliation,'payment-sheet-admin') %}
+                {% if isAllowed(affiliation,'payment-sheet-admin') %}
                     <tab heading="{{ translate("txt-payment-sheet") }}">
 
 
                         {% set year =  "now"|date("Y") %}
                         {% set period = ("now"|date("n") <= 6) ? 1 : 2 %}
 
-                        <h3>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliationService.affiliation,'payment-sheet-pdf','icon', year, period) }}</h3>
+                        <h3>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliation,'payment-sheet-pdf','icon', year, period) }}</h3>
 
-                        {{ paymentSheet(affiliationService.affiliation, year, period) }}
+                        {{ paymentSheet(affiliation, year, period) }}
 
                     </tab>
 
@@ -605,16 +595,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for affilaitionInvoice in affiliationService.affiliation.invoice %}
-                                {% set invoiceService = invoiceService.setInvoice(affilaitionInvoice.invoice) %}
-                                {% if invoiceService.isSent() %}
+                            {% for affilaitionInvoice in affiliation.invoice %}
+                                {% if invoiceService.isSent(affilaitionInvoice.invoice) %}
                                     <tr>
                                         <td>{{ affilaitionInvoice.invoice.invoiceNr }}</td>
                                         <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
                                         <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
-                                        <td>{{ invoiceService.parseTotal()|localizedcurrency("EUR") }}</td>
-                                        <td>{{ invoiceService.parseStatus()['name'] }}</td>
-                                        <td>{{ invoiceLink(invoiceService.invoice,'download','icon') }}</td>
+                                        <td>{{ invoiceService.parseTotal(affilaitionInvoice.invoice)|localizedcurrency("EUR") }}</td>
+                                        <td>{{ invoiceService.parseStatus(affilaitionInvoice.invoice)['name'] }}</td>
+                                        <td>{{ invoiceLink(affilaitionInvoice.invoice,'download','icon') }}</td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}

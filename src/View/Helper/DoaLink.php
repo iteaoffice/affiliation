@@ -66,7 +66,7 @@ class DoaLink extends LinkAbstract
             $this->addRouterParam('id', $this->getDoa()->getId());
             $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
         }
-        $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
+        $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
 
         return $this->createLink();
     }

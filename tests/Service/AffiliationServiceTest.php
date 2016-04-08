@@ -46,7 +46,7 @@ class AffiliationServiceTest extends \PHPUnit_Framework_TestCase
 
         $service->setEntityManager($emMock);
 
-        $affiliation = $service->setAffiliationId(1)->getAffiliation();
+        $affiliation = $service->findAffiliationById(1);
 
         $this->assertEquals($affiliation->getId(), 1);
 
@@ -82,6 +82,6 @@ class AffiliationServiceTest extends \PHPUnit_Framework_TestCase
         $service->setEntityManager($emMock);
 
 
-        $this->assertEquals(2, sizeof($service->findAll('affiliation')));
+        $this->assertEquals(2, sizeof($service->findAll(Affiliation::class)));
     }
 }

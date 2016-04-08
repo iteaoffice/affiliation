@@ -36,7 +36,7 @@ class RenderLoi extends AbstractPlugin
     {
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
-        $pdf->addPage();
+        $pdf->AddPage();
         $pdf->SetFontSize(9);
         $twig = $this->getServiceLocator()->get('ZfcTwigRenderer');
         /*

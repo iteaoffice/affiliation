@@ -10,7 +10,7 @@
 
 namespace Affiliation\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
 use Zend\InputFilter\Factory as InputFactory;
@@ -47,7 +47,7 @@ class Description extends EntityAbstract
      * )
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Affiliation[]|ArrayCollection()
+     * @var \Affiliation\Entity\Affiliation[]|Collections\ArrayCollection()
      */
     private $affiliation;
     /**
@@ -81,7 +81,7 @@ class Description extends EntityAbstract
      */
     public function __construct()
     {
-        $this->affiliation = new ArrayCollection();
+        $this->affiliation = new Collections\ArrayCollection();
     }
 
     /**
@@ -131,14 +131,10 @@ class Description extends EntityAbstract
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();
             $factory = new InputFactory();
-            $inputFilter->add(
-                $factory->createInput(
-                    [
-                        'name'     => 'description',
-                        'required' => true,
-                    ]
-                )
-            );
+            $inputFilter->add($factory->createInput([
+                    'name'     => 'description',
+                    'required' => true,
+                ]));
             $this->inputFilter = $inputFilter;
         }
 
@@ -146,7 +142,7 @@ class Description extends EntityAbstract
     }
 
     /**
-     * @param \Affiliation\Entity\Affiliation[]|ArrayCollection() $affiliation
+     * @param \Affiliation\Entity\Affiliation[]|Collections\ArrayCollection() $affiliation
      */
     public function setAffiliation($affiliation)
     {
@@ -154,11 +150,35 @@ class Description extends EntityAbstract
     }
 
     /**
-     * @return \Affiliation\Entity\Affiliation[]|ArrayCollection()
+     * @return \Affiliation\Entity\Affiliation[]|Collections\ArrayCollection()
      */
     public function getAffiliation()
     {
         return $this->affiliation;
+    }
+
+    /**
+     * New function needed to make the hydrator happy
+     *
+     * @param Collections\Collection $affiliationCollection
+     */
+    public function addAffiliation(Collections\Collection $affiliationCollection)
+    {
+        foreach ($affiliationCollection as $affiliation) {
+            $this->affiliation->add($affiliation);
+        }
+    }
+
+    /**
+     * New function needed to make the hydrator happy
+     *
+     * @param Collections\Collection $affiliationCollection
+     */
+    public function removeAffiliation(Collections\Collection $affiliationCollection)
+    {
+        foreach ($affiliationCollection as $single) {
+            $this->affiliation->removeElement($single);
+        }
     }
 
     /**

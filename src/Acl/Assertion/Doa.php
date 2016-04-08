@@ -27,41 +27,35 @@ class Doa extends AssertionAbstract
      * Returns true if and only if the assertion conditions are met.
      *
      * This method is passed the ACL, Role, Resource, and privilege to which the authorization query applies. If the
-     * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
+     * $role, $doa, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
      * @param Acl               $acl
      * @param RoleInterface     $role
-     * @param ResourceInterface $resource
+     * @param ResourceInterface $doa
      * @param string            $privilege
      *
      * @return bool
      */
-    public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $resource = null, $privilege = null)
+    public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $doa = null, $privilege = null)
     {
-        $id = $this->getRouteMatch()->getParam('id');
-        /*
-         * When the privilege is_null (not given by the isAllowed helper), get it from the routeMatch
-         */
-        if (is_null($privilege)) {
-            $privilege = $this->getRouteMatch()->getParam('privilege');
-        }
-        if (!$resource instanceof DoaEntity && !is_null($id)) {
-            /*
-             * @var DoaEntity
-             */
-            $resource = $this->getAffiliationService()->findEntityById('Doa', $id);
+        $this->setPrivilege($privilege);
+        $id = $this->getId();
+
+        if (!$doa instanceof DoaEntity && !is_null($id)) {
+            /** @var DoaEntity $doa */
+            $doa = $this->getAffiliationService()->findEntityById(DoaEntity::class, $id);
         }
 
-        switch ($privilege) {
+        switch ($this->getPrivilege()) {
             case 'upload':
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  * The affiliation can already be known, but if not grab it from the routeMatch
                  */
                 $affiliation = null;
-                if ($resource instanceof DoaEntity) {
-                    $affiliation = $resource->getAffiliation();
+                if ($doa instanceof DoaEntity) {
+                    $affiliation = $doa->getAffiliation();
                 }
                 if (is_null($affiliation)) {
                     /*
@@ -70,9 +64,9 @@ class Doa extends AssertionAbstract
                     if (!is_null($this->getRouteMatch()->getParam('id'))) {
                         $affiliationId = $this->getRouteMatch()->getParam('id');
                     } else {
-                        $affiliationId = $this->getRouteMatch()->getParam('affiliation-id');
+                        $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
                     }
-                    $affiliation = $this->getAffiliationService()->setAffiliationId($affiliationId)->getAffiliation();
+                    $affiliation = $this->getAffiliationService()->findAffiliationById($affiliationId);
                 }
 
                 return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'edit-community');
@@ -82,8 +76,8 @@ class Doa extends AssertionAbstract
                  * and the acl should not be approved
                  */
 
-                return is_null($resource->getDateApproved())
-                && $this->getAffiliationAssertion()->assert($acl, $role, $resource->getAffiliation(), 'edit-community');
+                return is_null($doa->getDateApproved())
+                && $this->getAffiliationAssertion()->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
             case 'render':
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
@@ -91,14 +85,13 @@ class Doa extends AssertionAbstract
                 if (!is_null($this->getRouteMatch()->getParam('id'))) {
                     $affiliationId = $this->getRouteMatch()->getParam('id');
                 } else {
-                    $affiliationId = $this->getRouteMatch()->getParam('affiliation-id');
+                    $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
                 }
-                $affiliation = $this->getAffiliationService()->setAffiliationId($affiliationId)->getAffiliation();
+                $affiliation = $this->getAffiliationService()->findAffiliationById($affiliationId);
 
                 return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'view-community');
             case 'download':
-                return $this->getAffiliationAssertion()
-                    ->assert($acl, $role, $resource->getAffiliation(), 'view-community');
+                return $this->getAffiliationAssertion()->assert($acl, $role, $doa->getAffiliation(), 'view-community');
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':

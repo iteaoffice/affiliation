@@ -27,28 +27,26 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function viewAction()
     {
-        $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
-        $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        if (is_null($affiliation)) {
+            return $this->notFoundAction();
+        }
 
-        $this->getProjectService()->addResource(
-            $affiliationService->getAffiliation()->getProject(),
-            ProjectAssertion::class
-        );
+        $this->getProjectService()->addResource($affiliation->getProject(), ProjectAssertion::class);
 
         return new ViewModel([
-            'affiliationService'    => $affiliationService,
+            'affiliationService'    => $this->getAffiliationService(),
+            'affiliation'           => $affiliation,
             'memberService'         => $this->getMemberService(),
-            'contactsInAffiliation' => $this->getContactService()
-                ->findContactsInAffiliation($affiliationService->getAffiliation()),
+            'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation($affiliation),
             'projectService'        => $this->getProjectService(),
             'workpackageService'    => $this->getWorkpackageService(),
-            'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(),
-            'versionType'           => $this->getProjectService()->getNextMode()->versionType,
+            'latestVersion'         => $this->getProjectService()->getLatestProjectVersion($affiliation->getProject()),
+            'versionType'           => $this->getProjectService()->getNextMode($affiliation->getProject())->versionType,
             'reportService'         => $this->getReportService(),
             'versionService'        => $this->getVersionService(),
             'invoiceService'        => $this->getInvoiceService(),
-            'organisationService'   => $this->getOrganisationService()
-                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation()),
+            'organisationService'   => $this->getOrganisationService(),
         ]);
     }
 
@@ -57,39 +55,41 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function mergeAction()
     {
-        $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
-        $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        if (is_null($affiliation)) {
+            return $this->notFoundAction();
+        }
 
         $data = array_merge($this->getRequest()->getPost()->toArray());
 
         if ($this->getRequest()->isPost()) {
             if (isset($data['merge']) && isset($data['submit'])) {
                 //Find the second affiliation
-                $affiliation = $this->getAffiliationService()->findEntityById('affiliation', $data['merge']);
+                $affiliation = $this->getAffiliationService()->findAffiliationById($data['merge']);
 
-                $this->mergeAffiliation($affiliationService->getAffiliation(), $affiliation);
+                $this->mergeAffiliation($affiliation, $affiliation);
 
                 $this->flashMessenger()->setNamespace('success')
                     ->addMessage(sprintf(
                         $this->translate("txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful"),
-                        $affiliationService->getAffiliation()->getOrganisation(),
                         $affiliation->getOrganisation(),
-                        $affiliationService->getAffiliation()->getProject()
+                        $affiliation->getOrganisation(),
+                        $affiliation->getProject()
                     ));
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/view', [
-                    'id' => $affiliationService->getAffiliation()->getId(),
+                    'id' => $affiliation->getId(),
                 ]);
             }
         }
 
 
         return new ViewModel([
-            'affiliationService'  => $affiliationService,
+            'affiliationService'  => $this->getAffiliationService(),
+            'affiliation'         => $affiliation,
             'merge'               => isset($data['merge']) ? $data['merge'] : null,
             'projectService'      => $this->getProjectService(),
-            'organisationService' => $this->getOrganisationService()
-                ->setOrganisation($affiliationService->getAffiliation()->getOrganisation()),
+            'organisationService' => $this->getOrganisationService(),
         ]);
     }
 
@@ -100,45 +100,40 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function editAction()
     {
-        $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('id'));
-        if ($affiliationService->isEmpty()) {
-            return $this->notFoundAction();
-        }
-        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
-        if ($projectService->isEmpty()) {
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        if (is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
         $formData = [];
         $formData['affiliation'] = sprintf(
             "%s|%s",
-            $affiliationService->getAffiliation()->getOrganisation()->getId(),
-            $affiliationService->getAffiliation()->getBranch()
+            $affiliation->getOrganisation()->getId(),
+            $affiliation->getBranch()
         );
-        $formData['contact'] = $affiliationService->getAffiliation()->getContact()->getId();
-        $formData['branch'] = $affiliationService->getAffiliation()->getBranch();
-        $formData['valueChain'] = $affiliationService->getAffiliation()->getValueChain();
-        $formData['marketAccess'] = $affiliationService->getAffiliation()->getMarketAccess();
-        $formData['mainContribution'] = $affiliationService->getAffiliation()->getMainContribution();
+        $formData['contact'] = $affiliation->getContact()->getId();
+        $formData['branch'] = $affiliation->getBranch();
+        $formData['valueChain'] = $affiliation->getValueChain();
+        $formData['marketAccess'] = $affiliation->getMarketAccess();
+        $formData['mainContribution'] = $affiliation->getMainContribution();
 
-        if (!is_null($affiliationService->getAffiliation()->getDateEnd())) {
-            $formData['dateEnd'] = $affiliationService->getAffiliation()->getDateEnd()->format('Y-m-d');
+        if (!is_null($affiliation->getDateEnd())) {
+            $formData['dateEnd'] = $affiliation->getDateEnd()->format('Y-m-d');
         }
-        if (!is_null($affiliationService->getAffiliation()->getDateSelfFunded())
-            || $affiliationService->getAffiliation()->getSelfFunded() == Affiliation::SELF_FUNDED
+        if (!is_null($affiliation->getDateSelfFunded())
+            || $affiliation->getSelfFunded() == Affiliation::SELF_FUNDED
         ) {
-            if (is_null($affiliationService->getAffiliation()->getDateSelfFunded())) {
+            if (is_null($affiliation->getDateSelfFunded())) {
                 $formData['dateSelfFunded'] = date('Y-m-d');
             } else {
-                $formData['dateSelfFunded'] = $affiliationService->getAffiliation()->getDateSelfFunded()
-                    ->format('Y-m-d');
+                $formData['dateSelfFunded'] = $affiliation->getDateSelfFunded()->format('Y-m-d');
             }
         }
 
         /**
          * Only fill the formData of the finanicalOrganisation when this is known
          */
-        if (!is_null($financial = $affiliationService->getAffiliation()->getFinancial())) {
+        if (!is_null($financial = $affiliation->getFinancial())) {
             $formData['financialOrganisation'] = $financial->getOrganisation()->getId();
             $formData['financialBranch'] = $financial->getBranch();
             $formData['financialContact'] = $financial->getContact()->getId();
@@ -146,7 +141,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         }
 
 
-        $form = new AdminAffiliation($affiliationService, $this->getOrganisationService());
+        $form = new AdminAffiliation($affiliation, $this->getOrganisationService());
         $form->setData($formData);
 
         $form->get('contact')->setDisableInArrayValidator(true);
@@ -157,14 +152,12 @@ class AffiliationManagerController extends AffiliationAbstractController
         if ($this->getRequest()->isPost() && $form->setData($_POST) && $form->isValid()) {
             $formData = $form->getData();
 
-            $affiliation = $affiliationService->getAffiliation();
-
             /**
              * Update the affiliation based on the form information
              */
-            $affiliation->setContact($this->getContactService()->setContactId($formData['contact'])->getContact());
-            $affiliation->setOrganisation($this->getOrganisationService()->setOrganisationId($formData['organisation'])
-                ->getOrganisation());
+            $affiliation->setContact($this->getContactService()->findContactById($formData['contact']));
+            $affiliation->setOrganisation($this->getOrganisationService()
+                ->findOrganisationById($formData['organisation']));
             $affiliation->setBranch($formData['branch']);
             if (empty($formData['dateSelfFunded'])) {
                 $affiliation->setSelfFunded(Affiliation::NOT_SELF_FUNDED);
@@ -193,9 +186,8 @@ class AffiliationManagerController extends AffiliationAbstractController
                 }
 
                 $financial->setOrganisation($this->getOrganisationService()
-                    ->setOrganisationId($formData['financialOrganisation'])->getOrganisation());
-                $financial->setContact($this->getContactService()->setContactId($formData['financialContact'])
-                    ->getContact());
+                    ->findOrganisationById($formData['financialOrganisation']));
+                $financial->setContact($this->getContactService()->findContactById($formData['financialContact']));
                 $financial->setBranch($formData['financialBranch']);
                 if (!empty($formData['emailCC'])) {
                     $financial->setEmailCC($formData['emailCC']);
@@ -208,17 +200,17 @@ class AffiliationManagerController extends AffiliationAbstractController
             $this->flashMessenger()->setNamespace('success')
                 ->addMessage(sprintf(
                     $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                    $affiliationService->getAffiliation()
+                    $affiliation
                 ));
 
             return $this->redirect()->toRoute('zfcadmin/affiliation/view', [
-                'id' => $affiliationService->getAffiliation()->getId(),
+                'id' => $affiliation->getId(),
             ]);
         }
 
         return new ViewModel([
-            'affiliationService' => $affiliationService,
-            'projectService'     => $projectService,
+            'affiliationService' => $this->getAffiliationService(),
+            'projectService'     => $this->getProjectService(),
             'form'               => $form,
         ]);
     }
@@ -229,19 +221,17 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function editAssociateAction()
     {
-        $affiliationService = $this->getAffiliationService()->setAffiliationId($this->params('affiliation'));
-        $affiliation = $affiliationService->getAffiliation();
-        if ($affiliationService->isEmpty()) {
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        
+        if (is_null($affiliation)) {
             return $this->notFoundAction();
         }
-        $contact = $this->getContactService()->setContactId($this->params('contact'))->getContact();
+
+        $contact = $this->getContactService()->findContactById($this->params('contact'));
         if (is_null($contact)) {
             return $this->notFoundAction();
         }
-        $projectService = $this->getProjectService()->setProject($affiliationService->getAffiliation()->getProject());
-        if ($projectService->isEmpty()) {
-            return $this->notFoundAction();
-        }
+
 
         //Find the associate
 
@@ -249,17 +239,16 @@ class AffiliationManagerController extends AffiliationAbstractController
             'affiliation' => $affiliation->getId(),
         ], $this->getRequest()->getPost()->toArray());
 
-        $form = new EditAssociate($affiliationService);
+        $form = new EditAssociate($affiliation);
         $form->setData($data);
 
         if ($this->getRequest()->isPost()) {
             if (!empty($data['cancel'])) {
-                return $this->redirect()
-                    ->toRoute(
-                        'zfcadmin/affiliation/view',
-                        ['id' => $affiliationService->getAffiliation()->getId()],
-                        ['fragment' => 'associates']
-                    );
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/view',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'associates']
+                );
             }
 
             if (!empty($data['delete'])) {
@@ -272,12 +261,11 @@ class AffiliationManagerController extends AffiliationAbstractController
                         $contact->getDisplayName()
                     ));
 
-                return $this->redirect()
-                    ->toRoute(
-                        'zfcadmin/affiliation/view',
-                        ['id' => $affiliationService->getAffiliation()->getId()],
-                        ['fragment' => 'associates']
-                    );
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/view',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'associates']
+                );
             }
 
 
@@ -288,7 +276,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 //Define the new affiliation
-                $affiliation = $this->getAffiliationService()->setAffiliationId($formData['affiliation'])
+                $affiliation = $this->getAffiliationService()->findAffiliationById($formData['affiliation'])
                     ->getAffiliation();
                 $affiliation->addAssociate($contact);
 
@@ -297,21 +285,20 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $this->flashMessenger()->setNamespace('success')
                     ->addMessage(sprintf(
                         $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                        $affiliationService->getAffiliation()
+                        $affiliation
                     ));
 
-                return $this->redirect()
-                    ->toRoute(
-                        'zfcadmin/affiliation/view',
-                        ['id' => $affiliationService->getAffiliation()->getId()],
-                        ['fragment' => 'associates']
-                    );
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/view',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'associates']
+                );
             }
         }
 
         return new ViewModel([
-            'affiliationService' => $affiliationService,
-            'projectService'     => $projectService,
+            'affiliationService'     => $this->getAffiliationService(),
+            'projectService'     => $this->getProjectService(),
             'contact'            => $contact,
             'form'               => $form,
         ]);

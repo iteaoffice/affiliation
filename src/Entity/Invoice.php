@@ -96,22 +96,23 @@ class Invoice extends EntityAbstract
     }
 
     /**
+     * @inheritDoc
+     */
+    public function __toString()
+    {
+        return (string)$this->getInvoice();
+    }
+
+
+    /**
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
         $this->$property = $value;
-    }
-
-    /**
-     * Returns the string identifier of the Resource.
-     *
-     * @return string
-     */
-    public function getResourceId()
-    {
-        return sprintf("%s:%s", __CLASS__, $this->id);
     }
 
     /**
@@ -179,19 +180,19 @@ class Invoice extends EntityAbstract
     }
 
     /**
-     * @return int
+     * @return \Project\Entity\Version\Version
      */
-    public function getVersionId()
+    public function getVersion()
     {
-        return $this->versionId;
+        return $this->version;
     }
 
     /**
-     * @param int $versionId
+     * @param \Project\Entity\Version\Version $version
      */
-    public function setVersionId($versionId)
+    public function setVersion($version)
     {
-        $this->versionId = $versionId;
+        $this->version = $version;
     }
 
     /**
@@ -211,26 +212,6 @@ class Invoice extends EntityAbstract
     }
 
     /**
-     * @return \Project\Entity\Version\Version
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * @param  \Project\Entity\Version\Version $version
-     *
-     * @return Invoice
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    /**
      * @return \Invoice\Entity\Invoice
      */
     public function getInvoice()
@@ -239,14 +220,10 @@ class Invoice extends EntityAbstract
     }
 
     /**
-     * @param  \Invoice\Entity\Invoice $invoice
-     *
-     * @return Invoice
+     * @param \Invoice\Entity\Invoice $invoice
      */
     public function setInvoice($invoice)
     {
         $this->invoice = $invoice;
-
-        return $this;
     }
 }

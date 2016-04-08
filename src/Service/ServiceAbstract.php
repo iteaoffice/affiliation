@@ -63,14 +63,7 @@ abstract class ServiceAbstract implements ServiceInterface
      * @var Affiliation
      */
     protected $affiliation;
-    /**
-     * @var Doa
-     */
-    protected $doa;
-    /**
-     * @var Loi
-     */
-    protected $loi;
+
 
     /**
      * @param      $entity
@@ -80,7 +73,7 @@ abstract class ServiceAbstract implements ServiceInterface
      */
     public function findAll($entity, $toArray = false)
     {
-        return $this->getEntityManager()->getRepository($this->getFullEntityName($entity))->findAll();
+        return $this->getEntityManager()->getRepository($entity)->findAll();
     }
 
     /**
@@ -91,7 +84,7 @@ abstract class ServiceAbstract implements ServiceInterface
      */
     public function findEntityById($entity, $id)
     {
-        return $this->getEntityManager()->getRepository($this->getFullEntityName($entity))->find($id);
+        return $this->getEntityManager()->getRepository($entity)->find($id);
     }
 
     /**
@@ -107,7 +100,7 @@ abstract class ServiceAbstract implements ServiceInterface
          * Update the permissions
          */
         $this->getAdminService()
-            ->flushPermitsByEntityAndId($entity->get('underscore_full_entity_name'), $entity->getId());
+            ->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
 
         return $entity;
     }
@@ -125,11 +118,11 @@ abstract class ServiceAbstract implements ServiceInterface
          * Update the permissions
          */
         $this->getAdminService()
-            ->flushPermitsByEntityAndId($entity->get('underscore_full_entity_name'), $entity->getId());
+            ->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
 
         //When an an invite is updated, we need to flush the permissions for the project. Later we will use
         //The dependencies for this, but for now we can use this trick
-        if ($entity->get('underscore_full_entity_name') === 'affiliation_entity_affiliation') {
+        if ($entity instanceof Affiliation) {
             $this->getAdminService()
                 ->flushPermitsByEntityAndId('project_entity_project', $entity->getProject()->getId());
         }
@@ -148,41 +141,6 @@ abstract class ServiceAbstract implements ServiceInterface
         $this->getEntityManager()->flush();
 
         return true;
-    }
-
-    /**
-     * Build dynamically a entity based on the full entity name.
-     *
-     * @param $entity
-     *
-     * @return mixed
-     */
-    public function getEntity($entity)
-    {
-        $entity = $this->getFullEntityName($entity);
-
-        return new $entity();
-    }
-
-    /**
-     * Create a full path to the entity for Doctrine.
-     *
-     * @param $entity
-     *
-     * @return string
-     */
-    public function getFullEntityName($entity)
-    {
-        /*
-         * Convert a - to a camelCased situation
-         */
-        if (strpos($entity, '-') !== false) {
-            $entity = explode('-', $entity);
-            $entity = $entity[0] . ucfirst($entity[1]);
-        }
-
-        return ucfirst(implode('', array_slice(explode('\\', __NAMESPACE__), 0, 1))) . '\\' . 'Entity' . '\\'
-        . ucfirst($entity);
     }
 
     /**
@@ -211,11 +169,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param \Doctrine\ORM\EntityManager $entityManager
+     *
      * @return ServiceAbstract
      */
     public function setEntityManager($entityManager)
     {
         $this->entityManager = $entityManager;
+
         return $this;
     }
 
@@ -229,11 +189,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param AdminService $adminService
+     *
      * @return ServiceAbstract
      */
     public function setAdminService($adminService)
     {
         $this->adminService = $adminService;
+
         return $this;
     }
 
@@ -247,11 +209,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param Authorize $authorizeService
+     *
      * @return ServiceAbstract
      */
     public function setAuthorizeService($authorizeService)
     {
         $this->authorizeService = $authorizeService;
+
         return $this;
     }
 
@@ -265,11 +229,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param OrganisationService $organisationService
+     *
      * @return ServiceAbstract
      */
     public function setOrganisationService($organisationService)
     {
         $this->organisationService = $organisationService;
+
         return $this;
     }
 
@@ -287,11 +253,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param ProjectService $projectService
+     *
      * @return ServiceAbstract
      */
     public function setProjectService($projectService)
     {
         $this->projectService = $projectService;
+
         return $this;
     }
 
@@ -305,11 +273,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param VersionService $versionService
+     *
      * @return ServiceAbstract
      */
     public function setVersionService($versionService)
     {
         $this->versionService = $versionService;
+
         return $this;
     }
 
@@ -323,11 +293,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param InvoiceService $invoiceService
+     *
      * @return ServiceAbstract
      */
     public function setInvoiceService($invoiceService)
     {
         $this->invoiceService = $invoiceService;
+
         return $this;
     }
 
@@ -341,65 +313,13 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param ServiceLocatorInterface $serviceLocator
+     *
      * @return ServiceAbstract
      */
     public function setServiceLocator($serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
 
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     * @return ServiceAbstract
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-        return $this;
-    }
-
-    /**
-     * @return Doa
-     */
-    public function getDoa()
-    {
-        return $this->doa;
-    }
-
-    /**
-     * @param Doa $doa
-     * @return ServiceAbstract
-     */
-    public function setDoa($doa)
-    {
-        $this->doa = $doa;
-        return $this;
-    }
-
-    /**
-     * @return Loi
-     */
-    public function getLoi()
-    {
-        return $this->loi;
-    }
-
-    /**
-     * @param Loi $loi
-     * @return ServiceAbstract
-     */
-    public function setLoi($loi)
-    {
-        $this->loi = $loi;
         return $this;
     }
 }

@@ -12,8 +12,6 @@ namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 
 /**
  * Entity for the Affiliation.
@@ -76,6 +74,14 @@ class Financial extends EntityAbstract
     private $emailCC;
 
     /**
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return sprintf("%s financial", $this->affiliation);
+    }
+
+    /**
      * Class constructor.
      */
     public function __construct()
@@ -95,34 +101,14 @@ class Financial extends EntityAbstract
     /**
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @param InputFilterInterface $inputFilter
-     *
-     * @throws \Exception
-     */
-    public function setInputFilter(InputFilterInterface $inputFilter)
-    {
-        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
-    }
 
     /**
      * @return int

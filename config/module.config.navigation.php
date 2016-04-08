@@ -80,7 +80,7 @@ return [
                                                                 'id' => \Affiliation\Entity\Affiliation::class,
                                                             ],
                                                             'routeParam' => [
-                                                                'id' => 'affiliation-id'
+                                                                'id' => 'affiliationId'
                                                             ]
                                                         ],
                                                     ],
@@ -106,7 +106,7 @@ return [
                                                                 'id' => \Affiliation\Entity\Affiliation::class,
                                                             ],
                                                             'routeParam' => [
-                                                                'id' => 'affiliation-id'
+                                                                'id' => 'affiliationId'
                                                             ]
                                                         ],
                                                     ],

@@ -1,16 +1,16 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-edit-doa-%s-in-%s")|format(
-affiliationService.affiliation.organisation.organisation,
-affiliationService.affiliation.project
+affiliation.organisation.organisation,
+affiliation.project
 )) %}
 
 
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
-    affiliationService.affiliation.organisation.organisation,
-    affiliationService.affiliation.project
+    affiliation.organisation.organisation,
+    affiliation.project
     ) }}</h1>
 
-{% if affiliationService.affiliation.doaReminder.count() > 0 %}
+{% if affiliation.doaReminder.count() > 0 %}
 
     <table class="table table-hover table-consended table-striped">
         <thead>
@@ -22,7 +22,7 @@ affiliationService.affiliation.project
         </tr>
         </thead>
         <tbody>
-        {% for reminder in affiliationService.affiliation.doaReminder %}
+        {% for reminder in affiliation.doaReminder %}
             <tr>
                 <td>{{ reminder.dateCreated|string_date }}</td>
                 <td>{{ reminder.email|raw }}</td>
@@ -36,6 +36,6 @@ affiliationService.affiliation.project
     {{ ztbalert().info(translate("txt-no-reminders-have-been-send-yet"))|raw }}
 {% endif %}
 
-{{ doaLink(null, 'remind-admin', 'button', affiliationService.affiliation) }}
+{{ doaLink(null, 'remind-admin', 'button', affiliation) }}
 {{ doaLink(null, 'approval-admin', 'button') }}
 {{ doaLink(null, 'missing-admin', 'button') }}

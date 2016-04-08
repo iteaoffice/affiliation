@@ -141,7 +141,7 @@ return [
                                     'remind'    => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/remind/[:affiliation-id].html',
+                                            'route'    => '/remind/[:affiliationId].html',
                                             'defaults' => [
                                                 'constraints' => [
                                                     'id' => '[0-9_-]+',
@@ -154,7 +154,7 @@ return [
                                     'reminders' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/reminders/[:affiliation-id].html',
+                                            'route'    => '/reminders/[:affiliationId].html',
                                             'defaults' => [
                                                 'constraints' => [
                                                     'id' => '[0-9_-]+',
@@ -266,7 +266,7 @@ return [
                                     'remind'    => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/remind/[:affiliation-id].html',
+                                            'route'    => '/remind/[:affiliationId].html',
                                             'defaults' => [
                                                 'constraints' => [
                                                     'id' => '[0-9_-]+',
@@ -279,7 +279,7 @@ return [
                                     'reminders' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/reminders/[:affiliation-id].html',
+                                            'route'    => '/reminders/[:affiliationId].html',
                                             'defaults' => [
                                                 'constraints' => [
                                                     'id' => '[0-9_-]+',

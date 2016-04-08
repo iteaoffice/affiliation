@@ -1,35 +1,35 @@
 {% do headTitle().append(translate("txt-admin")) %}
-{% do headTitle().append(translate("txt-merge-affiliation-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName)) %}
+{% do headTitle().append(translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.organisation.organisation, affiliation.project.parseFullName())) %}
 
-<h1>{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliationService.affiliation.organisation.organisation,projectService.parseFullName) }}</h1>
+<h1>{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.organisation, affiliation.project.parseFullName()) }}</h1>
 
 <h2>{{ translate("txt-project-information") }}</h2>
 
-{% set mainAffiliationId = affiliationService.affiliation.id %}
+{% set mainAffiliationId = affiliation.id %}
 
 <dl class="dl-horizontal">
     <dt>{{ translate("txt-project-name") }}</dt>
-    <dd>{{ projectLink(projectService,'view-admin', 'name') }}
-        {{ projectLink(projectService,'view-community', 'icon') }}
+    <dd>{{ projectLink(project,'view-admin', 'name') }}
+        {{ projectLink(project,'view-community', 'icon') }}
     </dd>
     <dt>{{ translate("txt-program-call") }}</dt>
-    <dd>{{ callLink(affiliationService.affiliation.project.call,'view-admin','name') }}</dd>
+    <dd>{{ callLink(affiliation.project.call,'view-admin','name') }}</dd>
     <dt>{{ translate("txt-status") }}</dt>
-    <dd>{{ projectService.parseStatus() }}</dd>
+    <dd>{{ projectService.parseStatus(affiliation.project) }}</dd>
     <dt>{{ translate("txt-project-leader") }}</dt>
-    <dd>{{ contactLink(projectService.project.contact,'view-admin','name') }} <a
-                href="mailto:{{ projectService.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+    <dd>{{ contactLink(project.contact,'view-admin','name') }} <a
+                href="mailto:{{ project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
     </dd>
 </dl>
 
 <h2>{{ translate("txt-main-affiliation") }}</h2>
 
 {% set effortVersionTableAmount = 0 %}
-    {% for affiliationVersion in affiliationService.affiliation.version %}
+    {% for affiliationVersion in affiliation.version %}
         {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}
     {% endfor %}
  {% set costVersionTableAmount = 0 %}
-    {% for affiliationVersion in affiliationService.affiliation.version %}
+    {% for affiliationVersion in affiliation.version %}
         {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
     {% endfor %}
 
@@ -68,50 +68,50 @@
                 {% endif %}
             </td>
             <td>
-                {{ affiliationLink(affiliationService.affiliation,'view-admin', 'name') }}
+                {{ affiliationLink(affiliation,'view-admin', 'name') }}
             </td>
-            <td>{{ countryLink(affiliationService.affiliation.organisation.country,'view-admin','name') }}</td>
-            <td>{{ affiliationService.affiliation.effort.count() }}</td>
-            <td>{{ affiliationService.affiliation.cost.count() }}</td>
-            <td>{{ affiliationService.affiliation.version.count() }}</td>
+            <td>{{ countryLink(affiliation.organisation.country,'view-admin','name') }}</td>
+            <td>{{ affiliation.effort.count() }}</td>
+            <td>{{ affiliation.cost.count() }}</td>
+            <td>{{ affiliation.version.count() }}</td>
             <td>{{ effortVersionTableAmount }}</td>
             <td>{{ costVersionTableAmount }}</td>
-            <td>{{ affiliationService.affiliation.spent.count() }}</td>
-            <td>{{ affiliationService.affiliation.projectReportEffortSpent.count() }}</td>
-            <td>{{ affiliationService.affiliation.achievement.count() }}</td>
-            <td>{{ affiliationService.affiliation.associate.count() }}</td>
-            <td>{{ affiliationService.affiliation.invoice.count() }}</td>
+            <td>{{ affiliation.spent.count() }}</td>
+            <td>{{ affiliation.projectReportEffortSpent.count() }}</td>
+            <td>{{ affiliation.achievement.count() }}</td>
+            <td>{{ affiliation.associate.count() }}</td>
+            <td>{{ affiliation.invoice.count() }}</td>
         </tr>
-        {% for affiliationService in projectService.getAffiliation(constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) if affiliationService.affiliation.id != mainAffiliationId %}
+        {% for affiliationService in projectService.getAffiliation(constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) if affiliation.id != mainAffiliationId %}
             {% set effortVersionTableAmount = 0 %}
-            {% for affiliationVersion in affiliationService.affiliation.version %}
+            {% for affiliationVersion in affiliation.version %}
                 {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}
             {% endfor %}
             {% set costVersionTableAmount = 0 %}
-            {% for affiliationVersion in affiliationService.affiliation.version %}
+            {% for affiliationVersion in affiliation.version %}
                 {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
             {% endfor %}
-            <tr {% if merge == affiliationService.affiliation.id %}class="info"{% endif %}>
+            <tr {% if merge == affiliation.id %}class="info"{% endif %}>
                 <td>
-                    {% if merge != affiliationService.affiliation.id %}
-                        <input type="radio" name="merge" value="{{ affiliationService.affiliation.id }}">
+                    {% if merge != affiliation.id %}
+                        <input type="radio" name="merge" value="{{ affiliation.id }}">
                     {% else %}
-                        <input type="hidden" name="merge" value="{{ affiliationService.affiliation.id }}">
+                        <input type="hidden" name="merge" value="{{ affiliation.id }}">
                         {{ translate("txt-sub") }}:
                     {% endif %}
                 </td>
-                <td>{{ affiliationLink(affiliationService.affiliation,'merge-admin', 'name') }} {{ affiliationLink(affiliationService.affiliation,'view-admin', 'icon') }}</td>
-                <td>{{ countryLink(affiliationService.affiliation.organisation.country,'view-admin','name') }}</td>
-                <td>{{ affiliationService.affiliation.effort.count() }}</td>
-                <td>{{ affiliationService.affiliation.cost.count() }}</td>
-                <td>{{ affiliationService.affiliation.version.count() }}</td>
+                <td>{{ affiliationLink(affiliation,'merge-admin', 'name') }} {{ affiliationLink(affiliation,'view-admin', 'icon') }}</td>
+                <td>{{ countryLink(affiliation.organisation.country,'view-admin','name') }}</td>
+                <td>{{ affiliation.effort.count() }}</td>
+                <td>{{ affiliation.cost.count() }}</td>
+                <td>{{ affiliation.version.count() }}</td>
                 <td>{{ effortVersionTableAmount }}</td>
                 <td>{{ costVersionTableAmount }}</td>
-                <td>{{ affiliationService.affiliation.spent.count() }}</td>
-                <td>{{ affiliationService.affiliation.projectReportEffortSpent.count() }}</td>
-                <td>{{ affiliationService.affiliation.achievement.count() }}</td>
-                <td>{{ affiliationService.affiliation.associate.count() }}</td>
-                <td>{{ affiliationService.affiliation.invoice.count() }}</td>
+                <td>{{ affiliation.spent.count() }}</td>
+                <td>{{ affiliation.projectReportEffortSpent.count() }}</td>
+                <td>{{ affiliation.achievement.count() }}</td>
+                <td>{{ affiliation.associate.count() }}</td>
+                <td>{{ affiliation.invoice.count() }}</td>
             </tr>
         {% endfor %}
         </tbody>

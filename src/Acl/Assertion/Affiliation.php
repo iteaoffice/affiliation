@@ -25,54 +25,48 @@ class Affiliation extends AssertionAbstract
      * Returns true if and only if the assertion conditions are met.
      *
      * This method is passed the ACL, Role, Resource, and privilege to which the authorization query applies. If the
-     * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
+     * $role, $affiliation, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl $acl
-     * @param RoleInterface $role
-     * @param ResourceInterface|AffiliationEntity $resource
-     * @param string $privilege
+     * @param Acl                                 $acl
+     * @param RoleInterface                       $role
+     * @param ResourceInterface|AffiliationEntity $affiliation
+     * @param string                              $privilege
      *
      * @return bool
      */
-    public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $resource = null, $privilege = null)
-    {
-        $id = $this->getRouteMatch()->getParam('id');
-        /*
-         * When the privilege is_null (not given by the isAllowed helper), get it from the routeMatch
-         */
-        if (is_null($privilege)) {
-            $privilege = $this->getRouteMatch()->getParam('privilege');
-        }
-        if (!$resource instanceof AffiliationEntity && !is_null($id)) {
-            /*
-             * @var AffiliationEntity
-             */
-            $resource = $this->getAffiliationService()->setAffiliationId($id)->getAffiliation();
+    public function assert(
+        Acl $acl,
+        RoleInterface $role = null,
+        ResourceInterface $affiliation = null,
+        $privilege = null
+    ) {
+        $this->setPrivilege($privilege);
+        $id = $this->getId();
+
+        if (!$affiliation instanceof AffiliationEntity && !is_null($id)) {
+            $affiliation = $this->getAffiliationService()->findAffiliationById($id);
         }
 
-
-
-        switch ($privilege) {
+        switch ($this->getPrivilege()) {
             case 'view-community':
-                if ($this->getContactService()->contactHasPermit($this->getContact(), 'view', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'view', $affiliation)) {
                     return true;
                 }
 
                 //whe the person has view rights on the project, the affiliation can also be viewed
-                return $this->getProjectAssertion()->assert($acl, $role, $resource->getProject(), 'view-community');
+                return $this->getProjectAssertion()->assert($acl, $role, $affiliation->getProject(), 'view-community');
             case 'add-associate':
             case 'edit-affiliation':
             case 'edit-description':
             case 'edit-community':
-                $this->getProjectService()->setProject($resource->getProject());
-                if ($this->getProjectService()->isStopped()) {
+                if ($this->getProjectService()->isStopped($affiliation->getProject())) {
                     return false;
                 }
-                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $affiliation)) {
                     return true;
                 }
-                if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $affiliation)) {
                     return true;
                 }
                 break;
@@ -81,17 +75,16 @@ class Affiliation extends AssertionAbstract
                 $reportId = $this->getRouteMatch()->getParam('report');
                 if (!is_null($reportId)) {
                     //Find the corresponding report
-                    $this->getReportService()->setReportId($reportId);
-                    if ($this->getReportService()->isEmpty() || $this->getReportService()->isFinal()) {
+                    $report = $this->getReportService()->findReportById($reportId);
+                    if (is_null($report) || $this->getReportService()->isFinal($report)) {
                         return false;
                     }
                 }
 
-                $this->getProjectService()->setProject($resource->getProject());
-                if ($this->getProjectService()->isStopped()) {
+                if ($this->getProjectService()->isStopped($affiliation->getProject())) {
                     return false;
                 }
-                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $affiliation)) {
                     return true;
                 }
 
@@ -99,7 +92,7 @@ class Affiliation extends AssertionAbstract
             case 'edit-financial':
             case 'payment-sheet':
             case 'payment-sheet-pdf':
-                if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $resource)) {
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $affiliation)) {
                     return true;
                 }
 

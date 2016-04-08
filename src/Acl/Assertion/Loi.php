@@ -25,41 +25,35 @@ class Loi extends AssertionAbstract
      * Returns true if and only if the assertion conditions are met.
      *
      * This method is passed the ACL, Role, Resource, and privilege to which the authorization query applies. If the
-     * $role, $resource, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
+     * $role, $loi, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
      * @param Acl               $acl
      * @param RoleInterface     $role
-     * @param ResourceInterface $resource
+     * @param ResourceInterface $loi
      * @param string            $privilege
      *
      * @return bool
      */
-    public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $resource = null, $privilege = null)
+    public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $loi = null, $privilege = null)
     {
-        $id = $this->getRouteMatch()->getParam('id');
-        /*
-         * When the privilege is_null (not given by the isAllowed helper), get it from the getRouteMatch
-         */
-        if (is_null($privilege)) {
-            $privilege = $this->getRouteMatch()->getParam('privilege');
-        }
-        if (!$resource instanceof LoiEntity && !is_null($id)) {
-            /*
-             * @var LoiEntity
-             */
-            $resource = $this->getAffiliationService()->findEntityById('Loi', $id);
+        $this->setPrivilege($privilege);
+        $id = $this->getId();
+
+        if (!$loi instanceof LoiEntity && !is_null($id)) {
+            /** @var LoiEntity $loi */
+            $loi = $this->getAffiliationService()->findEntityById(LoiEntity::class, $id);
         }
 
-        switch ($privilege) {
+        switch ($this->getPrivilege()) {
             case 'upload':
+                if (is_null($id)) {
+                    $id = $this->getRouteMatch()->getParam('affiliationId');
+                }
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
-                $affiliation = $this->getAffiliationService()->setAffiliationId(!is_null($this->getRouteMatch()
-                    ->getParam('id'))
-                    ? $this->getRouteMatch()->getParam('id') : $this->getRouteMatch()->getParam('affiliation-id'))
-                    ->getAffiliation();
+                $affiliation = $this->getAffiliationService()->findAffiliationById($id);
 
                 return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'edit-community');
             case 'render':
@@ -68,14 +62,17 @@ class Loi extends AssertionAbstract
                  * The affiliation can already be known, but if not grab it from the getRouteMatch
                  */
                 $affiliation = null;
-                if ($resource instanceof LoiEntity) {
-                    $affiliation = $resource->getAffiliation();
+                if ($loi instanceof LoiEntity) {
+                    $affiliation = $loi->getAffiliation();
                 }
                 if (is_null($affiliation)) {
-                    $affiliation = $this->getAffiliationService()->setAffiliationId(!is_null($this->getRouteMatch()
-                        ->getParam('id'))
-                        ? $this->getRouteMatch()->getParam('id') : $this->getRouteMatch()->getParam('affiliation-id'))
-                        ->getAffiliation();
+                    if (is_null($id)) {
+                        $id = $this->getRouteMatch()->getParam('affiliationId');
+                    }
+                    /*
+                     * For the upload we need to see if the user has access on the editing of the affiliation
+                     */
+                    $affiliation = $this->getAffiliationService()->findAffiliationById($id);
                 }
 
                 return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'view-community');
@@ -85,11 +82,10 @@ class Loi extends AssertionAbstract
                  * and the acl should not be approved
                  */
 
-                return is_null($resource->getDateApproved())
-                && $this->getAffiliationAssertion()->assert($acl, $role, $resource->getAffiliation(), 'edit-community');
+                return is_null($loi->getDateApproved())
+                && $this->getAffiliationAssertion()->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
             case 'download':
-                return $this->getAffiliationAssertion()
-                    ->assert($acl, $role, $resource->getAffiliation(), 'view-community');
+                return $this->getAffiliationAssertion()->assert($acl, $role, $loi->getAffiliation(), 'view-community');
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':

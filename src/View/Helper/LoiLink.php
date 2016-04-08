@@ -66,7 +66,7 @@ class LoiLink extends LinkAbstract
             $this->addRouterParam('id', $this->getLoi()->getId());
             $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
         }
-        $this->addRouterParam('affiliation-id', $this->getAffiliation()->getId());
+        $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
 
         return $this->createLink();
     }

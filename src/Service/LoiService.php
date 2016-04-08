@@ -26,23 +26,13 @@ use Organisation\Entity\Organisation;
 class LoiService extends ServiceAbstract
 {
     /**
-     * @param int $id
+     * @param $id
      *
-     * @return LoiService;
+     * @return null|Loi
      */
-    public function setLoiId($id)
+    public function findLoiById($id)
     {
-        $this->setLoi($this->findEntityById('loi', $id));
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmpty()
-    {
-        return is_null($this->loi) || is_null($this->loi->getId());
+        return $this->getEntityManager()->getRepository(Loi::class)->find($id);
     }
 
     /**

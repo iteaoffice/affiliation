@@ -91,6 +91,8 @@ class Log extends EntityAbstract
     /**
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
@@ -98,13 +100,11 @@ class Log extends EntityAbstract
     }
 
     /**
-     * Returns the string identifier of the Resource.
-     *
      * @return string
      */
-    public function getResourceId()
+    public function __toString()
     {
-        return sprintf("%s:%s", __CLASS__, $this->id);
+        return sprintf("Log %s", $this->getId());
     }
 
     /**
@@ -117,6 +117,7 @@ class Log extends EntityAbstract
 
     /**
      * @param int $id
+     *
      * @return Log
      */
     public function setId($id)
@@ -136,6 +137,7 @@ class Log extends EntityAbstract
 
     /**
      * @param int $year
+     *
      * @return Log
      */
     public function setYear($year)
@@ -155,6 +157,7 @@ class Log extends EntityAbstract
 
     /**
      * @param int $period
+     *
      * @return Log
      */
     public function setPeriod($period)
@@ -174,6 +177,7 @@ class Log extends EntityAbstract
 
     /**
      * @param string $log
+     *
      * @return Log
      */
     public function setLog($log)
@@ -193,6 +197,7 @@ class Log extends EntityAbstract
 
     /**
      * @param \DateTime $dateCreated
+     *
      * @return Log
      */
     public function setDateCreated($dateCreated)
@@ -212,6 +217,7 @@ class Log extends EntityAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
      * @return Log
      */
     public function setAffiliation($affiliation)
@@ -231,6 +237,7 @@ class Log extends EntityAbstract
 
     /**
      * @param \Contact\Entity\Contact $contact
+     *
      * @return Log
      */
     public function setContact($contact)

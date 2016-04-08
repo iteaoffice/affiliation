@@ -135,7 +135,7 @@ return [
                                     'render'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/render/affiliation-[:affiliation-id].pdf',
+                                            'route'    => '/render/affiliation-[:affiliationId].pdf',
                                             'defaults' => [
                                                 'action'    => 'render',
                                                 'privilege' => 'render'
@@ -145,7 +145,7 @@ return [
                                     'upload'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/upload/affiliation-[:affiliation-id].html',
+                                            'route'    => '/upload/affiliation-[:affiliationId].html',
                                             'defaults' => [
                                                 'action'    => 'upload',
                                                 'privilege' => 'upload'
@@ -187,7 +187,7 @@ return [
                                     'render'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/render/affiliation-[:affiliation-id].pdf',
+                                            'route'    => '/render/affiliation-[:affiliationId].pdf',
                                             'defaults' => [
                                                 'action'    => 'render',
                                                 'privilege' => 'render'
@@ -197,7 +197,7 @@ return [
                                     'upload'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/upload/affiliation-[:affiliation-id].html',
+                                            'route'    => '/upload/affiliation-[:affiliationId].html',
                                             'defaults' => [
                                                 'action'    => 'upload',
                                                 'privilege' => 'upload'

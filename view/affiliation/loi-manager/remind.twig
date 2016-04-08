@@ -1,7 +1,7 @@
-{% set project = affiliationService.affiliation.project %}
+{% set project = affiliation.project %}
 
 <h1>{{ translate("txt-remind-loi-%s-in-%s")|format(
-    affiliationService.affiliation.organisation.organisation,
+    affiliation.organisation.organisation,
     project
     ) }}</h1>
 
@@ -22,7 +22,7 @@
     <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(affiliationService.affiliation,'view-community') }}</p>
+        <p class="form-control-static">{{ affiliationLink(affiliation,'view-community') }}</p>
     </div>
 </div>
 

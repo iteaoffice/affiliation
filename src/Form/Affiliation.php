@@ -10,18 +10,24 @@
 
 namespace Affiliation\Form;
 
+use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
 use Zend\Form\Form;
 
 /**
+ * Class Affiliation
  *
+ * @package Affiliation\Form
  */
 class Affiliation extends Form
 {
     /**
+     * Affiliation constructor.
+     *
+     * @param Entity\Affiliation $affiliation
      * @param AffiliationService $affiliationService
      */
-    public function __construct(AffiliationService $affiliationService)
+    public function __construct(Entity\Affiliation $affiliation, AffiliationService $affiliationService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -29,7 +35,7 @@ class Affiliation extends Form
         $this->setAttribute('class', 'form-horizontal');
         $technicalContactValueOptions = [];
         $affiliationValueOptions = [];
-        foreach ($affiliationService->parseRenameOptions() as $country => $options) {
+        foreach ($affiliationService->parseRenameOptions($affiliation) as $country => $options) {
             $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
                 foreach ($branchAndName as $branch => $organisationWithBranch) {
@@ -44,9 +50,9 @@ class Affiliation extends Form
         /*
          * Collect the technical contacts
          */
-        $technicalContactValueOptions[$affiliationService->getAffiliation()->getContact()->getId()] =
-            $affiliationService->getAffiliation()->getContact()->getFormName();
-        foreach ($affiliationService->getAffiliation()->getAssociate() as $contact) {
+        $technicalContactValueOptions[$affiliation->getContact()->getId()]
+            = $affiliation->getContact()->getFormName();
+        foreach ($affiliation->getAssociate() as $contact) {
             $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         asort($technicalContactValueOptions);
@@ -55,18 +61,17 @@ class Affiliation extends Form
          * This array starts from the technical contacts
          */
         $financialContactValueOptions = $technicalContactValueOptions;
-        $organisation = $affiliationService->getAffiliation()->getOrganisation();
+        $organisation = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
             if (!is_null($affiliation->getFinancial())) {
-                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()] =
-                    $affiliation->getFinancial()->getContact()->getFormName();
+                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
+                    = $affiliation->getFinancial()->getContact()->getFormName();
             }
         }
 
         asort($financialContactValueOptions);
 
-        $this->add(
-            [
+        $this->add([
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'affiliation',
                 'options'    => [
@@ -76,10 +81,8 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'technical',
                 'options'    => [
@@ -89,10 +92,8 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'financial',
                 'options'    => [
@@ -102,10 +103,8 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Text',
                 'name'       => 'valueChain',
                 'options'    => [
@@ -115,10 +114,8 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'mainContribution',
                 'options'    => [
@@ -128,10 +125,8 @@ class Affiliation extends Form
                 'attributes' => [
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Textarea',
                 'name'       => 'marketAccess',
                 'options'    => [
@@ -142,53 +137,38 @@ class Affiliation extends Form
                     'cols'  => 8,
                     'class' => 'form-control',
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
                     'value' => _("txt-update"),
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
                     'value' => _("txt-cancel"),
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'deactivate',
                 'attributes' => [
                     'class' => "btn btn-danger",
-                    'value' => sprintf(
-                        _("Deactivate %s"),
-                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
-                    ),
+                    'value' => sprintf(_("Deactivate %s"), $affiliation->getOrganisation()->getOrganisation()),
                 ],
-            ]
-        );
-        $this->add(
-            [
+            ]);
+        $this->add([
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'reactivate',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => sprintf(
-                        _("Reactivate %s"),
-                        $affiliationService->getAffiliation()->getOrganisation()->getOrganisation()
-                    ),
+                    'value' => sprintf(_("Reactivate %s"), $affiliation->getOrganisation()->getOrganisation()),
                 ],
-            ]
-        );
+            ]);
     }
 }

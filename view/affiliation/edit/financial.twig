@@ -1,17 +1,13 @@
 {% do headTitle().append(translate("txt-edit-financial-affiliation-%s-in-%s")|format(
-    affiliationService.affiliation.organisation.organisation,
-    projectService.parseFullName()
-    )) %}
+affiliation.organisation.organisation,
+affiliation.project.parseFullName()
+)) %}
 
 
 <h1>{{ translate("txt-edit-financial-affiliation-%s-in-%s")|format(
-    affiliationService.affiliation.organisation.organisation,
-    projectService.parseFullName()
+    affiliation.organisation.organisation,
+    affiliation.project.parseFullName()
     ) }}</h1>
-
-{% set organisationService = organisationServiceProxy(
-affiliationService.affiliation.organisation
-) %}
 
 {% do form.prepare() %}
 
@@ -22,7 +18,7 @@ affiliationService.affiliation.organisation
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(projectService,'view-community', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(project,'view-community', 'name') }}</p>
     </div>
 </div>
 
@@ -30,7 +26,7 @@ affiliationService.affiliation.organisation
     <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(affiliationService.affiliation,'view-community') }}</p>
+        <p class="form-control-static">{{ affiliationLink(affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -38,7 +34,7 @@ affiliationService.affiliation.organisation
     <label class="col-sm-3 control-label">{{ translate("txt-country") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationService.affiliation.organisation.country }}</p>
+        <p class="form-control-static">{{ affiliation.organisation.country }}</p>
     </div>
 </div>
 
