@@ -16,12 +16,76 @@ use Affiliation\Form\AdminAffiliation;
 use Affiliation\Form\EditAssociate;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Zend\View\Model\ViewModel;
+use Search\Form\SearchResult;
+use Search\Paginator\Adapter\SolariumPaginator;
+use Solarium\QueryType\Select\Query\Query as SolariumQuery;
+use Zend\Paginator\Paginator;
 
 /**
  *
  */
 class AffiliationManagerController extends AffiliationAbstractController
 {
+
+    /**
+     * @return ViewModel
+     */
+    public function listAction()
+    {
+        $searchService = $this->getAffiliationSearchService();
+        $page = $this->params('page', 1);
+        $form = new SearchResult();
+        $data = array_merge([
+            'order'     => '',
+            'direction' => '',
+            'query'     => '*',
+            'facet'     => [],
+        ], $this->getRequest()->getQuery()->toArray());
+
+        if ($this->getRequest()->isGet()) {
+            $searchService->setSearch($data['query'], $data['order'], $data['direction']);
+            if (isset($data['facet'])) {
+                foreach ($data['facet'] as $facetField => $values) {
+                    $quotedValues = [];
+                    foreach ($values as $value) {
+                        $quotedValues[] = sprintf("\"%s\"", $value);
+                    }
+
+                    $searchService->addFilterQuery(
+                        $facetField,
+                        implode(' ' . SolariumQuery::QUERY_OPERATOR_OR . ' ', $quotedValues)
+                    );
+                }
+            }
+
+            $form->addSearchResults(
+                $searchService->getQuery()->getFacetSet(),
+                $searchService->getResultSet()->getFacetSet()
+            );
+            $form->setData($data);
+        }
+
+        $paginator = new Paginator(new SolariumPaginator($searchService->getSolrClient(), $searchService->getQuery()));
+        $paginator->setDefaultItemCountPerPage(($page === 'all') ? 1000 : 25);
+        $paginator->setCurrentPageNumber($page);
+        $paginator->setPageRange(ceil($paginator->getTotalItemCount() / $paginator->getDefaultItemCountPerPage()));
+
+        // Remove order and direction from the GET params to prevent duplication
+        $filteredData = array_filter($data, function ($key) {
+            return !in_array($key, ['order', 'direction']);
+        }, ARRAY_FILTER_USE_KEY);
+
+        return new ViewModel([
+            'form'                  => $form,
+            'order'                 => $data['order'],
+            'direction'             => $data['direction'],
+            'query'                 => $data['query'],
+            'arguments'             => http_build_query($filteredData),
+            'paginator'             => $paginator,
+            'organisationService'   => $this->getOrganisationService()
+        ]);
+    }
+    
     /**
      * @return ViewModel
      */

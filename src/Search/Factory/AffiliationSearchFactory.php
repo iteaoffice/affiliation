@@ -18,6 +18,7 @@ use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\Service\AffiliationService;
 use Contact\Service\ContactService;
 use Project\Service\ProjectService;
+use Project\Service\VersionService;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -45,6 +46,10 @@ class AffiliationSearchFactory implements FactoryInterface
         /** @var ProjectService $projectService */
         $projectService = $serviceLocator->get(ProjectService::class);
         $searchService->setProjectService($projectService);
+
+        /** @var VersionService $versionService */
+        $versionService = $serviceLocator->get(VersionService::class);
+        $searchService->setVersionService($versionService);
 
         /** @var ContactService $contactService */
         $contactService = $serviceLocator->get(ContactService::class);

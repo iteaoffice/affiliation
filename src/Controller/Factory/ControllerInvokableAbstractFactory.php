@@ -12,6 +12,7 @@ namespace Affiliation\Controller\Factory;
 
 use Affiliation\Controller\AffiliationAbstractController;
 use Affiliation\Options\ModuleOptions;
+use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\DoaService;
 use Affiliation\Service\FormService;
@@ -144,6 +145,10 @@ class ControllerInvokableAbstractFactory implements AbstractFactoryInterface
         /** @var ReportService $reportService */
         $reportService = $serviceManager->get(ReportService::class);
         $controller->setReportService($reportService);
+
+        /** @var AffiliationSearchService $affiliationSearchService */
+        $affiliationSearchService = $serviceManager->get(AffiliationSearchService::class);
+        $controller->setAffiliationSearchService($affiliationSearchService);
 
         /** @var ProgramModuleOptions $programModuleOptions */
         $programModuleOptions = $serviceManager->get(ProgramModuleOptions::class);
