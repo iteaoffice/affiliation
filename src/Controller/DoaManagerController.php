@@ -163,8 +163,8 @@ class DoaManagerController extends AffiliationAbstractController
         }
 
         return new ViewModel([
-            'affiliationService' => $this->getAffiliationService(),
-            'form'               => $form,
+            'affiliation' => $affiliation,
+            'form'        => $form,
         ]);
     }
 
@@ -173,11 +173,11 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function remindersAction()
     {
-        $affiliationService = $this->getAffiliationService()->findAffiliationById($this->getEvent()->getRouteMatch()
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->getEvent()->getRouteMatch()
             ->getParam('affiliationId'));
 
         return new ViewModel([
-            'affiliationService' => $this->getAffiliationService(),
+            'affiliation' => $affiliation,
         ]);
     }
 

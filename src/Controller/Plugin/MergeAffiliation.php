@@ -61,7 +61,6 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
     public function __invoke(Affiliation $mainAffiliation, Affiliation $affiliation)
     {
         print("This is not working yet, effort is not correctly transferred");
-        return true;
 
         $this->setMainAffiliation($mainAffiliation);
         $this->setAffiliation($affiliation);
@@ -159,13 +158,7 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
 
 
         //Move the cost in the version
-
         foreach ($affiliation->getVersion() as $affiliationVersion) {
-
-//            var_dump($affiliationVersion->getId());
-//            var_dump($affiliationVersion->getAffiliation()->getId());
-//            var_dump($affiliationVersion->getVersion()->getId());
-//            var_dump($affiliationVersion->getCostVersion()->count());
 
             /** @var Version $mainAffiliationVersion */
             $mainAffiliationVersion = $newAffiliationVersionList[$affiliationVersion->getVersion()->getId()];

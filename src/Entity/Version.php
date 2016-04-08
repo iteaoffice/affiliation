@@ -64,13 +64,13 @@ class Version extends EntityAbstract
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Version", cascade={"persist","remove"},  mappedBy="affiliationVersion")
      *
-     * @var \Project\Entity\Cost\Version
+     * @var \Project\Entity\Cost\Version[]|ArrayCollection
      */
     private $costVersion;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Version", cascade={"persist","remove"}, mappedBy="affiliationVersion")
      *
-     * @var \Project\Entity\Effort\Version
+     * @var \Project\Entity\Effort\Version[]|ArrayCollection
      */
     private $effortVersion;
 
@@ -198,7 +198,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return \Project\Entity\Cost\Version
+     * @return ArrayCollection|\Project\Entity\Cost\Version[]
      */
     public function getCostVersion()
     {
@@ -206,7 +206,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param \Project\Entity\Cost\Version $costVersion
+     * @param ArrayCollection|\Project\Entity\Cost\Version[] $costVersion
      *
      * @return Version
      */
@@ -218,7 +218,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return \Project\Entity\Effort\Version
+     * @return ArrayCollection|\Project\Entity\Effort\Version[]
      */
     public function getEffortVersion()
     {
@@ -226,7 +226,7 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @param \Project\Entity\Effort\Version $effortVersion
+     * @param ArrayCollection|\Project\Entity\Effort\Version[] $effortVersion
      *
      * @return Version
      */
