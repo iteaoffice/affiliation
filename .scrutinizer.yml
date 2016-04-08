@@ -1,10 +1,12 @@
 imports:
     - php
-
+build:
+    environment:
+        php:
+            version: 5.6
 tools:
     php_changetracking: true
-    php_sim:
-        min_mass: 30
+    php_sim: true
     php_pdepend: true
     php_mess_detector: true
     php_hhvm: true
@@ -12,4 +14,3 @@ tools:
     php_cs_fixer: true
     sensiolabs_security_checker: true
     external_code_coverage: true
-
