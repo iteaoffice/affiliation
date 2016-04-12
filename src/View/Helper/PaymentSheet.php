@@ -52,6 +52,7 @@ class PaymentSheet extends LinkAbstract
             'year'                           => $year,
             'period'                         => $period,
             'affiliation'                    => $affiliation,
+            'project'                        => $affiliation->getProject(),
             'affiliationService'             => $this->getAffiliationService(),
             'version'                        => $latestVersion,
             'projectService'                 => $this->getProjectService(),

@@ -20,7 +20,7 @@ use Zend\Form\Annotation;
  * @ORM\Table(name="project_loi_reminder")
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Stdlib\Hydrator\ObjectProperty")
- * @Annotation\Name("affiliation_loi_reminder")
+ * @Annotation\Name("project_loi_reminder")
  *
  * @category    Affiliation
  */

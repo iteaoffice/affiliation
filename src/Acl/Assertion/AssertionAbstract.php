@@ -83,23 +83,61 @@ abstract class AssertionAbstract implements AssertionInterface
      * @var array
      */
     protected $accessRoles = [];
+    /**
+     * @var RouteMatch
+     */
+    protected $routeMatch;
+    /**
+     * @var Request
+     */
+    protected $request;
 
     /**
      * @return RouteMatch
      */
     public function getRouteMatch()
     {
-        return $this->getServiceLocator()->get("Application")->getMvcEvent()->getRouteMatch();
+        if (is_null($this->routeMatch)) {
+            $this->routeMatch = $this->getServiceLocator()->get("Application")->getMvcEvent()->getRouteMatch();
+        }
+
+        return $this->routeMatch;
     }
 
     /**
-     * Proxy to the original request object to handle form.
+     * @param RouteMatch $routeMatch
      *
+     * @return AssertionAbstract
+     */
+    public function setRouteMatch($routeMatch)
+    {
+        $this->routeMatch = $routeMatch;
+
+        return $this;
+    }
+
+    /**
      * @return Request
      */
     public function getRequest()
     {
-        return $this->getServiceLocator()->get('application')->getMvcEvent()->getRequest();
+        if (is_null($this->request)) {
+            $this->request = $this->getServiceLocator()->get('application')->getMvcEvent()->getRequest();
+        }
+
+        return $this->request;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return AssertionAbstract
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+
+        return $this;
     }
 
     /**
@@ -108,6 +146,14 @@ abstract class AssertionAbstract implements AssertionInterface
     public function hasContact()
     {
         return !$this->getContact()->isEmpty();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRouteMatch()
+    {
+        return !is_null($this->getRouteMatch());
     }
 
     /**
@@ -208,7 +254,7 @@ abstract class AssertionAbstract implements AssertionInterface
         /**
          * When the privilege is_null (not given by the isAllowed helper), get it from the routeMatch
          */
-        if (is_null($privilege)) {
+        if (is_null($privilege) && $this->hasRouteMatch()) {
             $this->privilege = $this->getRouteMatch()
                 ->getParam('privilege', $this->getRouteMatch()->getParam('action'));
         } else {
@@ -228,6 +274,9 @@ abstract class AssertionAbstract implements AssertionInterface
         }
         if (is_null($this->getRouteMatch())) {
             return null;
+        }
+        if (!is_null($id = $this->getRouteMatch()->getParam('id'))) {
+            return (int)$id;
         }
 
         return null;

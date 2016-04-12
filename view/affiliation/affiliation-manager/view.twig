@@ -1,5 +1,5 @@
-{% set project = project %}
-
+{% set project = affiliation.project %}
+{% set organisation = affiliation.organisation %}
 
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-affiliation")) %}
@@ -9,7 +9,7 @@
 
 {% set years = projectService.parseYearRange(project, false, affiliation) %}
 
-{% set projectYears = projectService.parseYearRange(true) %}
+{% set projectYears = projectService.parseYearRange(project, true) %}
 
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-admin','button') %}
@@ -241,7 +241,7 @@
 
 
                         <dt>{{ translate("txt-address-label") }}</dt>
-                        <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch) }}</dd>
+                        <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch, affiliation.financial.organisation) }}</dd>
 
                         {% if organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
                             <dd>{{ contactService.parseAttention(affiliation.financial.contact) }} {{ affiliation.financial.contact.parseFullName() }}</dd>
@@ -362,7 +362,7 @@
                     <td></td>
                     <td>{{ translate("txt-costs") }}</td>
 
-                    {% for year in projectService.parseYearRange %}
+                    {% for year in projectService.parseYearRange(affiliation.project) %}
 
                         {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
 
@@ -374,14 +374,14 @@
             {% endfor %}
 
             <tr>
-                <th colspan="{{ 4 + projectService.parseYearRange|length }}">{{ translate("txt-draft") }}</th>
+                <th colspan="{{ 4 + projectService.parseYearRange(affiliation.project)|length }}">{{ translate("txt-draft") }}</th>
             </tr>
             <tr>
 
                 <td></td>
                 <td>{{ translate("txt-effort") }}</td>
 
-                {% for year in projectService.parseYearRange %}
+                {% for year in projectService.parseYearRange(affiliation.project) %}
 
 
                     {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
@@ -397,7 +397,7 @@
                 <td></td>
                 <td>{{ translate("txt-costs") }}</td>
 
-                {% for year in projectService.parseYearRange %}
+                {% for year in projectService.parseYearRange(affiliation.project) %}
 
                     {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliation)[year] %}
 

@@ -145,11 +145,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param EntityManager $entityManager
+     *
      * @return AffiliationAbstractController
      */
-    public function setEntityManager(EntityManager $entityManager)
+    public function setEntityManager($entityManager)
     {
         $this->entityManager = $entityManager;
+
         return $this;
     }
 
@@ -163,11 +165,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param ModuleOptions $moduleOptions
+     *
      * @return AffiliationAbstractController
      */
-    public function setModuleOptions(ModuleOptions $moduleOptions)
+    public function setModuleOptions($moduleOptions)
     {
         $this->moduleOptions = $moduleOptions;
+
         return $this;
     }
 
@@ -181,11 +185,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param FormService $formService
+     *
      * @return AffiliationAbstractController
      */
-    public function setFormService(FormService $formService)
+    public function setFormService($formService)
     {
         $this->formService = $formService;
+
         return $this;
     }
 
@@ -199,11 +205,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param AffiliationService $affiliationService
+     *
      * @return AffiliationAbstractController
      */
-    public function setAffiliationService(AffiliationService $affiliationService)
+    public function setAffiliationService($affiliationService)
     {
         $this->affiliationService = $affiliationService;
+
         return $this;
     }
 
@@ -217,11 +225,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param InvoiceService $invoiceService
+     *
      * @return AffiliationAbstractController
      */
-    public function setInvoiceService(InvoiceService $invoiceService)
+    public function setInvoiceService($invoiceService)
     {
         $this->invoiceService = $invoiceService;
+
         return $this;
     }
 
@@ -235,11 +245,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param DeeplinkService $deeplinkService
+     *
      * @return AffiliationAbstractController
      */
-    public function setDeeplinkService(DeeplinkService $deeplinkService)
+    public function setDeeplinkService($deeplinkService)
     {
         $this->deeplinkService = $deeplinkService;
+
         return $this;
     }
 
@@ -253,11 +265,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param OrganisationService $organisationService
+     *
      * @return AffiliationAbstractController
      */
-    public function setOrganisationService(OrganisationService $organisationService)
+    public function setOrganisationService($organisationService)
     {
         $this->organisationService = $organisationService;
+
         return $this;
     }
 
@@ -271,11 +285,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param ProjectService $projectService
+     *
      * @return AffiliationAbstractController
      */
-    public function setProjectService(ProjectService $projectService)
+    public function setProjectService($projectService)
     {
         $this->projectService = $projectService;
+
         return $this;
     }
 
@@ -289,11 +305,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param ReportService $reportService
+     *
      * @return AffiliationAbstractController
      */
-    public function setReportService(ReportService $reportService)
+    public function setReportService($reportService)
     {
         $this->reportService = $reportService;
+
         return $this;
     }
 
@@ -307,11 +325,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param VersionService $versionService
+     *
      * @return AffiliationAbstractController
      */
-    public function setVersionService(VersionService $versionService)
+    public function setVersionService($versionService)
     {
         $this->versionService = $versionService;
+
         return $this;
     }
 
@@ -325,11 +345,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param WorkpackageService $workpackageService
+     *
      * @return AffiliationAbstractController
      */
-    public function setWorkpackageService(WorkpackageService $workpackageService)
+    public function setWorkpackageService($workpackageService)
     {
         $this->workpackageService = $workpackageService;
+
         return $this;
     }
 
@@ -343,11 +365,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param ContactService $contactService
+     *
      * @return AffiliationAbstractController
      */
-    public function setContactService(ContactService $contactService)
+    public function setContactService($contactService)
     {
         $this->contactService = $contactService;
+
         return $this;
     }
 
@@ -361,11 +385,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param ProgramService $programService
+     *
      * @return AffiliationAbstractController
      */
-    public function setProgramService(ProgramService $programService)
+    public function setProgramService($programService)
     {
         $this->programService = $programService;
+
         return $this;
     }
 
@@ -379,11 +405,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param GeneralService $generalService
+     *
      * @return AffiliationAbstractController
      */
-    public function setGeneralService(GeneralService $generalService)
+    public function setGeneralService($generalService)
     {
         $this->generalService = $generalService;
+
         return $this;
     }
 
@@ -397,11 +425,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param MailingService $mailingService
+     *
      * @return AffiliationAbstractController
      */
-    public function setMailingService(MailingService $mailingService)
+    public function setMailingService($mailingService)
     {
         $this->mailingService = $mailingService;
+
         return $this;
     }
 
@@ -415,11 +445,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param EmailService $emailService
+     *
      * @return AffiliationAbstractController
      */
-    public function setEmailService(EmailService $emailService)
+    public function setEmailService($emailService)
     {
         $this->emailService = $emailService;
+
         return $this;
     }
 
@@ -433,11 +465,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param DoaService $doaService
+     *
      * @return AffiliationAbstractController
      */
-    public function setDoaService(DoaService $doaService)
+    public function setDoaService($doaService)
     {
         $this->doaService = $doaService;
+
         return $this;
     }
 
@@ -451,11 +485,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param LoiService $loiService
+     *
      * @return AffiliationAbstractController
      */
-    public function setLoiService(LoiService $loiService)
+    public function setLoiService($loiService)
     {
         $this->loiService = $loiService;
+
         return $this;
     }
 
@@ -469,11 +505,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param MemberService $memberService
+     *
      * @return AffiliationAbstractController
      */
-    public function setMemberService(MemberService $memberService)
+    public function setMemberService($memberService)
     {
         $this->memberService = $memberService;
+
         return $this;
     }
 
@@ -487,11 +525,13 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param AffiliationSearchService $affiliationSearchService
+     *
      * @return AffiliationAbstractController
      */
-    public function setAffiliationSearchService(AffiliationSearchService $affiliationSearchService)
+    public function setAffiliationSearchService($affiliationSearchService)
     {
         $this->affiliationSearchService = $affiliationSearchService;
+
         return $this;
     }
 
@@ -505,14 +545,16 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param ProgramModuleOptions $programModuleOptions
+     *
      * @return AffiliationAbstractController
      */
-    public function setProgramModuleOptions(ProgramModuleOptions $programModuleOptions)
+    public function setProgramModuleOptions($programModuleOptions)
     {
         $this->programModuleOptions = $programModuleOptions;
+
         return $this;
     }
-   
+
     /**
      * Proxy for the flash messenger helper to have the string translated earlier.
      *

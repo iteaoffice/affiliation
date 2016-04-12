@@ -163,10 +163,10 @@ class LoiManagerController extends AffiliationAbstractController
      */
     public function remindersAction()
     {
-        $affiliationService = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
         return new ViewModel([
-            'affiliationService' => $this->getAffiliationService(),
+            '$affiliation' => $affiliation,
         ]);
     }
 

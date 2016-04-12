@@ -196,7 +196,6 @@ class AffiliationService extends ServiceAbstract
             case is_null($affiliation->getFinancial()->getContact()):
                 $errors[] = 'No financial contact set for this organisation';
                 break;
-
         }
 
         return $errors;
@@ -350,7 +349,6 @@ class AffiliationService extends ServiceAbstract
                     }
                 }
                 break;
-
         }
 
         return $contributionDue;
@@ -375,7 +373,6 @@ class AffiliationService extends ServiceAbstract
 
         //Sum the invoiced amount of all invoices for this affiliation
         foreach ($affiliation->getInvoice() as $invoice) {
-
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
             if (!is_null($invoice->getInvoice()->getDayBookNumber())
                 && (($invoice->getPeriod() < $period && $invoice->getYear() == $year) || $invoice->getYear() < $year)
@@ -481,10 +478,11 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param  Version $version
-     * @param          $year
+     * @param Version $version
+     * @param         $year
      *
-     * @return float|null
+     * @return float|string
+     * @throws \Exception
      */
     public function parseContributionFee(Version $version, $year)
     {
@@ -502,6 +500,8 @@ class AffiliationService extends ServiceAbstract
                 return $fee->getPercentage() / 100;
             case Method::METHOD_CONTRIBUTION:
                 return $fee->getContribution();
+            default:
+                throw new \Exception("Unknown contributino fee in %s", __FUNCTION__);
         }
     }
 
@@ -509,15 +509,66 @@ class AffiliationService extends ServiceAbstract
      * @param Project $project
      * @param int     $which
      *
-     * @return \Generator|Affiliation[]
+     * @return Affiliation[]|ArrayCollection
      */
     public function findAffiliationByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {
-        $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAffiliationByProjectAndWhich($project, $which);
-        foreach ($affiliations as $affiliation) {
-            yield $affiliation;
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $affiliations = $repository->findAffiliationByProjectAndWhich($project, $which);
+
+        if (is_null($affiliations)) {
+            $affiliations = [];
         }
+
+        return new ArrayCollection($affiliations);
+    }
+
+    /**
+     * @param Version $version
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return Affiliation[]|ArrayCollection
+     */
+    public function findAffiliationByProjectVersionAndCountryAndWhich(
+        Version $version,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $affiliations = $repository->findAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
+
+        if (is_null($affiliations)) {
+            $affiliations = [];
+        }
+
+        return new ArrayCollection($affiliations);
+    }
+
+
+    /**
+     * @param Project $project
+     * @param Country $country
+     * @param int     $which
+     *
+     * @return Affiliation[]|ArrayCollection
+     */
+    public function findAffiliationByProjectAndCountryAndWhich(
+        Project $project,
+        Country $country,
+        $which = self::WHICH_ONLY_ACTIVE
+    ) {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $affiliations = $repository->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
+
+        if (is_null($affiliations)) {
+            $affiliations = [];
+        }
+
+        return new ArrayCollection($affiliations);
     }
 
     /**
@@ -528,35 +579,15 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationByProjectVersionAndWhich(Version $version, $which = self::WHICH_ALL)
     {
-        $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAffiliationByProjectVersionAndWhich($version, $which);
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $affiliations = $repository->findAffiliationByProjectVersionAndWhich($version, $which);
 
-        $result = new ArrayCollection();
-
-        foreach ($affiliations as $affiliation) {
-            $result->add($affiliation);
+        if (is_null($affiliations)) {
+            $affiliations = [];
         }
 
-        return $result;
-    }
-
-    /**
-     * @param Project $project
-     * @param Country $country
-     * @param int     $which
-     *
-     * @return \Generator
-     */
-    public function findAffiliationByProjectAndCountryAndWhich(
-        Project $project,
-        Country $country,
-        $which = self::WHICH_ONLY_ACTIVE
-    ) {
-        $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
-        foreach ($affiliations as $affiliation) {
-            yield $affiliation;
-        }
+        return new ArrayCollection($affiliations);
     }
 
     /**
@@ -571,12 +602,13 @@ class AffiliationService extends ServiceAbstract
         Country $country,
         $which = self::WHICH_ONLY_ACTIVE
     ) {
-        return $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAmountOfAffiliationByProjectAndCountryAndWhich($project, $country, $which);
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findAmountOfAffiliationByProjectAndCountryAndWhich($project, $country, $which);
     }
 
     /**
-     * @param Project $project
      * @param Country $country
      * @param Call    $call
      *
@@ -584,28 +616,12 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call)
     {
-        return $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAmountOfAffiliationByCountryAndCall($country, $call);
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findAmountOfAffiliationByCountryAndCall($country, $call);
     }
 
-    /**
-     * @param Version $version
-     * @param Country $country
-     * @param int     $which
-     *
-     * @return \Generator
-     */
-    public function findAffiliationByProjectVersionAndCountryAndWhich(
-        Version $version,
-        Country $country,
-        $which = self::WHICH_ONLY_ACTIVE
-    ) {
-        $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
-        foreach ($affiliations as $affiliation) {
-            yield $affiliation;
-        }
-    }
 
     /**
      * @param Version $version
@@ -619,8 +635,10 @@ class AffiliationService extends ServiceAbstract
         Country $country,
         $which = self::WHICH_ONLY_ACTIVE
     ) {
-        return $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAmountOfAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findAmountOfAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
     }
 
     /**
@@ -656,11 +674,13 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationCountriesByProjectAndWhich(Project $project, $which = self::WHICH_ONLY_ACTIVE)
     {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
         /**
          * @var $affiliations Affiliation[]
          */
-        $affiliations = $this->getEntityManager()->getRepository(Affiliation::class)
-            ->findAffiliationByProjectAndWhich($project, $which);
+        $affiliations = $repository->findAffiliationByProjectAndWhich($project, $which);
         $result = [];
         foreach ($affiliations as $affiliation) {
             $result[$affiliation->getOrganisation()->getCountry()->getCountry()] = $affiliation->getOrganisation()
@@ -714,7 +734,10 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationWithMissingDoa()
     {
-        return $this->getEntityManager()->getRepository(Affiliation::class)->findAffiliationWithMissingDoa();
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findAffiliationWithMissingDoa();
     }
 
     /**
@@ -724,7 +747,10 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationWithMissingLoi()
     {
-        return $this->getEntityManager()->getRepository(Affiliation::class)->findAffiliationWithMissingLoi();
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findAffiliationWithMissingLoi();
     }
 
     /**
@@ -768,10 +794,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * This function creates an array of organisations with branches which are optional when a user wants to change
-     * his affiliation.
-     *
-     * @param Affiliation $affiliation
+     * @param Affiliation $baseAffiliation
      *
      * @return array
      */

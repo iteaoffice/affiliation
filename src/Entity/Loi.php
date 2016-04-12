@@ -19,7 +19,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
 /**
  * ProjectLoi.
  *
- * @ORM\Table(name="affiliation_loi")
+ * @ORM\Table(name="project_loi")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Loi")
  */
 class Loi extends EntityAbstract implements ResourceInterface

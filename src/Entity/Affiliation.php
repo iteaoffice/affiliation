@@ -15,9 +15,6 @@ use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
-use Zend\InputFilter\Factory as InputFactory;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
@@ -356,8 +353,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->ictOrganisation = new Collections\ArrayCollection();
         $this->description = new Collections\ArrayCollection();
         $this->invoice = new Collections\ArrayCollection();
-        $this->invoiceCmShare = new Collections\ArrayCollection();
-        $this->invoicePostCalc = new Collections\ArrayCollection();
         $this->log = new Collections\ArrayCollection();
         $this->version = new Collections\ArrayCollection();
         $this->associate = new Collections\ArrayCollection();
@@ -604,38 +599,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function getInvoice()
     {
         return $this->invoice;
-    }
-
-    /**
-     * @param \Affiliation\Entity\InvoiceCmShare[]|Collections\ArrayCollection() $invoiceCmShare
-     */
-    public function setInvoiceCmShare($invoiceCmShare)
-    {
-        $this->invoiceCmShare = $invoiceCmShare;
-    }
-
-    /**
-     * @return \Affiliation\Entity\InvoiceCmShare[]|Collections\ArrayCollection()
-     */
-    public function getInvoiceCmShare()
-    {
-        return $this->invoiceCmShare;
-    }
-
-    /**
-     * @param \Affiliation\Entity\Invoice[]|Collections\ArrayCollection() $invoicePostCalc
-     */
-    public function setInvoicePostCalc($invoicePostCalc)
-    {
-        $this->invoicePostCalc = $invoicePostCalc;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
-     */
-    public function getInvoicePostCalc()
-    {
-        return $this->invoicePostCalc;
     }
 
     /**

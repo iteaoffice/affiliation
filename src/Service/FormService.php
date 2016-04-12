@@ -38,8 +38,8 @@ class FormService extends ServiceAbstract
             throw new \InvalidArgumentException("No entity created given");
         }
 
-        $formName = 'Affiliation\\' . $entity->get('entity_name') . '\\Form';
-        $filterName = 'Affiliation\\InputFilter\\' . $entity->get('entity_name');
+        $formName = 'Affiliation\\Form\\' . $entity->get('entity_name') . 'Form';
+        $filterName = 'Affiliation\\InputFilter\\' . $entity->get('entity_name') . '\\Filter';
 
         /*
          * The filter and the form can dynamically be created by pulling the form from the serviceManager

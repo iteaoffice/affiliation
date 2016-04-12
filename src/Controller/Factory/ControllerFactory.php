@@ -2,12 +2,16 @@
 /**
  * ITEA Office copyright message placeholder.
  *
- * @category  Publication
+ * PHP Version 5
  *
- * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright Copyright (c) 2004-2016 ITEA Office (http://itea3.org)
+ * @category    Project
+ *
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   2004-2016 ITEA Office
+ * @license     https://itea3.org/license.txt proprietary
+ *
+ * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
-
 namespace Affiliation\Controller\Factory;
 
 use Affiliation\Controller\AffiliationAbstractController;
@@ -22,6 +26,7 @@ use Deeplink\Service\DeeplinkService;
 use Doctrine\ORM\EntityManager;
 use General\Service\EmailService;
 use General\Service\GeneralService;
+use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Member\Service\MemberService;
 use Organisation\Service\OrganisationService;
@@ -32,48 +37,31 @@ use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\ControllerManager;
-use Zend\ServiceManager\AbstractFactoryInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class ControllerInvokableAbstractFactory
+ * Class ControllerFactory
  *
- * @package Affiliation\Controller\Factory
+ * @package Project\Controller\Factory
  */
-class ControllerInvokableAbstractFactory implements AbstractFactoryInterface
+class ControllerFactory implements FactoryInterface
 {
     /**
-     * Determine if we can create a service with name
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @param                         $name
-     * @param                         $requestedName
-     *
-     * @return bool
-     */
-    public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
-    {
-        return (class_exists($requestedName)
-            && in_array(AffiliationAbstractController::class, class_parents($requestedName)));
-    }
-
-    /**
-     * Create service with name
-     *
-     * @param ServiceLocatorInterface|ControllerManager $serviceLocator
-     * @param string                                    $name
-     * @param string                                    $requestedName
+     * @param ContainerInterface|ControllerManager $container
+     * @param                                      $requestedName
+     * @param array|null                           $options
      *
      * @return mixed
      */
-    public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-
         /** @var AffiliationAbstractController $controller */
         $controller = new $requestedName();
-        $controller->setServiceLocator($serviceLocator);
+        $controller->setServiceLocator($container);
 
-        $serviceManager = $serviceLocator->getServiceLocator();
+        $serviceManager = $container->getServiceLocator();
+
         /** @var FormService $formService */
         $formService = $serviceManager->get(FormService::class);
         $controller->setFormService($formService);
@@ -103,7 +91,7 @@ class ControllerInvokableAbstractFactory implements AbstractFactoryInterface
         $controller->setGeneralService($generalService);
 
         /** @var ContactService $contactService */
-        $contactService = clone $serviceManager->get(ContactService::class);
+        $contactService = $serviceManager->get(ContactService::class);
         $controller->setContactService($contactService);
 
         /** @var ModuleOptions $moduleOptions */
@@ -155,5 +143,17 @@ class ControllerInvokableAbstractFactory implements AbstractFactoryInterface
         $controller->setProgramModuleOptions($programModuleOptions);
 
         return $controller;
+    }
+
+    /**
+     * @param ServiceLocatorInterface $container
+     * @param string                  $canonicalName
+     * @param string                  $requestedName
+     *
+     * @return AffiliationAbstractController
+     */
+    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
+    {
+        return $this($container, $requestedName);
     }
 }

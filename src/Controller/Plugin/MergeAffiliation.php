@@ -164,7 +164,6 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
             $mainAffiliationVersion = $newAffiliationVersionList[$affiliationVersion->getVersion()->getId()];
 
             foreach ($affiliationVersion->getCostVersion() as $cost) {
-
                 //We need to check if the $mainAffiliation has already a cost in the given period
                 $found = false;
                 foreach ($mainAffiliationVersion->getCostVersion() as $mainCost) {

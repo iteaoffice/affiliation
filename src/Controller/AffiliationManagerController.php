@@ -15,11 +15,11 @@ use Affiliation\Entity\Financial;
 use Affiliation\Form\AdminAffiliation;
 use Affiliation\Form\EditAssociate;
 use Project\Acl\Assertion\Project as ProjectAssertion;
-use Zend\View\Model\ViewModel;
 use Search\Form\SearchResult;
 use Search\Paginator\Adapter\SolariumPaginator;
 use Solarium\QueryType\Select\Query\Query as SolariumQuery;
 use Zend\Paginator\Paginator;
+use Zend\View\Model\ViewModel;
 
 /**
  *
@@ -76,16 +76,16 @@ class AffiliationManagerController extends AffiliationAbstractController
         }, ARRAY_FILTER_USE_KEY);
 
         return new ViewModel([
-            'form'                  => $form,
-            'order'                 => $data['order'],
-            'direction'             => $data['direction'],
-            'query'                 => $data['query'],
-            'arguments'             => http_build_query($filteredData),
-            'paginator'             => $paginator,
-            'organisationService'   => $this->getOrganisationService()
+            'form'                => $form,
+            'order'               => $data['order'],
+            'direction'           => $data['direction'],
+            'query'               => $data['query'],
+            'arguments'           => http_build_query($filteredData),
+            'paginator'           => $paginator,
+            'organisationService' => $this->getOrganisationService()
         ]);
     }
-    
+
     /**
      * @return ViewModel
      */
@@ -273,9 +273,9 @@ class AffiliationManagerController extends AffiliationAbstractController
         }
 
         return new ViewModel([
-            'affiliationService' => $this->getAffiliationService(),
-            'projectService'     => $this->getProjectService(),
-            'form'               => $form,
+            'affiliation'    => $affiliation,
+            'projectService' => $this->getProjectService(),
+            'form'           => $form,
         ]);
     }
 
@@ -286,7 +286,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     public function editAssociateAction()
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
-        
+
         if (is_null($affiliation)) {
             return $this->notFoundAction();
         }
@@ -361,10 +361,10 @@ class AffiliationManagerController extends AffiliationAbstractController
         }
 
         return new ViewModel([
-            'affiliationService'     => $this->getAffiliationService(),
-            'projectService'     => $this->getProjectService(),
-            'contact'            => $contact,
-            'form'               => $form,
+            'affiliation'    => $affiliation,
+            'projectService' => $this->getProjectService(),
+            'contact'        => $contact,
+            'form'           => $form,
         ]);
     }
 }

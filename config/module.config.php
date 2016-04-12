@@ -12,32 +12,33 @@ use Affiliation\Controller;
 use Affiliation\Factory;
 use Affiliation\Form;
 use Affiliation\Options;
+use Affiliation\Search;
 use Affiliation\Service;
 use Affiliation\View;
-use Affiliation\Search;
 
 $config = [
     'controllers'     => [
-        'abstract_factories' => [
-            Controller\Factory\ControllerInvokableAbstractFactory::class,
+        'factories' => [
+            Controller\AffiliationManagerController::class => Controller\Factory\ControllerFactory::class,
+            Controller\CommunityController::class          => Controller\Factory\ControllerFactory::class,
+            Controller\DoaController::class                => Controller\Factory\ControllerFactory::class,
+            Controller\DoaManagerController::class         => Controller\Factory\ControllerFactory::class,
+            Controller\EditController::class               => Controller\Factory\ControllerFactory::class,
+            Controller\LoiController::class                => Controller\Factory\ControllerFactory::class,
+            Controller\LoiManagerController::class         => Controller\Factory\ControllerFactory::class,
         ],
     ],
     'service_manager' => [
-        'invokables'         => [
-            'affiliation_description_form_filter' => Form\FilterCreateObject::class,
-            'affiliation_loi_form_filter'         => Form\FilterCreateObject::class,
-            'affiliation_doa_form_filter'         => Form\FilterCreateObject::class,
-        ],
-        'factories'          => [
-            Service\AffiliationService::class               => Factory\AffiliationServiceFactory::class,
-            Service\DoaService::class                       => Factory\DoaServiceFactory::class,
-            Service\LoiService::class                       => Factory\LoiServiceFactory::class,
-            Service\FormService::class                      => Factory\FormServiceFactory::class,
-            Options\ModuleOptions::class                    => Factory\ModuleOptionsFactory::class,
-            Search\Service\AffiliationSearchService::class  => Search\Factory\AffiliationSearchFactory::class,
-        ],
-        'abstract_factories' => [
-            Acl\Factory\AssertionInvokableAbstractFactory::class,
+        'factories' => [
+            Service\AffiliationService::class              => Factory\AffiliationServiceFactory::class,
+            Service\DoaService::class                      => Factory\DoaServiceFactory::class,
+            Service\LoiService::class                      => Factory\LoiServiceFactory::class,
+            Service\FormService::class                     => Factory\FormServiceFactory::class,
+            Options\ModuleOptions::class                   => Factory\ModuleOptionsFactory::class,
+            Search\Service\AffiliationSearchService::class => Search\Factory\AffiliationSearchFactory::class,
+            Acl\Assertion\Affiliation::class               => Acl\Factory\AssertionFactory::class,
+            Acl\Assertion\Doa::class                       => Acl\Factory\AssertionFactory::class,
+            Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
         ],
     ],
     'view_helpers'    => [

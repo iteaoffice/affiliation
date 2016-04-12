@@ -4,7 +4,7 @@
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
 
 {% set years = projectService.parseYearRange(affiliation.project, false, affiliation) %}
-{% set projectYears = projectService.parseYearRange(true) %}
+{% set projectYears = projectService.parseYearRange(affiliation.project, true) %}
 
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
