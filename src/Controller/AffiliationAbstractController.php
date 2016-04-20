@@ -24,7 +24,6 @@ use General\Service\EmailService;
 use General\Service\GeneralService;
 use Invoice\Service\InvoiceService;
 use Mailing\Service\MailingService;
-use Member\Service\MemberService;
 use Organisation\Service\OrganisationService;
 use Program\Options\ModuleOptions as ProgramModuleOptions;
 use Program\Service\ProgramService;
@@ -122,10 +121,6 @@ abstract class AffiliationAbstractController extends AbstractActionController
      * @var LoiService
      */
     protected $loiService;
-    /**
-     * @var MemberService
-     */
-    protected $memberService;
     /**
      * @var AffiliationSearchService
      */
@@ -491,26 +486,6 @@ abstract class AffiliationAbstractController extends AbstractActionController
     public function setLoiService($loiService)
     {
         $this->loiService = $loiService;
-
-        return $this;
-    }
-
-    /**
-     * @return MemberService
-     */
-    public function getMemberService()
-    {
-        return $this->memberService;
-    }
-
-    /**
-     * @param MemberService $memberService
-     *
-     * @return AffiliationAbstractController
-     */
-    public function setMemberService($memberService)
-    {
-        $this->memberService = $memberService;
 
         return $this;
     }

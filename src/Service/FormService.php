@@ -15,20 +15,21 @@
 
 namespace Affiliation\Service;
 
+use Affiliation\Entity\EntityAbstract;
 use Affiliation\Form\CreateObject;
-use Affiliation\Form\FilterCreateObject;
+use Affiliation\InputFilter\ObjectFilter;
 use Zend\Form\Form;
 
 class FormService extends ServiceAbstract
 {
     /**
-     * @param null $className
-     * @param null $entity
-     * @param bool $bind
+     * @param null           $className
+     * @param EntityAbstract $entity
+     * @param bool           $bind
      *
      * @return Form
      */
-    public function getForm($className = null, $entity = null, $bind = true)
+    public function getForm($className = null, EntityAbstract $entity = null, $bind = true)
     {
         if (!is_null($className) && is_null($entity)) {
             $entity = new $className();
@@ -39,7 +40,7 @@ class FormService extends ServiceAbstract
         }
 
         $formName = 'Affiliation\\Form\\' . $entity->get('entity_name') . 'Form';
-        $filterName = 'Affiliation\\InputFilter\\' . $entity->get('entity_name') . '\\Filter';
+        $filterName = 'Affiliation\\InputFilter\\' . $entity->get('entity_name') . 'Filter';
 
         /*
          * The filter and the form can dynamically be created by pulling the form from the serviceManager
@@ -52,7 +53,7 @@ class FormService extends ServiceAbstract
         }
 
         if (!$this->getServiceLocator()->has($filterName)) {
-            $filter = new FilterCreateObject();
+            $filter = new ObjectFilter();
         } else {
             $filter = $this->getServiceLocator()->get($filterName);
         }
@@ -66,13 +67,13 @@ class FormService extends ServiceAbstract
     }
 
     /**
-     * @param      $className
-     * @param null $entity
-     * @param      $data
+     * @param string         $className
+     * @param EntityAbstract $entity
+     * @param array          $data
      *
      * @return Form
      */
-    public function prepare($className, $entity = null, $data = [])
+    public function prepare($className, EntityAbstract $entity = null, $data = [])
     {
         $form = $this->getForm($className, $entity, true);
         $form->setData($data);

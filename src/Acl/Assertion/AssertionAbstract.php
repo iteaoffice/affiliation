@@ -18,6 +18,7 @@ use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Service\AffiliationService;
 use Contact\Entity\Contact;
 use Contact\Service\ContactService;
+use Interop\Container\ContainerInterface;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
@@ -291,7 +292,7 @@ abstract class AssertionAbstract implements AssertionInterface
     }
 
     /**
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param ServiceLocatorInterface|ContainerInterface $serviceLocator
      *
      * @return AssertionAbstract
      */

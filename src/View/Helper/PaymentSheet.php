@@ -14,7 +14,6 @@
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
-use ZfcTwig\View\TwigRenderer;
 
 /**
  * Create a link to an document.
@@ -48,7 +47,7 @@ class PaymentSheet extends LinkAbstract
             return '';
         }
 
-        return $this->getZfcTwigRenderer()->render('affiliation/partial/payment-sheet', [
+        return $this->getRenderer()->render('affiliation/partial/payment-sheet', [
             'year'                           => $year,
             'period'                         => $period,
             'affiliation'                    => $affiliation,
@@ -66,13 +65,5 @@ class PaymentSheet extends LinkAbstract
             'versionContributionInformation' => $this->getVersionService()
                 ->getProjectVersionContributionInformation($affiliation, $latestVersion)
         ]);
-    }
-
-    /**
-     * @return TwigRenderer
-     */
-    public function getZfcTwigRenderer()
-    {
-        return $this->getServiceLocator()->get('ZfcTwigRenderer');
     }
 }

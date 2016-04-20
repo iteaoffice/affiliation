@@ -15,6 +15,7 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Loi;
+use Affiliation\Entity\Version;
 use BjyAuthorize\Service\Authorize;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
@@ -80,7 +81,7 @@ abstract class ServiceAbstract implements ServiceInterface
      * @param string $entity
      * @param        $id
      *
-     * @return null|Affiliation|Doa|Loi
+     * @return null|Affiliation|Doa|Loi|Version
      */
     public function findEntityById($entity, $id)
     {

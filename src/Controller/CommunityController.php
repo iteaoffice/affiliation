@@ -44,7 +44,7 @@ class CommunityController extends AffiliationAbstractController
             'latestVersion'         => $this->getProjectService()->getLatestProjectVersion($affiliation->getProject()),
             'versionType'           => $this->getProjectService()->getNextMode($affiliation->getProject())->versionType,
             'hasProjectEditRights'  => $hasProjectEditRights,
-            'requireMembership'     => $this->getProgramModuleOptions()->getRequireMembership(),
+            'requirePartnership'     => $this->getProgramModuleOptions()->getRequirePartnership(),
             'reportService'         => $this->getReportService(),
             'versionService'        => $this->getVersionService(),
             'invoiceService'        => $this->getInvoiceService(),

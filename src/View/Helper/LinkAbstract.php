@@ -11,6 +11,7 @@
 
 namespace Affiliation\View\Helper;
 
+use Affiliation\Acl\Assertion\AssertionAbstract;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Service\AffiliationService;
@@ -22,27 +23,14 @@ use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use Zend\Mvc\Router\RouteMatch;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\View\Helper\AbstractHelper;
 use Zend\View\Helper\ServerUrl;
 use Zend\View\Helper\Url;
-use Zend\View\HelperPluginManager;
 
 /**
  * Class LinkAbstract.
  */
-abstract class LinkAbstract extends AbstractHelper
+abstract class LinkAbstract extends AbstractViewHelper
 {
-    /**
-     * @var HelperPluginManager
-     */
-    protected $serviceLocator;
-    /**
-     * @var RouteMatch
-     */
-    protected $routeMatch = null;
     /**
      * @var string Text to be placed as title or as part of the linkContent
      */
@@ -110,11 +98,11 @@ abstract class LinkAbstract extends AbstractHelper
         /**
          * @var $url Url
          */
-        $url = $this->serviceLocator->get('url');
+        $url = $this->getHelperPluginManager()->get('url');
         /**
          * @var $serverUrl ServerUrl
          */
-        $serverUrl = $this->serviceLocator->get('serverUrl');
+        $serverUrl = $this->getHelperPluginManager()->get('serverUrl');
         $this->linkContent = [];
         $this->classes = [];
         $this->parseAction();
@@ -126,17 +114,12 @@ abstract class LinkAbstract extends AbstractHelper
 
         return sprintf(
             $uri,
-            $serverUrl() . $url(
-                $this->router,
-                $this->routerParams,
-                is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
-            ),
+            $serverUrl() . $url($this->router, $this->routerParams,
+                is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]),
             htmlentities($this->text),
             implode(' ', $this->classes),
-            in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode(
-                '',
-                $this->linkContent
-            ) : htmlentities(implode('', $this->linkContent))
+            in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode('', $this->linkContent)
+            : htmlentities(implode('', $this->linkContent))
         );
     }
 
@@ -190,9 +173,7 @@ abstract class LinkAbstract extends AbstractHelper
                 break;
             case 'paginator':
                 if (is_null($this->getAlternativeShow())) {
-                    throw new \InvalidArgumentException(
-                        sprintf("this->alternativeShow cannot be null for a paginator link")
-                    );
+                    throw new \InvalidArgumentException(sprintf("this->alternativeShow cannot be null for a paginator link"));
                 }
                 $this->addLinkContent($this->getAlternativeShow());
                 break;
@@ -205,13 +186,11 @@ abstract class LinkAbstract extends AbstractHelper
                 break;
             default:
                 if (!array_key_exists($this->getShow(), $this->showOptions)) {
-                    throw new \InvalidArgumentException(
-                        sprintf(
-                            "The option \"%s\" should be available in the showOptions array, only \"%s\" are available",
-                            $this->getShow(),
-                            implode(', ', array_keys($this->showOptions))
-                        )
-                    );
+                    throw new \InvalidArgumentException(sprintf(
+                        "The option \"%s\" should be available in the showOptions array, only \"%s\" are available",
+                        $this->getShow(),
+                        implode(', ', array_keys($this->showOptions))
+                    ));
                 }
                 $this->addLinkContent($this->showOptions[$this->getShow()]);
                 break;
@@ -326,8 +305,8 @@ abstract class LinkAbstract extends AbstractHelper
 
     /**
      * @param EntityAbstract $entity
-     * @param string $assertion
-     * @param string $action
+     * @param string         $assertion
+     * @param string         $action
      *
      * @return bool
      */
@@ -348,35 +327,11 @@ abstract class LinkAbstract extends AbstractHelper
     /**
      * @param string $assertion
      *
-     * @return mixed
+     * @return AssertionAbstract
      */
     public function getAssertion($assertion)
     {
-        return $this->getServiceLocator()->get($assertion);
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator->getServiceLocator();
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     *
-     * @return AbstractHelper
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-
-        return $this;
+        return $this->getServiceManager()->get($assertion);
     }
 
     /**
@@ -384,12 +339,12 @@ abstract class LinkAbstract extends AbstractHelper
      */
     public function getAuthorizeService()
     {
-        return $this->getServiceLocator()->get('BjyAuthorize\Service\Authorize');
+        return $this->getServiceManager()->get('BjyAuthorize\Service\Authorize');
     }
 
     /**
      * @param null|EntityAbstract $resource
-     * @param string $privilege
+     * @param string              $privilege
      *
      * @return bool
      */
@@ -398,7 +353,7 @@ abstract class LinkAbstract extends AbstractHelper
         /**
          * @var $isAllowed IsAllowed
          */
-        $isAllowed = $this->serviceLocator->get('isAllowed');
+        $isAllowed = $this->getHelperPluginManager()->get('isAllowed');
 
         return $isAllowed($resource, $privilege);
     }
@@ -408,7 +363,7 @@ abstract class LinkAbstract extends AbstractHelper
      *
      * @param string $key
      * @param        $value
-     * @param bool $allowNull
+     * @param bool   $allowNull
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {
@@ -445,26 +400,11 @@ abstract class LinkAbstract extends AbstractHelper
     }
 
     /**
-     * RouteInterface match returned by the router.
-     * Use a test on is_null to have the possibility to overrule the serviceLocator lookup for unit tets reasons.
-     *
-     * @return RouteMatch.
-     */
-    public function getRouteMatch()
-    {
-        if (is_null($this->routeMatch)) {
-            $this->routeMatch = $this->getServiceLocator()->get('application')->getMvcEvent()->getRouteMatch();
-        }
-
-        return $this->routeMatch;
-    }
-
-    /**
      * @return ProjectService
      */
     public function getProjectService()
     {
-        return $this->getServiceLocator()->get(ProjectService::class);
+        return $this->getServiceManager()->get(ProjectService::class);
     }
 
     /**
@@ -472,7 +412,7 @@ abstract class LinkAbstract extends AbstractHelper
      */
     public function getAffiliationService()
     {
-        return $this->getServiceLocator()->get(AffiliationService::class);
+        return $this->getServiceManager()->get(AffiliationService::class);
     }
 
     /**
@@ -480,7 +420,7 @@ abstract class LinkAbstract extends AbstractHelper
      */
     public function getVersionService()
     {
-        return $this->getServiceLocator()->get(VersionService::class);
+        return $this->getServiceManager()->get(VersionService::class);
     }
 
     /**
@@ -488,7 +428,7 @@ abstract class LinkAbstract extends AbstractHelper
      */
     public function getContactService()
     {
-        return clone $this->getServiceLocator()->get(ContactService::class);
+        return $this->getServiceManager()->get(ContactService::class);
     }
 
     /**
@@ -496,7 +436,7 @@ abstract class LinkAbstract extends AbstractHelper
      */
     public function getInvoiceService()
     {
-        return $this->getServiceLocator()->get(InvoiceService::class);
+        return $this->getServiceManager()->get(InvoiceService::class);
     }
 
     /**
@@ -504,25 +444,7 @@ abstract class LinkAbstract extends AbstractHelper
      */
     public function getOrganisationService()
     {
-        return $this->getServiceLocator()->get(OrganisationService::class);
-    }
-
-    /**
-     * @param RouteMatch $routeMatch
-     */
-    public function setRouteMatch(RouteMatch $routeMatch)
-    {
-        $this->routeMatch = $routeMatch;
-    }
-
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
-    public function translate($string)
-    {
-        return $this->serviceLocator->get('translate')->__invoke($string);
+        return $this->getServiceManager()->get(OrganisationService::class);
     }
 
     /**
@@ -535,6 +457,7 @@ abstract class LinkAbstract extends AbstractHelper
 
     /**
      * @param  int $year
+     *
      * @return LinkAbstract
      */
     public function setYear($year)
@@ -554,6 +477,7 @@ abstract class LinkAbstract extends AbstractHelper
 
     /**
      * @param  int $period
+     *
      * @return LinkAbstract
      */
     public function setPeriod($period)
@@ -589,6 +513,7 @@ abstract class LinkAbstract extends AbstractHelper
 
     /**
      * @param Contact $contact
+     *
      * @return LinkAbstract
      */
     public function setContact($contact)
@@ -608,6 +533,7 @@ abstract class LinkAbstract extends AbstractHelper
 
     /**
      * @param Affiliation $affiliation
+     *
      * @return LinkAbstract
      */
     public function setAffiliation($affiliation)

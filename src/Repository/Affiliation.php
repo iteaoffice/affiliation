@@ -38,30 +38,30 @@ class Affiliation extends EntityRepository
     public function findAffiliationByProjectAndWhich(Project $project, $which)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->where('a.project = ?1');
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->where('affiliation_entity_affiliation.project = ?1');
         $qb->setParameter(1, $project);
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;
             case AffiliationService::WHICH_ONLY_ACTIVE:
-                $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             case AffiliationService::WHICH_ONLY_INACTIVE:
-                $qb->andWhere($qb->expr()->isNotNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
-        $qb->addOrderBy('o.organisation', 'ASC');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
 
     /**
-     * Returns a list of affiliations which do not have an DOA.
+     * Returns affiliation_entity_affiliation list of affiliations which do not have an DOA.
      *
      * @throws InvalidArgumentException
      *
@@ -70,15 +70,15 @@ class Affiliation extends EntityRepository
     public function findAffiliationWithMissingDoa()
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->join('a.project', 'p');
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
 
         /**
          * @var $projectRepository \Project\Repository\Project
          */
-        $projectRepository = $this->getEntityManager()->getRepository('Project\Entity\Project');
+        $projectRepository = $this->getEntityManager()->getRepository(Project::class);
         $qb = $projectRepository->onlyActiveProject($qb);
 
         /*
@@ -86,27 +86,27 @@ class Affiliation extends EntityRepository
          */
         $subSelect = $this->_em->createQueryBuilder();
         $subSelect->select('project');
-        $subSelect->from('Project\Entity\Project', 'project');
+        $subSelect->from(Project::class, 'project');
         $subSelect->join('project.call', 'call');
         $subSelect->andWhere('call.doaRequirement = :doaRequirement');
-        $qb->andWhere($qb->expr()->in('a.project', $subSelect->getDQL()));
+        $qb->andWhere($qb->expr()->in('affiliation_entity_affiliation.project', $subSelect->getDQL()));
 
         /*
          * Exclude the found DOAs the corresponding projects
          */
         $subSelect2 = $this->_em->createQueryBuilder();
         $subSelect2->select('affiliation');
-        $subSelect2->from('Affiliation\Entity\Doa', 'doa');
+        $subSelect2->from(Entity\Doa::class, 'doa');
         $subSelect2->join('doa.affiliation', 'affiliation');
 
-        $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
+        $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect2->getDQL()));
 
         $qb->setParameter('doaRequirement', Call::DOA_REQUIREMENT_PER_PROJECT);
 
         //Exclude de-activated partners
-        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
 
-        $qb->addOrderBy('o.organisation', 'ASC');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -121,15 +121,15 @@ class Affiliation extends EntityRepository
     public function findAffiliationWithMissingLoi()
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->join('a.project', 'p');
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
 
         /**
          * @var $projectRepository \Project\Repository\Project
          */
-        $projectRepository = $this->getEntityManager()->getRepository('Project\Entity\Project');
+        $projectRepository = $this->getEntityManager()->getRepository(Project::class);
         $qb = $projectRepository->onlyActiveProject($qb);
 
         /*
@@ -137,14 +137,14 @@ class Affiliation extends EntityRepository
          */
         $subSelect2 = $this->_em->createQueryBuilder();
         $subSelect2->select('affiliation');
-        $subSelect2->from('Affiliation\Entity\Loi', 'loi');
+        $subSelect2->from(Entity\Loi::class, 'loi');
         $subSelect2->join('loi.affiliation', 'affiliation');
-        $qb->andWhere($qb->expr()->notIn('a', $subSelect2->getDQL()));
+        $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect2->getDQL()));
 
         //Exclude de-activated partners
-        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
 
-        $qb->addOrderBy('o.organisation', 'ASC');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         return $qb->getQuery();
     }
@@ -162,17 +162,17 @@ class Affiliation extends EntityRepository
     public function findAffiliationByProjectVersionAndWhich(Version $version, $which)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;
             case AffiliationService::WHICH_ONLY_ACTIVE:
-                $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             case AffiliationService::WHICH_ONLY_INACTIVE:
-                $qb->andWhere($qb->expr()->isNotNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
@@ -183,14 +183,14 @@ class Affiliation extends EntityRepository
          */
         $subSelect = $this->_em->createQueryBuilder();
         $subSelect->select('affiliation');
-        $subSelect->from('Affiliation\Entity\Version', 'affiliationVersion');
+        $subSelect->from(Entity\Version::class, 'affiliationVersion');
         $subSelect->join('affiliationVersion.affiliation', 'affiliation');
         $subSelect->andWhere('affiliationVersion.version = ?5');
-        $qb->andWhere($qb->expr()->in('a', $subSelect->getDQL()));
+        $qb->andWhere($qb->expr()->in('affiliation_entity_affiliation', $subSelect->getDQL()));
 
         $qb->setParameter(5, $version);
 
-        $qb->addOrderBy('o.organisation', 'ASC');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -209,19 +209,19 @@ class Affiliation extends EntityRepository
     public function findAffiliationByProjectVersionAndCountryAndWhich(Version $version, Country $country, $which)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->andWhere('o.country = ?2');
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->andWhere('organisation_entity_organisation.country = ?2');
         $qb->setParameter(2, $country);
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;
             case AffiliationService::WHICH_ONLY_ACTIVE:
-                $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             case AffiliationService::WHICH_ONLY_INACTIVE:
-                $qb->andWhere($qb->expr()->isNotNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
@@ -232,14 +232,14 @@ class Affiliation extends EntityRepository
          */
         $subSelect = $this->_em->createQueryBuilder();
         $subSelect->select('affiliation');
-        $subSelect->from('Affiliation\Entity\Version', 'affiliationVersion');
+        $subSelect->from(Entity\Version::class, 'affiliationVersion');
         $subSelect->join('affiliationVersion.affiliation', 'affiliation');
         $subSelect->andWhere('affiliationVersion.version = ?5');
-        $qb->andWhere($qb->expr()->in('a', $subSelect->getDQL()));
+        $qb->andWhere($qb->expr()->in('affiliation_entity_affiliation', $subSelect->getDQL()));
 
         $qb->setParameter(5, $version);
 
-        $qb->addOrderBy('o.organisation', 'ASC');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -261,19 +261,19 @@ class Affiliation extends EntityRepository
         $which
     ) {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('COUNT(a) amount');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->andWhere('o.country = ?2');
+        $qb->select('COUNT(affiliation_entity_affiliation) amount');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->andWhere('organisation_entity_organisation.country = ?2');
         $qb->setParameter(2, $country);
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;
             case AffiliationService::WHICH_ONLY_ACTIVE:
-                $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             case AffiliationService::WHICH_ONLY_INACTIVE:
-                $qb->andWhere($qb->expr()->isNotNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
@@ -284,15 +284,15 @@ class Affiliation extends EntityRepository
          */
         $subSelect = $this->_em->createQueryBuilder();
         $subSelect->select('affiliation');
-        $subSelect->from('Affiliation\Entity\Version', 'affiliationVersion');
+        $subSelect->from(Entity\Version::class, 'affiliationVersion');
         $subSelect->join('affiliationVersion.affiliation', 'affiliation');
         $subSelect->andWhere('affiliationVersion.version = ?5');
-        $qb->andWhere($qb->expr()->in('a', $subSelect->getDQL()));
+        $qb->andWhere($qb->expr()->in('affiliation_entity_affiliation', $subSelect->getDQL()));
 
         $qb->setParameter(5, $version);
 
-        $qb->addOrderBy('o.organisation', 'ASC');
-        $qb->addGroupBy('a.project');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
+        $qb->addGroupBy('affiliation_entity_affiliation.project');
 
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
@@ -311,22 +311,22 @@ class Affiliation extends EntityRepository
     public function findAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, $which)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('a');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->where('a.project = ?1');
-        $qb->addOrderBy('o.organisation', 'ASC');
-        $qb->andWhere('o.country = ?2');
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->where('affiliation_entity_affiliation.project = ?1');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
+        $qb->andWhere('organisation_entity_organisation.country = ?2');
         $qb->setParameter(1, $project);
         $qb->setParameter(2, $country);
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;
             case AffiliationService::WHICH_ONLY_ACTIVE:
-                $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             case AffiliationService::WHICH_ONLY_INACTIVE:
-                $qb->andWhere($qb->expr()->isNotNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
@@ -349,28 +349,28 @@ class Affiliation extends EntityRepository
     public function findAmountOfAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, $which)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('COUNT(a) amount');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->where('a.project = ?1');
-        $qb->addOrderBy('o.organisation', 'ASC');
-        $qb->andWhere('o.country = ?2');
+        $qb->select('COUNT(affiliation_entity_affiliation) amount');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->where('affiliation_entity_affiliation.project = ?1');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
+        $qb->andWhere('organisation_entity_organisation.country = ?2');
         $qb->setParameter(1, $project);
         $qb->setParameter(2, $country);
         switch ($which) {
             case AffiliationService::WHICH_ALL:
                 break;
             case AffiliationService::WHICH_ONLY_ACTIVE:
-                $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             case AffiliationService::WHICH_ONLY_INACTIVE:
-                $qb->andWhere($qb->expr()->isNotNull('a.dateEnd'));
+                $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
 
-        $qb->addGroupBy('a.project');
+        $qb->addGroupBy('affiliation_entity_affiliation.project');
 
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
@@ -388,32 +388,32 @@ class Affiliation extends EntityRepository
     public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('COUNT(a) amount');
-        $qb->from('Affiliation\Entity\Affiliation', 'a');
-        $qb->join('a.organisation', 'o');
-        $qb->join('a.project', 'p');
+        $qb->select('COUNT(affiliation_entity_affiliation) amount');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->join('affiliation_entity_affiliation.project', 'p');
         $qb->where('p.call = ?1');
-        $qb->andWhere('o.country = ?2');
-        $qb->addOrderBy('o.organisation', 'ASC');
+        $qb->andWhere('organisation_entity_organisation.country = ?2');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
         $qb->setParameter(1, $call);
         $qb->setParameter(2, $country);
-        $qb->addGroupBy('o.country');
+        $qb->addGroupBy('organisation_entity_organisation.country');
 
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
     /**
-     * @return array
+     * @return Entity\Affiliation[]
      */
     public function findAffiliationInProjectLog()
     {
         $queryBuilder = $this->_em->createQueryBuilder();
-        $queryBuilder->select('a', 'p', 'o');
-        $queryBuilder->from(Entity\Affiliation::class, 'a');
+        $queryBuilder->select('affiliation_entity_affiliation', 'p', 'organisation_entity_organisation');
+        $queryBuilder->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
 
-        $queryBuilder->innerJoin("a.projectLog", 'l');
-        $queryBuilder->innerJoin("a.project", 'p');
-        $queryBuilder->innerJoin("a.organisation", 'o');
+        $queryBuilder->innerJoin("affiliation_entity_affiliation.projectLog", 'l');
+        $queryBuilder->innerJoin("affiliation_entity_affiliation.project", 'p');
+        $queryBuilder->innerJoin("affiliation_entity_affiliation.organisation", 'organisation_entity_organisation');
 
         return $queryBuilder->getQuery()->getArrayResult();
     }

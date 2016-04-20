@@ -28,7 +28,6 @@ use General\Service\EmailService;
 use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
-use Member\Service\MemberService;
 use Organisation\Service\OrganisationService;
 use Program\Options\ModuleOptions as ProgramModuleOptions;
 use Program\Service\ProgramService;
@@ -58,8 +57,6 @@ class ControllerFactory implements FactoryInterface
     {
         /** @var AffiliationAbstractController $controller */
         $controller = new $requestedName();
-        $controller->setServiceLocator($container);
-
         $serviceManager = $container->getServiceLocator();
 
         /** @var FormService $formService */
@@ -101,10 +98,6 @@ class ControllerFactory implements FactoryInterface
         /** @var ProgramService $programService */
         $programService = $serviceManager->get(ProgramService::class);
         $controller->setProgramService($programService);
-
-        /** @var MemberService $memberService */
-        $memberService = $serviceManager->get(MemberService::class);
-        $controller->setMemberService($memberService);
 
         /** @var OrganisationService $organisationService */
         $organisationService = $serviceManager->get(OrganisationService::class);

@@ -42,11 +42,11 @@ class RenderLoi extends AbstractPlugin
         /*
          * Write the contact details
          */
-        $contactService = $this->getContactService()->setContact($loi->getContact());
+
         $pdf->SetXY(14, 55);
-        $pdf->Write(0, $contactService->parseFullName());
+        $pdf->Write(0, $loi->getContact()->parseFullName());
         $pdf->SetXY(14, 60);
-        $pdf->Write(0, $contactService->parseOrganisation());
+        $pdf->Write(0, $this->getContactService()->parseOrganisation($loi->getContact()));
         /*
          * Write the current date
          */
@@ -60,14 +60,11 @@ class RenderLoi extends AbstractPlugin
          * Use the NDA object to render the filename
          */
         $pdf->Write(0, $loi->parseFileName());
-        $ndaContent = $twig->render(
-            'affiliation/pdf/loi-project',
-            [
+        $ndaContent = $twig->render('affiliation/pdf/loi-project', [
                 'contact'      => $loi->getContact(),
                 'project'      => $loi->getAffiliation()->getProject(),
                 'organisation' => $loi->getAffiliation()->getOrganisation(),
-            ]
-        );
+            ]);
         $pdf->writeHTMLCell(0, 0, 14, 70, $ndaContent);
         /*
          * Signage block

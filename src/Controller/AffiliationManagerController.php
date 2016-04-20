@@ -101,7 +101,6 @@ class AffiliationManagerController extends AffiliationAbstractController
         return new ViewModel([
             'affiliationService'    => $this->getAffiliationService(),
             'affiliation'           => $affiliation,
-            'memberService'         => $this->getMemberService(),
             'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation($affiliation),
             'projectService'        => $this->getProjectService(),
             'workpackageService'    => $this->getWorkpackageService(),

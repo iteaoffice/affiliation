@@ -1,7 +1,7 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-edit-doa-%s-in-%s")|format(
 doa.affiliation.organisation.organisation,
-projectService.parseFullname
+doa.affiliation.project.parseFullname()
 )) %}
 
 {% do headLink().appendStylesheet(

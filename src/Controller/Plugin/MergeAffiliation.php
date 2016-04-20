@@ -22,7 +22,6 @@ use Contact\Service\ContactService;
 use Project\Service\ProjectService;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Mvc\Controller\PluginManager;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -30,7 +29,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * Class Checklist
  */
-class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInterface
+class MergeAffiliation extends AbstractPlugin
 {
     /**
      * @var ServiceLocatorInterface|PluginManager
@@ -293,7 +292,7 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
      */
     public function getAffiliationService()
     {
-        return $this->getServiceLocator()->getServiceLocator()->get(AffiliationService::class);
+        return $this->getServiceLocator()->get(AffiliationService::class);
     }
 
     /**
@@ -303,7 +302,7 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
      */
     public function getContactService()
     {
-        return $this->getServiceLocator()->getServiceLocator()->get(ContactService::class);
+        return $this->getServiceLocator()->get(ContactService::class);
     }
 
     /**
@@ -313,7 +312,7 @@ class MergeAffiliation extends AbstractPlugin implements ServiceLocatorAwareInte
      */
     public function getProjectService()
     {
-        return $this->getServiceLocator()->getServiceLocator()->get(ProjectService::class);
+        return $this->getServiceLocator()->get(ProjectService::class);
     }
 
     /**

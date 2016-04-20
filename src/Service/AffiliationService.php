@@ -12,6 +12,7 @@ namespace Affiliation\Service;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice;
+use Affiliation\Repository;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
@@ -108,7 +109,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseContributionFactor(Affiliation $affiliation, $year, $period)
     {
-        //Cast to ints as some values can originate form templates (== twig > might be string)
+        //Cast to int as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
         $period = (int)$period;
 
@@ -260,7 +261,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function isFundedInYear(Affiliation $affiliation, $year)
     {
-        //Cast to ints as some values can originate form templates (== twig > might be string)
+        //Cast to int as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
 
         return is_null($this->getFundingInYear($affiliation, $year)) ? false
@@ -276,7 +277,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function findAffiliationInvoiceByAffiliationPeriodAndYear(Affiliation $affiliation, $period, $year)
     {
-        //Cast to ints as some values can originate form templates (== twig > might be string)
+        //Cast to int as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
         $period = (int)$period;
 
@@ -284,6 +285,18 @@ class AffiliationService extends ServiceAbstract
             return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
         });
     }
+
+    /**
+     * @return \Affiliation\Entity\Affiliation[]
+     */
+    public function findAffiliationInProjectLog()
+    {
+        /** @var Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findAffiliationInProjectLog();
+    }
+
 
     /**
      * @param Affiliation $affiliation

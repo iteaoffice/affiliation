@@ -92,52 +92,53 @@
     </tbody>
 </table>
 
-<table class="table table-striped table-hover">
-    <thead>
-
-    <tr>
-        <th colspan="2">{{ translate("txt-financial-contact") }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td class="col-md-2">{{ translate("txt-name") }}</td>
-        <td class="col-md-4">{{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName()|default(translate("txt-unknown")) }}</td>
-    </tr>
-    <tr>
-        <td>{{ translate("txt-email") }}</td>
-        <td>{{ financialcontact.email|default(translate("txt-unknown")) }}</td>
-    </tr>
-    <tr>
-        <td>{{ translate("txt-vat-number") }}</td>
-        <td>{{ affiliationService.parseVatNumber(affiliation) }}</td>
-    </tr>
-    <tr>
-        <td>{{ translate("txt-billing-address") }}</td>
-        {% set financialAddress = contactService.getFinancialAddress(financialContact) %}
-        <td>
-            {{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch,affiliation.financial.organisation) }}
-            <br>
-            {{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName() }}<br>
-            {{ financialAddress }}<br>
-            {{ financialAddress.zipCode }} {{ financialAddress.city }}<br>
-            {{ financialAddress.country|upper }}
-        </td>
-    </tr>
-    <tr>
-        <td class="col-md-2">{{ translate("txt-preferred-delivery") }}</td>
-        {% if not affiliation.financial %}
-            <td class="col-md-4">{{ translate("txt-no-financial-information-for-this-partner") }}</td>
-        {% elseif not affiliation.financial.organisation.financial %}
-            <td class="col-md-4">{{ translate("txt-no-financial-information-for-the-billing-organisation") }}</td>
-        {% elseif affiliation.financial.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-            <td class="col-md-4">{{ translate("txt-by-email-to-%s")|format(financialcontact.email) }}</td>
-        {% else %}
-            <td class="col-md-4">{{ translate("txt-by-postal-mail") }}</td>
-        {% endif %}
-    </tr>
-    </tbody>
-</table>
+{% if financialContact %}
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th colspan="2">{{ translate("txt-financial-contact") }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="col-md-2">{{ translate("txt-name") }}</td>
+            <td class="col-md-4">{{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName()|default(translate("txt-unknown")) }}</td>
+        </tr>
+        <tr>
+            <td>{{ translate("txt-email") }}</td>
+            <td>{{ financialcontact.email|default(translate("txt-unknown")) }}</td>
+        </tr>
+        <tr>
+            <td>{{ translate("txt-vat-number") }}</td>
+            <td>{{ affiliationService.parseVatNumber(affiliation) }}</td>
+        </tr>
+        <tr>
+            <td>{{ translate("txt-billing-address") }}</td>
+            {% set financialAddress = contactService.getFinancialAddress(financialContact) %}
+            <td>
+                {{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch,affiliation.financial.organisation) }}
+                <br>
+                {{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName() }}<br>
+                {{ financialAddress }}<br>
+                {{ financialAddress.zipCode }} {{ financialAddress.city }}<br>
+                {{ financialAddress.country|upper }}
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-2">{{ translate("txt-preferred-delivery") }}</td>
+            {% if not affiliation.financial %}
+                <td class="col-md-4">{{ translate("txt-no-financial-information-for-this-partner") }}</td>
+            {% elseif not affiliation.financial.organisation.financial %}
+                <td class="col-md-4">{{ translate("txt-no-financial-information-for-the-billing-organisation") }}</td>
+            {% elseif affiliation.financial.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+                <td class="col-md-4">{{ translate("txt-by-email-to-%s")|format(financialcontact.email) }}</td>
+            {% else %}
+                <td class="col-md-4">{{ translate("txt-by-postal-mail") }}</td>
+            {% endif %}
+        </tr>
+        </tbody>
+    </table>
+{% endif %}
 
 <h4>{{ translate("txt-contribution-overview") }}</h4>
 

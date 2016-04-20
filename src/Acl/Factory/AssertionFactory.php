@@ -55,7 +55,7 @@ class AssertionFactory implements FactoryInterface
         $assertion->setAdminService($adminService);
 
         /** @var ContactService $contactService */
-        $contactService = clone $container->get(ContactService::class);
+        $contactService = $container->get(ContactService::class);
         $assertion->setContactService($contactService);
 
         //Inject the logged in user if applicable

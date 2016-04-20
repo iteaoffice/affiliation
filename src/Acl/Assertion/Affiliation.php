@@ -102,7 +102,7 @@ class Affiliation extends AssertionAbstract
             case 'edit-admin':
             case 'merge-admin':
             case 'payment-sheet-admin':
-                return $this->rolesHaveAccess(strtolower(Access::ACCESS_OFFICE));
+                return $this->rolesHaveAccess(Access::ACCESS_OFFICE);
         }
 
         return false;

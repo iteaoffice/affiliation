@@ -53,7 +53,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $financialContact = $this->getAffiliationService()->getFinancialContact($affiliation);
 
         $versionContributionInformation = $this->getVersionService()
-            ->getProjectVersionContributionInformation($affiliation, $latestVersion, $year);
+            ->getProjectVersionContributionInformation($affiliation, $latestVersion);
 
         $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod($affiliation->getProject()->getCall()
             ->getProgram());

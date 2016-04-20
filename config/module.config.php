@@ -17,7 +17,7 @@ use Affiliation\Service;
 use Affiliation\View;
 
 $config = [
-    'controllers'     => [
+    'controllers'        => [
         'factories' => [
             Controller\AffiliationManagerController::class => Controller\Factory\ControllerFactory::class,
             Controller\CommunityController::class          => Controller\Factory\ControllerFactory::class,
@@ -28,7 +28,7 @@ $config = [
             Controller\LoiManagerController::class         => Controller\Factory\ControllerFactory::class,
         ],
     ],
-    'service_manager' => [
+    'service_manager'    => [
         'factories' => [
             Service\AffiliationService::class              => Factory\AffiliationServiceFactory::class,
             Service\DoaService::class                      => Factory\DoaServiceFactory::class,
@@ -41,7 +41,21 @@ $config = [
             Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
         ],
     ],
-    'view_helpers'    => [
+    'controller_plugins' => [
+        'aliases'   => [
+            'renderPaymentSheet' => Controller\Plugin\RenderPaymentSheet::class,
+            'renderDoa'          => Controller\Plugin\RenderDoa::class,
+            'renderLoi'          => Controller\Plugin\RenderLoi::class,
+            'mergeAffiliation'   => Controller\Plugin\MergeAffiliation::class,
+        ],
+        'factories' => [
+            Controller\Plugin\RenderPaymentSheet::class => Controller\Factory\PluginFactory::class,
+            Controller\Plugin\RenderDoa::class          => Controller\Factory\PluginFactory::class,
+            Controller\Plugin\RenderLoi::class          => Controller\Factory\PluginFactory::class,
+            Controller\Plugin\MergeAffiliation::class   => Controller\Factory\PluginFactory::class,
+        ]
+    ],
+    'view_helpers'       => [
         'aliases'   => [
             'doaLink'                    => View\Helper\DoaLink::class,
             'associateLink'              => View\Helper\AssociateLink::class,
@@ -51,18 +65,18 @@ $config = [
             'affiliationEffortSpentLink' => View\Helper\EffortSpentLink::class,
         ],
         'factories' => [
-            View\Helper\AffiliationLink::class => View\Factory\LinkInvokableFactory::class,
-            View\Helper\AssociateLink::class   => View\Factory\LinkInvokableFactory::class,
-            View\Helper\EffortSpentLink::class => View\Factory\LinkInvokableFactory::class,
-            View\Helper\DoaLink::class         => View\Factory\LinkInvokableFactory::class,
-            View\Helper\LoiLink::class         => View\Factory\LinkInvokableFactory::class,
-            View\Helper\PaymentSheet::class    => View\Factory\LinkInvokableFactory::class,
+            View\Helper\AffiliationLink::class => View\Factory\ViewHelperFactory::class,
+            View\Helper\AssociateLink::class   => View\Factory\ViewHelperFactory::class,
+            View\Helper\EffortSpentLink::class => View\Factory\ViewHelperFactory::class,
+            View\Helper\DoaLink::class         => View\Factory\ViewHelperFactory::class,
+            View\Helper\LoiLink::class         => View\Factory\ViewHelperFactory::class,
+            View\Helper\PaymentSheet::class    => View\Factory\ViewHelperFactory::class,
         ]
     ],
-    'view_manager'    => [
+    'view_manager'       => [
         'template_map' => include __DIR__ . '/../template_map.php',
     ],
-    'doctrine'        => [
+    'doctrine'           => [
         'driver'       => [
             'affiliation_annotation_driver' => [
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',

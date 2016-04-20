@@ -48,17 +48,10 @@ class EffortSpentLink extends LinkAbstract
         /*
          * Set the non-standard options needed to give an other link value
          */
-        $this->setShowOptions(
-            [
-                'update' => $this->translate('txt-update')
-            ]
-        );
-        if (!$this->hasAccess(
-            $this->getAffiliation(),
-            AffiliationAssertion::class,
-            $this->getAction()
-        )
-        ) {
+        $this->setShowOptions([
+            'update' => $this->translate('txt-update')
+        ]);
+        if (!$this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
             return '';
         }
 
@@ -78,12 +71,7 @@ class EffortSpentLink extends LinkAbstract
         switch ($this->getAction()) {
             case 'update-effort-spent':
                 $this->setRouter('community/affiliation/edit/update-effort-spent');
-                $this->setText(
-                    sprintf(
-                        $this->translate("txt-report-on-%s"),
-                        $this->getReport()->parseName()
-                    )
-                );
+                $this->setText(sprintf($this->translate("txt-report-on-%s"), $this->getReport()->parseName()));
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
@@ -124,6 +112,8 @@ class EffortSpentLink extends LinkAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
+     * @return void
      */
     public function setAffiliation($affiliation)
     {

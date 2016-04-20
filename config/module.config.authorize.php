@@ -23,106 +23,106 @@ return [
             'BjyAuthorize\Guard\Route' => [
                 [
                     'route'     => 'zfcadmin/affiliation/list',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/view',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/edit',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/merge',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/edit-associate',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/list',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/approval',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/missing',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/view',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/edit',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/remind',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/reminders',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/approve',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/list',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/approval',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/missing',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/remind',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/reminders',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/view',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/edit',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/approve',
-                    'roles'     => [strtolower(Access::ACCESS_OFFICE)],
+                    'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class
                 ],
                 [

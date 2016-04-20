@@ -30,7 +30,6 @@
 <ul class="nav nav-tabs">
     <li class="active"><a href="#details" data-toggle="tab">{{ translate("txt-partner-details") }}</a></li>
     <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
-    <li><a href="#member" data-toggle="tab">{{ translate("txt-member") }}</a></li>
     <li><a href="#associates" data-toggle="tab">{{ translate("txt-associates") }}</a></li>
     <li><a href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a></li>
     <li><a href="#invoice" data-toggle="tab">{{ translate("txt-invoices") }}</a></li>
@@ -97,15 +96,6 @@
                 </dd>
             {% endif %}
 
-
-            <dt>{{ translate("txt-membership") }}</dt>
-            <dd>
-                {% if affiliation.organisation.member %}
-                    {{ memberLink(affiliation.organisation.member,'view-admin','name') }}
-                {% endif %}
-            </dd>
-
-
             {% if project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}
                 <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
                 <dd>
@@ -167,34 +157,6 @@
         {% endfor %}
 
         {{ affiliationLink(affiliation, 'edit-description','button') }}
-    </div>
-    <div class="tab-pane" id="member">
-        <h3>{{ translate("txt-member-information") }}</h3>
-
-        {% if memberService.isMember(affiliation.organisation) %}
-            {% set member = affiliation.organisation.member %}
-            <dl class="dl-horizontal">
-                <dt>{{ translate("txt-member-subtype") }}</dt>
-                <dd>{{ member.type.subType }}</dd>
-                <dt>{{ translate("txt-member-organisation") }}</dt>
-                <dd>{{ organisationLink(member.organisation,'view-admin','name') }}</dd>
-                <dt>{{ translate("txt-member-representative") }}</dt>
-                <dd>{{ contactLink(member.contact,'view-admin','name') }}</dd>
-                <dt>{{ translate("txt-member-date-created") }}</dt>
-                <dd>{{ member.dateCreated|string_date }}</dd>
-                {% if member.dateEnd %}
-                    <dt>{{ translate("txt-member-date-end") }}</dt>
-                    <dd>{{ member.dateEnd }}</dd>
-                {% endif %}
-            </dl>
-            {{ memberLink(member, 'view-admin','button') }}
-
-        {% else %}
-            {{ ztbalert().info(translate("txt-organisation-%s-is-no-member")|format(affiliation.organisation))|raw }}
-
-        {% endif %}
-
-
     </div>
     <div class="tab-pane" id="associates">
         <h3>{{ translate("txt-associates") }}</h3>
@@ -297,63 +259,104 @@
     <div class="tab-pane" id="version">
         <h4>{{ translate("txt-version-information") }}</h4>
 
-        <table class="table table-hover table-striped table-condensed">
-            <thead>
-            <tr>
-                <th>{{ translate("txt-version") }}</th>
-                <th>{{ translate("txt-id") }}</th>
-                <th>{{ translate("txt-status") }}</th>
-                <th>{{ translate("txt-date-submitted") }}</th>
-                <th>{{ translate("txt-total-effort") }}</th>
-                <th>{{ translate("txt-total-cost") }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for affiliationVersion in affiliation.version %}
+        {% if affiliation.version.count() > 0 %}
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
                 <tr>
-                    {% set version = affiliationVersion.version %}
-                    <td>{{ versionLink(version,'view-admin','name') }}</td>
-                    <td>{{ affiliationVersion.id }}</td>
-                    <td>{{ versionService.parseStatus(version) }}</td>
-                    <td>{{ version.dateReviewed|string_date }}</td>
-                    <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
-                    <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_cost }}</td>
+                    <th>{{ translate("txt-version") }}</th>
+                    <th>{{ translate("txt-id") }}</th>
+                    <th>{{ translate("txt-status") }}</th>
+                    <th>{{ translate("txt-date-submitted") }}</th>
+                    <th>{{ translate("txt-total-effort") }}</th>
+                    <th>{{ translate("txt-total-cost") }}</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for affiliationVersion in affiliation.version %}
+                    <tr>
+                        {% set version = affiliationVersion.version %}
+                        <td>{{ versionLink(version,'view-admin','name') }}</td>
+                        <td>{{ affiliationVersion.id }}</td>
+                        <td>{{ versionService.parseStatus(version) }}</td>
+                        <td>{{ version.dateReviewed|string_date }}</td>
+                        <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
+                        <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_cost }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            {{ ztbalert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
+        {% endif %}
+
 
         <h4>{{ translate("txt-costs-and-effort-overview") }}</h4>
-        <table class="table table-hover table-striped table-condensed">
-            <thead>
-            <tr>
-
-                <th></th>
-                <th>{{ translate("txt-type") }}</th>
-
-                {% for year in projectService.parseYearRange(project) %}
-                    <th>{{ year }}</th>
-                {% endfor %}
-                <th>{{ translate("txt-total") }}</th>
-
-            </tr>
-            </thead>
-            <tbody>
-            {% for affiliationVersion in affiliation.version %}
-                {% set version = affiliationVersion.version %}
+        {% if affiliation.version.count() > 0 %}
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
                 <tr>
-                    <th colspan="{{ 4 + projectService.parseYearRange(project)|length }}">{{ versionLink(version,'view-admin','description') }}</th>
+
+                    <th></th>
+                    <th>{{ translate("txt-type") }}</th>
+
+                    {% for year in projectService.parseYearRange(project) %}
+                        <th>{{ year }}</th>
+                    {% endfor %}
+                    <th>{{ translate("txt-total") }}</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for affiliationVersion in affiliation.version %}
+                    {% set version = affiliationVersion.version %}
+                    <tr>
+                        <th colspan="{{ 4 + projectService.parseYearRange(project)|length }}">{{ versionLink(version,'view-admin','description') }}</th>
+                    </tr>
+                    <tr>
+
+                        <td>{{ versionService.parseStatus(affiliationVersion.version) }}</td>
+                        <td>{{ translate("txt-effort") }}</td>
+
+                        {% for year in projectService.parseYearRange(project) %}
+                            {% set yearTotal = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, version)[year] %}
+                            <td>{{ yearTotal|parse_effort }}</td>
+                        {% endfor %}
+                        <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliation, version)|parse_effort }}</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td></td>
+                        <td>{{ translate("txt-costs") }}</td>
+
+                        {% for year in projectService.parseYearRange(affiliation.project) %}
+
+                            {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
+
+                            <td>{{ yearTotal.costs|parse_cost }}</td>
+                        {% endfor %}
+                        <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
+                    </tr>
+
+                {% endfor %}
+
+                <tr>
+                    <th colspan="{{ 4 + projectService.parseYearRange(affiliation.project)|length }}">{{ translate("txt-draft") }}</th>
                 </tr>
                 <tr>
 
-                    <td>{{ versionService.parseStatus(affiliationVersion.version) }}</td>
+                    <td></td>
                     <td>{{ translate("txt-effort") }}</td>
 
-                    {% for year in projectService.parseYearRange(project) %}
-                        {% set yearTotal = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, version)[year] %}
+                    {% for year in projectService.parseYearRange(affiliation.project) %}
+
+
+                        {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
+
                         <td>{{ yearTotal|parse_effort }}</td>
                     {% endfor %}
-                    <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliation, version)|parse_effort }}</td>
+                    <td>{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</td>
 
                 </tr>
 
@@ -364,73 +367,44 @@
 
                     {% for year in projectService.parseYearRange(affiliation.project) %}
 
-                        {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
+                        {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliation)[year] %}
 
-                        <td>{{ yearTotal.costs|parse_cost }}</td>
+                        <td>{{ yearTotal|parse_cost }}</td>
                     {% endfor %}
-                    <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
+                    <td>{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</td>
                 </tr>
-
-            {% endfor %}
-
-            <tr>
-                <th colspan="{{ 4 + projectService.parseYearRange(affiliation.project)|length }}">{{ translate("txt-draft") }}</th>
-            </tr>
-            <tr>
-
-                <td></td>
-                <td>{{ translate("txt-effort") }}</td>
-
-                {% for year in projectService.parseYearRange(affiliation.project) %}
-
-
-                    {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
-
-                    <td>{{ yearTotal|parse_effort }}</td>
-                {% endfor %}
-                <td>{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</td>
-
-            </tr>
-
-            <tr>
-
-                <td></td>
-                <td>{{ translate("txt-costs") }}</td>
-
-                {% for year in projectService.parseYearRange(affiliation.project) %}
-
-                    {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliation)[year] %}
-
-                    <td>{{ yearTotal|parse_cost }}</td>
-                {% endfor %}
-                <td>{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</td>
-            </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        {% else %}
+            {{ ztbalert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
+        {% endif %}
 
         <h4>{{ translate("txt-funding") }}</h4>
 
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>{{ translate("txt-date-from") }}</th>
-                <th>{{ translate("txt-date-until") }}</th>
-                <th>{{ translate("txt-source") }}</th>
-                <th>{{ translate("txt-status") }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for funding in affiliation.funding %}
+        {% if affiliation.funding.count() > 0 %}
+            <table class="table table-striped">
+                <thead>
                 <tr>
-                    <td>{{ funding.dateStart|date("d-m-Y") }}</td>
-                    <td>{{ funding.dateEnd|date("d-m-Y") }}</td>
-                    <td>{{ funding.source }}</td>
-                    <td class="funding-status {{ funding.status.parseCssName }}">{{ funding.status.status }}</td>
+                    <th>{{ translate("txt-date-from") }}</th>
+                    <th>{{ translate("txt-date-until") }}</th>
+                    <th>{{ translate("txt-source") }}</th>
+                    <th>{{ translate("txt-status") }}</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
+                </thead>
+                <tbody>
+                {% for funding in affiliation.funding %}
+                    <tr>
+                        <td>{{ funding.dateStart|date("d-m-Y") }}</td>
+                        <td>{{ funding.dateEnd|date("d-m-Y") }}</td>
+                        <td>{{ funding.source }}</td>
+                        <td class="funding-status {{ funding.status.parseCssName }}">{{ funding.status.status }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            {{ ztbalert().info(translate("txt-there-is-no-information-for-funding-available-for-%s")|format(affiliation))|raw }}
+        {% endif %}
     </div>
     <div class="tab-pane" id="report">
 
@@ -488,7 +462,7 @@
             </table>
         {% else %}
             <br>
-            {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s-in-%s")|format(affiliation,projectService.parseFullname(project)))|raw }}
+            {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s-in-%s")|format(affiliation,project.parseFullname()))|raw }}
         {% endif %}
 
         <h4>{{ translate("txt-exploitation-related-achievement") }}</h4>
@@ -524,7 +498,7 @@
 
         {% else %}
             <br>
-            {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s-in-%s")|format(affiliation,projectService.parseFullname(project)))|raw }}
+            {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s-in-%s")|format(affiliation,project.parseFullname()))|raw }}
         {% endif %}
 
         {{ achievementLink(null, 'create', 'button', affiliation) }}
@@ -559,7 +533,7 @@
                 </tbody>
             </table>
         {% else %}
-            {{ ztbalert().info(translate("txt-no-invoices-were-created-for-%s-in-%s")|format(affiliation,projectService.parseFullname(project)))|raw }}
+            {{ ztbalert().info(translate("txt-no-invoices-were-created-for-%s-in-%s")|format(affiliation,project.parseFullname()))|raw }}
         {% endif %}
         </tab>
     </div>

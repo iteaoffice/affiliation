@@ -42,7 +42,7 @@
 
         <dl class="dl-horizontal">
             <dt>{{ translate("txt-project-name") }}</dt>
-            <dd>{{ projectLink(project,'view-community', 'name') }}</dd>
+            <dd>{{ projectLink(affiliation.project,'view-community', 'name') }}</dd>
             <dt>{{ translate("txt-project-title") }}</dt>
             <dd>{{ project.title }}</dd>
             <dt>{{ translate("txt-status") }}</dt>
@@ -70,12 +70,12 @@
 
         <dl class="dl-horizontal">
 
-            {% if (requireMembership) %}
-                <dt>{{ translate("txt-membership") }}</dt>
+            {% if (requirePartnership) %}
+                <dt>{{ translate("txt-partnership") }}</dt>
                 <dd>
-                    {% if affiliation.organisation.member %}
-                        {#{{ memberLink(affiliation.organisation.member,'view','name') }}#}
-                        {{ translate("txt-organsation-%s-is-member-type-%s-since-%s")|format(affiliation.organisation,affiliation.organisation.member.type,affiliation.organisation.member.dateCreated|time_diff) }}
+                    {% if affiliation.organisation.partner %}
+                        {#{{ partnerLink(affiliation.organisation.partner,'view','name') }}#}
+                        {{ translate("txt-organsation-%s-is-partner-type-%s-since-%s")|format(affiliation.organisation,affiliation.organisation.partner.type,affiliation.organisation.partner.dateCreated|time_diff) }}
                     {% elseif (affiliation.organisation.applicant) %}
                         {{ applicantLink(affiliation.organisation.applicant,'view','text') }}
                     {% else %}
@@ -223,7 +223,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(project) %}
+                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
                     {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                     workpackage,
                     affiliation,
@@ -248,7 +248,7 @@
             <hr>
         {% endif %}
 
-        {% if projectService.isPrepareMode(project) %}
+        {% if projectService.isPrepareMode(affiliation.project) %}
             <h3>{{ translate("txt-latest-unsubmitted-version") }}</h3>
 
             {{ ztbalert().info(translate("txt-explanation-cost-and-effort-edit-in-place"))|raw }}
@@ -285,7 +285,7 @@
                     {% for year in years %}
                         <td>
                             {% if
-                            year in projectService.parseEditYearRange() and
+                            year in projectService.parseEditYearRange(affiliation.project) and
                             (
                             hasProjectEditRights or
                             isAllowed(affiliation, 'edit-affiliation')
@@ -323,7 +323,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(project) %}
+                {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
                     {% set effortPerYear = projectService.findTotalEffortByWorkpackageAndAffiliationPerYear(
                     workpackage,
                     affiliation,
@@ -376,7 +376,7 @@
                 </tbody>
             </table>
 
-            {{ projectLink(project, 'edit-cost-and-effort-community', 'button') }}
+            {{ projectLink(affiliation.project, 'edit-cost-and-effort-community', 'button') }}
         {% endif %}
 
     </div>
@@ -411,7 +411,7 @@
         {{ affiliationLink(affiliation,'add-associate','button') }}
     </div>
 
-    {% if projectService.isLabelled() %}
+    {% if projectService.isLabelled(affiliation.project) %}
         <div class="tab-pane" id="report">
 
             <h4>{{ translate("txt-progress-report-information") }}</h4>
@@ -467,7 +467,7 @@
                 </table>
             {% else %}
                 <br>
-                {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(projectService.parseFullname(affiliation.project)))|raw }}
+                {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(affiliation.project.parseFullname()))|raw }}
             {% endif %}
 
             <h4>{{ translate("txt-exploitation-related-achievement") }}</h4>
