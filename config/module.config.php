@@ -11,6 +11,7 @@ use Affiliation\Acl;
 use Affiliation\Controller;
 use Affiliation\Factory;
 use Affiliation\Form;
+use Affiliation\InputFilter;
 use Affiliation\Options;
 use Affiliation\Search;
 use Affiliation\Service;
@@ -34,10 +35,13 @@ $config = [
             Service\DoaService::class                      => Factory\DoaServiceFactory::class,
             Service\LoiService::class                      => Factory\LoiServiceFactory::class,
             Service\FormService::class                     => Factory\FormServiceFactory::class,
+            InputFilter\AffiliationFilter::class           => Factory\InputFilterFactory::class,
+            InputFilter\DescriptionFilter::class           => Factory\InputFilterFactory::class,
             Options\ModuleOptions::class                   => Factory\ModuleOptionsFactory::class,
             Search\Service\AffiliationSearchService::class => Search\Factory\AffiliationSearchFactory::class,
             Acl\Assertion\Affiliation::class               => Acl\Factory\AssertionFactory::class,
             Acl\Assertion\Doa::class                       => Acl\Factory\AssertionFactory::class,
+            Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
             Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
         ],
     ],

@@ -19,6 +19,7 @@ use Affiliation\Service\AffiliationService;
 use Affiliation\Service\DoaService;
 use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -27,30 +28,44 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @package Affiliation\Factory
  */
-class DoaServiceFactory implements FactoryInterface
+final class DoaServiceFactory implements FactoryInterface
 {
     /**
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param ContainerInterface $container
+     * @param string             $requestedName
+     * @param array|null         $options
      *
-     * @return AffiliationService
+     * @return DoaService
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $doaService = new DoaService();
-        $doaService->setServiceLocator($serviceLocator);
+        $doaService = new DoaService($options);
+        $doaService->setServiceLocator($container);
 
         /** @var EntityManager $entityManager */
-        $entityManager = $serviceLocator->get(EntityManager::class);
+        $entityManager = $container->get(EntityManager::class);
         $doaService->setEntityManager($entityManager);
 
         /** @var AdminService $adminService */
-        $adminService = $serviceLocator->get(AdminService::class);
+        $adminService = $container->get(AdminService::class);
         $doaService->setAdminService($adminService);
 
         /** @var Authorize $authorizeService */
-        $authorizeService = $serviceLocator->get(Authorize::class);
+        $authorizeService = $container->get(Authorize::class);
         $doaService->setAuthorizeService($authorizeService);
 
         return $doaService;
+    }
+
+    /**
+     * @param ServiceLocatorInterface $container
+     * @param string                  $canonicalName
+     * @param string                  $requestedName
+     *
+     * @return AffiliationService
+     */
+    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
+    {
+        return $this($container, $requestedName);
     }
 }

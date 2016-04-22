@@ -93,6 +93,6 @@ class AffiliationFilter extends InputFilter
         ]);
 
 
-        $this->add($inputFilter, 'general_entity_challenge');
+        $this->add($inputFilter, 'affiliation_entity_affiliation');
     }
 }

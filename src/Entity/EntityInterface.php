@@ -15,6 +15,11 @@
 
 namespace Affiliation\Entity;
 
+/**
+ * Interface EntityInterface
+ *
+ * @package Affiliation\Entity
+ */
 interface EntityInterface
 {
     /**

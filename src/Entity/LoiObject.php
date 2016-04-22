@@ -11,9 +11,6 @@
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\InputFilter\Factory as InputFactory;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 
 /**
  * ProjectLoiObject.
@@ -64,51 +61,12 @@ class LoiObject extends EntityAbstract
      *
      * @param $property
      * @param $value
+     *
+     * @return void;
      */
     public function __set($property, $value)
     {
         $this->$property = $value;
-    }
-
-    /**
-     * Set input filter.
-     *
-     * @param InputFilterInterface $inputFilter
-     *
-     * @throws \Exception
-     */
-    public function setInputFilter(InputFilterInterface $inputFilter)
-    {
-        throw new \Exception("Setting an inputFilter is currently not supported");
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $factory = new InputFactory();
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
-    }
-
-    /**
-     * Needed for the hydration of form elements.
-     *
-     * @return array
-     */
-    public function getArrayCopy()
-    {
-        return [];
-    }
-
-    public function populate()
-    {
-        return $this->getArrayCopy();
     }
 
     /**

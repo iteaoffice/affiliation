@@ -514,7 +514,7 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_CONTRIBUTION:
                 return $fee->getContribution();
             default:
-                throw new \Exception("Unknown contributino fee in %s", __FUNCTION__);
+                throw new \Exception("Unknown contribution fee in %s", __FUNCTION__);
         }
     }
 

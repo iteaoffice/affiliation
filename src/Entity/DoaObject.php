@@ -11,8 +11,6 @@
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 
 /**
  * ProjectDoaObject.
@@ -63,58 +61,12 @@ class DoaObject extends EntityAbstract
      *
      * @param $property
      * @param $value
+     *
+     * @return void
      */
     public function __set($property, $value)
     {
         $this->$property = $value;
-    }
-
-    /**
-     * Set input filter.
-     *
-     * @param InputFilterInterface $inputFilter
-     *
-     * @throws \Exception
-     */
-    public function setInputFilter(InputFilterInterface $inputFilter)
-    {
-        throw new \Exception("Setting an inputFilter is currently not supported");
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
-    }
-
-    /**
-     * Needed for the hydration of form elements.
-     *
-     * @return array
-     */
-    public function getArrayCopy()
-    {
-        return [];
-    }
-
-    public function populate()
-    {
-        return $this->getArrayCopy();
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
     }
 
     /**
@@ -126,27 +78,15 @@ class DoaObject extends EntityAbstract
     }
 
     /**
-     * @param \Affiliation\Entity\Doa $doa
+     * @param int $id
+     *
+     * @return DoaObject
      */
-    public function setDoa($doa)
+    public function setId($id)
     {
-        $this->doa = $doa;
-    }
+        $this->id = $id;
 
-    /**
-     * @return \Affiliation\Entity\Doa
-     */
-    public function getDoa()
-    {
-        return $this->doa;
-    }
-
-    /**
-     * @param string $object
-     */
-    public function setObject($object)
-    {
-        $this->object = $object;
+        return $this;
     }
 
     /**
@@ -155,5 +95,37 @@ class DoaObject extends EntityAbstract
     public function getObject()
     {
         return $this->object;
+    }
+
+    /**
+     * @param resource $object
+     *
+     * @return DoaObject
+     */
+    public function setObject($object)
+    {
+        $this->object = $object;
+
+        return $this;
+    }
+
+    /**
+     * @return Doa
+     */
+    public function getDoa()
+    {
+        return $this->doa;
+    }
+
+    /**
+     * @param Doa $doa
+     *
+     * @return DoaObject
+     */
+    public function setDoa($doa)
+    {
+        $this->doa = $doa;
+
+        return $this;
     }
 }

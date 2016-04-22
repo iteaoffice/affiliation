@@ -13,9 +13,6 @@ namespace Affiliation\Entity;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
-use Zend\InputFilter\Factory as InputFactory;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
 
 /**
  * Entity for the Affiliation.
@@ -53,14 +50,8 @@ class Description extends EntityAbstract
     /**
      * @ORM\Column(name="description", type="text", nullable=false)
      * @Annotation\Type("\Zend\Form\Element\Textarea")
-     * @Annotation\Attributes({
-     * "rows":"12"
-     * })
-     * @Annotation\Options({
-     * "label":"txt-affiliation-description","help-block":
-     * "txt-affiliation-description-explanation"
-     * })
-     * @Annotation\Required(true)
+     * @Annotation\Attributes({"rows":"12"})
+     * @Annotation\Options({"label":"txt-affiliation-description","help-block":"txt-affiliation-description-explanation"})
      *
      * @var string
      */
@@ -97,6 +88,8 @@ class Description extends EntityAbstract
     /**
      * @param $property
      * @param $value
+     *
+     * @return void
      */
     public function __set($property, $value)
     {
@@ -111,50 +104,6 @@ class Description extends EntityAbstract
     public function __toString()
     {
         return $this->getDescription();
-    }
-
-    /**
-     * @param InputFilterInterface $inputFilter
-     *
-     * @throws \Exception
-     */
-    public function setInputFilter(InputFilterInterface $inputFilter)
-    {
-        throw new \Exception(sprintf("This class %s is unused", __CLASS__));
-    }
-
-    /**
-     * @return \Zend\InputFilter\InputFilter|\Zend\InputFilter\InputFilterInterface
-     */
-    public function getInputFilter()
-    {
-        if (!$this->inputFilter) {
-            $inputFilter = new InputFilter();
-            $factory = new InputFactory();
-            $inputFilter->add($factory->createInput([
-                    'name'     => 'description',
-                    'required' => true,
-                ]));
-            $this->inputFilter = $inputFilter;
-        }
-
-        return $this->inputFilter;
-    }
-
-    /**
-     * @param \Affiliation\Entity\Affiliation[]|Collections\ArrayCollection() $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-    }
-
-    /**
-     * @return \Affiliation\Entity\Affiliation[]|Collections\ArrayCollection()
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
     }
 
     /**
@@ -182,27 +131,43 @@ class Description extends EntityAbstract
     }
 
     /**
-     * @param \Contact\Entity\Contact $contact
+     * @return int
      */
-    public function setContact($contact)
+    public function getId()
     {
-        $this->contact = $contact;
+        return $this->id;
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @param int $id
+     *
+     * @return Description
      */
-    public function getContact()
+    public function setId($id)
     {
-        return $this->contact;
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
-     * @param string $description
+     * @return Affiliation[]|Collections\ArrayCollection
      */
-    public function setDescription($description)
+    public function getAffiliation()
     {
-        $this->description = $description;
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation[]|Collections\ArrayCollection $affiliation
+     *
+     * @return Description
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
     }
 
     /**
@@ -214,18 +179,34 @@ class Description extends EntityAbstract
     }
 
     /**
-     * @param int $id
+     * @param string $description
+     *
+     * @return Description
      */
-    public function setId($id)
+    public function setDescription($description)
     {
-        $this->id = $id;
+        $this->description = $description;
+
+        return $this;
     }
 
     /**
-     * @return int
+     * @return \Contact\Entity\Contact
      */
-    public function getId()
+    public function getContact()
     {
-        return $this->id;
+        return $this->contact;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     *
+     * @return Description
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
+
+        return $this;
     }
 }

@@ -44,7 +44,6 @@ abstract class EntityAbstract implements EntityInterface
     public function __toString()
     {
         return (string)sprintf("%s:%s", $this->get("full_entity_name"), $this->getId());
-        ;
     }
 
     /**

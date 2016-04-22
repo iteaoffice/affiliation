@@ -123,6 +123,16 @@ return [
                                                             ],
                                                         ],
                                                     ],
+                                                    'payment-sheet'    => [
+                                                        'label'   => _('txt-affiliation-payment-sheet'),
+                                                        'route'   => 'community/affiliation/payment-sheet',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities' => [
+                                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                            ],
+                                                        ],
+                                                    ],
                                                 ],
                                             ],
                                         ],
@@ -138,29 +148,29 @@ return [
             'organisation' => [
                 // And finally, here is where we define our page hierarchy
                 'pages' => [
-                    'doa-approval' => [
+                    'doa-approval'     => [
                         'label' => _("txt-doa-approval"),
                         'route' => 'zfcadmin/affiliation/doa/approval',
                     ],
-                    'doa-missing'  => [
+                    'doa-missing'      => [
                         'label' => _("txt-missing-doa"),
                         'route' => 'zfcadmin/affiliation/doa/missing',
                     ],
-                    'loi-approval' => [
+                    'loi-approval'     => [
                         'label' => _("txt-loi-approval"),
                         'route' => 'zfcadmin/affiliation/loi/approval',
                     ],
-                    'loi-missing'  => [
+                    'loi-missing'      => [
                         'label' => _("txt-missing-loi"),
                         'route' => 'zfcadmin/affiliation/loi/missing',
                     ],
-                    'affiliation-list'  => [
+                    'affiliation-list' => [
                         'label' => _("txt-affiliations"),
                         'route' => 'zfcadmin/affiliation/list',
                     ],
                 ],
             ],
-            'project'     => [
+            'project'      => [
                 'pages' => [
                     'project-list' => [
                         'pages' => [

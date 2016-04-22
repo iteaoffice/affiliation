@@ -44,19 +44,19 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @package Project\Controller\Factory
  */
-class ControllerFactory implements FactoryInterface
+final class ControllerFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface|ControllerManager $container
-     * @param                                      $requestedName
+     * @param string                               $requestedName
      * @param array|null                           $options
      *
-     * @return mixed
+     * @return AffiliationAbstractController
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         /** @var AffiliationAbstractController $controller */
-        $controller = new $requestedName();
+        $controller = new $requestedName($options);
         $serviceManager = $container->getServiceLocator();
 
         /** @var FormService $formService */

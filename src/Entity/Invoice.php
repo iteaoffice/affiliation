@@ -52,7 +52,7 @@ class Invoice extends EntityAbstract
      */
     private $amountInvoiced;
     /**
-     * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="invoice", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="affiliationInvoice", cascade={"persist"})
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=true)
      * })
@@ -79,13 +79,6 @@ class Invoice extends EntityAbstract
     private $invoice;
 
     /**
-     * Class constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @param $property
      *
      * @return mixed
@@ -94,15 +87,6 @@ class Invoice extends EntityAbstract
     {
         return $this->$property;
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
-    {
-        return (string)$this->getInvoice();
-    }
-
 
     /**
      * @param $property
@@ -115,6 +99,15 @@ class Invoice extends EntityAbstract
         $this->$property = $value;
     }
 
+
+    /**
+     * @inheritDoc
+     */
+    public function __toString()
+    {
+        return (string)$this->getInvoice();
+    }
+
     /**
      * @return int
      */
@@ -125,10 +118,14 @@ class Invoice extends EntityAbstract
 
     /**
      * @param int $id
+     *
+     * @return Invoice
      */
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -141,10 +138,14 @@ class Invoice extends EntityAbstract
 
     /**
      * @param int $period
+     *
+     * @return Invoice
      */
     public function setPeriod($period)
     {
         $this->period = $period;
+
+        return $this;
     }
 
     /**
@@ -157,10 +158,14 @@ class Invoice extends EntityAbstract
 
     /**
      * @param int $year
+     *
+     * @return Invoice
      */
     public function setYear($year)
     {
         $this->year = $year;
+
+        return $this;
     }
 
     /**
@@ -173,10 +178,14 @@ class Invoice extends EntityAbstract
 
     /**
      * @param float $amountInvoiced
+     *
+     * @return Invoice
      */
     public function setAmountInvoiced($amountInvoiced)
     {
         $this->amountInvoiced = $amountInvoiced;
+
+        return $this;
     }
 
     /**
@@ -189,10 +198,14 @@ class Invoice extends EntityAbstract
 
     /**
      * @param \Project\Entity\Version\Version $version
+     *
+     * @return Invoice
      */
     public function setVersion($version)
     {
         $this->version = $version;
+
+        return $this;
     }
 
     /**
@@ -205,10 +218,14 @@ class Invoice extends EntityAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
+     * @return Invoice
      */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
+
+        return $this;
     }
 
     /**
@@ -221,9 +238,13 @@ class Invoice extends EntityAbstract
 
     /**
      * @param \Invoice\Entity\Invoice $invoice
+     *
+     * @return Invoice
      */
     public function setInvoice($invoice)
     {
         $this->invoice = $invoice;
+
+        return $this;
     }
 }

@@ -17,6 +17,7 @@ use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\Version;
 use BjyAuthorize\Service\Authorize;
+use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Project\Service\ProjectService;
@@ -100,8 +101,7 @@ abstract class ServiceAbstract implements ServiceInterface
         /*
          * Update the permissions
          */
-        $this->getAdminService()
-            ->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
+        $this->getAdminService()->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
 
         return $entity;
     }
@@ -118,8 +118,7 @@ abstract class ServiceAbstract implements ServiceInterface
         /*
          * Update the permissions
          */
-        $this->getAdminService()
-            ->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
+        $this->getAdminService()->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
 
         //When an an invite is updated, we need to flush the permissions for the project. Later we will use
         //The dependencies for this, but for now we can use this trick
@@ -313,7 +312,7 @@ abstract class ServiceAbstract implements ServiceInterface
     }
 
     /**
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param ServiceLocatorInterface|ContainerInterface $serviceLocator
      *
      * @return ServiceAbstract
      */

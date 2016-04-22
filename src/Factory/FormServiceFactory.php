@@ -16,6 +16,7 @@ namespace Affiliation\Factory;
 
 use Affiliation\Service\FormService;
 use Doctrine\ORM\EntityManager;
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -24,21 +25,35 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @package General\Factory
  */
-class FormServiceFactory implements FactoryInterface
+final class FormServiceFactory implements FactoryInterface
 {
     /**
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param ContainerInterface $container
+     * @param string             $requestedName
+     * @param array|null         $options
      *
      * @return FormService
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $formService = new FormService();
-        $formService->setServiceLocator($serviceLocator);
+        $formService = new FormService($options);
+        $formService->setServiceLocator($container);
         /** @var EntityManager $entityManager */
-        $entityManager = $serviceLocator->get(EntityManager::class);
+        $entityManager = $container->get(EntityManager::class);
         $formService->setEntityManager($entityManager);
 
         return $formService;
+    }
+
+    /**
+     * @param ServiceLocatorInterface $container
+     * @param string                  $canonicalName
+     * @param string                  $requestedName
+     *
+     * @return FormService
+     */
+    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
+    {
+        return $this($container, $requestedName);
     }
 }

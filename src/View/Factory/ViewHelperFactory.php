@@ -17,7 +17,6 @@ namespace Affiliation\View\Factory;
 
 use Affiliation\View\Helper\AbstractViewHelper;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\HelperPluginManager;
@@ -30,28 +29,6 @@ use Zend\View\HelperPluginManager;
 final class ViewHelperFactory implements FactoryInterface
 {
     /**
-     * Options to pass to the constructor (when used in v2), if any.
-     *
-     * @param null|array
-     */
-    private $creationOptions;
-
-    /**
-     * @param null|array|\Traversable $creationOptions
-     *
-     * @throws InvalidServiceException if $creationOptions cannot be coerced to
-     *     an array.
-     */
-    public function __construct($creationOptions = null)
-    {
-        if (null === $creationOptions) {
-            return;
-        }
-
-        $this->setCreationOptions($creationOptions);
-    }
-
-    /**
      * Create an instance of the requested class name.
      *
      * @param ContainerInterface|HelperPluginManager $container
@@ -63,7 +40,7 @@ final class ViewHelperFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         /** @var AbstractViewHelper $viewHelper */
-        $viewHelper = new $requestedName();
+        $viewHelper = new $requestedName($options);
         $viewHelper->setServiceManager($container->getServiceLocator());
         $viewHelper->setHelperPluginManager($container);
 
@@ -79,14 +56,6 @@ final class ViewHelperFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
-        return $this($serviceLocator, $requestedName, $this->creationOptions);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setCreationOptions(array $creationOptions)
-    {
-        $this->creationOptions = $creationOptions;
+        return $this($serviceLocator, $requestedName);
     }
 }

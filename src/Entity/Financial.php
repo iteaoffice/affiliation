@@ -82,13 +82,6 @@ class Financial extends EntityAbstract
     }
 
     /**
-     * Class constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @param $property
      *
      * @return mixed
