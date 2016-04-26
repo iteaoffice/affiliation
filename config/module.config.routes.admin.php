@@ -18,11 +18,9 @@ return [
                 'child_routes' => [
                     'affiliation' => [
                         'type'          => 'Segment',
-                        'priority'      => 1000,
                         'options'       => [
                             'route'    => '/affiliation',
                             'defaults' => [
-                                'namespace'  => __NAMESPACE__,
                                 'controller' => Controller\AffiliationManagerController::class,
                                 'action'     => 'index',
                             ],
@@ -34,6 +32,17 @@ return [
                                 'options' => [
                                     'route'    => '/list[/f-:encodedFilter][/page-:page].html',
                                     'defaults' => [
+                                        'format' => 'html',
+                                        'action' => 'list',
+                                    ]
+                                ]
+                            ],
+                            'list-csv'       => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/list[/f-:encodedFilter].csv',
+                                    'defaults' => [
+                                        'format' => 'csv',
                                         'action' => 'list',
                                     ]
                                 ]

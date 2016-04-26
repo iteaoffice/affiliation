@@ -82,7 +82,7 @@
             <td>{{ affiliation.associate.count() }}</td>
             <td>{{ affiliation.invoice.count() }}</td>
         </tr>
-        {% for affiliationService in projectService.getAffiliation(constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) if affiliation.id != mainAffiliationId %}
+        {% for affiliation in projectService.getAffiliation(constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) if affiliation.id != mainAffiliationId %}
             {% set effortVersionTableAmount = 0 %}
             {% for affiliationVersion in affiliation.version %}
                 {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}

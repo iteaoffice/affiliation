@@ -18,7 +18,6 @@ namespace Affiliation\Search\Service;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Service\AffiliationService;
 use Contact\Service\ContactService;
-use Project\Entity\Version\Type;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Search\Service\AbstractSearchService;
@@ -71,18 +70,32 @@ class AffiliationSearchService extends AbstractSearchService
      * <field name="date_self_funded" type="date" indexed="true" stored="true"/>
      *
      * <field name="organisation" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="organisation" dest="organisation_sort"/>
+     * <field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="organisation" dest="organisation_group"/>
      * <field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="organisation_type" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="organisation_type_group" type="string" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="organisation_type" dest="organisation_type_group"/>
      * <field name="organisation_country" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="organisation_country" dest="organisation_country_group"/>
      *
      * <field name="project" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="project" dest="project_sort"/>
      * <field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_title" type="text_en_splitting" indexed="true" stored="true"/>
      * <field name="project_status" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_call" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="project_call" dest="project_call_group"/>
      * <field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_program" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="project_program" dest="project_program_group"/>
      * <field name="project_latest_version_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_latest_version_type" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
      *
@@ -97,6 +110,9 @@ class AffiliationSearchService extends AbstractSearchService
      * <field name="effort_latest" type="double" indexed="true" stored="true" omitNorms="true"/>
      *
      * <field name="contact" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+     * <copyField source="contact" dest="contact_sort"/>
+     * <field name="contact_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="contact_email" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
      * <field name="contact_address" type="c_text" indexed="true" stored="true" omitNorms="true"/>
      * <field name="contact_zip" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
@@ -120,7 +136,7 @@ class AffiliationSearchService extends AbstractSearchService
         }
         $descriptionMerged = '';
         foreach ($affiliation->getDescription() as $description) {
-            $descriptionMerged .= $description->getDescription()."\n\n";
+            $descriptionMerged .= $description->getDescription() . "\n\n";
         }
         $affiliationDocument->description = $descriptionMerged;
         $affiliationDocument->branch = $affiliation->getBranch();
@@ -132,22 +148,21 @@ class AffiliationSearchService extends AbstractSearchService
         }
 
         // Organisation
-        $affiliationDocument->organisation = (string) $affiliation->getOrganisation();
+        $affiliationDocument->organisation = (string)$affiliation->getOrganisation();
         $affiliationDocument->organisation_id = $affiliation->getOrganisation()->getId();
-        $affiliationDocument->organisation_type = (string) $affiliation->getOrganisation()->getType();
-        $affiliationDocument->organisation_country = (string) $affiliation->getOrganisation()->getCountry();
+        $affiliationDocument->organisation_type = (string)$affiliation->getOrganisation()->getType();
+        $affiliationDocument->organisation_country = (string)$affiliation->getOrganisation()->getCountry();
 
         // Project
         /** @var ProjectService $projectService */
-        $projectService = $this->getProjectService()->setProject($affiliation->getProject());
-        $affiliationDocument->project = $projectService->getProject()->getProject();
-        $affiliationDocument->project_id = $projectService->getProject()->getId();
-        $affiliationDocument->project_number = $projectService->getProject()->getNumber();
-        $affiliationDocument->project_title = $projectService->getProject()->getTitle();
-        $affiliationDocument->project_status = $projectService->parseStatus();
-        $affiliationDocument->project_call = (string) $projectService->getProject()->getCall();
-        $affiliationDocument->project_call_id = $projectService->getProject()->getCall()->getId();
-        $affiliationDocument->project_program = (string) $projectService->getProject()->getCall()->getProgram();
+        $affiliationDocument->project = $affiliation->getProject()->getProject();
+        $affiliationDocument->project_id = $affiliation->getProject()->getId();
+        $affiliationDocument->project_number = $affiliation->getProject()->getNumber();
+        $affiliationDocument->project_title = $affiliation->getProject()->getTitle();
+        $affiliationDocument->project_status = $this->getProjectService()->parseStatus($affiliation->getProject());
+        $affiliationDocument->project_call = (string)$affiliation->getProject()->getCall()->shortName();
+        $affiliationDocument->project_call_id = $affiliation->getProject()->getCall()->getId();
+        $affiliationDocument->project_program = (string)$affiliation->getProject()->getCall()->getProgram();
 
         $latestApprovedVersion = $projectService->getLatestProjectVersion(null, null, false, true);
         if (!is_null($latestApprovedVersion)) {
@@ -158,53 +173,51 @@ class AffiliationSearchService extends AbstractSearchService
         /** @var VersionService $versionService */
         $versionService = $this->getVersionService();
         $poVersionType = $versionService->findVersionTypeByType('po');
-        $poVersion = $projectService->getLatestProjectVersion($poVersionType);
+        $poVersion = $projectService->getLatestProjectVersion($affiliation->getProject(), $poVersionType);
         $fppVersionType = $versionService->findVersionTypeByType('fpp');
-        $fppVersion = $projectService->getLatestProjectVersion($fppVersionType);
-        $excludeTypes = [Type::TYPE_PO, Type::TYPE_FPP];
+        $fppVersion = $projectService->getLatestProjectVersion($affiliation->getProject(), $fppVersionType);
 
         // Version cost
-        $affiliationDocument->cost_draft = $projectService->findTotalCostByProject($projectService);
+        $affiliationDocument->cost_draft = $projectService->findTotalCostByProject($affiliation->getProject());
         if (!is_null($poVersion)) {
-            $affiliationDocument->cost_po =
-                $versionService->findTotalCostVersionByAffiliationAndVersion($affiliation, $poVersion);
+            $affiliationDocument->cost_po
+                = $versionService->findTotalCostVersionByAffiliationAndVersion($affiliation, $poVersion);
         }
         if (!is_null($fppVersion)) {
-            $affiliationDocument->cost_fpp =
-                $versionService->findTotalCostVersionByAffiliationAndVersion($affiliation, $fppVersion);
+            $affiliationDocument->cost_fpp
+                = $versionService->findTotalCostVersionByAffiliationAndVersion($affiliation, $fppVersion);
         }
-        if (!is_null($latestApprovedVersion) && !in_array((int) $latestApprovedVersion->getVersionType()->getId(), $excludeTypes)) {
-            $affiliationDocument->cost_latest =
-                $versionService->findTotalCostVersionByAffiliationAndVersion($affiliation, $latestApprovedVersion);
+        if (!is_null($latestApprovedVersion)) {
+            $affiliationDocument->cost_latest
+                = $versionService->findTotalCostVersionByAffiliationAndVersion($affiliation, $latestApprovedVersion);
         }
 
         // Version effort
-        $affiliationDocument->effort_draft = $projectService->findTotalEffortByProject($projectService);
+        $affiliationDocument->effort_draft = $projectService->findTotalEffortByProject($affiliation->getProject());
         if (!is_null($poVersion)) {
-            $affiliationDocument->effort_po =
-                $versionService->findTotalEffortVersionByAffiliationAndVersion($affiliation, $poVersion);
+            $affiliationDocument->effort_po
+                = $versionService->findTotalEffortVersionByAffiliationAndVersion($affiliation, $poVersion);
         }
         if (!is_null($fppVersion)) {
-            $affiliationDocument->effort_fpp =
-                $versionService->findTotalEffortVersionByAffiliationAndVersion($affiliation, $fppVersion);
+            $affiliationDocument->effort_fpp
+                = $versionService->findTotalEffortVersionByAffiliationAndVersion($affiliation, $fppVersion);
         }
-        if (!is_null($latestApprovedVersion) && !in_array((int) $latestApprovedVersion->getVersionType()->getId(), $excludeTypes)) {
-            $affiliationDocument->effort_latest =
-                $versionService->findTotalEffortVersionByAffiliationAndVersion($affiliation, $latestApprovedVersion);
+        if (!is_null($latestApprovedVersion)) {
+            $affiliationDocument->effort_latest
+                = $versionService->findTotalEffortVersionByAffiliationAndVersion($affiliation, $latestApprovedVersion);
         }
 
         // Contact
         /** @var ContactService $contactService */
-        $contactService = $this->getContactService()->setContact($affiliation->getContact());
-        $affiliationDocument->contact = $contactService->parseFullName();
-        $affiliationDocument->contact_email = $contactService->getContact()->getEmail();
-        $contactVisitAddress = $contactService->getVisitAddress();
+        $affiliationDocument->contact = $affiliation->getContact()->parseFullName();
+        $affiliationDocument->contact_id = $affiliation->getContact()->getId();
+        $affiliationDocument->contact_email = $affiliation->getContact()->getEmail();
+        $contactVisitAddress = $this->getContactService()->getVisitAddress($affiliation->getContact());
         if (!is_null($contactVisitAddress)) {
-            $contactAddress = $contactVisitAddress->getAddress();
-            $affiliationDocument->contact_address = $contactAddress->getAddress();
-            $affiliationDocument->contact_zip = $contactAddress->getZipCode();
-            $affiliationDocument->contact_city = $contactAddress->getCity();
-            $affiliationDocument->contact_country = (string) $contactAddress->getCountry();
+            $affiliationDocument->contact_address = $contactVisitAddress->getAddress();
+            $affiliationDocument->contact_zip = $contactVisitAddress->getZipCode();
+            $affiliationDocument->contact_city = $contactVisitAddress->getCity();
+            $affiliationDocument->contact_country = (string)$contactVisitAddress->getCountry();
         }
 
         $update->addDocument($affiliationDocument);
@@ -241,26 +254,26 @@ class AffiliationSearchService extends AbstractSearchService
         ]));
 
         switch ($order) {
-            case 'organisation':
-                $this->getQuery()->addSort('organisation', $direction);
+            case 'organisation_sort':
+                $this->getQuery()->addSort($order, $direction);
                 break;
             case 'version_latest':
                 $this->getQuery()->addSort('project_latest_version_type', $direction);
                 break;
             case 'cost_latest':
-                $this->getQuery()->addSort('cost_latest', $direction);
+                $this->getQuery()->addSort($order, $direction);
                 break;
             case 'effort_latest':
-                $this->getQuery()->addSort('effort_latest', $direction);
+                $this->getQuery()->addSort($order, $direction);
                 break;
-            case 'project':
-                $this->getQuery()->addSort('project', $direction);
+            case 'project_sort':
+                $this->getQuery()->addSort($order, $direction);
                 break;
             case 'call':
                 $this->getQuery()->addSort('project_call', $direction);
                 break;
-            case 'contact':
-                $this->getQuery()->addSort('contact', $direction);
+            case 'contact_sort':
+                $this->getQuery()->addSort($order, $direction);
                 break;
             default:
                 $this->getQuery()->addSort('id', Query::SORT_DESC);
@@ -274,8 +287,8 @@ class AffiliationSearchService extends AbstractSearchService
             ->setExcludes(['project_call']);
         $facetSet->createFacetField('organisation_type')->setField('organisation_type')->setMinCount(1)
             ->setExcludes(['organisation_type']);
-        $facetSet->createFacetField('organisation_country')->setField('organisation_country')->setMinCount(1)
-            ->setExcludes(['organisation_country']);
+        $facetSet->createFacetField('organisation_country_group')->setField('organisation_country_group')
+            ->setMinCount(1)->setExcludes(['organisation_country_group']);
 
         return $this;
     }
@@ -290,6 +303,7 @@ class AffiliationSearchService extends AbstractSearchService
 
     /**
      * @param AffiliationService $affiliationService
+     *
      * @return AffiliationSearchService
      */
     public function setAffiliationService(AffiliationService $affiliationService)
@@ -309,11 +323,13 @@ class AffiliationSearchService extends AbstractSearchService
 
     /**
      * @param ProjectService $projectService
+     *
      * @return AffiliationSearchService
      */
     public function setProjectService(ProjectService $projectService)
     {
         $this->projectService = $projectService;
+
         return $this;
     }
 
@@ -327,11 +343,13 @@ class AffiliationSearchService extends AbstractSearchService
 
     /**
      * @param VersionService $versionService
+     *
      * @return AffiliationSearchService
      */
     public function setVersionService(VersionService $versionService)
     {
         $this->versionService = $versionService;
+
         return $this;
     }
 
@@ -345,11 +363,13 @@ class AffiliationSearchService extends AbstractSearchService
 
     /**
      * @param ContactService $contactService
+     *
      * @return AffiliationSearchService
      */
     public function setContactService(ContactService $contactService)
     {
         $this->contactService = $contactService;
+
         return $this;
     }
 }

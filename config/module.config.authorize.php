@@ -26,6 +26,10 @@ return [
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/list-csv',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/view',
                     'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => AffiliationAssertion::class
@@ -127,82 +131,82 @@ return [
                 ],
                 [
                     'route'     => 'community/affiliation/payment-sheet',
-                    'roles'     => [strtolower(Access::ACCESS_USER)],
+                    'roles'     => [Access::ACCESS_USER],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/payment-sheet-pdf',
-                    'roles'     => [strtolower(Access::ACCESS_USER)],
+                    'roles'     => [Access::ACCESS_USER],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/affiliation',
-                    'roles'     => [strtolower(Access::ACCESS_USER)],
+                    'roles'     => [Access::ACCESS_USER],
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/edit/affiliation',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/edit/add-associate',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/edit/financial',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/edit/update-effort-spent',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/edit/description',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => AffiliationAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/doa/upload',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/doa/render',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/doa/replace',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/doa/download',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => DoaAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/loi/upload',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => LoiAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/loi/render',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => LoiAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/loi/replace',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => LoiAssertion::class
                 ],
                 [
                     'route'     => 'community/affiliation/loi/download',
-                    'roles'     => strtolower(Access::ACCESS_USER),
+                    'roles'     => Access::ACCESS_USER,
                     'assertion' => LoiAssertion::class
                 ],
             ],

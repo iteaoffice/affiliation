@@ -17,6 +17,7 @@ namespace Affiliation\Search\Factory;
 use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\Service\AffiliationService;
 use Contact\Service\ContactService;
+use Interop\Container\ContainerInterface;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\ServiceManager\FactoryInterface;
@@ -27,34 +28,49 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  *
  * @package Affiliation\Search\Factory
  */
-class AffiliationSearchFactory implements FactoryInterface
+final class AffiliationSearchFactory implements FactoryInterface
 {
     /**
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param ContainerInterface $container
+     * @param string             $requestedName
+     * @param array|null         $options
      *
-     * @return AffiliationSearchService
+     * @return AffiliationSearchFactory
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $searchService = new AffiliationSearchService();
-        $searchService->setServiceLocator($serviceLocator);
+        /** @var AffiliationSearchService $searchService */
+        $searchService = new $requestedName($options);
+        $searchService->setServiceLocator($container);
 
         /** @var AffiliationService $affiliationService */
-        $affiliationService = $serviceLocator->get(AffiliationService::class);
+        $affiliationService = $container->get(AffiliationService::class);
         $searchService->setAffiliationService($affiliationService);
 
         /** @var ProjectService $projectService */
-        $projectService = $serviceLocator->get(ProjectService::class);
+        $projectService = $container->get(ProjectService::class);
         $searchService->setProjectService($projectService);
 
         /** @var VersionService $versionService */
-        $versionService = $serviceLocator->get(VersionService::class);
+        $versionService = $container->get(VersionService::class);
         $searchService->setVersionService($versionService);
 
         /** @var ContactService $contactService */
-        $contactService = $serviceLocator->get(ContactService::class);
+        $contactService = $container->get(ContactService::class);
         $searchService->setContactService($contactService);
 
         return $searchService;
+    }
+
+    /**
+     * @param ServiceLocatorInterface $container
+     * @param string                  $canonicalName
+     * @param string                  $requestedName
+     *
+     * @return AffiliationService
+     */
+    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
+    {
+        return $this($container, $requestedName);
     }
 }

@@ -33,13 +33,12 @@ class AffiliationManagerController extends AffiliationAbstractController
     public function listAction()
     {
         $searchService = $this->getAffiliationSearchService();
-        $page = $this->params('page', 1);
-        $form = new SearchResult();
         $data = array_merge([
             'order'     => '',
             'direction' => '',
             'query'     => '*',
             'facet'     => [],
+            'group'     => null
         ], $this->getRequest()->getQuery()->toArray());
 
         if ($this->getRequest()->isGet()) {
@@ -57,33 +56,130 @@ class AffiliationManagerController extends AffiliationAbstractController
                     );
                 }
             }
-
-            $form->addSearchResults(
-                $searchService->getQuery()->getFacetSet(),
-                $searchService->getResultSet()->getFacetSet()
-            );
-            $form->setData($data);
         }
 
-        $paginator = new Paginator(new SolariumPaginator($searchService->getSolrClient(), $searchService->getQuery()));
-        $paginator->setDefaultItemCountPerPage(($page === 'all') ? 1000 : 25);
-        $paginator->setCurrentPageNumber($page);
-        $paginator->setPageRange(ceil($paginator->getTotalItemCount() / $paginator->getDefaultItemCountPerPage()));
+        switch ($this->params('format', 'html')) {
+            // Csv export
+            case 'csv':
+                return $this->csvExport($searchService, [
+                    'organisation',
+                    'project_number',
+                    'project',
+                    'project_latest_version_type',
+                    'effort_draft',
+                    'effort_po',
+                    'effort_fpp',
+                    'effort_latest',
+                    'cost_draft',
+                    'cost_po',
+                    'cost_fpp',
+                    'cost_latest',
+                    'project_program',
+                    'project_call',
+                    'contact',
+                    'contact_email',
+                    'contact_address',
+                    'contact_zip',
+                    'contact_city',
+                    'contact_country'
+                ]);
 
-        // Remove order and direction from the GET params to prevent duplication
-        $filteredData = array_filter($data, function ($key) {
-            return !in_array($key, ['order', 'direction']);
-        }, ARRAY_FILTER_USE_KEY);
+            // Default paginated html view
+            default:
+                $form = new SearchResult();
 
-        return new ViewModel([
-            'form'                => $form,
-            'order'               => $data['order'],
-            'direction'           => $data['direction'],
-            'query'               => $data['query'],
-            'arguments'           => http_build_query($filteredData),
-            'paginator'           => $paginator,
-            'organisationService' => $this->getOrganisationService()
-        ]);
+                // Populate the group by options
+                $form->get('group')->setValueOptions([
+                    'organisation_group'         => $this->translate('txt-affiliation'),
+                    'organisation_country_group' => $this->translate('txt-country'),
+                    'organisation_type_group'    => $this->translate('txt-organisation-type'),
+                    'project_program_group'      => $this->translate('txt-program'),
+                    'project_call_group'         => $this->translate('txt-call')
+                ]);
+
+                // Populate column filter options and set default values
+                $form->get('cols')->setValueOptions([
+                    'col-affiliation'    => $this->translate('txt-affiliation'),
+                    'col-effort-draft'   => $this->translate('txt-effort-draft'),
+                    'col-cost-draft'     => $this->translate('txt-cost-draft'),
+                    'col-effort-po'      => $this->translate('txt-effort-po'),
+                    'col-cost-po'        => $this->translate('txt-cost-po'),
+                    'col-latest-version' => $this->translate('txt-latest-version'),
+                    'col-latest-effort'  => $this->translate('txt-latest-version-effort'),
+                    'col-latest-cost'    => $this->translate('txt-latest-version-cost'),
+                    'col-project'        => $this->translate('txt-project'),
+                    'col-call'           => $this->translate('txt-call'),
+                    'col-contact'        => $this->translate('txt-contact'),
+                ])->setValue([
+                    'col-affiliation',
+                    'col-latest-version',
+                    'col-latest-effort',
+                    'col-latest-cost',
+                    'col-project',
+                    'col-call',
+                    'col-contact'
+                ]);
+                //$form->get('cols')->setOption('skipLabel', true);
+
+                // Set facet data in the form
+                if ($this->getRequest()->isGet()) {
+                    $form->addSearchResults(
+                        $searchService->getQuery()->getFacetSet(),
+                        $searchService->getResultSet()->getFacetSet()
+                    );
+                    $form->setData($data);
+                }
+
+                $viewParams = [
+                    'fullArguments'       => http_build_query($data),
+                    'form'                => $form,
+                    'order'               => $data['order'],
+                    'direction'           => $data['direction'],
+                    'query'               => $data['query'],
+                    'organisationService' => $this->getOrganisationService()
+                ];
+
+                // Remove order and direction from the GET params to prevent duplication
+                $filteredData = array_filter($data, function ($key) {
+                    return !in_array($key, ['order', 'direction']);
+                }, ARRAY_FILTER_USE_KEY);
+                $viewParams['arguments'] = http_build_query($filteredData);
+
+                // Result is grouped
+                if (!empty($data['group'])) {
+                    $searchService->getQuery()->clearSorts();
+                    $searchService->getQuery()->addSort($data['group'], SolariumQuery::SORT_ASC);
+                    $groupComponent = $searchService->getQuery()->getGrouping();
+                    // Add sorting within group
+                    if (!empty($data['order'])) {
+                        $groupComponent->setSort($data['order'] . ' ' . $data['direction']);
+                    }
+                    $groupComponent->addField($data['group']);
+                    $groupComponent->setNumberOfGroups(true);
+                    $groupComponent->setLimit(100); // Solr needs a limit on results per group
+                    $searchService->getQuery()->setRows(1000); // Solr requires an upper limit
+                    $resultSet = $searchService->getResultSet();
+                    $groupedResults = $resultSet->getGrouping();
+                    $groups = reset($groupedResults);
+                    $viewParams['groupBy'] = $data['group'];
+                    $viewParams['groups'] = reset($groups); // Only 1 grouping field implemented
+
+                    // Regular ungrouped paginated result
+                } else {
+                    $page = $this->params('page', 1);
+                    $paginator = new Paginator(new SolariumPaginator(
+                        $searchService->getSolrClient(),
+                        $searchService->getQuery()
+                    ));
+                    $paginator->setDefaultItemCountPerPage(($page === 'all') ? 1000 : 25);
+                    $paginator->setCurrentPageNumber($page);
+                    $paginator->setPageRange(ceil($paginator->getTotalItemCount()
+                        / $paginator->getDefaultItemCountPerPage()));
+                    $viewParams['paginator'] = $paginator;
+                }
+
+                return new ViewModel($viewParams);
+        }
     }
 
     /**

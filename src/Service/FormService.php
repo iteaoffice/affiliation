@@ -17,8 +17,8 @@ namespace Affiliation\Service;
 
 use Affiliation\Entity\EntityAbstract;
 use Affiliation\Form\CreateObject;
-use Affiliation\InputFilter\ObjectFilter;
 use Zend\Form\Form;
+use Zend\InputFilter\InputFilter;
 
 class FormService extends ServiceAbstract
 {
@@ -52,13 +52,12 @@ class FormService extends ServiceAbstract
             $form = $this->getServiceLocator()->get($formName);
         }
 
-        if (!$this->getServiceLocator()->has($filterName)) {
-            $filter = new ObjectFilter();
-        } else {
+        if ($this->getServiceLocator()->has($filterName)) {
+            /** @var InputFilter $filter */
             $filter = $this->getServiceLocator()->get($filterName);
+            $form->setInputFilter($filter);
         }
 
-        $form->setInputFilter($filter);
         if ($bind) {
             $form->bind($entity);
         }
