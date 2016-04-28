@@ -108,7 +108,7 @@ abstract class LinkAbstract extends AbstractViewHelper
         $this->parseAction();
         $this->parseShow();
         if ('social' === $this->getShow()) {
-            return $serverUrl->__invoke() . $url($this->router, $this->routerParams);
+            return $serverUrl() . $url($this->router, $this->routerParams);
         }
         $uri = '<a href="%s" title="%s" class="%s">%s</a>';
 
@@ -153,10 +153,6 @@ abstract class LinkAbstract extends AbstractViewHelper
                         break;
                     case 'payment-sheet-pdf':
                         $this->addLinkContent('<i class="fa fa-file-pdf-o"></i>');
-                        break;
-
-                    case 'replace':
-                        $this->addLinkContent('<span class="glyphicon glyphicon-repeat"></span>');
                         break;
                     default:
                         $this->addLinkContent('<i class="fa fa-link"></i>');
