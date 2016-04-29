@@ -38,7 +38,9 @@ class AffiliationManagerController extends AffiliationAbstractController
             'direction' => '',
             'query'     => '*',
             'facet'     => [],
-            'group'     => null
+            'group'     => null,
+            'collapse'  => 0,
+            'cols'      => null,
         ], $this->getRequest()->getQuery()->toArray());
 
         if ($this->getRequest()->isGet()) {
@@ -62,26 +64,12 @@ class AffiliationManagerController extends AffiliationAbstractController
             // Csv export
             case 'csv':
                 return $this->csvExport($searchService, [
-                    'organisation',
-                    'project_number',
-                    'project',
-                    'project_latest_version_type',
-                    'effort_draft',
-                    'effort_po',
-                    'effort_fpp',
-                    'effort_latest',
-                    'cost_draft',
-                    'cost_po',
-                    'cost_fpp',
-                    'cost_latest',
-                    'project_program',
-                    'project_call',
-                    'contact',
-                    'contact_email',
-                    'contact_address',
-                    'contact_zip',
-                    'contact_city',
-                    'contact_country'
+                    'organisation_country','organisation_type','organisation',
+                    'project_number','project','project_latest_version_type',
+                    'effort_draft','effort_po','effort_fpp','effort_latest',
+                    'cost_draft','cost_po','cost_fpp','cost_latest',
+                    'project_program','project_call',
+                    'contact','contact_email','contact_address','contact_zip','contact_city','contact_country'
                 ]);
 
             // Default paginated html view
@@ -98,31 +86,39 @@ class AffiliationManagerController extends AffiliationAbstractController
                 ]);
 
                 // Populate column filter options and set default values
+                if(is_null($data['cols'])){
+                    $data['cols'] = [
+                        'col-affiliation',
+                        'col-latest-version',
+                        'col-latest-effort',
+                        'col-latest-cost',
+                        'col-project',
+                        'col-call',
+                        'col-contact'
+                    ];
+                }
                 $form->get('cols')->setValueOptions([
                     'col-affiliation'    => $this->translate('txt-affiliation'),
                     'col-effort-draft'   => $this->translate('txt-effort-draft'),
                     'col-cost-draft'     => $this->translate('txt-cost-draft'),
                     'col-effort-po'      => $this->translate('txt-effort-po'),
                     'col-cost-po'        => $this->translate('txt-cost-po'),
+                    'col-effort-fpp'     => $this->translate('txt-effort-fpp'),
+                    'col-cost-fpp'       => $this->translate('txt-cost-fpp'),
                     'col-latest-version' => $this->translate('txt-latest-version'),
                     'col-latest-effort'  => $this->translate('txt-latest-version-effort'),
                     'col-latest-cost'    => $this->translate('txt-latest-version-cost'),
                     'col-project'        => $this->translate('txt-project'),
                     'col-call'           => $this->translate('txt-call'),
                     'col-contact'        => $this->translate('txt-contact'),
-                ])->setValue([
-                    'col-affiliation',
-                    'col-latest-version',
-                    'col-latest-effort',
-                    'col-latest-cost',
-                    'col-project',
-                    'col-call',
-                    'col-contact'
-                ]);
+                ])->setValue($data['cols']);
                 //$form->get('cols')->setOption('skipLabel', true);
 
                 // Set facet data in the form
                 if ($this->getRequest()->isGet()) {
+                    $form->setFacetLabels([
+                        'organisation_country_group' => $this->translate('txt-country')
+                    ]);
                     $form->addSearchResults(
                         $searchService->getQuery()->getFacetSet(),
                         $searchService->getResultSet()->getFacetSet()
@@ -131,12 +127,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                 }
 
                 $viewParams = [
-                    'fullArguments'       => http_build_query($data),
-                    'form'                => $form,
-                    'order'               => $data['order'],
-                    'direction'           => $data['direction'],
-                    'query'               => $data['query'],
-                    'organisationService' => $this->getOrganisationService()
+                    'fullArguments' => http_build_query($data),
+                    'form'          => $form,
+                    'order'         => $data['order'],
+                    'direction'     => $data['direction'],
+                    'query'         => $data['query'],
+                    'cols'          => $data['cols'],
                 ];
 
                 // Remove order and direction from the GET params to prevent duplication
@@ -163,6 +159,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                     $groups = reset($groupedResults);
                     $viewParams['groupBy'] = $data['group'];
                     $viewParams['groups'] = reset($groups); // Only 1 grouping field implemented
+                    $viewParams['collapse'] = ((int)$data['collapse'] === 1);
 
                     // Regular ungrouped paginated result
                 } else {

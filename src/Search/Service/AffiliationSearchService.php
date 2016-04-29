@@ -155,16 +155,17 @@ class AffiliationSearchService extends AbstractSearchService
 
         // Project
         /** @var ProjectService $projectService */
+        $projectService = $this->getProjectService();
         $affiliationDocument->project = $affiliation->getProject()->getProject();
-        $affiliationDocument->project_id = $affiliation->getProject()->getId();
+        $affiliationDocument->project_id = $affiliation->getProject()->getId(); 
         $affiliationDocument->project_number = $affiliation->getProject()->getNumber();
         $affiliationDocument->project_title = $affiliation->getProject()->getTitle();
-        $affiliationDocument->project_status = $this->getProjectService()->parseStatus($affiliation->getProject());
+        $affiliationDocument->project_status = $projectService->parseStatus($affiliation->getProject());
         $affiliationDocument->project_call = (string)$affiliation->getProject()->getCall()->shortName();
         $affiliationDocument->project_call_id = $affiliation->getProject()->getCall()->getId();
         $affiliationDocument->project_program = (string)$affiliation->getProject()->getCall()->getProgram();
 
-        $latestApprovedVersion = $projectService->getLatestProjectVersion(null, null, false, true);
+        $latestApprovedVersion = $projectService->getLatestProjectVersion($affiliation->getProject(), null, null, false, true);
         if (!is_null($latestApprovedVersion)) {
             $affiliationDocument->project_latest_version_id = $latestApprovedVersion->getId();
             $affiliationDocument->project_latest_version_type = $latestApprovedVersion->getVersionType()->getType();
@@ -232,7 +233,7 @@ class AffiliationSearchService extends AbstractSearchService
      */
     public function updateIndex($clear = false)
     {
-        $this->updateIndexWithCollection($this->getAffiliationService()->findAll('Affiliation'), $clear);
+        $this->updateIndexWithCollection($this->getAffiliationService()->findAll(Affiliation::class), $clear);
     }
 
     /**
@@ -248,30 +249,17 @@ class AffiliationSearchService extends AbstractSearchService
 
         $this->getQuery()->setQuery(static::parseQuery($searchTerm, [
             'organisation',
-            'branch',
             'contact',
             'project',
         ]));
 
         switch ($order) {
             case 'organisation_sort':
-                $this->getQuery()->addSort($order, $direction);
-                break;
-            case 'version_latest':
-                $this->getQuery()->addSort('project_latest_version_type', $direction);
-                break;
-            case 'cost_latest':
-                $this->getQuery()->addSort($order, $direction);
-                break;
-            case 'effort_latest':
-                $this->getQuery()->addSort($order, $direction);
-                break;
+            case 'project_latest_version_type':
+            case 'effort_draft': case 'effort_po': case 'effort_fpp': case 'effort_latest':
+            case 'cost_draft': case 'cost_po': case 'cost_fpp': case 'cost_latest':
             case 'project_sort':
-                $this->getQuery()->addSort($order, $direction);
-                break;
-            case 'call':
-                $this->getQuery()->addSort('project_call', $direction);
-                break;
+            case 'project_call':
             case 'contact_sort':
                 $this->getQuery()->addSort($order, $direction);
                 break;
