@@ -65,10 +65,10 @@ class AffiliationManagerController extends AffiliationAbstractController
             case 'csv':
                 return $this->csvExport($searchService, [
                     'organisation_country', 'organisation_type', 'organisation',
-                    'project_number', 'project', 'project_latest_version_type',
-                    'effort_draft', 'effort_po', 'effort_fpp', 'effort_latest',
-                    'cost_draft', 'cost_po', 'cost_fpp', 'cost_latest',
+                    'project_number', 'project', 'project_draft_cost', 'project_draft_effort', 
+                    'project_latest_version_type', 'project_latest_version_status', 'project_latest_version_cost', 'project_latest_version_effort',
                     'project_program', 'project_call',
+                    'project_version_type', 'project_version_status', 'project_version_cost', 'project_version_effort',
                     'contact', 'contact_email', 'contact_address', 'contact_zip', 'contact_city', 'contact_country'
                 ]);
 
@@ -81,6 +81,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                     'organisation_group'         => $this->translate('txt-affiliation'),
                     'organisation_country_group' => $this->translate('txt-country'),
                     'organisation_type_group'    => $this->translate('txt-organisation-type'),
+                    'project_group'              => $this->translate('txt-project'),
                     'project_program_group'      => $this->translate('txt-program'),
                     'project_call_group'         => $this->translate('txt-call')
                 ]);
@@ -89,9 +90,9 @@ class AffiliationManagerController extends AffiliationAbstractController
                 if (is_null($data['cols'])) {
                     $data['cols'] = [
                         'col-affiliation',
-                        'col-latest-version',
-                        'col-latest-effort',
-                        'col-latest-cost',
+                        'col-version',
+                        'col-version-cost',
+                        'col-version-effort',
                         'col-project',
                         'col-call',
                         'col-contact'
@@ -99,13 +100,14 @@ class AffiliationManagerController extends AffiliationAbstractController
                 }
                 $form->get('cols')->setValueOptions([
                     'col-affiliation'    => $this->translate('txt-affiliation'),
-                    'col-effort-draft'   => $this->translate('txt-effort-draft'),
-                    'col-cost-draft'     => $this->translate('txt-cost-draft'),
-                    'col-effort-po'      => $this->translate('txt-effort-po'),
-                    'col-cost-po'        => $this->translate('txt-cost-po'),
-                    'col-effort-fpp'     => $this->translate('txt-effort-fpp'),
-                    'col-cost-fpp'       => $this->translate('txt-cost-fpp'),
+                    'col-draft-cost'     => $this->translate('txt-project-draft-cost'),
+                    'col-draft-effort'   => $this->translate('txt-project-draft-effort'),
+                    'col-version'        => $this->translate('txt-version'),
+                    'col-version-status' => $this->translate('txt-version-status'),
+                    'col-version-cost'   => $this->translate('txt-version-cost'),
+                    'col-version-effort' => $this->translate('txt-version-effort'),
                     'col-latest-version' => $this->translate('txt-latest-version'),
+                    'col-latest-status'  => $this->translate('txt-latest-version-status'),
                     'col-latest-effort'  => $this->translate('txt-latest-version-effort'),
                     'col-latest-cost'    => $this->translate('txt-latest-version-cost'),
                     'col-project'        => $this->translate('txt-project'),
