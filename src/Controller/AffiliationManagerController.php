@@ -64,12 +64,12 @@ class AffiliationManagerController extends AffiliationAbstractController
             // Csv export
             case 'csv':
                 return $this->csvExport($searchService, [
-                    'organisation_country','organisation_type','organisation',
-                    'project_number','project','project_latest_version_type',
-                    'effort_draft','effort_po','effort_fpp','effort_latest',
-                    'cost_draft','cost_po','cost_fpp','cost_latest',
-                    'project_program','project_call',
-                    'contact','contact_email','contact_address','contact_zip','contact_city','contact_country'
+                    'organisation_country', 'organisation_type', 'organisation',
+                    'project_number', 'project', 'project_latest_version_type',
+                    'effort_draft', 'effort_po', 'effort_fpp', 'effort_latest',
+                    'cost_draft', 'cost_po', 'cost_fpp', 'cost_latest',
+                    'project_program', 'project_call',
+                    'contact', 'contact_email', 'contact_address', 'contact_zip', 'contact_city', 'contact_country'
                 ]);
 
             // Default paginated html view
@@ -86,7 +86,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 ]);
 
                 // Populate column filter options and set default values
-                if(is_null($data['cols'])){
+                if (is_null($data['cols'])) {
                     $data['cols'] = [
                         'col-affiliation',
                         'col-latest-version',

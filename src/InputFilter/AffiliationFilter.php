@@ -20,12 +20,9 @@ use DoctrineModule\Validator;
 use Zend\InputFilter\InputFilter;
 
 /**
- * Jield webdev copyright message placeholder.
+ * Class AffiliationFilter
  *
- * @category    Partner
- *
- * @author      Johan van der Heide <info@jield.nl>
- * @copyright   Copyright (c) 2015 Jield (http://jield.nl)
+ * @package Affiliation\InputFilter
  */
 class AffiliationFilter extends InputFilter
 {

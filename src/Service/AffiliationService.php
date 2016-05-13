@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
 use Invoice\Entity\Method;
+use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
 use Program\Entity\Call\Call;
 use Project\Entity\Funding\Funding;
@@ -680,6 +681,19 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * @param Organisation $organisation
+     *
+     * @return ArrayCollection|Affiliation[]
+     */
+    public function findAffiliationByOrganisation(Organisation $organisation)
+    {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        
+        return new ArrayCollection($repository->findAffiliationByOrganisation($organisation));
+    }
+
+    /**
      * @param Project $project
      * @param int     $which
      *
@@ -804,6 +818,17 @@ class AffiliationService extends ServiceAbstract
     {
         $affiliation->setDateEnd(null);
         $this->updateEntity($affiliation);
+    }
+
+    /**
+     * @return array
+     */
+    public function findLogAffiliations()
+    {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findAffiliationInProjectLog();
     }
 
     /**

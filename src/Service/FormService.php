@@ -20,6 +20,11 @@ use Affiliation\Form\CreateObject;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
 
+/**
+ * Class FormService
+ *
+ * @package Affiliation\Service
+ */
 class FormService extends ServiceAbstract
 {
     /**
@@ -57,6 +62,10 @@ class FormService extends ServiceAbstract
             $filter = $this->getServiceLocator()->get($filterName);
             $form->setInputFilter($filter);
         }
+
+        $form->setAttribute('role', 'form');
+        $form->setAttribute('action', '');
+        $form->setAttribute('class', 'form-horizontal');
 
         if ($bind) {
             $form->bind($entity);

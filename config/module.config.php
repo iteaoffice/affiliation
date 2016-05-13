@@ -12,10 +12,12 @@ use Affiliation\Controller;
 use Affiliation\Factory;
 use Affiliation\Form;
 use Affiliation\InputFilter;
+use Affiliation\Navigation;
 use Affiliation\Options;
 use Affiliation\Search;
 use Affiliation\Service;
 use Affiliation\View;
+use Zend\Stdlib;
 
 $config = [
     'controllers'        => [
@@ -43,6 +45,9 @@ $config = [
             Acl\Assertion\Doa::class                       => Acl\Factory\AssertionFactory::class,
             Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
             Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
+            Navigation\Invokable\AffiliationLabel::class   => Navigation\Factory\NavigationInvokableFactory::class,
+            Navigation\Invokable\DoaLabel::class           => Navigation\Factory\NavigationInvokableFactory::class,
+            Navigation\Invokable\LoiLabel::class           => Navigation\Factory\NavigationInvokableFactory::class,
         ],
     ],
     'controller_plugins' => [
@@ -104,15 +109,9 @@ $config = [
         ],
     ],
 ];
-$configFiles = [
-    __DIR__ . '/module.config.routes.php',
-    __DIR__ . '/module.config.routes.admin.php',
-    __DIR__ . '/module.config.navigation.php',
-    __DIR__ . '/module.config.authorize.php',
-    __DIR__ . '/module.config.search.php',
-    __DIR__ . '/module.option.affiliation.php',
-];
-foreach ($configFiles as $configFile) {
-    $config = Zend\Stdlib\ArrayUtils::merge($config, include $configFile);
+
+foreach (Stdlib\Glob::glob(__DIR__ . '/module.config.{,*}.php', Stdlib\Glob::GLOB_BRACE) as $file) {
+    $config = Stdlib\ArrayUtils::merge($config, include $file);
 }
+
 return $config;

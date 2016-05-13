@@ -148,26 +148,32 @@ return [
             'organisation' => [
                 // And finally, here is where we define our page hierarchy
                 'pages' => [
+                    'affiliation-list' => [
+                        'label' => _("txt-nav-affiliation-list-statistics"),
+                        'order' => 15,
+                        'route' => 'zfcadmin/affiliation/list',
+                    ],
                     'doa-approval'     => [
-                        'label' => _("txt-doa-approval"),
+                        'label' => _("txt-nav-doa-approval"),
+                        'order' => 80,
                         'route' => 'zfcadmin/affiliation/doa/approval',
                     ],
                     'doa-missing'      => [
-                        'label' => _("txt-missing-doa"),
+                        'label' => _("txt-nav-missing-doa"),
+                        'order' => 90,
                         'route' => 'zfcadmin/affiliation/doa/missing',
                     ],
                     'loi-approval'     => [
-                        'label' => _("txt-loi-approval"),
+                        'label' => _("txt-nav-loi-approval"),
+                        'order' => 100,
                         'route' => 'zfcadmin/affiliation/loi/approval',
                     ],
                     'loi-missing'      => [
-                        'label' => _("txt-missing-loi"),
+                        'label' => _("txt-nav-missing-loi"),
+                        'order' => 110,
                         'route' => 'zfcadmin/affiliation/loi/missing',
                     ],
-                    'affiliation-list' => [
-                        'label' => _("txt-affiliations"),
-                        'route' => 'zfcadmin/affiliation/list',
-                    ],
+
                 ],
             ],
             'project'      => [

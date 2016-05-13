@@ -273,7 +273,7 @@
 {% set contribution = affiliationService.parseContribution(affiliation, version, year, period) %}
 
 <h4>{{ translate("txt-upcoming-invoice-for-year-%s-period-%s")|format(year,period) }}</h4>
-<table class="table table-hover table-striped">
+<table class="table table-hover table-striped table-condensed">
     <thead>
     <tr>
         <th>{{ translate("txt-period") }}</th>
@@ -305,7 +305,7 @@
 
 <h4>{{ translate("txt-already-sent-invoices-after-invoice-for-year-%s-period-%s")|format(year,period) }}</h4>
 
-<table class="table table-hover table-striped">
+<table class="table table-hover table-striped table-condensed">
     <thead>
     <tr>
         <th>{{ translate("txt-invoice-number") }}</th>

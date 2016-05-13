@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
 use InvalidArgumentException;
+use Organisation\Entity\Organisation;
 use Program\Entity\Call\Call;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
@@ -331,6 +332,26 @@ class Affiliation extends EntityRepository
             default:
                 throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
         }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param Organisation $organisation
+     *
+     * @return Entity\Affiliation[]
+     */
+    public function findAffiliationByOrganisation(Organisation $organisation)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
+
+        $qb->andWhere('affiliation_entity_affiliation.organisation = ?1');
+        $qb->setParameter(1, $organisation);
+
+        $qb->addOrderBy('project_entity_project.number', 'DESC');
 
         return $qb->getQuery()->getResult();
     }

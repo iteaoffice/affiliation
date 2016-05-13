@@ -157,7 +157,7 @@ class AffiliationSearchService extends AbstractSearchService
         /** @var ProjectService $projectService */
         $projectService = $this->getProjectService();
         $affiliationDocument->project = $affiliation->getProject()->getProject();
-        $affiliationDocument->project_id = $affiliation->getProject()->getId(); 
+        $affiliationDocument->project_id = $affiliation->getProject()->getId();
         $affiliationDocument->project_number = $affiliation->getProject()->getNumber();
         $affiliationDocument->project_title = $affiliation->getProject()->getTitle();
         $affiliationDocument->project_status = $projectService->parseStatus($affiliation->getProject());
@@ -256,8 +256,14 @@ class AffiliationSearchService extends AbstractSearchService
         switch ($order) {
             case 'organisation_sort':
             case 'project_latest_version_type':
-            case 'effort_draft': case 'effort_po': case 'effort_fpp': case 'effort_latest':
-            case 'cost_draft': case 'cost_po': case 'cost_fpp': case 'cost_latest':
+            case 'effort_draft':
+            case 'effort_po':
+            case 'effort_fpp':
+            case 'effort_latest':
+            case 'cost_draft':
+            case 'cost_po':
+            case 'cost_fpp':
+            case 'cost_latest':
             case 'project_sort':
             case 'project_call':
             case 'contact_sort':
