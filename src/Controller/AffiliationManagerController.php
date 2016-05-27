@@ -114,7 +114,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                     'col-call'           => $this->translate('txt-call'),
                     'col-contact'        => $this->translate('txt-contact'),
                 ])->setValue($data['cols']);
-                //$form->get('cols')->setOption('skipLabel', true);
+                $form->get('cols')->setOption('skipLabel', true);
 
                 // Set facet data in the form
                 if ($this->getRequest()->isGet()) {
@@ -161,9 +161,11 @@ class AffiliationManagerController extends AffiliationAbstractController
                     $groups = reset($groupedResults);
                     $viewParams['groupBy'] = $data['group'];
                     $viewParams['groups'] = reset($groups); // Only 1 grouping field implemented
-                    $viewParams['collapse'] = ((int)$data['collapse'] === 1);
+                    $collapse = ((int)$data['collapse'] === 1);
+                    $form->get('btn-collapse')->setLabel($this->translate(($collapse ? 'txt-expand-rows' : 'txt-collapse-rows')));
+                    $viewParams['collapse'] = $collapse;
 
-                    // Regular ungrouped paginated result
+                // Regular ungrouped paginated result
                 } else {
                     $page = $this->params('page', 1);
                     $paginator = new Paginator(new SolariumPaginator(

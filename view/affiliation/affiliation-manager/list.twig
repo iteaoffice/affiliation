@@ -10,24 +10,21 @@
         <h1>{{ translate("txt-affiliation-list") }}</h1>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
                 <p><a href="{{ url('zfcadmin/affiliation/list-csv') }}{% if fullArguments %}?{{ fullArguments }}{% endif %}"
                       class="btn btn-primary">{{ translate("txt-download-as-csv") }}</a>
                 </p>
-                <div><span class="label" style="background-color: #f2dede;">&nbsp;</span> = {{ translate('txt-inactive-affiliation') }}</div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <p>
-                <div class="input-group">
-                    {{ formelement(form.get('query')) }}
-                    <span class="input-group-btn">
-                        {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
-                        </span>
+                <div>
+                    <div class="form-group">{{ formelement(form.get('query')) }}</div>
+                    {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
                 </div>
                 </p>
                 <p>
-                <div class="form-inline">
+                <div>
                     <div class="form-group">{{ formelement(form.get('group')) }}</div>
                     {{ formelement(form.get('apply')) }}
                     {% if groups %}
@@ -45,6 +42,9 @@
                         {{ translate("txt-%s-items-in-%s-groups")|format(groups.getMatches(), groups.getNumberOfGroups()) }}
                     </p>
                 {% endif %}
+                <div><span class="label" style="background-color: #f2dede;">&nbsp;</span> = {{ translate('txt-inactive-affiliation') }}</div>
+            </div>
+            <div class="col-md-4">
                 <div class="row">
                     {{ ztbformelement(form.get('cols')) }}
                 </div>
@@ -342,11 +342,8 @@
             $('#tbl-list .' + $self.attr('value')).toggleClass('hidden', !$self.is(':checked'));
         });
         {% if groups %}$('#btn-collapse').click(function(){
-            var rows = $('#tbl-list tbody tr').not('.row-totals');
-            rows.toggleClass('hidden');
-            var hidden = rows.is(':hidden');
-            $(this).text((hidden ? '{{ translate('txt-expand-rows') }}' : '{{ translate('txt-collapse-rows') }}'));
-            $('#hid-collapse').val((hidden ? 1 : 0));
+            $('#hid-collapse').val(($('#tbl-list tbody tr').not('.row-totals').is(':hidden') ? 0 : 1));
+            $('#search').submit();
         });{% endif %}
     });
 </script>
