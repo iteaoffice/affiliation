@@ -65,7 +65,7 @@ class AffiliationManagerController extends AffiliationAbstractController
             case 'csv':
                 return $this->csvExport($searchService, [
                     'organisation_country', 'organisation_type', 'organisation',
-                    'project_number', 'project', 'project_draft_cost', 'project_draft_effort', 
+                    'project_number', 'project', 'project_draft_cost', 'project_draft_effort',
                     'project_latest_version_type', 'project_latest_version_status', 'project_latest_version_cost', 'project_latest_version_effort',
                     'project_program', 'project_call',
                     'project_version_type', 'project_version_status', 'project_version_cost', 'project_version_effort',

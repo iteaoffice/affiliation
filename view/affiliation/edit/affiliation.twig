@@ -17,7 +17,7 @@ affiliation.project.parseFullName()
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(project,'view-community', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
     </div>
 </div>
 
@@ -51,7 +51,7 @@ affiliation.project.parseFullName()
     <div class="col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
-        {% if affiliationService.isActive() %}
+        {% if affiliationService.isActive(affiliation) %}
             {{ ztbformelement(form.get('deactivate')) }}
         {% else %}
             {{ ztbformelement(form.get('reactivate')) }}

@@ -11,7 +11,7 @@
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
-use General\Entity\Country;
+use Doctrine\ORM\EntityManager;
 use General\Service\GeneralService;
 use Organisation\Entity\Financial as FinancialOrganisation;
 use Zend\Form\Form;
@@ -22,20 +22,19 @@ use Zend\Form\Form;
 class Financial extends Form
 {
     /**
+     * Financial constructor.
+     *
      * @param Affiliation    $affiliation
      * @param GeneralService $generalService
+     * @param EntityManager  $entityManager
      */
-    public function __construct(Affiliation $affiliation, GeneralService $generalService)
+    public function __construct(Affiliation $affiliation, GeneralService $generalService, EntityManager $entityManager)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
-        $countries = [];
-        foreach ($generalService->findAll(Country::class) as $country) {
-            $countries[$country->getId()] = $country->getCountry();
-        }
-        asort($countries);
+
         $this->add([
             'type'       => 'Zend\Form\Element\Text',
             'name'       => 'organisation',
@@ -43,20 +42,27 @@ class Financial extends Form
                 'label' => _("txt-organisation-name"),
             ],
             'attributes' => [
-                'class'    => 'form-control',
-                'required' => true,
+                'class' => 'form-control',
             ],
         ]);
+
         $this->add([
-            'type'       => 'Zend\Form\Element\Select',
+            'type'       => 'DoctrineORMModule\Form\Element\EntitySelect',
             'name'       => 'registeredCountry',
             'options'    => [
-                'value_options' => $countries,
-                'label'         => _("txt-registered-country"),
+                'target_class'   => "General\Entity\Country",
+                'object_manager' => $entityManager,
+                "find_method"    => [
+                    "name"   => "findForForm",
+                    'params' => [
+                        'criteria' => [],
+                        'orderBy'  => [],
+                    ],
+                ],
             ],
             'attributes' => [
-                'class'    => 'form-control',
-                'required' => true,
+                'class' => 'form-control',
+                'label' => _("txt-registered-country"),
             ],
         ]);
         $this->add([
@@ -66,7 +72,8 @@ class Financial extends Form
                 'label' => _("txt-vat-number"),
             ],
             'attributes' => [
-                'class' => 'form-control',
+                'class'       => 'form-control',
+                'placeholder' => _("txt-financial-vat-number-placeholder"),
             ],
         ]);
         $this->add([
@@ -122,20 +129,19 @@ class Financial extends Form
                 'label'         => _("txt-financial-contact"),
             ],
             'attributes' => [
-                'class'    => 'form-control',
-                'required' => true,
+                'class' => 'form-control',
             ],
         ]);
-        $organisationFinancial = new FinancialOrganisation();
+
         $this->add([
             'type'       => 'Zend\Form\Element\Radio',
             'name'       => 'omitContact',
             'options'    => [
-                'value_options' => $organisationFinancial->getOmitContactTemplates(),
+                'value_options' => FinancialOrganisation::getOmitContactTemplates(),
                 'label'         => _("txt-omit-contact"),
             ],
             'attributes' => [
-                'required' => true,
+
             ],
         ]);
         $this->add([
@@ -147,7 +153,6 @@ class Financial extends Form
             'attributes' => [
                 'class'       => 'form-control',
                 'placeholder' => _("txt-address-placeholder"),
-                'required'    => true,
             ],
         ]);
         $this->add([
@@ -159,7 +164,6 @@ class Financial extends Form
             'attributes' => [
                 'class'       => 'form-control',
                 'placeholder' => _("txt-zip-code-placeholder"),
-                'required'    => true,
             ],
         ]);
         $this->add([
@@ -171,30 +175,35 @@ class Financial extends Form
             'attributes' => [
                 'class'       => 'form-control',
                 'placeholder' => _("txt-city-placeholder"),
-                'required'    => true,
             ],
         ]);
         $this->add([
-            'type'       => 'Zend\Form\Element\Select',
+            'type'       => 'DoctrineORMModule\Form\Element\EntitySelect',
             'name'       => 'country',
             'options'    => [
-                'value_options' => $countries,
-                'label'         => _("txt-country"),
+                'target_class'   => "General\Entity\Country",
+                'object_manager' => $entityManager,
+                "find_method"    => [
+                    "name"   => "findForForm",
+                    'params' => [
+                        'criteria' => [],
+                        'orderBy'  => [],
+                    ],
+                ],
             ],
             'attributes' => [
-                'class'    => 'form-control',
-                'required' => true,
+                'class' => 'form-control',
+                'label' => _("txt-country"),
             ],
         ]);
         $this->add([
             'type'       => 'Zend\Form\Element\Radio',
             'name'       => 'preferredDelivery',
             'options'    => [
-                'value_options' => $organisationFinancial->getEmailTemplates(),
+                'value_options' => FinancialOrganisation::getEmailTemplates(),
                 'label'         => _("txt-preferred-delivery"),
             ],
             'attributes' => [
-                'required' => true,
             ],
         ]);
         $this->add([

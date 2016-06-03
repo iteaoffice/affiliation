@@ -196,164 +196,177 @@ class EditController extends AffiliationAbstractController
         }
 
 
-        $form = new FinancialForm($affiliation, $this->getGeneralService());
-        $form->setData($formData);
-        if ($this->getRequest()->isPost() && $form->setData($_POST)
-            && $form->isValid()
-        ) {
-            $formData = $form->getData();
+        $form = new FinancialForm($affiliation, $this->getGeneralService(), $this->getEntityManager());
 
-            //We need to find the organisation, first by tring the VAT, then via the name and country and then just create it
-            $organisation = null;
+        $data = array_merge($formData, $this->getRequest()->getPost()->toArray());
+        $form->setData($data);
 
-            //Check if an organisation with the given VAT is already found
-            $organisationFinancial = $this->getOrganisationService()
-                ->findFinancialOrganisationWithVAT($formData['vat']);
-
-
-            //If the organisation is found, it has by default an organiation
-            if (!is_null($organisationFinancial)) {
-                $organisation = $organisationFinancial->getOrganisation();
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute('community/affiliation/affiliation', [
+                    'id' => $affiliation->getId(),
+                ], [
+                    'fragment' => 'invoicing',
+                ]);
             }
 
-            //try to find the organisation based on te country and name
-            if (is_null($organisation)) {
-                $organisation = $this->getOrganisationService()
-                    ->findOrganisationByNameCountry(
-                        trim($formData['organisation']),
-                        $this->getGeneralService()->findEntityById(Country::class, $formData['country'])
-                    );
-            }
 
-            /**
-             * If the organisation is still not found, create it
-             */
-            if (is_null($organisation)) {
-                $organisation = new Organisation();
-                $organisation->setOrganisation($formData['organisation']);
-                $organisation->setCountry($this->getGeneralService()->findEntityById(Country::class, $formData['country']));
-                /**
-                 * @var $organisationType Type
-                 */
-                $organisationType = $this->getOrganisationService()->getEntityManager()
-                    ->getReference('Organisation\Entity\Type', 0);
-                $organisation->setType($organisationType);
-            }
+            if ($form->isValid()) {
+                $formData = $form->getData();
 
-            /**
-             *
-             * Update the affiliationFinancial
-             */
-            $affiliationFinancial = $affiliation->getFinancial();
-            if (is_null($affiliationFinancial)) {
-                $affiliationFinancial = new Financial();
-                $affiliationFinancial->setAffiliation($affiliation);
-            }
-            $affiliationFinancial->setContact($this->getContactService()->findContactById($formData['contact']));
-            $affiliationFinancial->setOrganisation($organisation);
-            $affiliationFinancial->setBranch(trim(substr(
-                $formData['organisation'],
-                strlen($organisation->getOrganisation())
-            )));
-            $this->getAffiliationService()->updateEntity($affiliationFinancial);
+                //We need to find the organisation, first by tring the VAT, then via the name and country and then just create it
+                $organisation = null;
+
+                //Check if an organisation with the given VAT is already found
+                $organisationFinancial = $this->getOrganisationService()
+                    ->findFinancialOrganisationWithVAT($formData['vat']);
 
 
-            if (!is_null($affiliation->getFinancial())) {
-                $organisationFinancial = $affiliation->getFinancial()->getOrganisation()->getFinancial();
-            } else {
-                $organisationFinancial = $affiliation->getOrganisation()->getFinancial();
-            }
-
-            if (is_null($organisationFinancial)) {
-                $organisationFinancial = new \Organisation\Entity\Financial();
-            }
-
-            $organisationFinancial->setOrganisation($organisation);
-            /**
-             * The presence of a VAT number triggers the creation of a financial organisation
-             */
-            if (!empty($formData['vat'])) {
-                $organisationFinancial->setVat($formData['vat']);
-
-                //Do an in-situ vat check
-                $vies = new Vies();
-
-                try {
-                    $result = $vies->validateVat(
-                        $organisationFinancial->getOrganisation()->getCountry()->getCd(),
-                        trim(str_replace(
-                            $organisationFinancial->getOrganisation()->getCountry()->getCd(),
-                            '',
-                            $formData['vat']
-                        ))
-                    );
-
-                    if ($result->isValid()) {
-                        $this->flashMessenger()->setNamespace('success')
-                            ->addMessage(sprintf($this->translate("txt-vat-number-is-valid"), $affiliation));
-
-
-                        //Update the financial
-                        $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_VALID);
-                        $organisationFinancial->setDateVat(new \DateTime());
-                    } else {
-                        //Update the financial
-                        $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_INVALID);
-                        $organisationFinancial->setDateVat(new \DateTime());
-                        $this->flashMessenger()->setNamespace('error')
-                            ->addMessage(sprintf($this->translate("txt-vat-number-is-invalid"), $affiliation));
-                    }
-                } catch (\Exception $e) {
-                    $this->flashMessenger()->setNamespace('danger')
-                        ->addMessage(sprintf(
-                            $this->translate("txt-vat-information-could-not-be-verified"),
-                            $affiliation
-                        ));
+                //If the organisation is found, it has by default an organiation
+                if (!is_null($organisationFinancial)) {
+                    $organisation = $organisationFinancial->getOrganisation();
                 }
-            } else {
-                $organisationFinancial->setVat(null);
-            }
 
-            $organisationFinancial->setEmail($formData['preferredDelivery']);
-            $organisationFinancial->setOmitContact($formData['omitContact']);
-            $this->getOrganisationService()->updateEntity($organisationFinancial);
+                //try to find the organisation based on te country and name
+                if (is_null($organisation)) {
+                    $organisation = $this->getOrganisationService()
+                        ->findOrganisationByNameCountry(
+                            trim($formData['organisation']),
+                            $this->getGeneralService()->findEntityById(Country::class, $formData['country'])
+                        );
+                }
 
-
-            /*
-             * save the financial address
-             */
-
-            if (is_null($financialAddress = $this->getContactService()
-                ->getFinancialAddress($affiliationFinancial->getContact()))) {
-                $financialAddress = new Address();
-                $financialAddress->setContact($affiliation->getFinancial()->getContact());
                 /**
-                 * @var $addressType AddressType
+                 * If the organisation is still not found, create it
                  */
-                $addressType = $this->getContactService()
-                    ->findEntityById(AddressType::class, AddressType::ADDRESS_TYPE_FINANCIAL);
-                $financialAddress->setType($addressType);
-            }
-            $financialAddress->setAddress($formData['address']);
-            $financialAddress->setZipCode($formData['zipCode']);
-            $financialAddress->setCity($formData['city']);
-            /**
-             * @var Country $country
-             */
-            $country = $this->getGeneralService()->findEntityById(Country::class, $formData['country']);
-            $financialAddress->setCountry($country);
-            $this->getContactService()->updateEntity($financialAddress);
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(sprintf(
-                    $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                    $affiliation
-                ));
+                if (is_null($organisation)) {
+                    $organisation = new Organisation();
+                    $organisation->setOrganisation($formData['organisation']);
+                    $organisation->setCountry($this->getGeneralService()
+                        ->findEntityById(Country::class, $formData['country']));
+                    /**
+                     * @var $organisationType Type
+                     */
+                    $organisationType = $this->getOrganisationService()->getEntityManager()
+                        ->getReference('Organisation\Entity\Type', 0);
+                    $organisation->setType($organisationType);
+                }
 
-            return $this->redirect()->toRoute('community/affiliation/affiliation', [
-                'id' => $affiliation->getId(),
-            ], [
-                'fragment' => 'invoicing',
-            ]);
+                /**
+                 *
+                 * Update the affiliationFinancial
+                 */
+                $affiliationFinancial = $affiliation->getFinancial();
+                if (is_null($affiliationFinancial)) {
+                    $affiliationFinancial = new Financial();
+                    $affiliationFinancial->setAffiliation($affiliation);
+                }
+                $affiliationFinancial->setContact($this->getContactService()->findContactById($formData['contact']));
+                $affiliationFinancial->setOrganisation($organisation);
+                $affiliationFinancial->setBranch(trim(substr(
+                    $formData['organisation'],
+                    strlen($organisation->getOrganisation())
+                )));
+                $this->getAffiliationService()->updateEntity($affiliationFinancial);
+
+
+                if (!is_null($affiliation->getFinancial())) {
+                    $organisationFinancial = $affiliation->getFinancial()->getOrganisation()->getFinancial();
+                } else {
+                    $organisationFinancial = $affiliation->getOrganisation()->getFinancial();
+                }
+
+                if (is_null($organisationFinancial)) {
+                    $organisationFinancial = new \Organisation\Entity\Financial();
+                }
+
+                $organisationFinancial->setOrganisation($organisation);
+                /**
+                 * The presence of a VAT number triggers the creation of a financial organisation
+                 */
+                if (!empty($formData['vat'])) {
+                    $organisationFinancial->setVat($formData['vat']);
+
+                    //Do an in-situ vat check
+                    $vies = new Vies();
+
+                    try {
+                        $result = $vies->validateVat(
+                            $organisationFinancial->getOrganisation()->getCountry()->getCd(),
+                            trim(str_replace(
+                                $organisationFinancial->getOrganisation()->getCountry()->getCd(),
+                                '',
+                                $formData['vat']
+                            ))
+                        );
+
+                        if ($result->isValid()) {
+                            $this->flashMessenger()->setNamespace('success')
+                                ->addMessage(sprintf($this->translate("txt-vat-number-is-valid"), $affiliation));
+
+
+                            //Update the financial
+                            $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_VALID);
+                            $organisationFinancial->setDateVat(new \DateTime());
+                        } else {
+                            //Update the financial
+                            $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_INVALID);
+                            $organisationFinancial->setDateVat(new \DateTime());
+                            $this->flashMessenger()->setNamespace('error')
+                                ->addMessage(sprintf($this->translate("txt-vat-number-is-invalid"), $affiliation));
+                        }
+                    } catch (\Exception $e) {
+                        $this->flashMessenger()->setNamespace('danger')
+                            ->addMessage(sprintf(
+                                $this->translate("txt-vat-information-could-not-be-verified"),
+                                $affiliation
+                            ));
+                    }
+                } else {
+                    $organisationFinancial->setVat(null);
+                }
+
+                $organisationFinancial->setEmail($formData['preferredDelivery']);
+                $organisationFinancial->setOmitContact($formData['omitContact']);
+                $this->getOrganisationService()->updateEntity($organisationFinancial);
+
+
+                /*
+                 * save the financial address
+                 */
+
+                if (is_null($financialAddress = $this->getContactService()
+                    ->getFinancialAddress($affiliationFinancial->getContact()))) {
+                    $financialAddress = new Address();
+                    $financialAddress->setContact($affiliation->getFinancial()->getContact());
+                    /**
+                     * @var $addressType AddressType
+                     */
+                    $addressType = $this->getContactService()
+                        ->findEntityById(AddressType::class, AddressType::ADDRESS_TYPE_FINANCIAL);
+                    $financialAddress->setType($addressType);
+                }
+                $financialAddress->setAddress($formData['address']);
+                $financialAddress->setZipCode($formData['zipCode']);
+                $financialAddress->setCity($formData['city']);
+                /**
+                 * @var Country $country
+                 */
+                $country = $this->getGeneralService()->findEntityById(Country::class, $formData['country']);
+                $financialAddress->setCountry($country);
+                $this->getContactService()->updateEntity($financialAddress);
+                $this->flashMessenger()->setNamespace('success')
+                    ->addMessage(sprintf(
+                        $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                        $affiliation
+                    ));
+
+                return $this->redirect()->toRoute('community/affiliation/affiliation', [
+                    'id' => $affiliation->getId(),
+                ], [
+                    'fragment' => 'invoicing',
+                ]);
+            }
         }
 
         return new ViewModel([
@@ -419,17 +432,25 @@ class EditController extends AffiliationAbstractController
         }
 
         if (!$affiliation->getDescription()->isEmpty()) {
-            /*
-             * @var Description
-             */
+            /** @var Description $description */
             $description = $affiliation->getDescription()->first();
         } else {
             $description = new Description();
         }
+
         $data = $this->getRequest()->getPost()->toArray();
-        $form = $this->getFormService()->prepare('description', $description, $data);
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (array_key_exists('submit', $data)) {
+        $form = $this->getFormService()->prepare($description, $description, $data);
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'description']
+                );
+            }
+
+            if ($form->isValid()) {
+
                 /** @var Description $description */
                 $description = $form->getData();
                 $description->setAffiliation([
@@ -443,13 +464,14 @@ class EditController extends AffiliationAbstractController
                         $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
                         $affiliation
                     ));
-            }
 
-            return $this->redirect()->toRoute(
-                'community/affiliation/affiliation',
-                ['id' => $affiliation->getId()],
-                ['fragment' => 'description']
-            );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'description']
+                );
+            }
         }
 
         return new ViewModel([
