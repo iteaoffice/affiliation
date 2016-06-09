@@ -62,6 +62,7 @@ class LoiManagerController extends AffiliationAbstractController
     public function approvalAction()
     {
         $loi = $this->getLoiService()->findNotApprovedLoi();
+
         $form = new LoiApproval($loi, $this->getContactService());
 
         return new ViewModel([

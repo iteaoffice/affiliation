@@ -1,8 +1,11 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-list-affiliation-loi")) %}
+
 {% do headLink().appendStylesheet(
 '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
 ) %}
 
-<h1>{{ translate("txt-unapproved-affiliation-loi") }}</h1>
+<h1>{{ translate("txt-list-affiliation-loi") }}</h1>
 
 <table class="table table-hover table-consended table-striped">
     <thead>

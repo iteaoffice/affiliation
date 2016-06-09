@@ -38,13 +38,13 @@ class LoiApproval extends Form implements InputFilterProviderInterface
         foreach ($lois as $loi) {
             $affiliationFieldset = new Fieldset('affiliation_' . $loi->getAffiliation()->getId());
 
-            $contactService->findContactsInAffiliation($loi->getAffiliation());
+            $contacts = $contactService->findContactsInAffiliation($loi->getAffiliation());
             $affiliationFieldset->add(
                 [
                     'type'       => 'Zend\Form\Element\Select',
                     'name'       => 'contact',
                     'options'    => [
-                        'value_options' => $contactService->toFormValueOptions(),
+                        'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
                         'label'         => _("txt-contact-name"),
                     ],
                     'attributes' => [

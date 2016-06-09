@@ -1,3 +1,6 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-missing-affiliation-loi")) %}
+
 <h1>{{ translate("txt-missing-affiliation-loi") }}</h1>
 
 {% if paginator.pageRange > 0 %}

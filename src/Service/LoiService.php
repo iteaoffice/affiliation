@@ -10,48 +10,51 @@
 
 namespace Affiliation\Service;
 
-use Affiliation\Entity\Loi;
+use Affiliation\Entity;
+use Affiliation\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Organisation\Entity\Organisation;
 
 /**
- * LoiService.
- *
- * this is a generic wrapper service for all the other services
- *
- * First parameter of all methods (lowercase, underscore_separated)
- * will be used to fetch the correct model service, one exception is the 'linkModel'
- * method.
+ * Class LoiService
+ * @package Affiliation\Service
  */
 class LoiService extends ServiceAbstract
 {
     /**
      * @param $id
      *
-     * @return null|Loi
+     * @return null|Entity\Loi
      */
     public function findLoiById($id)
     {
-        return $this->getEntityManager()->getRepository(Loi::class)->find($id);
+        return $this->getEntityManager()->getRepository(Entity\Loi::class)->find($id);
     }
 
     /**
      * Get a list of not approved lois.
      *
-     * @return Loi[]|ArrayCollection
+     * @return Entity\Loi[]|ArrayCollection
      */
     public function findNotApprovedLoi()
     {
-        return new ArrayCollection($this->getEntityManager()->getRepository(Loi::class)->findNotApprovedLoi());
+        /** @var Repository\Loi $repository */
+        $repository = $this->getEntityManager()->getRepository(Entity\Loi::class);
+
+        return new ArrayCollection($repository->findNotApprovedLoi());
     }
 
     /**
      * Get a list Loi's by organisation
      *
-     * @return Loi[]
+     * @param Organisation $organisation
+     * @return Entity\Loi[]
      */
     public function findLoiByOrganisation(Organisation $organisation)
     {
-        return $this->getEntityManager()->getRepository(Loi::class)->findLoiByOrganisation($organisation);
+        /** @var Repository\Loi $repository */
+        $repository = $this->getEntityManager()->getRepository(Entity\Loi::class);
+
+        return $repository->findLoiByOrganisation($organisation);
     }
 }

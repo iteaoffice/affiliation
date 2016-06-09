@@ -1,3 +1,9 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-edit-loi-%s-in-%s")|format(
+affiliation.organisation.organisation,
+project
+) ) %}
+
 {% set project = affiliation.project %}
 
 <h1>{{ translate("txt-edit-loi-%s-in-%s")|format(

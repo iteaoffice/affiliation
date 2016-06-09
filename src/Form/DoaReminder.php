@@ -35,14 +35,14 @@ class DoaReminder extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-        $contactService->findContactsInAffiliation($affiliation);
+        $contacts = $contactService->findContactsInAffiliation($affiliation);
 
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Select',
                 'name'       => 'receiver',
                 'options'    => [
-                    'value_options' => $contactService->toFormValueOptions(),
+                    'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
                     'label'         => _("txt-contact-name"),
                 ],
                 'attributes' => [

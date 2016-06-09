@@ -1,3 +1,9 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-edit-loi-%s-in-%s")|format(
+loi.affiliation.organisation.organisation,
+loi.affiliation.project
+)) %}
+
 {% do headLink().appendStylesheet(
 '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
 ) %}
