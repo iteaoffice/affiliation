@@ -69,6 +69,21 @@
         </dl>
 
         <dl class="dl-horizontal">
+            <dt>{{ translate("txt-funding-status") }}</dt>
+            {% for year in projectService.parseYearRange(affiliation.project) %}
+                <dd> {{ year }}:
+                    {% if affiliationService.isSelfFunded(affiliation) %}
+                        {{ translate("txt-self-funded") }}
+                    {% elseif (affiliationService.getFundingInYear(affiliation,year)) %}
+                        <span class="badge funding-status {{ affiliationService.getFundingInYear(affiliation,year).status.parseCssName }}">{{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}</span>
+                    {% else %}
+                        {{ translate("txt-not-set") }}
+                    {% endif %}
+                </dd>
+            {% endfor %}
+        </dl>
+
+        <dl class="dl-horizontal">
 
             {% if (requirePartnership) %}
                 <dt>{{ translate("txt-partnership") }}</dt>
