@@ -317,7 +317,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 $yearData[] = $this->translate("txt-self-funded");
             } elseif (!is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
                 $yearData[] = $this->getAffiliationService()->getFundingInYear($affiliation, $projectYear)->getStatus()
-                    ->getStatus();
+                    ->getStatusFunding();
             } else {
                 $yearData[] = "-";
             }

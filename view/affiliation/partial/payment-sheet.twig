@@ -164,7 +164,7 @@
                 {% if affiliationService.isSelfFunded(affiliation) %}
                     {{ translate("txt-self-funded") }}
                 {% else %}
-                    <span class="badge funding-status {{ affiliationService.getFundingInYear(affiliation,projectYear).status.parseCssName }}">{{ affiliationService.getFundingInYear(affiliation,projectYear).status.status }}</span>
+                    <span class="badge funding-status {{ affiliationService.getFundingInYear(affiliation,projectYear).status.parseCssName }}">{{ affiliationService.getFundingInYear(affiliation,projectYear).status.statusFunding }}</span>
                 {% endif %}
             </td>
 
