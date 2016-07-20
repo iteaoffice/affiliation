@@ -64,12 +64,29 @@ class AffiliationManagerController extends AffiliationAbstractController
             // Csv export
             case 'csv':
                 return $this->csvExport($searchService, [
-                    'organisation_country', 'organisation_type', 'organisation',
-                    'project_number', 'project', 'project_draft_cost', 'project_draft_effort',
-                    'project_latest_version_type', 'project_latest_version_status', 'project_latest_version_cost', 'project_latest_version_effort',
-                    'project_program', 'project_call',
-                    'project_version_type', 'project_version_status', 'project_version_cost', 'project_version_effort',
-                    'contact', 'contact_email', 'contact_address', 'contact_zip', 'contact_city', 'contact_country'
+                    'organisation_country',
+                    'organisation_type',
+                    'organisation',
+                    'project_number',
+                    'project',
+                    'project_draft_cost',
+                    'project_draft_effort',
+                    'project_latest_version_type',
+                    'project_latest_version_status',
+                    'project_latest_version_cost',
+                    'project_latest_version_effort',
+                    'project_program',
+                    'project_call',
+                    'project_version_type',
+                    'project_version_status',
+                    'project_version_cost',
+                    'project_version_effort',
+                    'contact',
+                    'contact_email',
+                    'contact_address',
+                    'contact_zip',
+                    'contact_city',
+                    'contact_country',
                 ]);
 
             // Default paginated html view
@@ -83,7 +100,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                     'organisation_type_group'    => $this->translate('txt-organisation-type'),
                     'project_group'              => $this->translate('txt-project'),
                     'project_program_group'      => $this->translate('txt-program'),
-                    'project_call_group'         => $this->translate('txt-call')
+                    'project_call_group'         => $this->translate('txt-call'),
                 ]);
 
                 // Populate column filter options and set default values
@@ -95,7 +112,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                         'col-version-effort',
                         'col-project',
                         'col-call',
-                        'col-contact'
+                        'col-contact',
                     ];
                 }
                 $form->get('cols')->setValueOptions([
@@ -119,7 +136,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 // Set facet data in the form
                 if ($this->getRequest()->isGet()) {
                     $form->setFacetLabels([
-                        'organisation_country_group' => $this->translate('txt-country')
+                        'organisation_country_group' => $this->translate('txt-country'),
                     ]);
                     $form->addSearchResults(
                         $searchService->getQuery()->getFacetSet(),
@@ -165,7 +182,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                     $form->get('btn-collapse')->setLabel($this->translate(($collapse ? 'txt-expand-rows' : 'txt-collapse-rows')));
                     $viewParams['collapse'] = $collapse;
 
-                // Regular ungrouped paginated result
+                    // Regular ungrouped paginated result
                 } else {
                     $page = $this->params('page', 1);
                     $paginator = new Paginator(new SolariumPaginator(
@@ -184,7 +201,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return ViewModel
+     * @return array|ViewModel
      */
     public function viewAction()
     {
@@ -211,7 +228,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return ViewModel
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function mergeAction()
     {
@@ -254,9 +271,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     }
 
     /**
-     * Edit a affiliation.
-     *
-     * @return ViewModel
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function editAction()
     {
@@ -377,7 +392,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
 
     /**
-     * @return array|ViewModel
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function editAssociateAction()
     {
@@ -436,8 +451,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 //Define the new affiliation
-                $affiliation = $this->getAffiliationService()->findAffiliationById($formData['affiliation'])
-                    ->getAffiliation();
+                $affiliation = $this->getAffiliationService()->findAffiliationById($formData['affiliation']);
                 $affiliation->addAssociate($contact);
 
                 $this->getAffiliationService()->updateEntity($affiliation);

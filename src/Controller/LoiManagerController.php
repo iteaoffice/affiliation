@@ -91,7 +91,7 @@ class LoiManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return ViewModel
+     * @return ViewModel|array
      */
     public function remindAction()
     {
@@ -172,7 +172,7 @@ class LoiManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return \Zend\View\Model\ViewModel
+     * @return \Zend\View\Model\ViewModel|array
      */
     public function viewAction()
     {
@@ -185,7 +185,7 @@ class LoiManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return \Zend\View\Model\ViewModel
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function editAction()
     {
@@ -204,8 +204,8 @@ class LoiManagerController extends AffiliationAbstractController
 
         //Get contacts in an organisation
         $contacts = $this->getContactService()->findContactsInAffiliation($loi->getAffiliation());
-        $form->get('project_entity_loi')->get('contact')->setValueOptions($this->getContactService()
-            ->toFormValueOptions($contacts));
+        $form->get('affiliation_entity_loi')->get('contact')->setValueOptions($this->getContactService()
+            ->toFormValueOptions($contacts['contacts']));
 
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
