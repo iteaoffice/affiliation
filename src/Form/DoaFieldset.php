@@ -25,13 +25,15 @@ use Zend\Validator\File\Size;
 class DoaFieldset extends Fieldset implements InputFilterProviderInterface
 {
     /**
+     * DoaFieldset constructor.
+     *
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
     {
-        parent::__construct('doa');
-        $doa = new Entity\Doa();
-        $doctrineHydrator = new DoctrineHydrator($entityManager, 'Affiliation\Entity\Doa');
+        parent::__construct('affiliation_entity_doa');
+        $doa              = new Entity\Doa();
+        $doctrineHydrator = new DoctrineHydrator($entityManager, Entity\Doa::class);
         $this->setHydrator($doctrineHydrator)->setObject($doa);
         $builder = new AnnotationBuilder();
         /*

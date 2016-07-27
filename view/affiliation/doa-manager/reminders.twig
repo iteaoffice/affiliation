@@ -8,7 +8,7 @@ affiliation.project
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
     affiliation.organisation.organisation,
     affiliation.project
-    ) }}</h1>
+    ) }} {{ doaLink(null, 'remind-admin', 'button', affiliation) }}</h1>
 
 {% if affiliation.doaReminder.count() > 0 %}
 
@@ -35,7 +35,3 @@ affiliation.project
 {% else %}
     {{ ztbalert().info(translate("txt-no-reminders-have-been-send-yet"))|raw }}
 {% endif %}
-
-{{ doaLink(null, 'remind-admin', 'button', affiliation) }}
-{{ doaLink(null, 'approval-admin', 'button') }}
-{{ doaLink(null, 'missing-admin', 'button') }}

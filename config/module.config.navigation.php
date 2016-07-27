@@ -24,10 +24,10 @@ return [
                                                 'visible' => false,
                                                 'params'  => [
                                                     'entities'   => [
-                                                        'id' => Affiliation\Entity\Affiliation::class
+                                                        'id' => Affiliation\Entity\Affiliation::class,
                                                     ],
                                                     'invokables' => [
-                                                        Affiliation\Navigation\Invokable\AffiliationLabel::class
+                                                        Affiliation\Navigation\Invokable\AffiliationLabel::class,
                                                     ],
                                                 ],
                                                 'pages'   => [
@@ -80,8 +80,8 @@ return [
                                                                 'id' => \Affiliation\Entity\Affiliation::class,
                                                             ],
                                                             'routeParam' => [
-                                                                'id' => 'affiliationId'
-                                                            ]
+                                                                'id' => 'affiliationId',
+                                                            ],
                                                         ],
                                                     ],
                                                     'replace-doa'      => [
@@ -93,7 +93,7 @@ return [
                                                                 'id' => \Affiliation\Entity\Doa::class,
                                                             ],
                                                             'invokables' => [
-                                                                Affiliation\Navigation\Invokable\DoaLabel::class
+                                                                Affiliation\Navigation\Invokable\DoaLabel::class,
                                                             ],
                                                         ],
                                                     ],
@@ -106,8 +106,8 @@ return [
                                                                 'id' => \Affiliation\Entity\Affiliation::class,
                                                             ],
                                                             'routeParam' => [
-                                                                'id' => 'affiliationId'
-                                                            ]
+                                                                'id' => 'affiliationId',
+                                                            ],
                                                         ],
                                                     ],
                                                     'replace-loi'      => [
@@ -119,7 +119,7 @@ return [
                                                                 'id' => \Affiliation\Entity\Affiliation::class,
                                                             ],
                                                             'invokables' => [
-                                                                Affiliation\Navigation\Invokable\LoiLabel::class
+                                                                Affiliation\Navigation\Invokable\LoiLabel::class,
                                                             ],
                                                         ],
                                                     ],
@@ -157,11 +157,38 @@ return [
                         'label' => _("txt-nav-doa-approval"),
                         'order' => 80,
                         'route' => 'zfcadmin/affiliation/doa/approval',
+                        'pages' => [
+                            'edit' => [
+                                'label'   => _('txt-nav-edit'),
+                                'route'   => 'zfcadmin/affiliation/doa/edit',
+                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => \Affiliation\Entity\Doa::class,
+                                    ],
+                                    'invokables' => [
+                                        Affiliation\Navigation\Invokable\DoaLabel::class,
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                     'doa-missing'      => [
                         'label' => _("txt-nav-missing-doa"),
                         'order' => 90,
                         'route' => 'zfcadmin/affiliation/doa/missing',
+                        'pages' => [
+                            'edit' => [
+                                'label'   => _('txt-nav-doa-remind'),
+                                'route'   => 'zfcadmin/affiliation/doa/remind',
+                                'visible' => false,
+                            ],
+                            'reminders' => [
+                                'label'   => _('txt-nav-doa-reminders'),
+                                'route'   => 'zfcadmin/affiliation/doa/reminders',
+                                'visible' => false,
+                            ],
+                        ],
                     ],
                     'loi-approval'     => [
                         'label' => _("txt-nav-loi-approval"),
@@ -188,10 +215,10 @@ return [
                                         'visible' => false,
                                         'params'  => [
                                             'entities'   => [
-                                                'id' => Affiliation\Entity\Affiliation::class
+                                                'id' => Affiliation\Entity\Affiliation::class,
                                             ],
                                             'invokables' => [
-                                                Affiliation\Navigation\Invokable\AffiliationLabel::class
+                                                Affiliation\Navigation\Invokable\AffiliationLabel::class,
                                             ],
                                         ],
                                         'pages'   => [

@@ -40,9 +40,14 @@ class DoaLabel extends AbstractNavigationInvokable
             $doa = $this->getEntities()->get(Doa::class);
             $this->getEntities()->set(Affiliation::class, $doa->getAffiliation());
             $this->getEntities()->set(Project::class, $doa->getAffiliation()->getProject());
-            $page->setParams(array_merge($page->getParams(), [
-                'id' => $doa->getId(),
-            ]));
+            $page->setParams(
+                array_merge(
+                    $page->getParams(),
+                    [
+                    'id' => $doa->getId(),
+                    ]
+                )
+            );
             $label = $this->translate('txt-doa');
         } else {
             $label = $this->translate('txt-nav-view');

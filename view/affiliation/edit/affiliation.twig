@@ -51,9 +51,14 @@ affiliation.project.parseFullName()
     <div class="col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
-        {% if affiliationService.isActive(affiliation) %}
+        {% if form.has('deactivate') %}
             {{ ztbformelement(form.get('deactivate')) }}
-        {% else %}
+        {% endif %}
+        {% if affiliationHasCostOrEffortInDraft %}
+            <button type="button" class="btn btn-danger"
+                    onclick="return alert('{{ translate("txt-deactivation-of-partner-is-disabled-remove-cost-and-effort-in-draft-first") }}');">{{ translate("txt-deactivation-disabled") }}</button>
+        {% endif %}
+        {% if form.has('reactivate') %}
             {{ ztbformelement(form.get('reactivate')) }}
         {% endif %}
     </div>
