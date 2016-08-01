@@ -56,7 +56,7 @@ affiliation.project.parseFullName()
         {% endif %}
         {% if affiliationHasCostOrEffortInDraft %}
             <button type="button" class="btn btn-danger"
-                    onclick="return alert('{{ translate("txt-deactivation-of-partner-is-disabled-remove-cost-and-effort-in-draft-first") }}');">{{ translate("txt-deactivation-disabled") }}</button>
+                    disabled="disabled">{{ translate("txt-deactivate") }}</button> <i class="fa fa-info-circle cursor-help" title="{{ translate("txt-deactivation-of-partner-is-disabled-remove-cost-and-effort-in-draft-first") }}"></i>
         {% endif %}
         {% if form.has('reactivate') %}
             {{ ztbformelement(form.get('reactivate')) }}

@@ -9,7 +9,7 @@
 <h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
     affiliation.organisation.organisation,
     affiliation.project.parseFullName()
-    ) }}</h1>
+    ) }} </h1>
 
 {% do form.prepare() %}
 
@@ -20,7 +20,7 @@
     <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(project,'view-admin', 'name') }}</p>
+        <p class="form-control-static">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
@@ -64,10 +64,11 @@
     <div class="col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
-        {% if affiliationService.isActive(affiliation) %}
-            {{ ztbformelement(form.get('deactivate')) }}
+        {% if form.has('delete') %}
+            {{ ztbformelement(form.get('delete')) }}
         {% else %}
-            {{ ztbformelement(form.get('reactivate')) }}
+            <button type="button" class="btn btn-danger"
+                    disabled="disabled">{{ translate("txt-delete") }}</button> <i class="fa fa-info-circle cursor-help" title="{{ translate("txt-removal-of-partner-is-disabled-because-partner-is-active-in-version") }}"></i>
         {% endif %}
     </div>
 </div>

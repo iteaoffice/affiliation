@@ -146,6 +146,8 @@
         <h3>{{ translate("txt-partner-description") }}</h3>
 
         {% for description in affiliation.description %}
+            {{ affiliation.id }}
+            {{ description.id }}
             <dl class="dl-horizontal">
                 <dt>{{ translate("txt-description") }}</dt>
                 <dd>{{ description.description|raw|nl2br }}</dd>

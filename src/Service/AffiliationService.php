@@ -73,6 +73,16 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * @param Affiliation $affiliation
+     *
+     * @return bool
+     */
+    public function isActiveInVersion(Affiliation $affiliation)
+    {
+        return ! $affiliation->getVersion()->isEmpty();
+    }
+
+    /**
      * Checks if the affiliation has a DOA.
      *
      * @param Affiliation $affiliation
