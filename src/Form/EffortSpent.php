@@ -160,7 +160,6 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                                 ),
                             ],
                             'callback' => function ($value, $context = []) {
-
                                 if ($this->effortPlanned == 0
                                     && $context['effort'] == 0
                                 ) {

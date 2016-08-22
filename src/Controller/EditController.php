@@ -156,6 +156,11 @@ class EditController extends AffiliationAbstractController
                 $financial->setContact($this->getContactService()->findContactById($formData['financial']));
                 $this->getAffiliationService()->updateEntity($financial);
 
+                //Update the mode of the project
+                $project = $affiliation->getProject();
+                $project->setMode($this->getProjectService()->getNextMode($project)->mode);
+                $this->getProjectService()->updateEntity($project);
+
                 $this->flashMessenger()->setNamespace('success')
                     ->addMessage(
                         sprintf(
@@ -250,7 +255,7 @@ class EditController extends AffiliationAbstractController
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
                     [
-                    'id' => $affiliation->getId(),
+                        'id' => $affiliation->getId(),
                     ],
                     [
                         'fragment' => 'invoicing',
@@ -426,7 +431,7 @@ class EditController extends AffiliationAbstractController
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
                     [
-                    'id' => $affiliation->getId(),
+                        'id' => $affiliation->getId(),
                     ],
                     [
                         'fragment' => 'invoicing',
@@ -613,7 +618,7 @@ class EditController extends AffiliationAbstractController
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
                     [
-                    'id' => $affiliation->getId(),
+                        'id' => $affiliation->getId(),
                     ],
                     ['fragment' => 'report']
                 );
@@ -642,7 +647,7 @@ class EditController extends AffiliationAbstractController
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
                     [
-                    'id' => $affiliation->getId(),
+                        'id' => $affiliation->getId(),
                     ],
                     ['fragment' => 'report']
                 );

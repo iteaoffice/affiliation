@@ -20,9 +20,7 @@ use Zend\View\Model\ViewModel;
 class CommunityController extends AffiliationAbstractController
 {
     /**
-     * Show the details of 1 affiliation.
-     *
-     * @return \Zend\View\Model\ViewModel
+     * @return array|ViewModel
      */
     public function affiliationAction()
     {
@@ -52,7 +50,7 @@ class CommunityController extends AffiliationAbstractController
     }
 
     /**
-     * @return ViewModel
+     * @return array|ViewModel
      */
     public function paymentSheetAction()
     {
@@ -74,7 +72,9 @@ class CommunityController extends AffiliationAbstractController
         ]);
     }
 
-
+    /**
+     * @return array|\Zend\Http\PhpEnvironment\Response|\Zend\Stdlib\ResponseInterface
+     */
     public function paymentSheetPdfAction()
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
