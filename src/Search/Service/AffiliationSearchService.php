@@ -248,26 +248,35 @@ class AffiliationSearchService extends AbstractSearchService
             'contact',
             'project',
         ]));
+        $hasTerm = !in_array($searchTerm, ['*','']);
+        $hasSort = ($order !== '');
 
-        switch ($order) {
-            case 'organisation_sort':
-            case 'cost_draft':
-            case 'effort_draft':
-            case 'project_version_type':
-            case 'project_version_status':
-            case 'project_version_cost':
-            case 'project_version_effort':
-            case 'project_latest_version_type':
-            case 'project_latest_version_cost':
-            case 'project_latest_version_effort':
-            case 'project_sort':
-            case 'project_call':
-            case 'contact_sort':
-                $this->getQuery()->addSort($order, $direction);
-                break;
-            default:
-                $this->getQuery()->addSort('id', Query::SORT_DESC);
-                break;
+        if ($hasSort) {
+            switch ($order) {
+                case 'organisation_sort':
+                case 'cost_draft':
+                case 'effort_draft':
+                case 'project_version_type':
+                case 'project_version_status':
+                case 'project_version_cost':
+                case 'project_version_effort':
+                case 'project_latest_version_type':
+                case 'project_latest_version_cost':
+                case 'project_latest_version_effort':
+                case 'project_sort':
+                case 'project_call':
+                case 'contact_sort':
+                    $this->getQuery()->addSort($order, $direction);
+                    break;
+                default:
+                    $this->getQuery()->addSort('id', Query::SORT_DESC);
+                    break;
+            }
+        }
+        if($hasTerm){
+            $this->getQuery()->addSort('score', Query::SORT_DESC);
+        } else {
+            $this->getQuery()->addSort('id', Query::SORT_DESC);
         }
 
         $facetSet = $this->getQuery()->getFacetSet();
