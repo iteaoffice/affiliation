@@ -48,18 +48,16 @@ class AffiliationManagerController extends AffiliationAbstractController
 
         if ($this->getRequest()->isGet()) {
             $searchService->setSearch($data['query'], $data['order'], $data['direction']);
-            if (isset($data['facet'])) {
-                foreach ($data['facet'] as $facetField => $values) {
-                    $quotedValues = [];
-                    foreach ($values as $value) {
-                        $quotedValues[] = sprintf("\"%s\"", $value);
-                    }
-
-                    $searchService->addFilterQuery(
-                        $facetField,
-                        implode(' ' . SolariumQuery::QUERY_OPERATOR_OR . ' ', $quotedValues)
-                    );
+            foreach ($data['facet'] as $facetField => $values) {
+                $quotedValues = [];
+                foreach ($values as $value) {
+                    $quotedValues[] = sprintf("\"%s\"", $value);
                 }
+
+                $searchService->addFilterQuery(
+                    $facetField,
+                    implode(' ' . SolariumQuery::QUERY_OPERATOR_OR . ' ', $quotedValues)
+                );
             }
         }
 
@@ -167,40 +165,38 @@ class AffiliationManagerController extends AffiliationAbstractController
                 ];
 
                 // Remove order and direction from the GET params to prevent duplication
-                $filteredData            = array_filter(
-                    $data,
-                    function ($key) {
+                $filteredData = array_filter($data, function ($key) {
                         return ! in_array($key, ['order', 'direction']);
-                    },
-                    ARRAY_FILTER_USE_KEY
+                    }, ARRAY_FILTER_USE_KEY
                 );
                 $viewParams['arguments'] = http_build_query($filteredData);
 
-                // Result is grouped
-                if (! empty($data['group'])) {
+                // Result is grouped, filter is required to prevent browser lockups  and unreliable
+                // results because of the 1000 result limit
+                if (!empty($data['group']) && !empty($data['facet'])) {
                     $searchService->getQuery()->clearSorts();
                     $searchService->getQuery()->addSort($data['group'], SolariumQuery::SORT_ASC);
                     $groupComponent = $searchService->getQuery()->getGrouping();
                     // Add sorting within group
-                    if (! empty($data['order'])) {
+                    if (!empty($data['order'])) {
                         $groupComponent->setSort($data['order'] . ' ' . $data['direction']);
                     }
                     $groupComponent->addField($data['group']);
                     $groupComponent->setNumberOfGroups(true);
                     $groupComponent->setLimit(100); // Solr needs a limit on results per group
                     $searchService->getQuery()->setRows(1000); // Solr requires an upper limit
-                    $resultSet             = $searchService->getResultSet();
-                    $groupedResults        = $resultSet->getGrouping();
-                    $groups                = reset($groupedResults);
+                    $resultSet = $searchService->getResultSet();
+                    $groupedResults = $resultSet->getGrouping();
+                    $groups = reset($groupedResults);
                     $viewParams['groupBy'] = $data['group'];
-                    $viewParams['groups']  = reset($groups); // Only 1 grouping field implemented
-                    $collapse              = ((int)$data['collapse'] === 1);
+                    $viewParams['groups'] = reset($groups); // Only 1 grouping field implemented
+                    $collapse = ((int)$data['collapse'] === 1);
                     $form->get('btn-collapse')->setLabel(
                         $this->translate(($collapse ? 'txt-expand-rows' : 'txt-collapse-rows'))
                     );
                     $viewParams['collapse'] = $collapse;
 
-                    // Regular ungrouped paginated result
+                // Regular ungrouped paginated result
                 } else {
                     $page      = $this->params('page', 1);
                     $paginator = new Paginator(
@@ -212,12 +208,16 @@ class AffiliationManagerController extends AffiliationAbstractController
                     $paginator->setDefaultItemCountPerPage(($page === 'all') ? 1000 : 25);
                     $paginator->setCurrentPageNumber($page);
                     $paginator->setPageRange(
-                        ceil(
-                            $paginator->getTotalItemCount()
-                            / $paginator->getDefaultItemCountPerPage()
-                        )
+                        ceil($paginator->getTotalItemCount() / $paginator->getDefaultItemCountPerPage())
                     );
                     $viewParams['paginator'] = $paginator;
+
+                    // Show a warning when trying to group unfiltered results
+                    if(!empty($data['group']) && empty($data['facet'])) {
+                        $this->flashMessenger()->setNamespace('info')->addMessage(
+                            $this->translate('txt-please-select-a-filter-before-grouping')
+                        );
+                    }
                 }
 
                 return new ViewModel($viewParams);
