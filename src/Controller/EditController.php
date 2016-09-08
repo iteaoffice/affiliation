@@ -43,16 +43,17 @@ class EditController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $formData                     = $this->getRequest()->getPost()->toArray();
-        $formData['affiliation']      = sprintf(
+        $formData                        = $this->getRequest()->getPost()->toArray();
+        $formData['affiliation']         = sprintf(
             "%s|%s",
             $affiliation->getOrganisation()->getId(),
             $affiliation->getBranch()
         );
-        $formData['technical']        = $affiliation->getContact()->getId();
-        $formData['valueChain']       = $affiliation->getValueChain();
-        $formData['marketAccess']     = $affiliation->getMarketAccess();
-        $formData['mainContribution'] = $affiliation->getMainContribution();
+        $formData['technical']           = $affiliation->getContact()->getId();
+        $formData['valueChain']          = $affiliation->getValueChain();
+        $formData['marketAccess']        = $affiliation->getMarketAccess();
+        $formData['mainContribution']    = $affiliation->getMainContribution();
+        $formData['strategicImportance'] = $affiliation->getStrategicImportance();
 
         /*
          * Check if the organisation has a financial contact
@@ -144,6 +145,7 @@ class EditController extends AffiliationAbstractController
                 $affiliation->setValueChain($formData['valueChain']);
                 $affiliation->setMainContribution($formData['mainContribution']);
                 $affiliation->setMarketAccess($formData['marketAccess']);
+                $affiliation->setStrategicImportance($formData['strategicImportance']);
                 /*
                  * Handle the financial organisation
                  */

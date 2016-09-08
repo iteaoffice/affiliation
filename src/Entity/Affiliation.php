@@ -89,6 +89,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $marketAccess;
     /**
+     * @ORM\Column(name="strategic_importance", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-strategic-importance"})
+     *
+     * @var string
+     */
+    private $strategicImportance;
+    /**
      * @ORM\Column(name="main_contribution", type="string", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-main-contribution"})
@@ -350,22 +358,22 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function __construct()
     {
-        $this->ictOrganisation = new Collections\ArrayCollection();
-        $this->description = new Collections\ArrayCollection();
-        $this->invoice = new Collections\ArrayCollection();
-        $this->log = new Collections\ArrayCollection();
-        $this->version = new Collections\ArrayCollection();
-        $this->associate = new Collections\ArrayCollection();
-        $this->cost = new Collections\ArrayCollection();
-        $this->funding = new Collections\ArrayCollection();
-        $this->effort = new Collections\ArrayCollection();
-        $this->spent = new Collections\ArrayCollection();
-        $this->doaReminder = new Collections\ArrayCollection();
-        $this->loiReminder = new Collections\ArrayCollection();
-        $this->achievement = new Collections\ArrayCollection();
+        $this->ictOrganisation          = new Collections\ArrayCollection();
+        $this->description              = new Collections\ArrayCollection();
+        $this->invoice                  = new Collections\ArrayCollection();
+        $this->log                      = new Collections\ArrayCollection();
+        $this->version                  = new Collections\ArrayCollection();
+        $this->associate                = new Collections\ArrayCollection();
+        $this->cost                     = new Collections\ArrayCollection();
+        $this->funding                  = new Collections\ArrayCollection();
+        $this->effort                   = new Collections\ArrayCollection();
+        $this->spent                    = new Collections\ArrayCollection();
+        $this->doaReminder              = new Collections\ArrayCollection();
+        $this->loiReminder              = new Collections\ArrayCollection();
+        $this->achievement              = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changerequestCostChange = new Collections\ArrayCollection();
-        $this->projectLog = new Collections\ArrayCollection();
+        $this->changerequestCostChange  = new Collections\ArrayCollection();
+        $this->projectLog               = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -408,11 +416,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function parseBranchedName()
     {
-        return trim(preg_replace(
-            '/^(([^\~]*)\~\s?)?\s?(.*)$/',
-            '${2}' . $this->getOrganisation()->getOrganisation() . ' ${3}',
-            $this->getBranch()
-        ));
+        return trim(
+            preg_replace(
+                '/^(([^\~]*)\~\s?)?\s?(.*)$/',
+                '${2}' . $this->getOrganisation()->getOrganisation() . ' ${3}',
+                $this->getBranch()
+            )
+        );
     }
 
     /**
@@ -428,7 +438,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function addAssociate(Contact $contact)
     {
-        if (!$this->associate->contains($contact)) {
+        if (! $this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
@@ -967,6 +977,26 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setProjectLog($projectLog)
     {
         $this->projectLog = $projectLog;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStrategicImportance()
+    {
+        return $this->strategicImportance;
+    }
+
+    /**
+     * @param string $strategicImportance
+     *
+     * @return Affiliation
+     */
+    public function setStrategicImportance($strategicImportance)
+    {
+        $this->strategicImportance = $strategicImportance;
 
         return $this;
     }

@@ -166,9 +166,8 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                 // Remove order and direction from the GET params to prevent duplication
                 $filteredData = array_filter($data, function ($key) {
-                        return ! in_array($key, ['order', 'direction']);
-                    }, ARRAY_FILTER_USE_KEY
-                );
+                    return ! in_array($key, ['order', 'direction']);
+                }, ARRAY_FILTER_USE_KEY);
                 $viewParams['arguments'] = http_build_query($filteredData);
 
                 // Result is grouped, filter is required to prevent browser lockups  and unreliable
@@ -213,7 +212,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                     $viewParams['paginator'] = $paginator;
 
                     // Show a warning when trying to group unfiltered results
-                    if(!empty($data['group']) && empty($data['facet'])) {
+                    if (!empty($data['group']) && empty($data['facet'])) {
                         $this->flashMessenger()->setNamespace('info')->addMessage(
                             $this->translate('txt-please-select-a-filter-before-grouping')
                         );

@@ -248,7 +248,7 @@ class AffiliationSearchService extends AbstractSearchService
             'contact',
             'project',
         ]));
-        $hasTerm = !in_array($searchTerm, ['*','']);
+        $hasTerm = !in_array($searchTerm, ['*', '']);
         $hasSort = ($order !== '');
 
         if ($hasSort) {
@@ -273,7 +273,7 @@ class AffiliationSearchService extends AbstractSearchService
                     break;
             }
         }
-        if($hasTerm){
+        if ($hasTerm) {
             $this->getQuery()->addSort('score', Query::SORT_DESC);
         } else {
             $this->getQuery()->addSort('id', Query::SORT_DESC);
