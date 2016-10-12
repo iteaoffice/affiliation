@@ -100,7 +100,7 @@ class LoiController extends AffiliationAbstractController
     public function replaceAction()
     {
         $loi = $this->getLoiService()->findLoiById($this->params('id'));
-        
+
         if (is_null($loi) || sizeof($loi->getObject()) === 0) {
             return $this->notFoundAction();
         }

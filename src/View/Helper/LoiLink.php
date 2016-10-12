@@ -61,7 +61,7 @@ class LoiLink extends LinkAbstract
         ) {
             return '';
         }
-        $this->addRouterParam('entity', 'Loi');
+
         if (!is_null($loi)) {
             $this->addRouterParam('id', $this->getLoi()->getId());
             $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());

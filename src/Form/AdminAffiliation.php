@@ -129,6 +129,19 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'strategicImportance',
+                'options'    => [
+                    'label'      => _("txt-strategic-importance"),
+                    'help-block' => _("txt-strategic-importance-inline-help"),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
+        );
 
 
         $this->add(

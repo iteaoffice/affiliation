@@ -916,14 +916,16 @@ class AffiliationService extends ServiceAbstract
             /**
              * Add the contact organisation
              */
-            $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
-                ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
-            [$contact->getContactOrganisation()->getBranch()]
-                = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
-                    ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+            if (! is_null($contact->getContactOrganisation())) {
+                $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
+                    ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
+                [$contact->getContactOrganisation()->getBranch()]
+                    = $this->getOrganisationService()->parseOrganisationWithBranch(
+                        $contact->getContactOrganisation()
+                        ->getBranch(),
+                        $contact->getContactOrganisation()->getOrganisation()
+                    );
+            }
             /**
              * Go over the clusters
              */
