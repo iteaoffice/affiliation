@@ -53,7 +53,9 @@ class Affiliation extends Form
         $technicalContactValueOptions[$affiliation->getContact()->getId()]
             = $affiliation->getContact()->getFormName();
         foreach ($affiliation->getAssociate() as $contact) {
-            $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
+            if (is_null($contact->getDateEnd())) {
+                $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
+            }
         }
         asort($technicalContactValueOptions);
         /*
@@ -63,9 +65,11 @@ class Affiliation extends Form
         $financialContactValueOptions = $technicalContactValueOptions;
         $organisation                 = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
-            if (! is_null($affiliation->getFinancial())) {
-                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
-                    = $affiliation->getFinancial()->getContact()->getFormName();
+            if ( ! is_null($affiliation->getFinancial())) {
+                if (is_null($affiliation->getFinancial()->getContact()->getDateEnd())) {
+                    $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
+                        = $affiliation->getFinancial()->getContact()->getFormName();
+                }
             }
         }
 
@@ -189,7 +193,7 @@ class Affiliation extends Form
                 'name'       => 'deactivate',
                 'attributes' => [
                     'class' => "btn btn-danger",
-                    'value' => sprintf(_("Deactivate %s"), $affiliation->getOrganisation()->getOrganisation()),
+                    'value' => sprintf(_("Deactivate %s"), $affiliation->parseBranchedName()),
                 ],
             ]
         );
@@ -199,7 +203,7 @@ class Affiliation extends Form
                 'name'       => 'reactivate',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => sprintf(_("Reactivate %s"), $affiliation->getOrganisation()->getOrganisation()),
+                    'value' => sprintf(_("Reactivate %s"), $affiliation->parseBranchedName()),
                 ],
             ]
         );

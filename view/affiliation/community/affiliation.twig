@@ -9,7 +9,9 @@
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
 
-<h1>{{ affiliation.organisation.organisation }}</h1>
+{% set organisation = affiliation.organisation %}
+
+<h1>{{ organisationService.parseOrganisationWithBranch(affiliation.branch, affiliation.organisation) }}</h1>
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
     affiliation.project.parseFullName()
@@ -161,7 +163,7 @@
                     {{ affiliation.financial.contact.displayName }} <a
                             href="mailto:{{ affiliation.financial.contact.email }}"><i
                                 class="fa fa-envelope-o"></i></a>
-                    {{ contactLink(affiliation.contact,'view-admin','icon') }}
+                    {{ contactLink(affiliation.financial.contact,'view-admin','icon') }}
                 </dd>
             {% endif %}
         </dl>
@@ -539,15 +541,19 @@
                 <tab heading="{{ translate("txt-invoicing-details") }}">
 
                     <h3>{{ translate("txt-invoicing-details") }}</h3>
+                    {% if affiliation.financial.id %}
 
-                    {% if affiliation.financial %}
                         <dl class="dl-horizontal">
                             <dt>{{ translate("txt-address-label") }}</dt>
+
                             <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch, affiliation.financial.organisation) }}</dd>
 
+                            {% if organisation.financial and organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
+                                <dd>{{ contactService.parseAttention(affiliation.financial.contact) }} {{ affiliation.financial.contact.parseFullName() }}</dd>
+                            {% endif %}
 
-                            {% if contact.department %}
-                                <dd>{{ contact.department }}</dd>
+                            {% if affiliation.financial.contact.department %}
+                                <dd>{{ affiliation.financial.contact.department }}</dd>
                             {% endif %}
 
                             {% set financialAddress = contactService.getFinancialAddress(affiliation.financial.contact) %}
@@ -561,19 +567,14 @@
                     {% endif %}
 
 
-                    {% if organisation.financial %}
+                    {% if affiliation.organisation.financial %}
                         <dl class="dl-horizontal">
                             <dt>{{ translate('txt-vat-number') }}</dt>
                             <dd>{{ organisation.financial.vat }}</dd>
 
-                            {% if organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
-                                <dd>{{ contactService.parseAttention(organisation.financial.contact) }} {{ organisation.financial.contact.parseFullName() }}</dd>
-                            {% endif %}
-
-
                             <dt>{{ translate("txt-preferred-delivery") }}</dt>
-                            {% if organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-                                <dd>{{ translate("txt-by-email-to-%s")|format(contact.email) }}</dd>
+                            {% if affiliation.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+                                <dd>{{ translate("txt-by-email-to-%s")|format(affiliation.financial.contact.email) }}</dd>
                             {% else %}
                                 <dd>{{ translate("txt-by-postal-mail") }}</dd>
                             {% endif %}

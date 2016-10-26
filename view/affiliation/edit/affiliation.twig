@@ -4,7 +4,7 @@ affiliation.project.parseFullName()
 )) %}
 
 <h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
-    affiliation.organisation.organisation,
+    affiliation.parseBranchedName(),
     affiliation.project.parseFullName()
     ) }}</h1>
 
@@ -25,7 +25,7 @@ affiliation.project.parseFullName()
     <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(affiliation,'view-community') }}</p>
+        <p class="form-control-static">{{ affiliationLink(affiliation,'view-community','organisation-branch') }}</p>
     </div>
 </div>
 

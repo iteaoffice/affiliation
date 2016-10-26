@@ -240,7 +240,6 @@ class EditController extends AffiliationAbstractController
         $formData['registeredCountry'] = $affiliation->getOrganisation()->getCountry()->getId();
 
         if (! is_null($organisationFinancial)) {
-            $organisationFinancial         = $affiliation->getOrganisation()->getFinancial();
             $formData['preferredDelivery'] = $organisationFinancial->getEmail();
             $formData['vat']               = $organisationFinancial->getVat();
             $formData['omitContact']       = $organisationFinancial->getOmitContact();

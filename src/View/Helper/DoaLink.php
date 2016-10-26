@@ -76,7 +76,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/upload');
                 $this->setText(sprintf(
                     $this->translate("txt-upload-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $this->getAffiliation()->getOrganisation(),
+                    $this->getAffiliation()->parseBranchedName(),
                     $this->getAffiliation()->getProject()
                 ));
                 break;
@@ -84,7 +84,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/render');
                 $this->setText(sprintf(
                     $this->translate("txt-render-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $this->getDoa()->getAffiliation()->getOrganisation(),
+                    $this->getDoa()->getAffiliation()->parseBranchedName(),
                     $this->getDoa()->getAffiliation()->getProject()
                 ));
                 break;
@@ -92,7 +92,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/replace');
                 $this->setText(sprintf(
                     $this->translate("txt-replace-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $this->getDoa()->getAffiliation()->getOrganisation(),
+                    $this->getDoa()->getAffiliation()->parseBranchedName(),
                     $this->getDoa()->getAffiliation()->getProject()
                 ));
                 break;
@@ -100,7 +100,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/download');
                 $this->setText(sprintf(
                     $this->translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $this->getDoa()->getAffiliation()->getOrganisation(),
+                    $this->getDoa()->getAffiliation()->parseBranchedName(),
                     $this->getDoa()->getAffiliation()->getProject()
                 ));
                 break;
@@ -127,7 +127,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/doa/view');
                 $this->setText(sprintf(
                     $this->translate("txt-view-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $this->getDoa()->getAffiliation()->getOrganisation(),
+                    $this->getDoa()->getAffiliation()->parseBranchedName(),
                     $this->getDoa()->getAffiliation()->getProject()
                 ));
                 break;
@@ -135,7 +135,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/doa/edit');
                 $this->setText(sprintf(
                     $this->translate("txt-edit-doa-for-organisation-%s-in-project-%s-link-title"),
-                    $this->getDoa()->getAffiliation()->getOrganisation(),
+                    $this->getDoa()->getAffiliation()->parseBranchedName(),
                     $this->getDoa()->getAffiliation()->getProject()
                 ));
                 break;

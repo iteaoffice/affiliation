@@ -107,25 +107,25 @@ class AffiliationLink extends LinkAbstract
         switch ($this->getAction()) {
             case 'view-community':
                 $this->setRouter('community/affiliation/affiliation');
-                $this->setText(sprintf($this->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translate("txt-view-affiliation-%s"), $this->getAffiliation()->parseBranchedName()));
                 break;
             case 'edit-community':
                 $this->setRouter('community/affiliation/edit/affiliation');
-                $this->setText(sprintf($this->translate("txt-edit-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translate("txt-edit-affiliation-%s"), $this->getAffiliation()->parseBranchedName()));
                 break;
             case 'edit-financial':
                 $this->setRouter('community/affiliation/edit/financial');
-                $this->setText(sprintf($this->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()->parseBranchedName()));
                 break;
             case 'add-associate':
                 $this->setRouter('community/affiliation/edit/add-associate');
-                $this->setText(sprintf($this->translate("txt-add-associate-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translate("txt-add-associate-affiliation-%s"), $this->getAffiliation()->parseBranchedName()));
                 break;
             case 'edit-description':
                 $this->setRouter('community/affiliation/edit/description');
                 $this->setText(sprintf(
                     $this->translate("txt-edit-description-affiliation-%s"),
-                    $this->getAffiliation()
+                    $this->getAffiliation()->parseBranchedName()
                 ));
                 break;
             case 'view-admin':
