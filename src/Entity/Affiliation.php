@@ -14,6 +14,7 @@ use Contact\Entity\Contact;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Organisation\Service\OrganisationService;
 use Zend\Form\Annotation;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 
@@ -22,7 +23,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  *
  * @ORM\Table(name="affiliation")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Affiliation")
- * @Annotation\Hydrator("Zend\Stdlib\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation")
  *
  * @category    Affiliation
@@ -109,7 +110,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @Annotation\Type("Zend\Form\Element\Radio")
      * @Annotation\Attributes({"array":"selfFundedTemplates"})
      * @Annotation\Attributes({"label":"txt-self-funded"})
-     * @Annotation\Required(true)
      *
      * @var integer
      */
@@ -408,7 +408,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function __toString()
     {
-        return $this->getOrganisation()->getOrganisation();
+        return $this->parseBranchedName();
     }
 
     /**
@@ -416,13 +416,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function parseBranchedName()
     {
-        return trim(
-            preg_replace(
-                '/^(([^\~]*)\~\s?)?\s?(.*)$/',
-                '${2}' . $this->getOrganisation()->getOrganisation() . ' ${3}',
-                $this->getBranch()
-            )
-        );
+        return OrganisationService::parseBranch($this->getBranch(), (string)$this->getOrganisation());
     }
 
     /**

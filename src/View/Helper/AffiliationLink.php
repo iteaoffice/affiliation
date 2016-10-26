@@ -42,7 +42,7 @@ class AffiliationLink extends LinkAbstract
     public function __invoke(
         Affiliation $affiliation,
         $action = 'view',
-        $show = 'name',
+        $show = 'organisation-branch',
         $year = null,
         $period = null,
         $fragment = null

@@ -36,8 +36,9 @@ use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\ControllerManager;
-use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\View\HelperPluginManager;
 
 /**
  * Class ControllerFactory
@@ -57,96 +58,87 @@ final class ControllerFactory implements FactoryInterface
     {
         /** @var AffiliationAbstractController $controller */
         $controller = new $requestedName($options);
-        $serviceManager = $container->getServiceLocator();
 
         /** @var FormService $formService */
-        $formService = $serviceManager->get(FormService::class);
+        $formService = $container->get(FormService::class);
         $controller->setFormService($formService);
 
         /** @var EntityManager $entityManager */
-        $entityManager = $serviceManager->get(EntityManager::class);
+        $entityManager = $container->get(EntityManager::class);
         $controller->setEntityManager($entityManager);
 
         /** @var ProjectService $projectService */
-        $projectService = $serviceManager->get(ProjectService::class);
+        $projectService = $container->get(ProjectService::class);
         $controller->setProjectService($projectService);
 
         /** @var VersionService $versionService */
-        $versionService = $serviceManager->get(VersionService::class);
+        $versionService = $container->get(VersionService::class);
         $controller->setVersionService($versionService);
 
         /** @var WorkpackageService $workpackageService */
-        $workpackageService = $serviceManager->get(WorkpackageService::class);
+        $workpackageService = $container->get(WorkpackageService::class);
         $controller->setWorkpackageService($workpackageService);
 
         /** @var AffiliationService $affiliationService */
-        $affiliationService = $serviceManager->get(AffiliationService::class);
+        $affiliationService = $container->get(AffiliationService::class);
         $controller->setAffiliationService($affiliationService);
 
         /** @var GeneralService $generalService */
-        $generalService = $serviceManager->get(GeneralService::class);
+        $generalService = $container->get(GeneralService::class);
         $controller->setGeneralService($generalService);
 
         /** @var ContactService $contactService */
-        $contactService = $serviceManager->get(ContactService::class);
+        $contactService = $container->get(ContactService::class);
         $controller->setContactService($contactService);
 
         /** @var ModuleOptions $moduleOptions */
-        $moduleOptions = $serviceManager->get(ModuleOptions::class);
+        $moduleOptions = $container->get(ModuleOptions::class);
         $controller->setModuleOptions($moduleOptions);
 
         /** @var ProgramService $programService */
-        $programService = $serviceManager->get(ProgramService::class);
+        $programService = $container->get(ProgramService::class);
         $controller->setProgramService($programService);
 
         /** @var OrganisationService $organisationService */
-        $organisationService = $serviceManager->get(OrganisationService::class);
+        $organisationService = $container->get(OrganisationService::class);
         $controller->setOrganisationService($organisationService);
 
         /** @var DeeplinkService $deeplinkService */
-        $deeplinkService = $serviceManager->get(DeeplinkService::class);
+        $deeplinkService = $container->get(DeeplinkService::class);
         $controller->setDeeplinkService($deeplinkService);
 
         /** @var LoiService $loiService */
-        $loiService = $serviceManager->get(LoiService::class);
+        $loiService = $container->get(LoiService::class);
         $controller->setLoiService($loiService);
 
         /** @var DoaService $doaService */
-        $doaService = $serviceManager->get(DoaService::class);
+        $doaService = $container->get(DoaService::class);
         $controller->setDoaService($doaService);
 
         /** @var EmailService $emailService */
-        $emailService = $serviceManager->get(EmailService::class);
+        $emailService = $container->get(EmailService::class);
         $controller->setEmailService($emailService);
 
         /** @var InvoiceService $invoiceService */
-        $invoiceService = $serviceManager->get(InvoiceService::class);
+        $invoiceService = $container->get(InvoiceService::class);
         $controller->setInvoiceService($invoiceService);
 
         /** @var ReportService $reportService */
-        $reportService = $serviceManager->get(ReportService::class);
+        $reportService = $container->get(ReportService::class);
         $controller->setReportService($reportService);
 
         /** @var AffiliationSearchService $affiliationSearchService */
-        $affiliationSearchService = $serviceManager->get(AffiliationSearchService::class);
+        $affiliationSearchService = $container->get(AffiliationSearchService::class);
         $controller->setAffiliationSearchService($affiliationSearchService);
 
         /** @var ProgramModuleOptions $programModuleOptions */
-        $programModuleOptions = $serviceManager->get(ProgramModuleOptions::class);
+        $programModuleOptions = $container->get(ProgramModuleOptions::class);
         $controller->setProgramModuleOptions($programModuleOptions);
 
-        return $controller;
-    }
+        /** @var HelperPluginManager $viewHelperManager */
+        $viewHelperManager = $container->get('ViewHelperManager');
+        $controller->setViewHelperManager($viewHelperManager);
 
-    /**
-     * @param ServiceLocatorInterface $container
-     * @param string                  $canonicalName
-     * @param string                  $requestedName
-     *
-     * @return AffiliationAbstractController
-     */
-    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
-    {
-        return $this($container, $requestedName);
+        return $controller;
     }
 }

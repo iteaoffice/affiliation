@@ -165,6 +165,17 @@ class Affiliation extends Form
         );
         $this->add(
             [
+                'type'    => 'Zend\Form\Element\Radio',
+                'name'    => 'selfFunded',
+                'options' => [
+                    'value_options' => Entity\Affiliation::getSelfFundedTemplates(),
+                    'label'         => _("txt-self-funded"),
+                    'help-block'    => _("txt-self-funded-inline-help"),
+                ],
+            ]
+        );
+        $this->add(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
                 'attributes' => [
@@ -189,7 +200,7 @@ class Affiliation extends Form
                 'name'       => 'deactivate',
                 'attributes' => [
                     'class' => "btn btn-danger",
-                    'value' => sprintf(_("Deactivate %s"), $affiliation->getOrganisation()->getOrganisation()),
+                    'value' => sprintf(_("Deactivate %s"), $affiliation->parseBranchedName()),
                 ],
             ]
         );
@@ -199,7 +210,7 @@ class Affiliation extends Form
                 'name'       => 'reactivate',
                 'attributes' => [
                     'class' => "btn btn-warning",
-                    'value' => sprintf(_("Reactivate %s"), $affiliation->getOrganisation()->getOrganisation()),
+                    'value' => sprintf(_("Reactivate %s"), $affiliation->parseBranchedName()),
                 ],
             ]
         );

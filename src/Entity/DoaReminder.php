@@ -19,7 +19,7 @@ use Zend\Form\Annotation;
  *
  * @ORM\Table(name="project_doa_reminder")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Stdlib\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_doa_reminder")
  *
  * @category    Affiliation

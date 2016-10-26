@@ -17,7 +17,7 @@ namespace Affiliation\View\Factory;
 
 use Affiliation\View\Helper\AbstractViewHelper;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\HelperPluginManager;
 
@@ -41,8 +41,8 @@ final class ViewHelperFactory implements FactoryInterface
     {
         /** @var AbstractViewHelper $viewHelper */
         $viewHelper = new $requestedName($options);
-        $viewHelper->setServiceManager($container->getServiceLocator());
-        $viewHelper->setHelperPluginManager($container);
+        $viewHelper->setServiceManager($container);
+        $viewHelper->setHelperPluginManager($container->get('ViewHelperManager'));
 
         return $viewHelper;
     }

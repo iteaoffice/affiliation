@@ -23,6 +23,7 @@ use DragonBe\Vies\Vies;
 use General\Entity\Country;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
+use Organisation\Service\OrganisationService;
 use Project\Entity\Report\EffortSpent as ReportEffortSpent;
 use Project\Service\ProjectService;
 use Zend\View\Model\ViewModel;
@@ -54,6 +55,7 @@ class EditController extends AffiliationAbstractController
         $formData['marketAccess']        = $affiliation->getMarketAccess();
         $formData['mainContribution']    = $affiliation->getMainContribution();
         $formData['strategicImportance'] = $affiliation->getStrategicImportance();
+        $formData['selfFunded']          = $affiliation->getSelfFunded();
 
         /*
          * Check if the organisation has a financial contact
@@ -90,7 +92,9 @@ class EditController extends AffiliationAbstractController
                     ->updateCountryRationaleByAffiliation($affiliation, ProjectService::AFFILIATION_DEACTIVATE);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf(_("txt-affiliation-%s-has-successfully-been-deactivated"), $affiliation));
+                    ->addMessage(
+                        sprintf($this->translate("txt-affiliation-%s-has-successfully-been-deactivated"), $affiliation)
+                    );
 
                 return $this->redirect()->toRoute(
                     'community/project/project/partners',
@@ -110,7 +114,9 @@ class EditController extends AffiliationAbstractController
                     ->updateCountryRationaleByAffiliation($affiliation, ProjectService::AFFILIATION_REACTIVATE);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf(_("txt-affiliation-%s-has-successfully-been-reactivated"), $affiliation));
+                    ->addMessage(
+                        sprintf($this->translate("txt-affiliation-%s-has-successfully-been-reactivated"), $affiliation)
+                    );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -146,6 +152,7 @@ class EditController extends AffiliationAbstractController
                 $affiliation->setMainContribution($formData['mainContribution']);
                 $affiliation->setMarketAccess($formData['marketAccess']);
                 $affiliation->setStrategicImportance($formData['strategicImportance']);
+                $affiliation->setSelfFunded($formData['selfFunded']);
                 /*
                  * Handle the financial organisation
                  */
@@ -277,7 +284,7 @@ class EditController extends AffiliationAbstractController
                     ->findFinancialOrganisationWithVAT($formData['vat']);
 
 
-                //If the organisation is found, it has by default an organiation
+                //If the organisation is found, it has by default an organisation
                 if (! is_null($organisationFinancial)) {
                     $organisation = $organisationFinancial->getOrganisation();
                 }
@@ -305,7 +312,7 @@ class EditController extends AffiliationAbstractController
                      * @var $organisationType Type
                      */
                     $organisationType = $this->getOrganisationService()->getEntityManager()
-                        ->getReference('Organisation\Entity\Type', 0);
+                        ->getReference(Type::class, Type::TYPE_UNKNOWN);
                     $organisation->setType($organisationType);
                 }
 
@@ -320,14 +327,13 @@ class EditController extends AffiliationAbstractController
                 }
                 $affiliationFinancial->setContact($this->getContactService()->findContactById($formData['contact']));
                 $affiliationFinancial->setOrganisation($organisation);
-                $affiliationFinancial->setBranch(
-                    trim(
-                        substr(
-                            $formData['organisation'],
-                            strlen($organisation->getOrganisation())
-                        )
-                    )
-                );
+
+                //Update the branch is complicated so we create a dedicated function for it in the
+                //OrganisationService
+
+                $affiliationFinancial->setBranch(OrganisationService::determineBranch($formData['organisation'], $organisation->getOrganisation()));
+
+
                 $this->getAffiliationService()->updateEntity($affiliationFinancial);
 
 

@@ -1,10 +1,10 @@
 {% do headTitle().append(translate("txt-edit-affiliation-%s-in-%s")|format(
-affiliation.organisation.organisation,
+affiliation.parseBranchedName(),
 affiliation.project.parseFullName()
 )) %}
 
 <h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
-    affiliation.organisation.organisation,
+    affiliation.parseBranchedName(),
     affiliation.project.parseFullName()
     ) }}</h1>
 
@@ -44,6 +44,7 @@ affiliation.project.parseFullName()
 {{ ztbformelement(form.get('mainContribution')) }}
 {{ ztbformelement(form.get('strategicImportance')) }}
 {{ ztbformelement(form.get('marketAccess')) }}
+{{ ztbformelement(form.get('selfFunded')) }}
 
 
 <hr>
@@ -57,7 +58,9 @@ affiliation.project.parseFullName()
         {% endif %}
         {% if affiliationHasCostOrEffortInDraft %}
             <button type="button" class="btn btn-danger"
-                    disabled="disabled">{{ translate("txt-deactivate") }}</button> <i class="fa fa-info-circle cursor-help" title="{{ translate("txt-deactivation-of-partner-is-disabled-remove-cost-and-effort-in-draft-first") }}"></i>
+                    disabled="disabled">{{ translate("txt-deactivate") }}</button> <i
+                class="fa fa-info-circle cursor-help"
+                title="{{ translate("txt-deactivation-of-partner-is-disabled-remove-cost-and-effort-in-draft-first") }}"></i>
         {% endif %}
         {% if form.has('reactivate') %}
             {{ ztbformelement(form.get('reactivate')) }}

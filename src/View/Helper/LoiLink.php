@@ -32,9 +32,9 @@ class LoiLink extends LinkAbstract
     protected $affiliation;
 
     /**
-     * @param Loi $loi
-     * @param string $action
-     * @param string $show
+     * @param Loi         $loi
+     * @param string      $action
+     * @param string      $show
      * @param Affiliation $affiliation
      *
      * @return string
@@ -53,7 +53,7 @@ class LoiLink extends LinkAbstract
                 'name' => $this->getLoi(),
             ]
         );
-        if (!$this->hasAccess(
+        if (! $this->hasAccess(
             $this->getLoi(),
             LoiAssertion::class,
             $this->getAction()
@@ -62,7 +62,7 @@ class LoiLink extends LinkAbstract
             return '';
         }
 
-        if (!is_null($loi)) {
+        if (! is_null($loi)) {
             $this->addRouterParam('id', $this->getLoi()->getId());
             $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
         }
@@ -84,7 +84,7 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getAffiliation()->getOrganisation(),
+                        $this->getAffiliation()->parseBranchedName(),
                         $this->getAffiliation()->getProject()
                     )
                 );
@@ -94,7 +94,7 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
                 );
@@ -104,7 +104,7 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
                 );
@@ -145,7 +145,7 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-view-loi-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
                 );
@@ -155,7 +155,7 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-edit-loi-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
                 );
@@ -206,7 +206,7 @@ class LoiLink extends LinkAbstract
         /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
-        if (!is_null($affiliation)) {
+        if (! is_null($affiliation)) {
             $this->getLoi()->setAffiliation($affiliation);
         }
     }

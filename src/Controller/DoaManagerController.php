@@ -143,8 +143,7 @@ class DoaManagerController extends AffiliationAbstractController
             /**
              * @var $deeplinkLink DeeplinkLink
              */
-            $deeplinkLink = $this->getPluginManager()->getServiceLocator()->get('ViewHelperManager')
-                ->get('deeplinkLink');
+            $deeplinkLink = $this->getViewHelperManager()->get('deeplinkLink');
             $email->setDeeplink($deeplinkLink($deeplink, 'view', 'link'));
 
             $this->getEmailService()->send();

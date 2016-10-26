@@ -1,5 +1,5 @@
 {% do headTitle().append(translate("txt-affiliation")) %}
-{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.organisation.organisation, affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
 
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
 
@@ -9,7 +9,7 @@
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
 
-<h1>{{ affiliation.organisation.organisation }}</h1>
+<h1>{{ affiliation.parseBranchedName() }}</h1>
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
     affiliation.project.parseFullName()
@@ -19,6 +19,18 @@
     {{ ztbalert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(
     affiliation,
     affiliation.dateEnd|string_date
+    )|raw }}
+{% endif %}
+
+{% if affiliationService.isSelfFunded(affiliation) %}
+    {{ ztbalert().success(translate("txt-affiliation-%s-is-self-funded"))|format(
+    affiliation
+    )|raw }}
+{% endif %}
+
+{% if affiliation.selfFunded is constant("Affiliation\\Entity\\Affiliation::SELF_FUNDED") and not affiliation.dateSelfFunded %}
+    {{ ztbalert().info(translate("txt-affiliation-%s-is-indicated-as-self-funded-but-not-yet-approved-by-the-office"))|format(
+    affiliation
     )|raw }}
 {% endif %}
 
@@ -178,7 +190,7 @@
             </dl>
         {% else %}
             {{ ztbalert().warning(translate("txt-no-description-found-for-%s")|format(
-            affiliation.organisation.organisation
+            affiliation.parseBranchedName()
             ))|raw }}
         {% endfor %}
 
@@ -539,15 +551,19 @@
                 <tab heading="{{ translate("txt-invoicing-details") }}">
 
                     <h3>{{ translate("txt-invoicing-details") }}</h3>
-
                     {% if affiliation.financial %}
+
                         <dl class="dl-horizontal">
                             <dt>{{ translate("txt-address-label") }}</dt>
+
                             <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch, affiliation.financial.organisation) }}</dd>
 
+                            {% if affiliation.organisation.financial and  affiliation.organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
+                                <dd>{{ contactService.parseAttention(affiliation.financial.contact) }} {{ affiliation.financial.contact.parseFullName() }}</dd>
+                            {% endif %}
 
-                            {% if contact.department %}
-                                <dd>{{ contact.department }}</dd>
+                            {% if affiliation.financial.contact.department %}
+                                <dd>{{ affiliation.financial.contact.department }}</dd>
                             {% endif %}
 
                             {% set financialAddress = contactService.getFinancialAddress(affiliation.financial.contact) %}
@@ -561,19 +577,14 @@
                     {% endif %}
 
 
-                    {% if organisation.financial %}
+                    {% if affiliation.organisation.financial %}
                         <dl class="dl-horizontal">
                             <dt>{{ translate('txt-vat-number') }}</dt>
-                            <dd>{{ organisation.financial.vat }}</dd>
-
-                            {% if organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
-                                <dd>{{ contactService.parseAttention(organisation.financial.contact) }} {{ organisation.financial.contact.parseFullName() }}</dd>
-                            {% endif %}
-
+                            <dd>{{ affiliation.organisation.financial.vat }}</dd>
 
                             <dt>{{ translate("txt-preferred-delivery") }}</dt>
-                            {% if organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-                                <dd>{{ translate("txt-by-email-to-%s")|format(contact.email) }}</dd>
+                            {% if affiliation.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+                                <dd>{{ translate("txt-by-email-to-%s")|format(affiliation.financial.contact.email) }}</dd>
                             {% else %}
                                 <dd>{{ translate("txt-by-postal-mail") }}</dd>
                             {% endif %}

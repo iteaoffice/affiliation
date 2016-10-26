@@ -3,7 +3,7 @@
 
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-affiliation")) %}
-{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.organisation.organisation,project.parseFullName())) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(),project.parseFullName())) %}
 
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
 
@@ -14,7 +14,7 @@
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-admin','button') %}
 
-<h1>{{ affiliation.organisation.organisation }}</h1>
+<h1>{{ affiliation.parseBranchedName() }}</h1>
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
     project.parseFullName()
@@ -24,6 +24,18 @@
     {{ ztbalert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(
     affiliation,
     affiliation.dateEnd|string_date
+    )|raw }}
+{% endif %}
+
+{% if affiliationService.isSelfFunded(affiliation) %}
+    {{ ztbalert().success(translate("txt-affiliation-%s-is-self-funded"))|format(
+    affiliation
+    )|raw }}
+{% endif %}
+
+{% if affiliation.selfFunded is constant("Affiliation\\Entity\\Affiliation::SELF_FUNDED") and not affiliation.dateSelfFunded %}
+    {{ ztbalert().info(translate("txt-affiliation-%s-is-indicated-as-self-funded-but-not-yet-approved-by-the-office"))|format(
+    affiliation
     )|raw }}
 {% endif %}
 
@@ -47,6 +59,11 @@
             <dd>{{ organisationLink(organisation,'view-admin', 'name') }}
                 {{ affiliationLink(affiliation,'view-community', 'icon') }}
             </dd>
+            <dt>{{ translate("txt-branch") }}</dt>
+            <dd><code>{{ affiliation.branch }}</code></dd>
+            <dt>{{ translate("txt-branched-name") }}</dt>
+            <dd>{{ affiliation.parseBranchedName() }}</dd>
+
             <dt>{{ translate("txt-project-name") }}</dt>
             <dd>{{ projectLink(project,'view-admin', 'name') }}
                 {{ projectLink(project,'view-community', 'icon') }}
@@ -55,6 +72,9 @@
             <dd>{{ callLink(project.call,'view-admin','name') }}</dd>
             <dt>{{ translate("txt-status") }}</dt>
             <dd>{{ projectService.parseStatus(project) }}</dd>
+
+            <dt>{{ translate("txt-self-funded-affiliation-status") }}</dt>
+            <dd>{{ translate(affiliation.getSelfFunded(true)) }}</dd>
             <dt>{{ translate("txt-project-leader") }}</dt>
             <dd>{{ contactLink(project.contact,'view-admin','name') }} <a
                         href="mailto:{{ project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
@@ -138,6 +158,8 @@
                 <dd>{{ contactLink(affiliation.financial.contact,'view-admin','name') }} <a
                             href="mailto:{{ affiliation.financial.contact.email }}"><i
                                 class="fa fa-envelope-o"></i></a></dd>
+                <dt>{{ translate("txt-financial-branch") }}</dt>
+                <dd>{{ affiliation.financial.branch }}</dd>
             {% endif %}
         </dl>
 
@@ -148,15 +170,13 @@
         <h3>{{ translate("txt-partner-description") }}</h3>
 
         {% for description in affiliation.description %}
-            {{ affiliation.id }}
-            {{ description.id }}
             <dl class="dl-horizontal">
                 <dt>{{ translate("txt-description") }}</dt>
                 <dd>{{ description.description|raw|nl2br }}</dd>
             </dl>
         {% else %}
             {{ ztbalert().warning(translate("txt-no-description-found-for-%s")|format(
-            affiliation.organisation.organisation
+            affiliation.parseBranchedName()
             ))|raw }}
         {% endfor %}
 

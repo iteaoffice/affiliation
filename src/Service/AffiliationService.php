@@ -15,6 +15,7 @@ use Affiliation\Entity\Invoice;
 use Affiliation\Repository;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
 use Invoice\Entity\Method;
@@ -69,7 +70,7 @@ class AffiliationService extends ServiceAbstract
     public function isSelfFunded(Affiliation $affiliation)
     {
         return $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
-        && ! is_null($affiliation->getDateSelfFunded());
+            && ! is_null($affiliation->getDateSelfFunded());
     }
 
     /**
@@ -102,6 +103,17 @@ class AffiliationService extends ServiceAbstract
     public function hasLoi(Affiliation $affiliation)
     {
         return ! is_null($affiliation->getLoi());
+    }
+
+    /**
+     * @return Affiliation[]
+     */
+    public function findNotValidatedSelfFundedAffiliation()
+    {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return $repository->findNotValidatedSelfFundedAffiliation();
     }
 
     /**
@@ -417,7 +429,7 @@ class AffiliationService extends ServiceAbstract
     public function parseBalance(Affiliation $affiliation, Version $version, $year, $period)
     {
         return $this->parseContributionDue($affiliation, $version, $year, $period)
-        - $this->parseContributionPaid($affiliation, $year, $period);
+            - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
     /**
@@ -778,7 +790,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * Give a list of all affiliations which do not have a doa.
      *
-     * @return QueryBuilder
+     * @return Query
      */
     public function findAffiliationWithMissingLoi()
     {

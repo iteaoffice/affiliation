@@ -23,7 +23,7 @@ use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Zend\Authentication\AuthenticationService;
-use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**

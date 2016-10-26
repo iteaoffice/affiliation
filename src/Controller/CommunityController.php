@@ -33,20 +33,28 @@ class CommunityController extends AffiliationAbstractController
         $this->getProjectService()->addResource($affiliation->getProject(), ProjectAssertion::class);
         $hasProjectEditRights = $this->isAllowed($affiliation->getProject(), 'edit-community');
 
-        return new ViewModel([
-            'affiliationService'    => $this->getAffiliationService(),
-            'affiliation'           => $affiliation,
-            'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation($affiliation),
-            'projectService'        => $this->getProjectService(),
-            'workpackageService'    => $this->getWorkpackageService(),
-            'latestVersion'         => $this->getProjectService()->getLatestProjectVersion($affiliation->getProject()),
-            'versionType'           => $this->getProjectService()->getNextMode($affiliation->getProject())->versionType,
-            'hasProjectEditRights'  => $hasProjectEditRights,
-            'requirePartnership'     => $this->getProgramModuleOptions()->getRequirePartnership(),
-            'reportService'         => $this->getReportService(),
-            'versionService'        => $this->getVersionService(),
-            'invoiceService'        => $this->getInvoiceService(),
-        ]);
+        return new ViewModel(
+            [
+                'affiliationService'    => $this->getAffiliationService(),
+                'affiliation'           => $affiliation,
+                'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation($affiliation),
+                'projectService'        => $this->getProjectService(),
+                'workpackageService'    => $this->getWorkpackageService(),
+                'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(
+                    $affiliation->getProject()
+                ),
+                'versionType'           => $this->getProjectService()->getNextMode(
+                    $affiliation->getProject()
+                )->versionType,
+                'hasProjectEditRights'  => $hasProjectEditRights,
+                'requirePartnership'    => $this->getProgramModuleOptions()->getRequirePartnership(),
+                'reportService'         => $this->getReportService(),
+                'versionService'        => $this->getVersionService(),
+                'invoiceService'        => $this->getInvoiceService(),
+                'organisationService'   => $this->getOrganisationService(),
+                'contactService'        => $this->getContactService(),
+            ]
+        );
     }
 
     /**
@@ -60,16 +68,18 @@ class CommunityController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $year = (int)$this->params('year');
+        $year   = (int)$this->params('year');
         $period = (int)$this->params('period');
 
-        return new ViewModel([
-            'year'               => $year,
-            'period'             => $period,
-            'affiliationService' => $this->getAffiliationService(),
-            'affiliation'        => $affiliation,
+        return new ViewModel(
+            [
+                'year'               => $year,
+                'period'             => $period,
+                'affiliationService' => $this->getAffiliationService(),
+                'affiliation'        => $affiliation,
 
-        ]);
+            ]
+        );
     }
 
     /**
@@ -83,20 +93,23 @@ class CommunityController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $year = (int)$this->params('year');
+        $year   = (int)$this->params('year');
         $period = (int)$this->params('period');
 
 
         $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period);
-        $response = $this->getResponse();
+        $response           = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
-            ->addHeaderLine('Content-Disposition', 'attachment; filename="' . sprintf(
-                "payment_sheet_%s_%s_%sH.pdf",
-                $affiliation->getOrganisation()->getDocRef(),
-                $year,
-                $period
-            ) . '"')
+            ->addHeaderLine(
+                'Content-Disposition',
+                'attachment; filename="' . sprintf(
+                    "payment_sheet_%s_%s_%sH.pdf",
+                    $affiliation->getOrganisation()->getDocRef(),
+                    $year,
+                    $period
+                ) . '"'
+            )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
         $response->setContent($renderPaymentSheet->getPDFData());
