@@ -84,21 +84,6 @@
         </dl>
 
         <dl class="dl-horizontal">
-            <dt>{{ translate("txt-funding-status") }}</dt>
-            {% for year in projectService.parseYearRange(affiliation.project) %}
-                <dd> {{ year }}:
-                    {% if affiliationService.isSelfFunded(affiliation) %}
-                        {{ translate("txt-self-funded") }}
-                    {% elseif (affiliationService.getFundingInYear(affiliation,year)) %}
-                        <span class="badge funding-status {{ affiliationService.getFundingInYear(affiliation,year).status.parseCssName }}">{{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}</span>
-                    {% else %}
-                        {{ translate("txt-not-set") }}
-                    {% endif %}
-                </dd>
-            {% endfor %}
-        </dl>
-
-        <dl class="dl-horizontal">
 
             {% if (requirePartnership) %}
                 <dt>{{ translate("txt-partnership") }}</dt>
@@ -177,6 +162,62 @@
                 </dd>
             {% endif %}
         </dl>
+
+        <dl class="dl-horizontal">
+
+
+            <dt>{{ translate("txt-funding-status") }}</dt>
+            <dd>
+                <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                    <tr>
+                        <th class="col-md-1">{{ translate("txt-year") }}</th>
+                        <th class="col-md-2">{{ translate("txt-partner-status") }}</th>
+                        <th class="col-md-2">{{ translate("txt-office-status") }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for year in projectService.parseYearRange(affiliation.project) %}
+
+                        <tr>
+                            <td>
+                                {{ year }}</td>
+                            <td>
+                                {% if affiliationService.isSelfFunded(affiliation) %}
+                                    {{ translate("txt-self-funded") }}
+                                {% elseif affiliation.selfFunded is constant("Affiliation\\Entity\\Affiliation::SELF_FUNDED") %}
+                                    {{ translate("txt-self-funded-requested") }}
+                                {% elseif (affiliationService.getFundingInYear(affiliation,year)) %}
+
+                                    <a id="funding_{{ calendarContact.id }}"
+                                       href="#" class="funding"
+                                       data-type="select"
+                                       data-source="{{ url('community/project/funding/get-funding') }}"
+                                       data-pk="{{ calendarContact.id }}"
+                                       data-value="{{ calendarContact.role.id }}"
+                                       data-url="{{ url('community/project/funding/update-funding') }}"
+                                       data-title="{{ translate("txt-update-role") }}">{{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}</a>
+                                {% else %}
+                                    {{ translate("txt-not-set") }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if affiliationService.isSelfFunded(affiliation) %}
+                                    {{ translate("txt-self-funded") }}
+                                {% elseif (affiliationService.getFundingInYear(affiliation,year)) %}
+                                    <span class="badge funding-status {{ affiliationService.getFundingInYear(affiliation,year, constant("Project\\Entity\\Funding\\Source::SOURCE_OFFICE")).status.parseCssName }}">{{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}</span>
+                                {% else %}
+                                    {{ translate("txt-not-set") }}
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </dd>
+        </dl>
+
 
         {{ affiliationLink|raw }}
     </div>
@@ -387,7 +428,7 @@
                             ) %}
                                 <i class="fa pull-left"></i>
                                 <a id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
-                                   href="#" class="affiliation workpackage" data-type="text"
+                                   href="#" class="funding" data-type="text"
                                    data-pk="{{ affiliation.id }},{{ workpackage.id }},{{ year }}"
                                    data-url="{{ url('json/update-effort') }}"
                                    data-title="{{ translate("txt-update-effort") }}">{{ effortInCurrentYear|parse_effort }}</a>
@@ -661,5 +702,7 @@
         //turn to inline mode
         $.fn.editable.defaults.mode = 'popup';
         $('.affiliation').editable();
+        $('.funding').editable();
     });
+
 </script>

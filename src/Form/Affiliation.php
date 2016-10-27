@@ -53,7 +53,9 @@ class Affiliation extends Form
         $technicalContactValueOptions[$affiliation->getContact()->getId()]
             = $affiliation->getContact()->getFormName();
         foreach ($affiliation->getAssociate() as $contact) {
-            $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
+            if (is_null($contact->getDateEnd())) {
+                $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
+            }
         }
         asort($technicalContactValueOptions);
         /*
@@ -64,8 +66,10 @@ class Affiliation extends Form
         $organisation                 = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
             if (! is_null($affiliation->getFinancial())) {
-                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
-                    = $affiliation->getFinancial()->getContact()->getFormName();
+                if (is_null($affiliation->getFinancial()->getContact()->getDateEnd())) {
+                    $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
+                        = $affiliation->getFinancial()->getContact()->getFormName();
+                }
             }
         }
 

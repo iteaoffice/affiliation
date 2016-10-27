@@ -247,7 +247,6 @@ class EditController extends AffiliationAbstractController
         $formData['registeredCountry'] = $affiliation->getOrganisation()->getCountry()->getId();
 
         if (! is_null($organisationFinancial)) {
-            $organisationFinancial         = $affiliation->getOrganisation()->getFinancial();
             $formData['preferredDelivery'] = $organisationFinancial->getEmail();
             $formData['vat']               = $organisationFinancial->getVat();
             $formData['omitContact']       = $organisationFinancial->getOmitContact();
@@ -330,8 +329,9 @@ class EditController extends AffiliationAbstractController
 
                 //Update the branch is complicated so we create a dedicated function for it in the
                 //OrganisationService
-
-                $affiliationFinancial->setBranch(OrganisationService::determineBranch($formData['organisation'], $organisation->getOrganisation()));
+                $affiliationFinancial->setBranch(
+                    OrganisationService::determineBranch($formData['organisation'], $organisation->getOrganisation())
+                );
 
 
                 $this->getAffiliationService()->updateEntity($affiliationFinancial);

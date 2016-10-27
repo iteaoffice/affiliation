@@ -51,8 +51,8 @@ class CommunityController extends AffiliationAbstractController
                 'reportService'         => $this->getReportService(),
                 'versionService'        => $this->getVersionService(),
                 'invoiceService'        => $this->getInvoiceService(),
-                'organisationService'   => $this->getOrganisationService(),
                 'contactService'        => $this->getContactService(),
+                'organisationService'   => $this->getOrganisationService(),
             ]
         );
     }

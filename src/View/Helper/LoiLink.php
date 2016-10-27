@@ -114,7 +114,7 @@ class LoiLink extends LinkAbstract
                 $this->setText(
                     sprintf(
                         $this->translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
-                        $this->getLoi()->getAffiliation()->getOrganisation(),
+                        $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
                 );
