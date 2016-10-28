@@ -1,11 +1,11 @@
 {% do headTitle().append(translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
-affiliation.organisation.organisation,
+affiliation.parseBranchedName(),
 report.parseName()
 )) %}
 
 
 <h1>{{ translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
-    affiliation.organisation.organisation,
+    affiliation.parseBranchedName(),
     report.parseName()
     ) }}</h1>
 

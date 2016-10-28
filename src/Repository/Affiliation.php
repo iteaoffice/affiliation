@@ -13,6 +13,7 @@ namespace Affiliation\Repository;
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
 use InvalidArgumentException;
@@ -62,6 +63,22 @@ class Affiliation extends EntityRepository
     }
 
     /**
+     * @return Entity\Affiliation[]
+     */
+    public function findNotValidatedSelfFundedAffiliation()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->where('affiliation_entity_affiliation.selfFunded = ?1');
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateSelfFunded'));
+        $qb->setParameter(1, Entity\Affiliation::SELF_FUNDED);
+
+        return $qb->getQuery()->getResult();
+    }
+
+
+    /**
      * Returns affiliation_entity_affiliation list of affiliations which do not have an DOA.
      *
      * @throws InvalidArgumentException
@@ -80,7 +97,7 @@ class Affiliation extends EntityRepository
          * @var $projectRepository \Project\Repository\Project
          */
         $projectRepository = $this->getEntityManager()->getRepository(Project::class);
-        $qb = $projectRepository->onlyActiveProject($qb);
+        $qb                = $projectRepository->onlyActiveProject($qb);
 
         /*
          * Fetch the corresponding projects
@@ -117,7 +134,7 @@ class Affiliation extends EntityRepository
      *
      * @throws InvalidArgumentException
      *
-     * @return QueryBuilder
+     * @return Query
      */
     public function findAffiliationWithMissingLoi()
     {
@@ -131,7 +148,7 @@ class Affiliation extends EntityRepository
          * @var $projectRepository \Project\Repository\Project
          */
         $projectRepository = $this->getEntityManager()->getRepository(Project::class);
-        $qb = $projectRepository->onlyActiveProject($qb);
+        $qb                = $projectRepository->onlyActiveProject($qb);
 
         /*
          * Exclude the found LOIs the corresponding projects
@@ -141,6 +158,15 @@ class Affiliation extends EntityRepository
         $subSelect2->from(Entity\Loi::class, 'loi');
         $subSelect2->join('loi.affiliation', 'affiliation');
         $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect2->getDQL()));
+
+        /*
+         * Exclude the found LOIs the corresponding projects
+         */
+        $subSelect3 = $this->_em->createQueryBuilder();
+        $subSelect3->select('affiliation2');
+        $subSelect3->from(Entity\Doa::class, 'doa');
+        $subSelect3->join('doa.affiliation', 'affiliation2');
+        $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect3->getDQL()));
 
         //Exclude de-activated partners
         $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));

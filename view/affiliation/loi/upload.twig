@@ -4,7 +4,7 @@
 
 <h1>{{ translate("txt-upload-loi-for-organisation-%s-for-project-%s")|
     format(
-    affiliation.parseBranchedName(),
+    affiliation.organisation,
     affiliation.project)|raw }}</h1>
 
 {% do form.prepare() %}
@@ -25,7 +25,7 @@
     <label class="col-sm-3 control-label">{{ translate("txt-organisation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliation.parseBranchedName() }}</p>
+        <p class="form-control-static">{{ affiliation.organisation }}</p>
     </div>
 </div>
 

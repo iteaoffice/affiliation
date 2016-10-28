@@ -223,7 +223,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'name'       => 'delete',
                 'attributes' => [
                     'class' => "btn btn-danger",
-                    'value' => sprintf(_("Delete %s"), $affiliation->getOrganisation()->getOrganisation()),
+                    'value' => sprintf(_("Delete %s"), $affiliation->parseBranchedName()),
                 ],
             ]
         );

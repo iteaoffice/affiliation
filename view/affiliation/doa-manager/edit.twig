@@ -1,6 +1,6 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-edit-doa-%s-in-%s")|format(
-doa.affiliation.organisation.organisation,
+doa.affiliation.parseBranchedName(),
 doa.affiliation.project.parseFullname()
 )) %}
 
@@ -9,7 +9,7 @@ doa.affiliation.project.parseFullname()
 ) %}
 
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
-    doa.affiliation.organisation.organisation,
+    doa.affiliation.parseBranchedName(),
     doa.affiliation.project
     ) }}</h1>
 

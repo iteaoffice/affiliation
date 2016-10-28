@@ -18,7 +18,7 @@ use Zend\Form\Annotation;
  *
  * @ORM\Table(name="affiliation_invoice")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Stdlib\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_invoice")
  *
  * @category    Affiliation

@@ -7,3 +7,4 @@ _("txt-reactivate-partner-%s-button");
 _("txt-affiliation-%s-has-been-deactivated-on-%s-date");
 _("txt-update-costs");
 _("txt-deactivation-of-partner-is-disabled-remove-cost-and-effort-in-draft-first");
+_("txt-not-self-funded");

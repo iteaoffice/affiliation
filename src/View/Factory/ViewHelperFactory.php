@@ -17,8 +17,7 @@ namespace Affiliation\View\Factory;
 
 use Affiliation\View\Helper\AbstractViewHelper;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\View\HelperPluginManager;
 
 /**
@@ -35,27 +34,15 @@ final class ViewHelperFactory implements FactoryInterface
      * @param string                                 $requestedName
      * @param null|array                             $options
      *
-     * @return object
+     * @return AbstractViewHelper
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): AbstractViewHelper
     {
         /** @var AbstractViewHelper $viewHelper */
         $viewHelper = new $requestedName($options);
-        $viewHelper->setServiceManager($container->getServiceLocator());
-        $viewHelper->setHelperPluginManager($container);
+        $viewHelper->setServiceManager($container);
+        $viewHelper->setHelperPluginManager($container->get('ViewHelperManager'));
 
         return $viewHelper;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $serviceLocator
-     * @param string                  $canonicalName
-     * @param string                  $requestedName
-     *
-     * @return mixed
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
-    {
-        return $this($serviceLocator, $requestedName);
     }
 }

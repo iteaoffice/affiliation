@@ -1,15 +1,10 @@
-{% set project = loi.affiliation.project %}
-
-{% do headTitle().append(translate("txt-replace-loi-for-organisation-%s-for-project-%s")|
-format(loi.affiliation.parseBranchedName(), project)) %}
-
-
+{% set project = affiliation.project %}
 
 <h1>{{ translate("txt-replace-loi-for-organisation-%s-for-project-%s")|
-    format(loi.affiliation.parseBranchedName(), project)|raw }}</h1>
+    format(affiliation.organisation, project)|raw }}</h1>
 
 <p class="lead">{{ translate("txt-replace-loi-for-organisation-%s-for-project-%s-explanation")|
-    format(loi.affiliation.parseBranchedName(), project)|raw }}</p>
+    format(affiliation.organisation, project)|raw }}</p>
 
 
 {% do form.prepare() %}
@@ -30,7 +25,7 @@ format(loi.affiliation.parseBranchedName(), project)) %}
     <label class="col-sm-3 control-label">{{ translate("txt-organisation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ loi.affiliation.parseBranchedName() }}</p>
+        <p class="form-control-static">{{ affiliation.organisation }}</p>
     </div>
 </div>
 
@@ -38,7 +33,7 @@ format(loi.affiliation.parseBranchedName(), project)) %}
     <label class="col-sm-3 control-label">{{ translate("txt-download-current-loi") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ loiLink(loi,'download','text') }}</p>
+        <p class="form-control-static">{{ loiLink(affiliation.loi,'download','text') }}</p>
     </div>
 </div>
 

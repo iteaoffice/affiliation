@@ -143,8 +143,7 @@ class DoaManagerController extends AffiliationAbstractController
             /**
              * @var $deeplinkLink DeeplinkLink
              */
-            $deeplinkLink = $this->getPluginManager()->getServiceLocator()->get('ViewHelperManager')
-                ->get('deeplinkLink');
+            $deeplinkLink = $this->getViewHelperManager()->get('deeplinkLink');
             $email->setDeeplink($deeplinkLink($deeplink, 'view', 'link'));
 
             $this->getEmailService()->send();
@@ -264,7 +263,7 @@ class DoaManagerController extends AffiliationAbstractController
                     /*
                      * Replace the content of the object
                      */
-                    if (! $doa->getObject()->isEmpty()) {
+                    if ( ! $doa->getObject()->isEmpty()) {
                         $doa->getObject()->first()->setObject(
                             file_get_contents($fileData['affiliation_entity_doa']['file']['tmp_name'])
                         );
@@ -330,7 +329,7 @@ class DoaManagerController extends AffiliationAbstractController
             );
         }
 
-        if (! \DateTime::createFromFormat('Y-h-d', $dateSigned)) {
+        if ( ! \DateTime::createFromFormat('Y-h-d', $dateSigned)) {
             return new JsonModel(
                 [
                     'result' => 'error',

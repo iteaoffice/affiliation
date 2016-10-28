@@ -20,7 +20,7 @@ use Contact\Service\ContactService;
 use Interop\Container\ContainerInterface;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**

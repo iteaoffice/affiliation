@@ -41,7 +41,7 @@ class AffiliationLabel extends AbstractNavigationInvokable
             $page->setParams(array_merge($page->getParams(), [
                 'id' => $affiliation->getId(),
             ]));
-            $label = (string)$affiliation->parseBranchedName();
+            $label = (string)$affiliation;
         } else {
             $label = $this->translate('txt-nav-view');
         }

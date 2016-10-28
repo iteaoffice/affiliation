@@ -1,6 +1,6 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-edit-loi-%s-in-%s")|format(
-loi.affiliation.organisation.organisation,
+loi.affiliation.parseBranchedName(),
 loi.affiliation.project
 )) %}
 
@@ -9,7 +9,7 @@ loi.affiliation.project
 ) %}
 
 <h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
-    loi.affiliation.organisation.organisation,
+    loi.affiliation.parseBranchedName(),
     loi.affiliation.project
     ) }}</h1>
 

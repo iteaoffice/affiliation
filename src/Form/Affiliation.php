@@ -53,9 +53,7 @@ class Affiliation extends Form
         $technicalContactValueOptions[$affiliation->getContact()->getId()]
             = $affiliation->getContact()->getFormName();
         foreach ($affiliation->getAssociate() as $contact) {
-            if (is_null($contact->getDateEnd())) {
-                $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
-            }
+            $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         asort($technicalContactValueOptions);
         /*
@@ -66,10 +64,8 @@ class Affiliation extends Form
         $organisation                 = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
             if ( ! is_null($affiliation->getFinancial())) {
-                if (is_null($affiliation->getFinancial()->getContact()->getDateEnd())) {
-                    $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
-                        = $affiliation->getFinancial()->getContact()->getFormName();
-                }
+                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
+                    = $affiliation->getFinancial()->getContact()->getFormName();
             }
         }
 
@@ -164,6 +160,17 @@ class Affiliation extends Form
                 'attributes' => [
                     'cols'  => 8,
                     'class' => 'form-control',
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Radio',
+                'name'    => 'selfFunded',
+                'options' => [
+                    'value_options' => Entity\Affiliation::getSelfFundedTemplates(),
+                    'label'         => _("txt-self-funded"),
+                    'help-block'    => _("txt-self-funded-inline-help"),
                 ],
             ]
         );

@@ -33,6 +33,7 @@ use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
+use Zend\View\HelperPluginManager;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 /**
@@ -129,6 +130,10 @@ abstract class AffiliationAbstractController extends AbstractActionController
      * @var ProgramModuleOptions
      */
     protected $programModuleOptions;
+    /**
+     * @var HelperPluginManager
+     */
+    protected $viewHelperManager;
 
     /**
      * @return EntityManager
@@ -531,6 +536,26 @@ abstract class AffiliationAbstractController extends AbstractActionController
     }
 
     /**
+     * @return HelperPluginManager
+     */
+    public function getViewHelperManager(): HelperPluginManager
+    {
+        return $this->viewHelperManager;
+    }
+
+    /**
+     * @param HelperPluginManager $viewHelperManager
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setViewHelperManager(HelperPluginManager $viewHelperManager): AffiliationAbstractController
+    {
+        $this->viewHelperManager = $viewHelperManager;
+
+        return $this;
+    }
+
+    /**
      * Proxy for the flash messenger helper to have the string translated earlier.
      *
      * @param $string
@@ -542,7 +567,7 @@ abstract class AffiliationAbstractController extends AbstractActionController
         /*
          * @var Translate
          */
-        $translate = $this->getPluginManager()->getServiceLocator()->get('ViewHelperManager')->get('translate');
+        $translate = $this->getViewHelperManager()->get('translate');
 
         return $translate($string);
     }
