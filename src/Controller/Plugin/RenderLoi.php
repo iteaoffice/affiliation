@@ -60,11 +60,14 @@ class RenderLoi extends AbstractPlugin
          * Use the NDA object to render the filename
          */
         $pdf->Write(0, $loi->parseFileName());
-        $ndaContent = $twig->render('affiliation/pdf/loi-project', [
-                'contact'      => $loi->getContact(),
-                'project'      => $loi->getAffiliation()->getProject(),
-                'organisation' => $loi->getAffiliation()->getOrganisation(),
-            ]);
+        $ndaContent = $twig->render(
+            'affiliation/pdf/loi-project',
+            [
+            'contact'      => $loi->getContact(),
+            'project'      => $loi->getAffiliation()->getProject(),
+            'organisation' => $loi->getAffiliation()->getOrganisation(),
+            ]
+        );
         $pdf->writeHTMLCell(0, 0, 14, 70, $ndaContent);
         /*
          * Signage block
@@ -85,26 +88,6 @@ class RenderLoi extends AbstractPlugin
         $pdf->Line(30, 275, 90, 275);
 
         return $pdf;
-    }
-
-    /**
-     * Gateway to the General Service.
-     *
-     * @return GeneralService
-     */
-    public function getGeneralService()
-    {
-        return $this->getServiceLocator()->get(GeneralService::class);
-    }
-
-    /**
-     * Gateway to the Contact Service.
-     *
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->getServiceLocator()->get(ContactService::class);
     }
 
     /**
@@ -133,5 +116,25 @@ class RenderLoi extends AbstractPlugin
         $this->serviceLocator = $serviceLocator;
 
         return $this;
+    }
+
+    /**
+     * Gateway to the Contact Service.
+     *
+     * @return ContactService
+     */
+    public function getContactService()
+    {
+        return $this->getServiceLocator()->get(ContactService::class);
+    }
+
+    /**
+     * Gateway to the General Service.
+     *
+     * @return GeneralService
+     */
+    public function getGeneralService()
+    {
+        return $this->getServiceLocator()->get(GeneralService::class);
     }
 }

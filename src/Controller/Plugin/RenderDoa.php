@@ -59,12 +59,15 @@ class RenderDoa extends AbstractPlugin
          * Use the NDA object to render the filename
          */
         $pdf->Write(0, $doa->parseFileName());
-        $ndaContent = $twig->render('affiliation/pdf/doa-project', [
+        $ndaContent = $twig->render(
+            'affiliation/pdf/doa-project',
+            [
             'contact'        => $doa->getContact(),
             'project'        => $doa->getAffiliation()->getProject(),
             'organisation'   => $doa->getAffiliation()->getOrganisation(),
             'contactService' => $this->getContactService(),
-        ]);
+            ]
+        );
         $pdf->writeHTMLCell(0, 0, 14, 85, $ndaContent);
         /*
          * Signage block
@@ -85,26 +88,6 @@ class RenderDoa extends AbstractPlugin
         $pdf->Line(30, 275, 90, 275);
 
         return $pdf;
-    }
-
-    /**
-     * Gateway to the General Service.
-     *
-     * @return GeneralService
-     */
-    public function getGeneralService()
-    {
-        return $this->getServiceLocator()->get(GeneralService::class);
-    }
-
-    /**
-     * Gateway to the Contact Service.
-     *
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->getServiceLocator()->get(ContactService::class);
     }
 
     /**
@@ -133,5 +116,25 @@ class RenderDoa extends AbstractPlugin
         $this->serviceLocator = $serviceLocator;
 
         return $this;
+    }
+
+    /**
+     * Gateway to the Contact Service.
+     *
+     * @return ContactService
+     */
+    public function getContactService()
+    {
+        return $this->getServiceLocator()->get(ContactService::class);
+    }
+
+    /**
+     * Gateway to the General Service.
+     *
+     * @return GeneralService
+     */
+    public function getGeneralService()
+    {
+        return $this->getServiceLocator()->get(GeneralService::class);
     }
 }

@@ -70,14 +70,6 @@ class LoiObject extends EntityAbstract
     }
 
     /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * @return int
      */
     public function getId()
@@ -86,11 +78,11 @@ class LoiObject extends EntityAbstract
     }
 
     /**
-     * @param \Affiliation\Entity\Loi $loi
+     * @param int $id
      */
-    public function setLoi($loi)
+    public function setId($id)
     {
-        $this->loi = $loi;
+        $this->id = $id;
     }
 
     /**
@@ -102,11 +94,11 @@ class LoiObject extends EntityAbstract
     }
 
     /**
-     * @param string $object
+     * @param \Affiliation\Entity\Loi $loi
      */
-    public function setObject($object)
+    public function setLoi($loi)
     {
-        $this->object = $object;
+        $this->loi = $loi;
     }
 
     /**
@@ -115,5 +107,13 @@ class LoiObject extends EntityAbstract
     public function getObject()
     {
         return $this->object;
+    }
+
+    /**
+     * @param string $object
+     */
+    public function setObject($object)
+    {
+        $this->object = $object;
     }
 }

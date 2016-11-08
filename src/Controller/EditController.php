@@ -384,7 +384,7 @@ class EditController extends AffiliationAbstractController
                             $this->flashMessenger()->setNamespace('error')
                                 ->addMessage(sprintf($this->translate("txt-vat-number-is-invalid"), $affiliation));
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         $this->flashMessenger()->setNamespace('danger')
                             ->addMessage(
                                 sprintf(

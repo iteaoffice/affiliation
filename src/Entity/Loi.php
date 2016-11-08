@@ -155,6 +155,26 @@ class Loi extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     *
+     * @return Loi
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -310,26 +330,6 @@ class Loi extends EntityAbstract implements ResourceInterface
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
-
-        return $this;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Loi
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
 
         return $this;
     }

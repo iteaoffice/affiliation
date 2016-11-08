@@ -21,7 +21,6 @@ use Interop\Container\ContainerInterface;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class AffiliationSearchFactory
@@ -35,9 +34,10 @@ final class AffiliationSearchFactory implements FactoryInterface
      * @param string             $requestedName
      * @param array|null         $options
      *
-     * @return AffiliationSearchFactory
+     * @return AffiliationSearchService
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null
+    ): AffiliationSearchService
     {
         /** @var AffiliationSearchService $searchService */
         $searchService = new $requestedName($options);
@@ -60,17 +60,5 @@ final class AffiliationSearchFactory implements FactoryInterface
         $searchService->setContactService($contactService);
 
         return $searchService;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $container
-     * @param string                  $canonicalName
-     * @param string                  $requestedName
-     *
-     * @return AffiliationService
-     */
-    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
-    {
-        return $this($container, $requestedName);
     }
 }

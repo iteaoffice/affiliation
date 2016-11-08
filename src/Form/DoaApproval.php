@@ -43,49 +43,57 @@ class DoaApproval extends Form implements InputFilterProviderInterface
             $affiliationFieldset = new Fieldset('affiliation_' . $doa->getAffiliation()->getId());
 
             $contacts = $contactService->findContactsInAffiliation($doa->getAffiliation());
-            $affiliationFieldset->add([
-                'type'       => 'Zend\Form\Element\Select',
-                'name'       => 'contact',
-                'options'    => [
-                    'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
-                    'label'         => _("txt-contact-name"),
-                ],
-                'attributes' => [
-                    'class'    => 'form-control',
-                    'id'       => 'contact-' . $doa->getId(),
-                    'required' => true,
-                ],
-            ]);
+            $affiliationFieldset->add(
+                [
+                    'type'       => 'Zend\Form\Element\Select',
+                    'name'       => 'contact',
+                    'options'    => [
+                        'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
+                        'label'         => _("txt-contact-name"),
+                    ],
+                    'attributes' => [
+                        'class'    => 'form-control',
+                        'id'       => 'contact-' . $doa->getId(),
+                        'required' => true,
+                    ],
+                ]
+            );
 
-            $affiliationFieldset->add([
-                'type'       => 'Zend\Form\Element\Text',
-                'name'       => 'dateSigned',
-                'attributes' => [
-                    'class'    => 'form-control',
-                    'id'       => 'dateSigned-' . $doa->getId(),
-                    'required' => true,
-                ],
-            ]);
+            $affiliationFieldset->add(
+                [
+                    'type'       => 'Zend\Form\Element\Text',
+                    'name'       => 'dateSigned',
+                    'attributes' => [
+                        'class'    => 'form-control',
+                        'id'       => 'dateSigned-' . $doa->getId(),
+                        'required' => true,
+                    ],
+                ]
+            );
 
             $this->add($affiliationFieldset);
         }
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'submit',
-            'attributes' => [
-                'class' => "btn btn-primary",
-                'value' => _("txt-update"),
-            ],
-        ]);
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'cancel',
-            'attributes' => [
-                'class' => "btn btn-warning",
-                'value' => _("txt-cancel"),
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'submit',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-update"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'cancel',
+                'attributes' => [
+                    'class' => "btn btn-warning",
+                    'value' => _("txt-cancel"),
+                ],
+            ]
+        );
     }
 
     /**

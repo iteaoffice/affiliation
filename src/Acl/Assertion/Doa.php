@@ -42,7 +42,7 @@ class Doa extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$doa instanceof DoaEntity && !is_null($id)) {
+        if (! $doa instanceof DoaEntity && ! is_null($id)) {
             /** @var DoaEntity $doa */
             $doa = $this->getAffiliationService()->findEntityById(DoaEntity::class, $id);
         }
@@ -61,7 +61,7 @@ class Doa extends AssertionAbstract
                     /*
                      * The id can originate from two different params
                      */
-                    if (!is_null($this->getRouteMatch()->getParam('id'))) {
+                    if (! is_null($this->getRouteMatch()->getParam('id'))) {
                         $affiliationId = $this->getRouteMatch()->getParam('id');
                     } else {
                         $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
@@ -77,12 +77,12 @@ class Doa extends AssertionAbstract
                  */
 
                 return is_null($doa->getDateApproved())
-                && $this->getAffiliationAssertion()->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
+                    && $this->getAffiliationAssertion()->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
             case 'render':
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
-                if (!is_null($this->getRouteMatch()->getParam('id'))) {
+                if (! is_null($this->getRouteMatch()->getParam('id'))) {
                     $affiliationId = $this->getRouteMatch()->getParam('id');
                 } else {
                     $affiliationId = $this->getRouteMatch()->getParam('affiliationId');

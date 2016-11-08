@@ -34,8 +34,8 @@ return [
                                     'defaults' => [
                                         'format' => 'html',
                                         'action' => 'list',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'list-csv'       => [
                                 'type'    => 'Segment',
@@ -44,8 +44,8 @@ return [
                                     'defaults' => [
                                         'format' => 'csv',
                                         'action' => 'list',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'view'           => [
                                 'type'    => 'Segment',
@@ -54,8 +54,8 @@ return [
                                     'defaults' => [
                                         'action'    => 'view',
                                         'privilege' => 'view-admin',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'edit'           => [
                                 'type'    => 'Segment',
@@ -64,8 +64,8 @@ return [
                                     'defaults' => [
                                         'action'    => 'edit',
                                         'privilege' => 'edit-admin',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'merge'          => [
                                 'type'    => 'Segment',
@@ -74,8 +74,8 @@ return [
                                     'defaults' => [
                                         'action'    => 'merge',
                                         'privilege' => 'merge-admin',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'edit-associate' => [
                                 'type'    => 'Segment',
@@ -84,8 +84,8 @@ return [
                                     'defaults' => [
                                         'action'    => 'edit-associate',
                                         'privilege' => 'edit-admin',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'loi'            => [
                                 'type'          => 'Segment',
@@ -157,8 +157,8 @@ return [
                                                 ],
                                                 'action'      => 'remind',
                                                 'privilege'   => 'remind-admin',
-                                            ]
-                                        ]
+                                            ],
+                                        ],
                                     ],
                                     'reminders' => [
                                         'type'    => 'Segment',
@@ -170,8 +170,8 @@ return [
                                                 ],
                                                 'action'      => 'reminders',
                                                 'privilege'   => 'reminders-admin',
-                                            ]
-                                        ]
+                                            ],
+                                        ],
                                     ],
                                     'edit'      => [
                                         'type'    => 'Segment',
@@ -197,7 +197,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                ]
+                                ],
                             ],
                             'doa'            => [
                                 'type'          => 'Segment',
@@ -269,8 +269,8 @@ return [
                                                 ],
                                                 'action'      => 'edit',
                                                 'privilege'   => 'edit-admin',
-                                            ]
-                                        ]
+                                            ],
+                                        ],
                                     ],
                                     'remind'    => [
                                         'type'    => 'Segment',
@@ -282,8 +282,8 @@ return [
                                                 ],
                                                 'action'      => 'remind',
                                                 'privilege'   => 'remind-admin',
-                                            ]
-                                        ]
+                                            ],
+                                        ],
                                     ],
                                     'reminders' => [
                                         'type'    => 'Segment',
@@ -295,8 +295,8 @@ return [
                                                 ],
                                                 'action'      => 'reminders',
                                                 'privilege'   => 'reminders-admin',
-                                            ]
-                                        ]
+                                            ],
+                                        ],
                                     ],
                                     'approve'   => [
                                         'type'     => 'Segment',
@@ -306,15 +306,15 @@ return [
                                             'defaults' => [
                                                 'action'    => 'approve',
                                                 'privilege' => 'edit-admin',
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
-                ]
-            ]
-        ]
-    ]
+                ],
+            ],
+        ],
+    ],
 ];

@@ -44,7 +44,7 @@ class DoaLabel extends AbstractNavigationInvokable
                 array_merge(
                     $page->getParams(),
                     [
-                    'id' => $doa->getId(),
+                        'id' => $doa->getId(),
                     ]
                 )
             );

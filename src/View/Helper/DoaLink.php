@@ -53,17 +53,65 @@ class DoaLink extends LinkAbstract
                 'name' => $this->getDoa(),
             ]
         );
-        if ( ! $this->hasAccess($this->getDoa(), DoaAssertion::class, $this->getAction())) {
+        if (! $this->hasAccess($this->getDoa(), DoaAssertion::class, $this->getAction())) {
             return '';
         }
 
-        if ( ! is_null($doa)) {
+        if (! is_null($doa)) {
             $this->addRouterParam('id', $this->getDoa()->getId());
             $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
         }
         $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
 
         return $this->createLink();
+    }
+
+    /**
+     * @return Doa
+     */
+    public function getDoa()
+    {
+        if (is_null($this->doa)) {
+            $this->doa = new Doa();
+        }
+
+        return $this->doa;
+    }
+
+    /**
+     * @param Doa $doa
+     */
+    public function setDoa($doa)
+    {
+        $this->doa = $doa;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
+        }
+
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     *
+     * @return void
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+        /*
+         * Only overwrite the the Affiliation in the LOI when this is not is_null
+         */
+        if (! is_null($affiliation)) {
+            $this->getDoa()->setAffiliation($affiliation);
+        }
     }
 
     /**
@@ -157,54 +205,6 @@ class DoaLink extends LinkAbstract
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
-        }
-    }
-
-    /**
-     * @return Doa
-     */
-    public function getDoa()
-    {
-        if (is_null($this->doa)) {
-            $this->doa = new Doa();
-        }
-
-        return $this->doa;
-    }
-
-    /**
-     * @param Doa $doa
-     */
-    public function setDoa($doa)
-    {
-        $this->doa = $doa;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return void
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-        /*
-         * Only overwrite the the Affiliation in the LOI when this is not is_null
-         */
-        if ( ! is_null($affiliation)) {
-            $this->getDoa()->setAffiliation($affiliation);
         }
     }
 }

@@ -16,7 +16,6 @@
 namespace Affiliation\InputFilter;
 
 use Doctrine\ORM\EntityManager;
-use DoctrineModule\Validator;
 use Zend\InputFilter\InputFilter;
 
 /**
@@ -34,10 +33,12 @@ class DescriptionFilter extends InputFilter
     public function __construct(EntityManager $entityManager)
     {
         $inputFilter = new InputFilter();
-        $inputFilter->add([
-            'name'     => 'description',
-            'required' => true,
-        ]);
+        $inputFilter->add(
+            [
+                'name'     => 'description',
+                'required' => true,
+            ]
+        );
 
 
         $this->add($inputFilter, 'affiliation_entity_description');

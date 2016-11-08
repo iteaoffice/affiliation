@@ -58,18 +58,22 @@ class DoaController extends AffiliationAbstractController
                 $fileSizeValidator->isValid($fileData['file']);
                 $affiliationDoa = new Entity\Doa();
                 $affiliationDoa->setSize($fileSizeValidator->size);
-                $affiliationDoa->setContentType($this->getGeneralService()
-                    ->findContentTypeByContentTypeName($fileData['file']['type']));
+                $affiliationDoa->setContentType(
+                    $this->getGeneralService()
+                        ->findContentTypeByContentTypeName($fileData['file']['type'])
+                );
                 $affiliationDoa->setContact($this->zfcUserAuthentication()->getIdentity());
                 $affiliationDoa->setAffiliation($affiliation);
                 $affiliationDoaObject->setDoa($affiliationDoa);
                 $this->getAffiliationService()->newEntity($affiliationDoaObject);
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf(
-                        _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded"),
-                        $affiliation->getOrganisation(),
-                        $affiliation->getProject()
-                    ));
+                    ->addMessage(
+                        sprintf(
+                            _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded"),
+                            $affiliation->getOrganisation(),
+                            $affiliation->getProject()
+                        )
+                    );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -79,11 +83,13 @@ class DoaController extends AffiliationAbstractController
             }
         }
 
-        return new ViewModel([
-            'affiliationService' => $this->getAffiliationService(),
-            'affiliation'        => $affiliation,
-            'form'               => $form,
-        ]);
+        return new ViewModel(
+            [
+                'affiliationService' => $this->getAffiliationService(),
+                'affiliation'        => $affiliation,
+                'form'               => $form,
+            ]
+        );
     }
 
     /**
@@ -137,16 +143,20 @@ class DoaController extends AffiliationAbstractController
                 $fileSizeValidator->isValid($fileData['file']);
                 $doa->setSize($fileSizeValidator->size);
                 $doa->setContact($this->zfcUserAuthentication()->getIdentity());
-                $doa->setContentType($this->getGeneralService()
-                    ->findContentTypeByContentTypeName($fileData['file']['type']));
+                $doa->setContentType(
+                    $this->getGeneralService()
+                        ->findContentTypeByContentTypeName($fileData['file']['type'])
+                );
                 $affiliationDoaObject->setDoa($doa);
                 $this->getAffiliationService()->newEntity($affiliationDoaObject);
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf(
-                        _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced"),
-                        $doa->getAffiliation()->getOrganisation(),
-                        $doa->getAffiliation()->getProject()
-                    ));
+                    ->addMessage(
+                        sprintf(
+                            _("txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced"),
+                            $doa->getAffiliation()->getOrganisation(),
+                            $doa->getAffiliation()->getProject()
+                        )
+                    );
 
                 return $this->redirect()
                     ->toRoute(
@@ -157,11 +167,13 @@ class DoaController extends AffiliationAbstractController
             }
         }
 
-        return new ViewModel([
-            'affiliationService' => $this->getAffiliationService(),
-            'doa'                => $doa,
-            'form'               => $form,
-        ]);
+        return new ViewModel(
+            [
+                'affiliationService' => $this->getAffiliationService(),
+                'doa'                => $doa,
+                'form'               => $form,
+            ]
+        );
     }
 
     /**
@@ -179,7 +191,7 @@ class DoaController extends AffiliationAbstractController
         $programDoa->setContact($this->zfcUserAuthentication()->getIdentity());
         $programDoa->setAffiliation($affiliation);
         $renderProjectDoa = $this->renderDoa()->renderProjectDoa($programDoa);
-        $response = $this->getResponse();
+        $response         = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
             ->addHeaderLine('Content-Disposition', 'attachment; filename="' . $programDoa->parseFileName() . '.pdf"')
@@ -206,7 +218,7 @@ class DoaController extends AffiliationAbstractController
         /*
          * Due to the BLOB issue, we treat this as an array and we need to capture the first element
          */
-        $object = $doa->getObject()->first()->getObject();
+        $object   = $doa->getObject()->first()->getObject();
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
@@ -214,8 +226,10 @@ class DoaController extends AffiliationAbstractController
                 'Content-Disposition',
                 'attachment; filename="' . $doa->parseFileName() . '.' . $doa->getContentType()->getExtension() . '"'
             )
-            ->addHeaderLine("Pragma: public")->addHeaderLine('Content-Type: ' . $doa->getContentType()
-                    ->getContentType())->addHeaderLine('Content-Length: ' . $doa->getSize());
+            ->addHeaderLine("Pragma: public")->addHeaderLine(
+                'Content-Type: ' . $doa->getContentType()
+                    ->getContentType()
+            )->addHeaderLine('Content-Length: ' . $doa->getSize());
 
         return $this->response;
     }

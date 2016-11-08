@@ -37,89 +37,103 @@ class EffortSpent extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-        $this->add([
-            'type'    => 'Zend\Form\Element\Text',
-            'name'    => 'effort',
-            'options' => [
-                'label'      => _("txt-effort-spent"),
-                'help-block' => _("txt-effort-spent-effort-help-block"),
-            ],
-        ]);
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Text',
+                'name'    => 'effort',
+                'options' => [
+                    'label'      => _("txt-effort-spent"),
+                    'help-block' => _("txt-effort-spent-effort-help-block"),
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Textarea',
-            'name'       => 'marketAccess',
-            'options'    => [
-                'label'      => _("txt-exploitation-prospects"),
-                'help-block' => _("txt-market-access-inline-help"),
-            ],
-            'attributes' => [
-                'id'    => 'marketAccess',
-                'rows'  => 8,
-                'class' => 'form-control',
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'marketAccess',
+                'options'    => [
+                    'label'      => _("txt-exploitation-prospects"),
+                    'help-block' => _("txt-market-access-inline-help"),
+                ],
+                'attributes' => [
+                    'id'    => 'marketAccess',
+                    'rows'  => 8,
+                    'class' => 'form-control',
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Textarea',
-            'name'       => 'mainContribution',
-            'options'    => [
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'mainContribution',
+                'options'    => [
 
-                'label'      => _("txt-main-contributions-role-and-added-value-within-the-project"),
-                'help-block' => _("txt--main-contribution-for-the-project-inline-help"),
-            ],
-            'attributes' => [
-                'id'    => 'mainContribution',
-                'class' => 'form-control',
-            ],
-        ]);
+                    'label'      => _("txt-main-contributions-role-and-added-value-within-the-project"),
+                    'help-block' => _("txt--main-contribution-for-the-project-inline-help"),
+                ],
+                'attributes' => [
+                    'id'    => 'mainContribution',
+                    'class' => 'form-control',
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Textarea',
-            'name'       => 'summary',
-            'options'    => [
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'summary',
+                'options'    => [
 
-                'label'      => _("txt-main-results-during-reporting-period"),
-                'help-block' => _("txt-brief-summary-of-partner-during-reporting-period"),
-            ],
-            'attributes' => [
-                'id'    => 'summary',
-                'rows'  => 4,
-                'class' => 'form-control',
-            ],
-        ]);
+                    'label'      => _("txt-main-results-during-reporting-period"),
+                    'help-block' => _("txt-brief-summary-of-partner-during-reporting-period"),
+                ],
+                'attributes' => [
+                    'id'    => 'summary',
+                    'rows'  => 4,
+                    'class' => 'form-control',
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Textarea',
-            'name'       => 'comment',
-            'options'    => [
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'comment',
+                'options'    => [
 
-                'label'      => _("txt-descrepancy-explanation"),
-                'help-block' => _("txt-effort-spent-comment-on-discrepancy-help-block"),
-            ],
-            'attributes' => [
-                'id'    => 'comment',
-                'rows'  => 4,
-                'class' => 'form-control',
-            ],
-        ]);
+                    'label'      => _("txt-descrepancy-explanation"),
+                    'help-block' => _("txt-effort-spent-comment-on-discrepancy-help-block"),
+                ],
+                'attributes' => [
+                    'id'    => 'comment',
+                    'rows'  => 4,
+                    'class' => 'form-control',
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'submit',
-            'attributes' => [
-                'class' => "btn btn-primary",
-                'value' => _("txt-update"),
-            ],
-        ]);
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'cancel',
-            'attributes' => [
-                'class' => "btn btn-warning",
-                'value' => _("txt-cancel"),
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'submit',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-update"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'cancel',
+                'attributes' => [
+                    'class' => "btn btn-warning",
+                    'value' => _("txt-cancel"),
+                ],
+            ]
+        );
     }
 
     /**
@@ -172,9 +186,11 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                                     return strlen($value) > 0;
                                 }
 
-                                if (abs(($context['effort']
+                                if (abs(
+                                    ($context['effort']
                                             - $this->effortPlanned)
-                                        / $this->effortPlanned) > 0.2
+                                        / $this->effortPlanned
+                                ) > 0.2
                                 ) {
                                     return strlen($value) > 0;
                                 }
@@ -184,7 +200,7 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                         ],
                     ],
                 ],
-            ]
+            ],
         ];
     }
 }

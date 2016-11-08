@@ -63,12 +63,11 @@ class Affiliation extends Form
         $financialContactValueOptions = $technicalContactValueOptions;
         $organisation                 = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
-            if ( ! is_null($affiliation->getFinancial())) {
+            if (! is_null($affiliation->getFinancial())) {
                 if (is_null($affiliation->getFinancial()->getContact()->getDateEnd())) {
                     $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
                         = $affiliation->getFinancial()->getContact()->getFormName();
                 }
-
             }
         }
 

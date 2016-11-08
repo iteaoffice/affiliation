@@ -70,10 +70,14 @@ class AffiliationServiceTest extends \PHPUnit_Framework_TestCase
         // Mock the repository, disabling the constructor
         $userRepositoryMock = $this->getMockBuilder(\Affiliation\Repository\Affiliation::class)
             ->disableOriginalConstructor()->getMock();
-        $userRepositoryMock->expects($this->once())->method('findAll')->will($this->returnValue([
-            $affiliation,
-            $affiliation2
-        ]));
+        $userRepositoryMock->expects($this->once())->method('findAll')->will(
+            $this->returnValue(
+                [
+                    $affiliation,
+                    $affiliation2,
+                ]
+            )
+        );
 
         // Mock the entity manager
         $emMock = $this->getMock('EntityManager', ['getRepository'], [], '', false);

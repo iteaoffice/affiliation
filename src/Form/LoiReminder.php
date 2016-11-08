@@ -42,79 +42,91 @@ class LoiReminder extends Form implements InputFilterProviderInterface
 
         $contacts = $contactService->findContactsInAffiliation($affiliation);
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Select',
-            'name'       => 'receiver',
-            'options'    => [
-                'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
-                'label'         => _("txt-contact-name"),
-            ],
-            'attributes' => [
-                'class'    => 'form-control',
-                'id'       => 'receiver',
-                'required' => true,
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Select',
+                'name'       => 'receiver',
+                'options'    => [
+                    'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
+                    'label'         => _("txt-contact-name"),
+                ],
+                'attributes' => [
+                    'class'    => 'form-control',
+                    'id'       => 'receiver',
+                    'required' => true,
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => EntitySelect::class,
-            'name'       => 'deeplinkTarget',
-            'attributes' => [
-                'label' => _("txt-deeplink-target"),
-            ],
-            'options'    => [
-                'object_manager'  => $entityManager,
-                'target_class'    => Target::class,
-                'find_method'     => [
-                    'name'   => 'findBy',
-                    'params' => [
-                        'criteria' => [],
-                        'orderBy'  => [
-                            'route' => 'ASC',
+        $this->add(
+            [
+                'type'       => EntitySelect::class,
+                'name'       => 'deeplinkTarget',
+                'attributes' => [
+                    'label' => _("txt-deeplink-target"),
+                ],
+                'options'    => [
+                    'object_manager'  => $entityManager,
+                    'target_class'    => Target::class,
+                    'find_method'     => [
+                        'name'   => 'findBy',
+                        'params' => [
+                            'criteria' => [],
+                            'orderBy'  => [
+                                'route' => 'ASC',
+                            ],
                         ],
                     ],
+                    'label_generator' => function (Target $targetEntity) {
+                        return sprintf("%s (%s)", $targetEntity->getTarget(), $targetEntity->getRoute());
+                    },
                 ],
-                'label_generator' => function (Target $targetEntity) {
-                    return sprintf("%s (%s)", $targetEntity->getTarget(), $targetEntity->getRoute());
-                },
-            ],
-        ]);
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Text',
-            'name'       => 'subject',
-            'attributes' => [
-                'label' => _("txt-subject"),
-                'class' => 'form-control',
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Text',
+                'name'       => 'subject',
+                'attributes' => [
+                    'label' => _("txt-subject"),
+                    'class' => 'form-control',
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Textarea',
-            'name'       => 'message',
-            'attributes' => [
-                'label' => _("txt-message"),
-                'rows'  => 15,
-                'class' => 'form-control',
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Textarea',
+                'name'       => 'message',
+                'attributes' => [
+                    'label' => _("txt-message"),
+                    'rows'  => 15,
+                    'class' => 'form-control',
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'submit',
-            'attributes' => [
-                'class' => "btn btn-primary",
-                'value' => _("txt-send"),
-            ],
-        ]);
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'cancel',
-            'attributes' => [
-                'class' => "btn btn-warning",
-                'value' => _("txt-cancel"),
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'submit',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-send"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'cancel',
+                'attributes' => [
+                    'class' => "btn btn-warning",
+                    'value' => _("txt-cancel"),
+                ],
+            ]
+        );
     }
 
     /**

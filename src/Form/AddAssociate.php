@@ -38,35 +38,41 @@ class AddAssociate extends Form implements InputFilterProviderInterface
             $contacts[$contact->getId()] = $contact->getFormName();
         }
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Select',
-            'name'       => 'contact',
-            'options'    => [
-                'value_options' => $contacts,
-                'label'         => _("txt-contact-name"),
-            ],
-            'attributes' => [
-                'class'    => 'form-control',
-                'required' => true,
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Select',
+                'name'       => 'contact',
+                'options'    => [
+                    'value_options' => $contacts,
+                    'label'         => _("txt-contact-name"),
+                ],
+                'attributes' => [
+                    'class'    => 'form-control',
+                    'required' => true,
+                ],
+            ]
+        );
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'submit',
-            'attributes' => [
-                'class' => "btn btn-primary",
-                'value' => _("txt-update"),
-            ],
-        ]);
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'cancel',
-            'attributes' => [
-                'class' => "btn btn-warning",
-                'value' => _("txt-cancel"),
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'submit',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-update"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'cancel',
+                'attributes' => [
+                    'class' => "btn btn-warning",
+                    'value' => _("txt-cancel"),
+                ],
+            ]
+        );
     }
 
     /**

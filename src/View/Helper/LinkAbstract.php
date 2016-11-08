@@ -114,12 +114,14 @@ abstract class LinkAbstract extends AbstractViewHelper
 
         return sprintf(
             $uri,
-            $serverUrl() . $url($this->router, $this->routerParams,
-                is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]),
+            $serverUrl() . $url(
+                $this->router, $this->routerParams,
+                is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
+            ),
             htmlentities($this->text),
             implode(' ', $this->classes),
             in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode('', $this->linkContent)
-            : htmlentities(implode('', $this->linkContent))
+                : htmlentities(implode('', $this->linkContent))
         );
     }
 
@@ -169,7 +171,9 @@ abstract class LinkAbstract extends AbstractViewHelper
                 break;
             case 'paginator':
                 if (is_null($this->getAlternativeShow())) {
-                    throw new \InvalidArgumentException(sprintf("this->alternativeShow cannot be null for a paginator link"));
+                    throw new \InvalidArgumentException(
+                        sprintf("this->alternativeShow cannot be null for a paginator link")
+                    );
                 }
                 $this->addLinkContent($this->getAlternativeShow());
                 break;
@@ -181,12 +185,14 @@ abstract class LinkAbstract extends AbstractViewHelper
                 return;
                 break;
             default:
-                if (!array_key_exists($this->getShow(), $this->showOptions)) {
-                    throw new \InvalidArgumentException(sprintf(
-                        "The option \"%s\" should be available in the showOptions array, only \"%s\" are available",
-                        $this->getShow(),
-                        implode(', ', array_keys($this->showOptions))
-                    ));
+                if (! array_key_exists($this->getShow(), $this->showOptions)) {
+                    throw new \InvalidArgumentException(
+                        sprintf(
+                            "The option \"%s\" should be available in the showOptions array, only \"%s\" are available",
+                            $this->getShow(),
+                            implode(', ', array_keys($this->showOptions))
+                        )
+                    );
                 }
                 $this->addLinkContent($this->showOptions[$this->getShow()]);
                 break;
@@ -232,7 +238,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function addLinkContent($linkContent)
     {
-        if (!is_array($linkContent)) {
+        if (! is_array($linkContent)) {
             $linkContent = [$linkContent];
         }
         foreach ($linkContent as $content) {
@@ -265,7 +271,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function addClasses($classes)
     {
-        if (!is_array($classes)) {
+        if (! is_array($classes)) {
             $classes = [$classes];
         }
         foreach ($classes as $class) {
@@ -292,6 +298,22 @@ abstract class LinkAbstract extends AbstractViewHelper
     }
 
     /**
+     * @return array
+     */
+    public function getFragment()
+    {
+        return $this->fragment;
+    }
+
+    /**
+     * @param string $fragment
+     */
+    public function setFragment($fragment)
+    {
+        $this->fragment = $fragment;
+    }
+
+    /**
      * @param string $showOptions
      */
     public function setShowOptions($showOptions)
@@ -309,11 +331,11 @@ abstract class LinkAbstract extends AbstractViewHelper
     public function hasAccess(EntityAbstract $entity, $assertion, $action)
     {
         $assertion = $this->getAssertion($assertion);
-        if (!is_null($entity) && !$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
+        if (! is_null($entity) && ! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
             $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }
-        if (!$this->isAllowed($entity, $action)) {
+        if (! $this->isAllowed($entity, $action)) {
             return false;
         }
 
@@ -363,10 +385,10 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {
-        if (!$allowNull && is_null($value)) {
+        if (! $allowNull && is_null($value)) {
             throw new \InvalidArgumentException(sprintf("null is not allowed for %s", $key));
         }
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             $this->routerParams[$key] = $value;
         }
     }
@@ -481,22 +503,6 @@ abstract class LinkAbstract extends AbstractViewHelper
         $this->period = $period;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getFragment()
-    {
-        return $this->fragment;
-    }
-
-    /**
-     * @param string $fragment
-     */
-    public function setFragment($fragment)
-    {
-        $this->fragment = $fragment;
     }
 
     /**

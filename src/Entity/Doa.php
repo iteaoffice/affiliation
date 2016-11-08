@@ -158,6 +158,26 @@ class Doa extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     *
+     * @return Doa
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -313,26 +333,6 @@ class Doa extends EntityAbstract implements ResourceInterface
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
-
-        return $this;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Doa
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
 
         return $this;
     }

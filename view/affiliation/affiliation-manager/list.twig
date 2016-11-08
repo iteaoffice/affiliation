@@ -12,8 +12,9 @@
         <div class="row">
             <div class="col-md-4">
                 <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
-                <p><a href="{{ url('zfcadmin/affiliation/list-csv') }}{% if fullArguments %}?{{ fullArguments }}{% endif %}"
-                      class="btn btn-primary">{{ translate("txt-download-as-csv") }}</a>
+                <p>
+                    <a href="{{ url('zfcadmin/affiliation/list-csv') }}{% if fullArguments %}?{{ fullArguments }}{% endif %}"
+                       class="btn btn-primary">{{ translate("txt-download-as-csv") }}</a>
                 </p>
             </div>
             <div class="col-md-4">
@@ -42,7 +43,8 @@
                         {{ translate("txt-%s-items-in-%s-groups")|format(groups.getMatches(), groups.getNumberOfGroups()) }}
                     </p>
                 {% endif %}
-                <div><span class="label" style="background-color: #f2dede;">&nbsp;</span> = {{ translate('txt-inactive-affiliation') }}</div>
+                <div><span class="label" style="background-color: #f2dede;">&nbsp;</span>
+                    = {{ translate('txt-inactive-affiliation') }}</div>
             </div>
             <div class="col-md-4">
                 <div class="row">
@@ -167,15 +169,18 @@
                     <tr class="row-totals">
                         <th>{{ translate("txt-total") }} {{ valueGroup.getValue() }}</th>
                         <th class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}"></th>
-                        <th class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">{{ draftCostSum|parse_cost }} k&euro;</th>
+                        <th class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">{{ draftCostSum|parse_cost }}
+                            k&euro;</th>
                         <th class="text-right col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">{{ draftEffortSum|parse_effort }} {{ translate('txt-py') }}</th>
                         <th class="text-right col-version{% if 'col-version' not in cols %} hidden{% endif %}"></th>
                         <th class="text-right col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}"></th>
-                        <th class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">{{ costSum|parse_cost }} k&euro;</th>
+                        <th class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">{{ costSum|parse_cost }}
+                            k&euro;</th>
                         <th class="text-right col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">{{ effortSum|parse_effort }} {{ translate('txt-py') }}</th>
                         <th class="col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}"></th>
                         <th class="col-latest-status{% if 'col-latest-status' not in cols %} hidden{% endif %}"></th>
-                        <th class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">{{ latestCostSum|parse_cost }} k&euro;</th>
+                        <th class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">{{ latestCostSum|parse_cost }}
+                            k&euro;</th>
                         <th class="text-right col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">{{ latestEffortSum|parse_effort }} {{ translate('txt-py') }}</th>
                         <th class="col-project{% if 'col-project' not in cols %} hidden{% endif %}"></th>
                         <th class="col-call{% if 'col-call' not in cols %} hidden{% endif %}"></th>
@@ -187,15 +192,18 @@
                 <tr style="background-color: #d9dadc">
                     <th>{{ translate("txt-grand-total") }}</th>
                     <th class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}"></th>
-                    <th class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">{{ draftCostTotal|parse_cost }} k&euro;</th>
+                    <th class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">{{ draftCostTotal|parse_cost }}
+                        k&euro;</th>
                     <th class="text-right col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">{{ draftEffortTotal|parse_effort }} {{ translate('txt-py') }}</th>
                     <th class="text-right col-version{% if 'col-version' not in cols %} hidden{% endif %}"></th>
                     <th class="text-right col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}"></th>
-                    <th class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">{{ costTotal|parse_cost }} k&euro;</th>
+                    <th class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">{{ costTotal|parse_cost }}
+                        k&euro;</th>
                     <th class="text-right col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">{{ effortTotal|parse_effort }} {{ translate('txt-py') }}</th>
                     <th class="col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}"></th>
                     <th class="col-latest-status{% if 'col-latest-status' not in cols %} hidden{% endif %}"></th>
-                    <th class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">{{ latestCostTotal|parse_cost }} k&euro;</th>
+                    <th class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">{{ latestCostTotal|parse_cost }}
+                        k&euro;</th>
                     <th class="text-right col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">{{ latestEffortTotal|parse_effort }} {{ translate('txt-py') }}</th>
                     <th class="col-project{% if 'col-project' not in cols %} hidden{% endif %}"></th>
                     <th class="col-call{% if 'col-call' not in cols %} hidden{% endif %}"></th>
@@ -341,7 +349,7 @@
             var $self = $(this);
             $('#tbl-list .' + $self.attr('value')).toggleClass('hidden', !$self.is(':checked'));
         });
-        {% if groups %}$('#btn-collapse').click(function(){
+        {% if groups %}$('#btn-collapse').click(function () {
             $('#hid-collapse').val(($('#tbl-list tbody tr').not('.row-totals').is(':hidden') ? 0 : 1));
             $('#search').submit();
         });{% endif %}

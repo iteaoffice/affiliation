@@ -23,7 +23,6 @@ use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Project\Service\VersionService;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class AffiliationServiceFactory
@@ -39,7 +38,7 @@ final class AffiliationServiceFactory implements FactoryInterface
      *
      * @return AffiliationService
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): AffiliationService
     {
         $affiliationService = new AffiliationService($options);
         $affiliationService->setServiceLocator($container);
@@ -69,17 +68,5 @@ final class AffiliationServiceFactory implements FactoryInterface
         $affiliationService->setAuthorizeService($authorizeService);
 
         return $affiliationService;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $container
-     * @param string                  $canonicalName
-     * @param string                  $requestedName
-     *
-     * @return AffiliationService
-     */
-    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
-    {
-        return $this($container, $requestedName);
     }
 }

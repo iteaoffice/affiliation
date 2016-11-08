@@ -45,9 +45,11 @@ class AssociateLink extends LinkAbstract
         /*
          * Set the non-standard options needed to give an other link value
          */
-        $this->setShowOptions([
-            'contact' => $this->getContact()->getDisplayName(),
-        ]);
+        $this->setShowOptions(
+            [
+                'contact' => $this->getContact()->getDisplayName(),
+            ]
+        );
 
         $this->addRouterParam('affiliation', $this->getAffiliation()->getId());
         $this->addRouterParam('contact', $this->getContact()->getId());

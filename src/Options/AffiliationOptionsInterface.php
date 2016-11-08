@@ -45,7 +45,8 @@ interface AffiliationOptionsInterface
     public function getPaymentSheetTemplate();
 
     /**
-     * @param  string        $paymentSheetTemplate
+     * @param  string $paymentSheetTemplate
+     *
      * @return ModuleOptions
      */
     public function setPaymentSheetTemplate($paymentSheetTemplate);

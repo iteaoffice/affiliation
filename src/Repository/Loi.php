@@ -38,6 +38,7 @@ class Loi extends EntityRepository
 
     /**
      * @param  Organisation $organisation
+     *
      * @return LoiEntity[]
      */
     public function findLoiByOrganisation(Organisation $organisation)

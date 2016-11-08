@@ -47,40 +47,48 @@ class EditAssociate extends Form implements InputFilterProviderInterface
 
         asort($affiliations);
 
-        $this->add([
-            'type'    => 'Zend\Form\Element\Select',
-            'name'    => 'affiliation',
-            'options' => [
-                'value_options' => $affiliations,
-                'label'         => _("txt-partner-name"),
-            ],
-        ]);
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Select',
+                'name'    => 'affiliation',
+                'options' => [
+                    'value_options' => $affiliations,
+                    'label'         => _("txt-partner-name"),
+                ],
+            ]
+        );
 
 
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'submit',
-            'attributes' => [
-                'class' => "btn btn-primary",
-                'value' => _("txt-update"),
-            ],
-        ]);
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'delete',
-            'attributes' => [
-                'class' => "btn btn-danger",
-                'value' => _("txt-delete"),
-            ],
-        ]);
-        $this->add([
-            'type'       => 'Zend\Form\Element\Submit',
-            'name'       => 'cancel',
-            'attributes' => [
-                'class' => "btn btn-warning",
-                'value' => _("txt-cancel"),
-            ],
-        ]);
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'submit',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-update"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'delete',
+                'attributes' => [
+                    'class' => "btn btn-danger",
+                    'value' => _("txt-delete"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'cancel',
+                'attributes' => [
+                    'class' => "btn btn-warning",
+                    'value' => _("txt-cancel"),
+                ],
+            ]
+        );
     }
 
     /**

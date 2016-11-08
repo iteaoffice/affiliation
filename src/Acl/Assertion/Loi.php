@@ -40,7 +40,7 @@ class Loi extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$loi instanceof LoiEntity && !is_null($id)) {
+        if (! $loi instanceof LoiEntity && ! is_null($id)) {
             /** @var LoiEntity $loi */
             $loi = $this->getAffiliationService()->findEntityById(LoiEntity::class, $id);
         }
@@ -83,7 +83,7 @@ class Loi extends AssertionAbstract
                  */
 
                 return is_null($loi->getDateApproved())
-                && $this->getAffiliationAssertion()->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
+                    && $this->getAffiliationAssertion()->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
             case 'download':
                 return $this->getAffiliationAssertion()->assert($acl, $role, $loi->getAffiliation(), 'view-community');
             case 'view-admin':

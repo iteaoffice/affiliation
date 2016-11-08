@@ -14,7 +14,6 @@ use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
 use General\Entity\Country;
 use InvalidArgumentException;
 use Organisation\Entity\Organisation;

@@ -381,6 +381,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @return array
+     */
+    public static function getSelfFundedTemplates()
+    {
+        return self::$selfFundedTemplates;
+    }
+
+    /**
      * @param $property
      *
      * @return mixed
@@ -420,11 +428,35 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public static function getSelfFundedTemplates()
+    public function getBranch()
     {
-        return self::$selfFundedTemplates;
+        return $this->branch;
+    }
+
+    /**
+     * @param string $branch
+     */
+    public function setBranch($branch)
+    {
+        $this->branch = $branch;
+    }
+
+    /**
+     * @return \Organisation\Entity\Organisation
+     */
+    public function getOrganisation()
+    {
+        return $this->organisation;
+    }
+
+    /**
+     * @param \Organisation\Entity\Organisation $organisation
+     */
+    public function setOrganisation($organisation)
+    {
+        $this->organisation = $organisation;
     }
 
     /**
@@ -432,7 +464,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function addAssociate(Contact $contact)
     {
-        if ( ! $this->associate->contains($contact)) {
+        if (! $this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
@@ -446,19 +478,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param string $branch
+     * @return \Contact\Entity\Contact
      */
-    public function setBranch($branch)
+    public function getContact()
     {
-        $this->branch = $branch;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBranch()
-    {
-        return $this->branch;
+        return $this->contact;
     }
 
     /**
@@ -470,11 +494,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @return \DateTime
      */
-    public function getContact()
+    public function getDateCreated()
     {
-        return $this->contact;
+        return $this->dateCreated;
     }
 
     /**
@@ -488,9 +512,9 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @return \DateTime
      */
-    public function getDateCreated()
+    public function getDateEnd()
     {
-        return $this->dateCreated;
+        return $this->dateEnd;
     }
 
     /**
@@ -504,9 +528,9 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @return \DateTime
      */
-    public function getDateEnd()
+    public function getDateSelfFunded()
     {
-        return $this->dateEnd;
+        return $this->dateSelfFunded;
     }
 
     /**
@@ -518,11 +542,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \DateTime
+     * @return \Affiliation\Entity\Description[]|Collections\ArrayCollection()
      */
-    public function getDateSelfFunded()
+    public function getDescription()
     {
-        return $this->dateSelfFunded;
+        return $this->description;
     }
 
     /**
@@ -534,11 +558,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Description[]|Collections\ArrayCollection()
+     * @return \Affiliation\Entity\Financial
      */
-    public function getDescription()
+    public function getFinancial()
     {
-        return $this->description;
+        return $this->financial;
     }
 
     /**
@@ -550,11 +574,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Financial
+     * @return \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
      */
-    public function getFinancial()
+    public function getIctOrganisation()
     {
-        return $this->financial;
+        return $this->ictOrganisation;
     }
 
     /**
@@ -566,11 +590,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
+     * @return int
      */
-    public function getIctOrganisation()
+    public function getId()
     {
-        return $this->ictOrganisation;
+        return $this->id;
     }
 
     /**
@@ -582,11 +606,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return int
+     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
      */
-    public function getId()
+    public function getInvoice()
     {
-        return $this->id;
+        return $this->invoice;
     }
 
     /**
@@ -598,11 +622,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
+     * @return \Affiliation\Entity\Log[]|Collections\ArrayCollection()
      */
-    public function getInvoice()
+    public function getLog()
     {
-        return $this->invoice;
+        return $this->log;
     }
 
     /**
@@ -614,11 +638,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Affiliation\Entity\Log[]|Collections\ArrayCollection()
+     * @return string
      */
-    public function getLog()
+    public function getNote()
     {
-        return $this->log;
+        return $this->note;
     }
 
     /**
@@ -630,38 +654,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return string
-     */
-    public function getNote()
-    {
-        return $this->note;
-    }
-
-    /**
-     * @param \Organisation\Entity\Organisation $organisation
-     */
-    public function setOrganisation($organisation)
-    {
-        $this->organisation = $organisation;
-    }
-
-    /**
-     * @return \Organisation\Entity\Organisation
-     */
-    public function getOrganisation()
-    {
-        return $this->organisation;
-    }
-
-    /**
-     * @param \Project\Entity\Project $project
-     */
-    public function setProject($project)
-    {
-        $this->project = $project;
-    }
-
-    /**
      * @return \Project\Entity\Project
      */
     public function getProject()
@@ -670,11 +662,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param int $selfFunded
+     * @param \Project\Entity\Project $project
      */
-    public function setSelfFunded($selfFunded)
+    public function setProject($project)
     {
-        $this->selfFunded = $selfFunded;
+        $this->project = $project;
     }
 
     /**
@@ -692,11 +684,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param string $valueChain
+     * @param int $selfFunded
      */
-    public function setValueChain($valueChain)
+    public function setSelfFunded($selfFunded)
     {
-        $this->valueChain = $valueChain;
+        $this->selfFunded = $selfFunded;
     }
 
     /**
@@ -708,11 +700,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Version[]|Collections\ArrayCollection() $version
+     * @param string $valueChain
      */
-    public function setVersion($version)
+    public function setValueChain($valueChain)
     {
-        $this->version = $version;
+        $this->valueChain = $valueChain;
     }
 
     /**
@@ -724,11 +716,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Contact\Entity\Contact[]|Collections\ArrayCollection() $associate
+     * @param \Affiliation\Entity\Version[]|Collections\ArrayCollection() $version
      */
-    public function setAssociate($associate)
+    public function setVersion($version)
     {
-        $this->associate = $associate;
+        $this->version = $version;
     }
 
     /**
@@ -740,11 +732,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Cost\Cost[]|Collections\ArrayCollection() $cost
+     * @param \Contact\Entity\Contact[]|Collections\ArrayCollection() $associate
      */
-    public function setCost($cost)
+    public function setAssociate($associate)
     {
-        $this->cost = $cost;
+        $this->associate = $associate;
     }
 
     /**
@@ -756,11 +748,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Funding\Funding[]|Collections\ArrayCollection() $funding
+     * @param \Project\Entity\Cost\Cost[]|Collections\ArrayCollection() $cost
      */
-    public function setFunding($funding)
+    public function setCost($cost)
     {
-        $this->funding = $funding;
+        $this->cost = $cost;
     }
 
     /**
@@ -772,11 +764,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Effort\Spent[]|Collections\ArrayCollection() $spent
+     * @param \Project\Entity\Funding\Funding[]|Collections\ArrayCollection() $funding
      */
-    public function setSpent($spent)
+    public function setFunding($funding)
     {
-        $this->spent = $spent;
+        $this->funding = $funding;
     }
 
     /**
@@ -788,11 +780,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Effort\Effort[]|Collections\ArrayCollection() $effort
+     * @param \Project\Entity\Effort\Spent[]|Collections\ArrayCollection() $spent
      */
-    public function setEffort($effort)
+    public function setSpent($spent)
     {
-        $this->effort = $effort;
+        $this->spent = $spent;
     }
 
     /**
@@ -804,11 +796,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\Loi $loi
+     * @param \Project\Entity\Effort\Effort[]|Collections\ArrayCollection() $effort
      */
-    public function setLoi($loi)
+    public function setEffort($effort)
     {
-        $this->loi = $loi;
+        $this->effort = $effort;
     }
 
     /**
@@ -817,6 +809,14 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function getLoi()
     {
         return $this->loi;
+    }
+
+    /**
+     * @param \Affiliation\Entity\Loi $loi
+     */
+    public function setLoi($loi)
+    {
+        $this->loi = $loi;
     }
 
     /**

@@ -35,7 +35,7 @@ return [
                                     'route'    => '/details/[:id].html',
                                     'defaults' => [
                                         'action'    => 'affiliation',
-                                        'privilege' => 'view-community'
+                                        'privilege' => 'view-community',
                                     ],
                                 ],
                             ],
@@ -46,8 +46,8 @@ return [
                                     'defaults' => [
                                         'action'    => 'payment-sheet',
                                         'privilege' => 'payment-sheet',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'payment-sheet-pdf' => [
                                 'type'    => 'Segment',
@@ -56,8 +56,8 @@ return [
                                     'defaults' => [
                                         'action'    => 'payment-sheet-pdf',
                                         'privilege' => 'payment-sheet',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'edit'              => [
                                 'type'          => 'Segment',
@@ -76,7 +76,7 @@ return [
                                             'route'    => '/affiliation/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'affiliation',
-                                                'privilege' => 'edit-affiliation'
+                                                'privilege' => 'edit-affiliation',
                                             ],
                                         ],
                                     ],
@@ -86,7 +86,7 @@ return [
                                             'route'    => '/add-associate/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'add-associate',
-                                                'privilege' => 'add-associate'
+                                                'privilege' => 'add-associate',
                                             ],
                                         ],
                                     ],
@@ -96,7 +96,7 @@ return [
                                             'route'    => '/financial/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'financial',
-                                                'privilege' => 'edit-financial'
+                                                'privilege' => 'edit-financial',
                                             ],
                                         ],
                                     ],
@@ -106,7 +106,7 @@ return [
                                             'route'    => '/description/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'description',
-                                                'privilege' => 'edit-description'
+                                                'privilege' => 'edit-description',
                                             ],
                                         ],
                                     ],
@@ -120,7 +120,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                ]
+                                ],
                             ],
                             'doa'               => [
                                 'type'         => 'Segment',
@@ -138,7 +138,7 @@ return [
                                             'route'    => '/render/affiliation-[:affiliationId].pdf',
                                             'defaults' => [
                                                 'action'    => 'render',
-                                                'privilege' => 'render'
+                                                'privilege' => 'render',
                                             ],
                                         ],
                                     ],
@@ -148,7 +148,7 @@ return [
                                             'route'    => '/upload/affiliation-[:affiliationId].html',
                                             'defaults' => [
                                                 'action'    => 'upload',
-                                                'privilege' => 'upload'
+                                                'privilege' => 'upload',
                                             ],
                                         ],
                                     ],
@@ -158,7 +158,7 @@ return [
                                             'route'    => '/replace/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'replace',
-                                                'privilege' => 'replace'
+                                                'privilege' => 'replace',
                                             ],
                                         ],
                                     ],
@@ -168,11 +168,11 @@ return [
                                             'route'    => '/download/[:id].[:ext]',
                                             'defaults' => [
                                                 'action'    => 'download',
-                                                'privilege' => 'download'
+                                                'privilege' => 'download',
                                             ],
                                         ],
                                     ],
-                                ]
+                                ],
                             ],
                             'loi'               => [
                                 'type'         => 'Segment',
@@ -190,7 +190,7 @@ return [
                                             'route'    => '/render/affiliation-[:affiliationId].pdf',
                                             'defaults' => [
                                                 'action'    => 'render',
-                                                'privilege' => 'render'
+                                                'privilege' => 'render',
                                             ],
                                         ],
                                     ],
@@ -200,7 +200,7 @@ return [
                                             'route'    => '/upload/affiliation-[:affiliationId].html',
                                             'defaults' => [
                                                 'action'    => 'upload',
-                                                'privilege' => 'upload'
+                                                'privilege' => 'upload',
                                             ],
                                         ],
                                     ],
@@ -210,7 +210,7 @@ return [
                                             'route'    => '/replace/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'replace',
-                                                'privilege' => 'replace'
+                                                'privilege' => 'replace',
                                             ],
                                         ],
                                     ],
@@ -220,16 +220,16 @@ return [
                                             'route'    => '/download/[:id].[:ext]',
                                             'defaults' => [
                                                 'action'    => 'download',
-                                                'privilege' => 'download'
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                                'privilege' => 'download',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
-        ]
-    ]
+        ],
+    ],
 ];

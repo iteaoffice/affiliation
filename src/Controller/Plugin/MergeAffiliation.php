@@ -85,7 +85,7 @@ class MergeAffiliation extends AbstractPlugin
 
 
             //Not found in the original table, do a move
-            if (!$found) {
+            if (! $found) {
                 //We have no costs in the main affiliation, replace the affiliation
                 $cost->setAffiliation($mainAffiliation);
                 $this->getProjectService()->updateEntity($cost);
@@ -118,7 +118,7 @@ class MergeAffiliation extends AbstractPlugin
             }
 
             //Not found in the original table, do a move
-            if (!$found) {
+            if (! $found) {
                 //We have no efforts in the main affiliation, replace the affiliation
                 $effort->setAffiliation($mainAffiliation);
                 $this->getProjectService()->updateEntity($effort);
@@ -145,12 +145,13 @@ class MergeAffiliation extends AbstractPlugin
 
         //Check if all versions are present (if the affiliation has all the partners) and if not, create it
         foreach ($affiliation->getVersion() as $affiliationVersion) {
-            if (!array_key_exists($affiliationVersion->getVersion()->getId(), $newAffiliationVersionList)) {
+            if (! array_key_exists($affiliationVersion->getVersion()->getId(), $newAffiliationVersionList)) {
                 $mainAffiliationVersion = new Version();
                 $mainAffiliationVersion->setAffiliation($mainAffiliation);
                 $mainAffiliationVersion->setContact($mainAffiliation->getContact());
                 $mainAffiliationVersion->setVersion($affiliationVersion->getVersion());
-                $mainAffiliationVersion = $this->getAffiliationService()->newEntity($mainAffiliationVersion);
+                $mainAffiliationVersion                                                = $this->getAffiliationService()
+                    ->newEntity($mainAffiliationVersion);
                 $newAffiliationVersionList[$affiliationVersion->getVersion()->getId()] = $mainAffiliationVersion;
             }
         }
@@ -178,7 +179,7 @@ class MergeAffiliation extends AbstractPlugin
                 }
 
 
-                if (!$found) {
+                if (! $found) {
                     //We have no costs in the main affiliation, replace the affiliation
                     $cost->setAffiliationVersion($mainAffiliationVersion);
                     $this->getProjectService()->updateEntity($cost);
@@ -217,7 +218,7 @@ class MergeAffiliation extends AbstractPlugin
                     }
                 }
 
-                if (!$found) {
+                if (! $found) {
                     //We have no efforts in the main affiliation, replace the affiliation
                     $effort->setAffiliationVersion($mainAffiliationVersion);
                     $this->getProjectService()->updateEntity($effort);
@@ -276,33 +277,13 @@ class MergeAffiliation extends AbstractPlugin
 
         //Move the associates
         foreach ($affiliation->getAssociate() as $associate) {
-            if (!$mainAffiliation->getAssociate()->contains($associate)) {
+            if (! $mainAffiliation->getAssociate()->contains($associate)) {
                 $mainAffiliation->getAssociate()->add($associate);
                 $this->getAffiliationService()->updateEntity($mainAffiliation);
             }
         }
 
         $this->getAffiliationService()->removeEntity($affiliation);
-    }
-
-    /**
-     * Gateway to the Affiliation Service.
-     *
-     * @return AffiliationService
-     */
-    public function getAffiliationService()
-    {
-        return $this->getServiceLocator()->get(AffiliationService::class);
-    }
-
-    /**
-     * Gateway to the ContactService Service.
-     *
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->getServiceLocator()->get(ContactService::class);
     }
 
     /**
@@ -333,6 +314,26 @@ class MergeAffiliation extends AbstractPlugin
         $this->serviceLocator = $serviceLocator;
 
         return $this;
+    }
+
+    /**
+     * Gateway to the Affiliation Service.
+     *
+     * @return AffiliationService
+     */
+    public function getAffiliationService()
+    {
+        return $this->getServiceLocator()->get(AffiliationService::class);
+    }
+
+    /**
+     * Gateway to the ContactService Service.
+     *
+     * @return ContactService
+     */
+    public function getContactService()
+    {
+        return $this->getServiceLocator()->get(ContactService::class);
     }
 
     /**

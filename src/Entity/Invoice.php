@@ -109,6 +109,26 @@ class Invoice extends EntityAbstract
     }
 
     /**
+     * @return \Invoice\Entity\Invoice
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @param \Invoice\Entity\Invoice $invoice
+     *
+     * @return Invoice
+     */
+    public function setInvoice($invoice)
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -224,26 +244,6 @@ class Invoice extends EntityAbstract
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
-
-        return $this;
-    }
-
-    /**
-     * @return \Invoice\Entity\Invoice
-     */
-    public function getInvoice()
-    {
-        return $this->invoice;
-    }
-
-    /**
-     * @param \Invoice\Entity\Invoice $invoice
-     *
-     * @return Invoice
-     */
-    public function setInvoice($invoice)
-    {
-        $this->invoice = $invoice;
 
         return $this;
     }

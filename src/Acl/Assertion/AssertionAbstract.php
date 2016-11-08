@@ -94,87 +94,11 @@ abstract class AssertionAbstract implements AssertionInterface
     protected $request;
 
     /**
-     * @return RouteMatch
-     */
-    public function getRouteMatch()
-    {
-        if (is_null($this->routeMatch)) {
-            $this->routeMatch = $this->getServiceLocator()->get("Application")->getMvcEvent()->getRouteMatch();
-        }
-
-        return $this->routeMatch;
-    }
-
-    /**
-     * @param RouteMatch $routeMatch
-     *
-     * @return AssertionAbstract
-     */
-    public function setRouteMatch($routeMatch)
-    {
-        $this->routeMatch = $routeMatch;
-
-        return $this;
-    }
-
-    /**
-     * @return Request
-     */
-    public function getRequest()
-    {
-        if (is_null($this->request)) {
-            $this->request = $this->getServiceLocator()->get('application')->getMvcEvent()->getRequest();
-        }
-
-        return $this->request;
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return AssertionAbstract
-     */
-    public function setRequest($request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     public function hasContact()
     {
-        return !$this->getContact()->isEmpty();
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasRouteMatch()
-    {
-        return !is_null($this->getRouteMatch());
-    }
-
-    /**
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->contactService;
-    }
-
-    /**
-     * @param ContactService $contactService
-     *
-     * @return AssertionAbstract
-     */
-    public function setContactService($contactService)
-    {
-        $this->contactService = $contactService;
-
-        return $this;
+        return ! $this->getContact()->isEmpty();
     }
 
     /**
@@ -202,39 +126,23 @@ abstract class AssertionAbstract implements AssertionInterface
     }
 
     /**
-     * Returns true when a role or roles have access.
-     *
-     * @param $roles
-     *
-     * @return boolean
+     * @return ContactService
      */
-    protected function rolesHaveAccess($roles)
+    public function getContactService()
     {
-        if (!is_array($roles)) {
-            $roles = [$roles];
-        }
-
-        $roles = array_map('strtolower', $roles);
-
-        foreach ($this->getAccessRoles() as $access) {
-            if (in_array(strtolower($access), $roles)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->contactService;
     }
 
     /**
-     * @return array
+     * @param ContactService $contactService
+     *
+     * @return AssertionAbstract
      */
-    public function getAccessRoles()
+    public function setContactService($contactService)
     {
-        if (empty($this->accessRoles) && !$this->getContact()->isEmpty()) {
-            $this->accessRoles = $this->getAdminService()->findAccessRolesByContactAsArray($this->getContact());
-        }
+        $this->contactService = $contactService;
 
-        return $this->accessRoles;
+        return $this;
     }
 
     /**
@@ -266,21 +174,35 @@ abstract class AssertionAbstract implements AssertionInterface
     }
 
     /**
-     * @return int|null
+     * @return bool
      */
-    public function getId()
+    public function hasRouteMatch()
     {
-        if (!is_null($id = $this->getRequest()->getPost('id'))) {
-            return (int)$id;
-        }
-        if (is_null($this->getRouteMatch())) {
-            return null;
-        }
-        if (!is_null($id = $this->getRouteMatch()->getParam('id'))) {
-            return (int)$id;
+        return ! is_null($this->getRouteMatch());
+    }
+
+    /**
+     * @return RouteMatch
+     */
+    public function getRouteMatch()
+    {
+        if (is_null($this->routeMatch)) {
+            $this->routeMatch = $this->getServiceLocator()->get("Application")->getMvcEvent()->getRouteMatch();
         }
 
-        return null;
+        return $this->routeMatch;
+    }
+
+    /**
+     * @param RouteMatch $routeMatch
+     *
+     * @return AssertionAbstract
+     */
+    public function setRouteMatch($routeMatch)
+    {
+        $this->routeMatch = $routeMatch;
+
+        return $this;
     }
 
     /**
@@ -299,6 +221,48 @@ abstract class AssertionAbstract implements AssertionInterface
     public function setServiceLocator($serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId()
+    {
+        if (! is_null($id = $this->getRequest()->getPost('id'))) {
+            return (int)$id;
+        }
+        if (is_null($this->getRouteMatch())) {
+            return null;
+        }
+        if (! is_null($id = $this->getRouteMatch()->getParam('id'))) {
+            return (int)$id;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        if (is_null($this->request)) {
+            $this->request = $this->getServiceLocator()->get('application')->getMvcEvent()->getRequest();
+        }
+
+        return $this->request;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return AssertionAbstract
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
 
         return $this;
     }
@@ -405,6 +369,42 @@ abstract class AssertionAbstract implements AssertionInterface
         $this->affiliationAssertion = $affiliationAssertion;
 
         return $this;
+    }
+
+    /**
+     * Returns true when a role or roles have access.
+     *
+     * @param $roles
+     *
+     * @return boolean
+     */
+    protected function rolesHaveAccess($roles)
+    {
+        if (! is_array($roles)) {
+            $roles = [$roles];
+        }
+
+        $roles = array_map('strtolower', $roles);
+
+        foreach ($this->getAccessRoles() as $access) {
+            if (in_array(strtolower($access), $roles)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAccessRoles()
+    {
+        if (empty($this->accessRoles) && ! $this->getContact()->isEmpty()) {
+            $this->accessRoles = $this->getAdminService()->findAccessRolesByContactAsArray($this->getContact());
+        }
+
+        return $this->accessRoles;
     }
 
     /**

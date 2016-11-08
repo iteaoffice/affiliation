@@ -37,7 +37,6 @@ use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\HelperPluginManager;
 
 /**

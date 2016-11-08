@@ -79,7 +79,7 @@ class Version extends EntityAbstract
      */
     public function __construct()
     {
-        $this->costVersion = new ArrayCollection();
+        $this->costVersion   = new ArrayCollection();
         $this->effortVersion = new ArrayCollection();
     }
 
@@ -118,26 +118,6 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return Version
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * @return Affiliation
      */
     public function getAffiliation()
@@ -158,26 +138,6 @@ class Version extends EntityAbstract
     }
 
     /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
-    {
-        return $this->contact;
-    }
-
-    /**
-     * @param \Contact\Entity\Contact $contact
-     *
-     * @return Version
-     */
-    public function setContact($contact)
-    {
-        $this->contact = $contact;
-
-        return $this;
-    }
-
-    /**
      * @return \Project\Entity\Version\Version
      */
     public function getVersion()
@@ -193,6 +153,46 @@ class Version extends EntityAbstract
     public function setVersion($version)
     {
         $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return Version
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getContact()
+    {
+        return $this->contact;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $contact
+     *
+     * @return Version
+     */
+    public function setContact($contact)
+    {
+        $this->contact = $contact;
 
         return $this;
     }

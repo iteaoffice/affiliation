@@ -17,7 +17,6 @@ namespace Affiliation\Factory;
 use Affiliation\Options\ModuleOptions;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class ModuleOptionsFactory
@@ -33,22 +32,10 @@ final class ModuleOptionsFactory implements FactoryInterface
      *
      * @return ModuleOptions
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ModuleOptions
     {
         $config = $container->get('Config');
 
         return new ModuleOptions(isset($config['affiliation_option']) ? $config['affiliation_option'] : []);
-    }
-
-    /**
-     * @param ServiceLocatorInterface $container
-     * @param string                  $canonicalName
-     * @param string                  $requestedName
-     *
-     * @return ModuleOptions
-     */
-    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
-    {
-        return $this($container, $requestedName);
     }
 }

@@ -40,9 +40,14 @@ class LoiLabel extends AbstractNavigationInvokable
             $loi = $this->getEntities()->get(Loi::class);
             $this->getEntities()->set(Affiliation::class, $loi->getAffiliation());
             $this->getEntities()->set(Project::class, $loi->getAffiliation()->getProject());
-            $page->setParams(array_merge($page->getParams(), [
-                'id' => $loi->getId(),
-            ]));
+            $page->setParams(
+                array_merge(
+                    $page->getParams(),
+                    [
+                    'id' => $loi->getId(),
+                    ]
+                )
+            );
             $label = $this->translate('txt-loi');
         } else {
             $label = $this->translate('txt-nav-view');

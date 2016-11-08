@@ -15,13 +15,11 @@
 namespace Affiliation\Factory;
 
 use Admin\Service\AdminService;
-use Affiliation\Service\AffiliationService;
 use Affiliation\Service\LoiService;
 use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class DoaServiceFactory
@@ -37,7 +35,7 @@ final class LoiServiceFactory implements FactoryInterface
      *
      * @return LoiService
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): LoiService
     {
         /** @var LoiService $loiService */
         $loiService = new $requestedName($options);
@@ -56,17 +54,5 @@ final class LoiServiceFactory implements FactoryInterface
         $loiService->setAuthorizeService($authorizeService);
 
         return $loiService;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $container
-     * @param string                  $canonicalName
-     * @param string                  $requestedName
-     *
-     * @return AffiliationService
-     */
-    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
-    {
-        return $this($container, $requestedName);
     }
 }

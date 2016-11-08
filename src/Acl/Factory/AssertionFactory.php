@@ -24,7 +24,6 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Zend\Authentication\AuthenticationService;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class AssertionFactory
@@ -38,11 +37,11 @@ class AssertionFactory implements FactoryInterface
      * @param                    $requestedName
      * @param array|null         $options
      *
-     * @return mixed
+     * @return AssertionAbstract
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): AssertionAbstract
     {
-        /** @var $assertion AssertionAbstract */
+        /** @var AssertionAbstract $assertion */
         $assertion = new $requestedName($options);
         $assertion->setServiceLocator($container);
 
@@ -78,17 +77,5 @@ class AssertionFactory implements FactoryInterface
         $assertion->setProjectAssertion($projectAssertion);
 
         return $assertion;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $container
-     * @param null                    $canonicalName
-     * @param                         $requestedName
-     *
-     * @return mixed
-     */
-    public function createService(ServiceLocatorInterface $container, $canonicalName = null, $requestedName = null)
-    {
-        return $this($container, $requestedName);
     }
 }

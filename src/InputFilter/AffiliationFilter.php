@@ -16,7 +16,6 @@
 namespace Affiliation\InputFilter;
 
 use Doctrine\ORM\EntityManager;
-use DoctrineModule\Validator;
 use Zend\InputFilter\InputFilter;
 
 /**
@@ -34,60 +33,80 @@ class AffiliationFilter extends InputFilter
     public function __construct(EntityManager $entityManager)
     {
         $inputFilter = new InputFilter();
-        $inputFilter->add([
-            'name'       => 'branch',
-            'required'   => false,
-            'filters'    => [
-                ['name' => 'StripTags'],
-                ['name' => 'StringTrim'],
-            ],
-            'validators' => [
-                [
-                    'name'    => 'StringLength',
-                    'options' => [
-                        'encoding' => 'UTF-8',
-                        'min'      => 1,
-                        'max'      => 40,
+        $inputFilter->add(
+            [
+                'name'       => 'branch',
+                'required'   => false,
+                'filters'    => [
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
+                ],
+                'validators' => [
+                    [
+                        'name'    => 'StringLength',
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 1,
+                            'max'      => 40,
+                        ],
                     ],
                 ],
-            ],
-        ]);
-        $inputFilter->add([
-            'name'     => 'note',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'valueChain',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'mainContribution',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'marketAccess',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'dateEnd',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'dateEnd',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'dateSelfFunded',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'contact',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name'     => 'selfFunded',
-            'required' => true,
-        ]);
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'note',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'valueChain',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'mainContribution',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'marketAccess',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'dateEnd',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'dateEnd',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'dateSelfFunded',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'contact',
+                'required' => false,
+            ]
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'selfFunded',
+                'required' => true,
+            ]
+        );
 
 
         $this->add($inputFilter, 'affiliation_entity_affiliation');

@@ -10,7 +10,6 @@
 
 namespace Affiliation\Controller;
 
-use Affiliation\Entity;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Zend\View\Model\ViewModel;
 

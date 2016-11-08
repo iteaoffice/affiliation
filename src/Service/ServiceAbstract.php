@@ -79,6 +79,26 @@ abstract class ServiceAbstract implements ServiceInterface
     }
 
     /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
+    /**
+     * @param \Doctrine\ORM\EntityManager $entityManager
+     *
+     * @return ServiceAbstract
+     */
+    public function setEntityManager($entityManager)
+    {
+        $this->entityManager = $entityManager;
+
+        return $this;
+    }
+
+    /**
      * @param string $entity
      * @param        $id
      *
@@ -104,6 +124,26 @@ abstract class ServiceAbstract implements ServiceInterface
         $this->getAdminService()->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
 
         return $entity;
+    }
+
+    /**
+     * @return AdminService
+     */
+    public function getAdminService()
+    {
+        return $this->adminService;
+    }
+
+    /**
+     * @param AdminService $adminService
+     *
+     * @return ServiceAbstract
+     */
+    public function setAdminService($adminService)
+    {
+        $this->adminService = $adminService;
+
+        return $this;
     }
 
     /**
@@ -153,48 +193,28 @@ abstract class ServiceAbstract implements ServiceInterface
          * @var AssertionAbstract
          */
         $assertion = $this->getServiceLocator()->get($assertion);
-        if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
+        if (! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
             $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @return ServiceLocatorInterface
      */
-    public function getEntityManager()
+    public function getServiceLocator()
     {
-        return $this->entityManager;
+        return $this->serviceLocator;
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManager $entityManager
+     * @param ServiceLocatorInterface|ContainerInterface $serviceLocator
      *
      * @return ServiceAbstract
      */
-    public function setEntityManager($entityManager)
+    public function setServiceLocator($serviceLocator)
     {
-        $this->entityManager = $entityManager;
-
-        return $this;
-    }
-
-    /**
-     * @return AdminService
-     */
-    public function getAdminService()
-    {
-        return $this->adminService;
-    }
-
-    /**
-     * @param AdminService $adminService
-     *
-     * @return ServiceAbstract
-     */
-    public function setAdminService($adminService)
-    {
-        $this->adminService = $adminService;
+        $this->serviceLocator = $serviceLocator;
 
         return $this;
     }
@@ -299,26 +319,6 @@ abstract class ServiceAbstract implements ServiceInterface
     public function setInvoiceService($invoiceService)
     {
         $this->invoiceService = $invoiceService;
-
-        return $this;
-    }
-
-    /**
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * @param ServiceLocatorInterface|ContainerInterface $serviceLocator
-     *
-     * @return ServiceAbstract
-     */
-    public function setServiceLocator($serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
 
         return $this;
     }

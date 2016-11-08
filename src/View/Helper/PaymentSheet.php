@@ -47,7 +47,9 @@ class PaymentSheet extends LinkAbstract
             return '';
         }
 
-        return $this->getRenderer()->render('affiliation/partial/payment-sheet', [
+        return $this->getRenderer()->render(
+            'affiliation/partial/payment-sheet',
+            [
             'year'                           => $year,
             'period'                         => $period,
             'affiliation'                    => $affiliation,
@@ -58,12 +60,15 @@ class PaymentSheet extends LinkAbstract
             'contactService'                 => $this->getContactService(),
             'financialContact'               => $this->getAffiliationService()->getFinancialContact($affiliation),
             'organisationService'            => $this->getOrganisationService(),
-            'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod($affiliation->getProject()
-                ->getCall()->getProgram()),
+            'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod(
+                $affiliation->getProject()
+                    ->getCall()->getProgram()
+            ),
             'invoiceService'                 => $this->getInvoiceService(),
             'versionService'                 => $this->getVersionService(),
             'versionContributionInformation' => $this->getVersionService()
-                ->getProjectVersionContributionInformation($affiliation, $latestVersion)
-        ]);
+                ->getProjectVersionContributionInformation($affiliation, $latestVersion),
+            ]
+        );
     }
 }

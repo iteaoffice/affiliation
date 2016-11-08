@@ -10,7 +10,6 @@
 use Affiliation\Acl;
 use Affiliation\Controller;
 use Affiliation\Factory;
-use Affiliation\Form;
 use Affiliation\InputFilter;
 use Affiliation\Navigation;
 use Affiliation\Options;
@@ -62,7 +61,7 @@ $config = [
             Controller\Plugin\RenderDoa::class          => Controller\Factory\PluginFactory::class,
             Controller\Plugin\RenderLoi::class          => Controller\Factory\PluginFactory::class,
             Controller\Plugin\MergeAffiliation::class   => Controller\Factory\PluginFactory::class,
-        ]
+        ],
     ],
     'view_helpers'       => [
         'aliases'   => [
@@ -80,7 +79,7 @@ $config = [
             View\Helper\DoaLink::class         => View\Factory\ViewHelperFactory::class,
             View\Helper\LoiLink::class         => View\Factory\ViewHelperFactory::class,
             View\Helper\PaymentSheet::class    => View\Factory\ViewHelperFactory::class,
-        ]
+        ],
     ],
     'view_manager'       => [
         'template_map' => include __DIR__ . '/../template_map.php',

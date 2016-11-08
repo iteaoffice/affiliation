@@ -31,6 +31,25 @@ abstract class EntityAbstract implements EntityInterface
     }
 
     /**
+     * @param $switch
+     *
+     * @return null|string
+     */
+    public function get($switch)
+    {
+        switch ($switch) {
+            case 'full_entity_name':
+                return str_replace('DoctrineORMModule\Proxy\__CG__\\', '', static::class);
+            case 'entity_name':
+                return str_replace(__NAMESPACE__ . '\\', '', $this->get('full_entity_name'));
+            case 'underscore_entity_name':
+                return strtolower(str_replace('\\', '_', $this->get('full_entity_name')));
+        }
+
+        return null;
+    }
+
+    /**
      * @return bool
      */
     public function isEmpty()
@@ -63,24 +82,5 @@ abstract class EntityAbstract implements EntityInterface
         }
 
         return false;
-    }
-
-    /**
-     * @param $switch
-     *
-     * @return null|string
-     */
-    public function get($switch)
-    {
-        switch ($switch) {
-            case 'full_entity_name':
-                return str_replace('DoctrineORMModule\Proxy\__CG__\\', '', static::class);
-            case 'entity_name':
-                return str_replace(__NAMESPACE__ . '\\', '', $this->get('full_entity_name'));
-            case 'underscore_entity_name':
-                return strtolower(str_replace('\\', '_', $this->get('full_entity_name')));
-        }
-
-        return null;
     }
 }

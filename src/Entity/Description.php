@@ -107,6 +107,26 @@ class Description extends EntityAbstract
     }
 
     /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     *
+     * @return Description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
      * New function needed to make the hydrator happy
      *
      * @param Collections\Collection $affiliationCollection
@@ -166,26 +186,6 @@ class Description extends EntityAbstract
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description
-     *
-     * @return Description
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
 
         return $this;
     }

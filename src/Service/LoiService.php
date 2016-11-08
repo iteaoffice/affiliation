@@ -17,6 +17,7 @@ use Organisation\Entity\Organisation;
 
 /**
  * Class LoiService
+ *
  * @package Affiliation\Service
  */
 class LoiService extends ServiceAbstract
@@ -48,6 +49,7 @@ class LoiService extends ServiceAbstract
      * Get a list Loi's by organisation
      *
      * @param Organisation $organisation
+     *
      * @return Entity\Loi[]
      */
     public function findLoiByOrganisation(Organisation $organisation)

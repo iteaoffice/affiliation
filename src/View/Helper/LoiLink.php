@@ -53,7 +53,7 @@ class LoiLink extends LinkAbstract
                 'name' => $this->getLoi(),
             ]
         );
-        if ( ! $this->hasAccess(
+        if (! $this->hasAccess(
             $this->getLoi(),
             LoiAssertion::class,
             $this->getAction()
@@ -62,13 +62,59 @@ class LoiLink extends LinkAbstract
             return '';
         }
 
-        if ( ! is_null($loi)) {
+        if (! is_null($loi)) {
             $this->addRouterParam('id', $this->getLoi()->getId());
             $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
         }
         $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
 
         return $this->createLink();
+    }
+
+    /**
+     * @return Loi
+     */
+    public function getLoi()
+    {
+        if (is_null($this->loi)) {
+            $this->loi = new Loi();
+        }
+
+        return $this->loi;
+    }
+
+    /**
+     * @param Loi $loi
+     */
+    public function setLoi($loi)
+    {
+        $this->loi = $loi;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    public function getAffiliation()
+    {
+        if (is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
+        }
+
+        return $this->affiliation;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+        /*
+         * Only overwrite the the Affiliation in the LOI when this is not is_null
+         */
+        if (! is_null($affiliation)) {
+            $this->getLoi()->setAffiliation($affiliation);
+        }
     }
 
     /**
@@ -162,52 +208,6 @@ class LoiLink extends LinkAbstract
                 break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
-        }
-    }
-
-    /**
-     * @return Loi
-     */
-    public function getLoi()
-    {
-        if (is_null($this->loi)) {
-            $this->loi = new Loi();
-        }
-
-        return $this->loi;
-    }
-
-    /**
-     * @param Loi $loi
-     */
-    public function setLoi($loi)
-    {
-        $this->loi = $loi;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-        /*
-         * Only overwrite the the Affiliation in the LOI when this is not is_null
-         */
-        if ( ! is_null($affiliation)) {
-            $this->getLoi()->setAffiliation($affiliation);
         }
     }
 }

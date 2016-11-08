@@ -38,9 +38,14 @@ class AffiliationLabel extends AbstractNavigationInvokable
             /** @var Affiliation $affiliation */
             $affiliation = $this->getEntities()->get(Affiliation::class);
             $this->getEntities()->set(Project::class, $affiliation->getProject());
-            $page->setParams(array_merge($page->getParams(), [
-                'id' => $affiliation->getId(),
-            ]));
+            $page->setParams(
+                array_merge(
+                    $page->getParams(),
+                    [
+                    'id' => $affiliation->getId(),
+                    ]
+                )
+            );
             $label = (string)$affiliation;
         } else {
             $label = $this->translate('txt-nav-view');
