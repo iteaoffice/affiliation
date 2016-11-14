@@ -176,15 +176,16 @@
                                 {% elseif affiliation.selfFunded is constant("Affiliation\\Entity\\Affiliation::SELF_FUNDED") %}
                                     {{ translate("txt-self-funded-requested") }}
                                 {% elseif (affiliationService.getFundingInYear(affiliation,year)) %}
+                                    {{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}
 
-                                    <a id="funding_{{ calendarContact.id }}"
-                                       href="#" class="funding"
-                                       data-type="select"
-                                       data-source="{{ url('community/project/funding/get-funding') }}"
-                                       data-pk="{{ calendarContact.id }}"
-                                       data-value="{{ calendarContact.role.id }}"
-                                       data-url="{{ url('community/project/funding/update-funding') }}"
-                                       data-title="{{ translate("txt-update-role") }}">{{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}</a>
+                                    {#<a id="funding_{{ calendarContact.id }}"#}
+                                    {#href="#" class="funding"#}
+                                    {#data-type="select"#}
+                                    {#data-source="{{ url('community/project/funding/get-funding') }}"#}
+                                    {#data-pk="{{ calendarContact.id }}"#}
+                                    {#data-value="{{ calendarContact.role.id }}"#}
+                                    {#data-url="{{ url('community/project/funding/update-funding') }}"#}
+                                    {#data-title="{{ translate("txt-update-role") }}">{{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}</a>#}
                                 {% else %}
                                     {{ translate("txt-not-set") }}
                                 {% endif %}
@@ -624,7 +625,7 @@
 
                     {{ affiliationLink(affiliation, 'edit-financial','button') }}
                 </tab>
-                {% if isAllowed(affiliation,'payment-sheet-admin') %}
+                {% if isAllowed(affiliation,'payment-sheet') %}
                     <tab heading="{{ translate("txt-payment-sheet") }}">
 
 

@@ -142,11 +142,12 @@
                 {% elseif affiliation.loi.dateApproved is null %}
                     {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
                     format(affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
-                    {{ loiLink(affiliation.loi,'replace','icon') }}
+                    {{ loiLink(affiliation.loi,'edit-admin','icon') }}
                     {{ loiLink(affiliation.loi,'download','icon') }}
                 {% else %}
                     {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliation.loi.dateApproved|string_date) }}
                     {{ loiLink(affiliation.loi,'download','icon') }}
+                    {{ loiLink(affiliation.loi,'edit-admin','icon') }}
                 {% endif %}
             </dd>
             <dt>{{ translate("txt-technical-contact") }}</dt>

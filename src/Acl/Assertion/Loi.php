@@ -77,6 +77,10 @@ class Loi extends AssertionAbstract
 
                 return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'view-community');
             case 'replace':
+                if ($this->rolesHaveAccess([Access::ACCESS_OFFICE])) {
+                    return true;
+                }
+
                 /*
                  * For the replace we need to see if the user has access on the editing of the affiliation
                  * and the acl should not be approved

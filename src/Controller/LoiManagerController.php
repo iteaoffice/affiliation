@@ -28,15 +28,9 @@ use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
- * Affiliation controller.
+ * Class LoiManagerController
  *
- * @category   Affiliation
- *
- * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright  2004-2015 ITEA Office
- * @license    https://itea3.org/license.txt proprietary
- *
- * @link       https://itea3.org
+ * @package Affiliation\Controller
  */
 class LoiManagerController extends AffiliationAbstractController
 {
@@ -252,26 +246,30 @@ class LoiManagerController extends AffiliationAbstractController
 
                 $fileData = $this->params()->fromFiles();
 
-                if ($fileData['loi']['file']['error'] === 0) {
+                if ($fileData['affiliation_entity_loi']['file']['error'] === 0) {
                     /*
                      * Replace the content of the object
                      */
                     if (! $loi->getObject()->isEmpty()) {
-                        $loi->getObject()->first()->setObject(file_get_contents($fileData['loi']['file']['tmp_name']));
+                        $loi->getObject()->first()->setObject(
+                            file_get_contents($fileData['affiliation_entity_loi']['file']['tmp_name'])
+                        );
                     } else {
                         $loiObject = new LoiObject();
-                        $loiObject->setObject(file_get_contents($fileData['loi']['file']['tmp_name']));
+                        $loiObject->setObject(
+                            file_get_contents($fileData['affiliation_entity_loi']['file']['tmp_name'])
+                        );
                         $loiObject->setLoi($loi);
                         $this->getLoiService()->newEntity($loiObject);
                     }
 
                     //Create a article object element
                     $fileSizeValidator = new FilesSize(PHP_INT_MAX);
-                    $fileSizeValidator->isValid($fileData['loi']['file']);
+                    $fileSizeValidator->isValid($fileData['affiliation_entity_loi']['file']);
                     $loi->setSize($fileSizeValidator->size);
                     $loi->setContentType(
                         $this->getGeneralService()
-                            ->findContentTypeByContentTypeName($fileData['loi']['file']['type'])
+                            ->findContentTypeByContentTypeName($fileData['affiliation_entity_loi']['file']['type'])
                     );
                 }
 
@@ -314,7 +312,7 @@ class LoiManagerController extends AffiliationAbstractController
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => _("txt-contact-or-date-signed-is-empty"),
+                    'error'  => $this->translate("txt-contact-or-date-signed-is-empty"),
                 ]
             );
         }
@@ -323,7 +321,7 @@ class LoiManagerController extends AffiliationAbstractController
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => _("txt-incorrect-date-format-should-be-yyyy-mm-dd"),
+                    'error'  => $this->translate("txt-incorrect-date-format-should-be-yyyy-mm-dd"),
                 ]
             );
         }
