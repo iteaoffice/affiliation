@@ -16,6 +16,7 @@ namespace AffiliationTest\Service;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Service\AffiliationService;
+use Doctrine\ORM\EntityManager;
 
 class AffiliationServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,7 +42,9 @@ class AffiliationServiceTest extends \PHPUnit_Framework_TestCase
         $userRepositoryMock->expects($this->once())->method('find')->will($this->returnValue($affiliation));
 
         // Mock the entity manager
-        $emMock = $this->getMock('EntityManager', ['getRepository'], [], '', false);
+
+        $emMock = $this->getMockBuilder(EntityManager::class)
+            ->disableOriginalConstructor()->getMock();
         $emMock->expects($this->any())->method('getRepository')->will($this->returnValue($userRepositoryMock));
 
         $service->setEntityManager($emMock);
@@ -52,40 +55,5 @@ class AffiliationServiceTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    /**
-     *
-     */
-    public function testCanSetAffiliations()
-    {
-        $service = new AffiliationService();
 
-        // Create a dummy user entity
-        $affiliation = new Affiliation();
-        $affiliation->setId(1);
-
-        // Create a dummy user entity
-        $affiliation2 = new Affiliation();
-        $affiliation2->setId(2);
-
-        // Mock the repository, disabling the constructor
-        $userRepositoryMock = $this->getMockBuilder(\Affiliation\Repository\Affiliation::class)
-            ->disableOriginalConstructor()->getMock();
-        $userRepositoryMock->expects($this->once())->method('findAll')->will(
-            $this->returnValue(
-                [
-                    $affiliation,
-                    $affiliation2,
-                ]
-            )
-        );
-
-        // Mock the entity manager
-        $emMock = $this->getMock('EntityManager', ['getRepository'], [], '', false);
-        $emMock->expects($this->any())->method('getRepository')->will($this->returnValue($userRepositoryMock));
-
-        $service->setEntityManager($emMock);
-
-
-        $this->assertEquals(2, sizeof($service->findAll(Affiliation::class)));
-    }
 }
