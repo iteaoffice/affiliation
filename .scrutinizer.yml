@@ -3,7 +3,7 @@ imports:
 build:
     environment:
         php:
-            version: 7
+            version: 7.0.8
 tools:
     php_changetracking: true
     php_sim: true
