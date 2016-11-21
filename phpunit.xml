@@ -12,7 +12,6 @@
     <testsuite name="iteaoffice/affiliation">
         <directory>./tests</directory>
     </testsuite>
-
     <filter>
         <whitelist>
             <directory suffix=".php">./src</directory>

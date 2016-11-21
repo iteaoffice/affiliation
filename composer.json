@@ -25,7 +25,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "@stable",
-    "zendframework/zendframework": "~3.0"
+    "zendframework/zendframework": "~3.0",
+    "doctrine/doctrine-module": "dev-master"
   },
   "config": {
     "secure-http": false
