@@ -22,7 +22,8 @@ use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 /**
- *
+ * Class AffiliationManagerController
+ * @package Affiliation\Controller
  */
 class AffiliationManagerController extends AffiliationAbstractController
 {

@@ -11,11 +11,6 @@
 namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Doa;
-use Affiliation\Options\ModuleOptions;
-use Contact\Service\ContactService;
-use General\Service\GeneralService;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class RenderDoa.
@@ -23,22 +18,17 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class RenderDoa extends AbstractPlugin
 {
     /**
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
      * @param Doa $doa
      *
      * @return AffiliationPdf
      */
-    public function renderProjectDoa(Doa $doa)
+    public function renderProjectDoa(Doa $doa): AffiliationPdf
     {
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
         $pdf->AddPage();
         $pdf->SetFontSize(9);
-        $twig = $this->getServiceLocator()->get('ZfcTwigRenderer');
+        $twig = $this->getTwigRenderer();
         /*
          * Write the contact details
          */
@@ -88,53 +78,5 @@ class RenderDoa extends AbstractPlugin
         $pdf->Line(30, 275, 90, 275);
 
         return $pdf;
-    }
-
-    /**
-     * @return ModuleOptions
-     */
-    public function getModuleOptions()
-    {
-        return $this->getServiceLocator()->get(ModuleOptions::class);
-    }
-
-    /**
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $serviceLocator
-     *
-     * @return $this
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-
-        return $this;
-    }
-
-    /**
-     * Gateway to the Contact Service.
-     *
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->getServiceLocator()->get(ContactService::class);
-    }
-
-    /**
-     * Gateway to the General Service.
-     *
-     * @return GeneralService
-     */
-    public function getGeneralService()
-    {
-        return $this->getServiceLocator()->get(GeneralService::class);
     }
 }

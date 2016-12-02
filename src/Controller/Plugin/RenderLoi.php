@@ -11,67 +11,52 @@
 namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Loi;
-use Affiliation\Options\ModuleOptions;
-use Contact\Service\ContactService;
-use General\Service\GeneralService;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class RenderLoi.
+ * Class RenderLoi
+ * @package Affiliation\Controller\Plugin
  */
 class RenderLoi extends AbstractPlugin
 {
-    /**
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * @param Loi $loi
      *
      * @return AffiliationPdf
      */
-    public function renderProjectLoi(Loi $loi)
+    public function renderProjectLoi(Loi $loi): AffiliationPdf
     {
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
         $pdf->AddPage();
         $pdf->SetFontSize(9);
-        $twig = $this->getServiceLocator()->get('ZfcTwigRenderer');
-        /*
-         * Write the contact details
-         */
+        $twig = $this->getTwigRenderer();
 
+        // Write the contact details
         $pdf->SetXY(14, 55);
         $pdf->Write(0, $loi->getContact()->parseFullName());
         $pdf->SetXY(14, 60);
         $pdf->Write(0, $this->getContactService()->parseOrganisation($loi->getContact()));
-        /*
-         * Write the current date
-         */
+
+        // Write the current date
         $pdf->SetXY(77, 55);
         $pdf->Write(0, date("Y-m-d"));
-        /*
-         * Write the Reference
-         */
+
+        // Write the Reference
         $pdf->SetXY(118, 55);
-        /*
-         * Use the NDA object to render the filename
-         */
+
+        // Use the NDA object to render the filename
         $pdf->Write(0, $loi->parseFileName());
         $ndaContent = $twig->render(
-            'affiliation/pdf/loi-project',
-            [
-            'contact'      => $loi->getContact(),
-            'project'      => $loi->getAffiliation()->getProject(),
-            'organisation' => $loi->getAffiliation()->getOrganisation(),
+            'affiliation/pdf/loi-project', [
+                'contact'      => $loi->getContact(),
+                'project'      => $loi->getAffiliation()->getProject(),
+                'organisation' => $loi->getAffiliation()->getOrganisation(),
             ]
         );
         $pdf->writeHTMLCell(0, 0, 14, 70, $ndaContent);
-        /*
-         * Signage block
-         */
+
+        // Signage block
         $pdf->SetXY(14, 250);
         $pdf->Write(0, 'Undersigned');
         $pdf->SetXY(14, 260);
@@ -88,53 +73,5 @@ class RenderLoi extends AbstractPlugin
         $pdf->Line(30, 275, 90, 275);
 
         return $pdf;
-    }
-
-    /**
-     * @return ModuleOptions
-     */
-    public function getModuleOptions()
-    {
-        return $this->getServiceLocator()->get(ModuleOptions::class);
-    }
-
-    /**
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $serviceLocator
-     *
-     * @return $this
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-
-        return $this;
-    }
-
-    /**
-     * Gateway to the Contact Service.
-     *
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->getServiceLocator()->get(ContactService::class);
-    }
-
-    /**
-     * Gateway to the General Service.
-     *
-     * @return GeneralService
-     */
-    public function getGeneralService()
-    {
-        return $this->getServiceLocator()->get(GeneralService::class);
     }
 }
