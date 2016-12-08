@@ -109,7 +109,7 @@ class DoaController extends AffiliationAbstractController
          */
         $doa = $this->getAffiliationService()->findEntityById(Doa::class, $this->params('id'));
 
-        if (is_null($doa) || sizeof($doa->getObject()) === 0) {
+        if (is_null($doa) || count($doa->getObject()) === 0) {
             return $this->notFoundAction();
         }
         $data = array_merge_recursive(
@@ -212,7 +212,7 @@ class DoaController extends AffiliationAbstractController
          * @var Doa $doa
          */
         $doa = $this->getAffiliationService()->findEntityById(Doa::class, $this->params('id'));
-        if (is_null($doa) || sizeof($doa->getObject()) === 0) {
+        if (is_null($doa) || count($doa->getObject()) === 0) {
             return $this->notFoundAction();
         }
         /*

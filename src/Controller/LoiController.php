@@ -107,7 +107,7 @@ class LoiController extends AffiliationAbstractController
     {
         $loi = $this->getLoiService()->findLoiById($this->params('id'));
 
-        if (is_null($loi) || sizeof($loi->getObject()) === 0) {
+        if (is_null($loi) || count($loi->getObject()) === 0) {
             return $this->notFoundAction();
         }
         $data = array_merge_recursive(
@@ -210,7 +210,7 @@ class LoiController extends AffiliationAbstractController
          */
         $loi = $this->getLoiService()->findLoiById($this->params('id'));
 
-        if (is_null($loi) || sizeof($loi->getObject()) === 0) {
+        if (is_null($loi) || count($loi->getObject()) === 0) {
             return $this->notFoundAction();
         }
         /*

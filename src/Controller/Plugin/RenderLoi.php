@@ -48,7 +48,8 @@ class RenderLoi extends AbstractPlugin
         // Use the NDA object to render the filename
         $pdf->Write(0, $loi->parseFileName());
         $ndaContent = $twig->render(
-            'affiliation/pdf/loi-project', [
+            'affiliation/pdf/loi-project',
+            [
                 'contact'      => $loi->getContact(),
                 'project'      => $loi->getAffiliation()->getProject(),
                 'organisation' => $loi->getAffiliation()->getOrganisation(),

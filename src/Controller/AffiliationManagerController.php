@@ -22,8 +22,7 @@ use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 /**
- * Class AffiliationManagerController
- * @package Affiliation\Controller
+ *
  */
 class AffiliationManagerController extends AffiliationAbstractController
 {
@@ -171,7 +170,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $filteredData            = array_filter(
                     $data,
                     function ($key) {
-                        return ! in_array($key, ['order', 'direction']);
+                        return ! in_array($key, ['order', 'direction'], true);
                     },
                     ARRAY_FILTER_USE_KEY
                 );
@@ -210,12 +209,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                             $searchService->getQuery()
                         )
                     );
-                    $paginator->setDefaultItemCountPerPage(($page === 'all') ? 1000 : 25);
+                    $paginator::setDefaultItemCountPerPage(($page === 'all') ? 1000 : 25);
                     $paginator->setCurrentPageNumber($page);
                     $paginator->setPageRange(
                         ceil(
                             $paginator->getTotalItemCount()
-                            / $paginator->getDefaultItemCountPerPage()
+                            / $paginator::getDefaultItemCountPerPage()
                         )
                     );
                     $viewParams['paginator'] = $paginator;
@@ -373,7 +372,7 @@ class AffiliationManagerController extends AffiliationAbstractController
             if (isset($formData['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
-                    ['id' => $affiliation->getId(), ]
+                    ['id' => $affiliation->getId(),]
                 );
             }
 

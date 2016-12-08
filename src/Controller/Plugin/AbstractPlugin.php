@@ -271,5 +271,4 @@ class AbstractPlugin extends ZendAbstractPlugin
         $translator = $this->getHelperPluginManager()->get('translate');
         return $translator ? $translator($string) : $string;
     }
-
 }

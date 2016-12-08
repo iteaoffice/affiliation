@@ -68,8 +68,7 @@ class MergeAffiliation extends AbstractPlugin
         Affiliation $mainAffiliation,
         Affiliation $affiliation,
         int $costAndEffortStrategy = self::STRATEGY_SUM
-    ): bool
-    {
+    ): bool {
         print("This is not working yet, effort is not correctly transferred");
 
         $this->setMainAffiliation($mainAffiliation);
@@ -156,7 +155,6 @@ class MergeAffiliation extends AbstractPlugin
     {
         if ($this->getCostAndEffortStrategy() !== self::STRATEGY_USE_MAIN) {
             foreach ($this->getAffiliation()->getCost() as $cost) {
-
                 // We need to check if the $mainAffiliation has already a cost in the given period
                 $found = false;
                 foreach ($this->getMainAffiliation()->getCost() as $mainCost) {
@@ -187,8 +185,7 @@ class MergeAffiliation extends AbstractPlugin
                     // Strictly use data of main affiliation, just delete the other cost
                     if ($this->getCostAndEffortStrategy() === self::STRATEGY_USE_MAIN) {
                         $this->getProjectService()->removeEntity($cost);
-                    }
-                    // We have no costs in the main affiliation, replace the affiliation
+                    } // We have no costs in the main affiliation, replace the affiliation
                     else {
                         $cost->setAffiliation($this->getMainAffiliation());
                         $this->getProjectService()->updateEntity($cost);
@@ -231,7 +228,10 @@ class MergeAffiliation extends AbstractPlugin
                     $found = true;
 
                     $this->debug[] = sprintf(
-                        $debugTemplate, $originalEffort, $effort->getEffort(), $mainEffort->getEffort()
+                        $debugTemplate,
+                        $originalEffort,
+                        $effort->getEffort(),
+                        $mainEffort->getEffort()
                     );
 
                     break;
@@ -244,8 +244,7 @@ class MergeAffiliation extends AbstractPlugin
                 if ($this->getCostAndEffortStrategy() === self::STRATEGY_USE_MAIN) {
                     $this->getProjectService()->removeEntity($effort);
                     $debugTemplate = 'Removed effort from other affiliation %s';
-                }
-                // We have no effort in the main affiliation, replace the affiliation
+                } // We have no effort in the main affiliation, replace the affiliation
                 else {
                     $effort->setAffiliation($this->getMainAffiliation());
                     $this->getProjectService()->updateEntity($effort);
@@ -253,7 +252,9 @@ class MergeAffiliation extends AbstractPlugin
                 }
 
                 $this->debug[] = sprintf(
-                    $debugTemplate, $this->getAffiliation()->getId(), $this->getMainAffiliation()->getId()
+                    $debugTemplate,
+                    $this->getAffiliation()->getId(),
+                    $this->getMainAffiliation()->getId()
                 );
             }
         }
@@ -297,7 +298,6 @@ class MergeAffiliation extends AbstractPlugin
     protected function transferVersionCost()
     {
         foreach ($this->getAffiliation()->getVersion() as $affiliationVersion) {
-
             $mergedAffiliationVersions = $this->getMergedAffiliationVersions();
             /** @var Version $mainAffiliationVersion */
             $mainAffiliationVersion = $mergedAffiliationVersions[$affiliationVersion->getVersion()->getId()];
@@ -332,7 +332,6 @@ class MergeAffiliation extends AbstractPlugin
     protected function transferVersionEffort()
     {
         foreach ($this->getAffiliation()->getVersion() as $affiliationVersion) {
-
             $mergedAffiliationVersions = $this->getMergedAffiliationVersions();
             /** @var Version $mainAffiliationVersion */
             $mainAffiliationVersion = $mergedAffiliationVersions[$affiliationVersion->getVersion()->getId()];
@@ -355,7 +354,9 @@ class MergeAffiliation extends AbstractPlugin
 
                         $this->debug[] = sprintf(
                             "Version-effort found and added %s + %s = %s",
-                            $originalEffort, $effort->getEffort(), $mainEffort->getEffort()
+                            $originalEffort,
+                            $effort->getEffort(),
+                            $mainEffort->getEffort()
                         );
                     }
                 }
@@ -367,7 +368,8 @@ class MergeAffiliation extends AbstractPlugin
 
                     $this->debug[] = sprintf(
                         "Version-effort not found and added moved from %s to %s",
-                        $effort->getAffiliationVersion()->getId(), $mainAffiliationVersion->getId()
+                        $effort->getAffiliationVersion()->getId(),
+                        $mainAffiliationVersion->getId()
                     );
                 }
             }

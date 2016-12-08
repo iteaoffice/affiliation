@@ -44,7 +44,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param $id
      *
-     * @return null|Affiliation
+     * @return null|Affiliation|object
      */
     public function findAffiliationById($id)
     {
@@ -402,7 +402,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return float|int
      */
-    public function parseBalance(Affiliation $affiliation, Version $version, $year, $period)
+    public function parseBalance(Affiliation $affiliation, Version $version, int $year, int $period)
     {
         return $this->parseContributionDue($affiliation, $version, $year, $period)
             - $this->parseContributionPaid($affiliation, $year, $period);

@@ -12,15 +12,28 @@ namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice as AffiliationInvoice;
+use Affiliation\Options\ModuleOptions;
+use Affiliation\Service\AffiliationService;
+use Contact\Service\ContactService;
 use Invoice\Entity\Method;
+use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
+use Organisation\Service\OrganisationService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
+use Zend\I18n\View\Helper\Translate;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class RenderPaymentSheet
- * @package Affiliation\Controller\Plugin
+ * Class RenderLoi.
  */
 class RenderPaymentSheet extends AbstractPlugin
 {
+    /**
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * @param Affiliation $affiliation
@@ -30,11 +43,12 @@ class RenderPaymentSheet extends AbstractPlugin
      * @return AffiliationPdf
      * @throws \Exception
      */
-    public function render(Affiliation $affiliation, $year, $period): AffiliationPdf
+    public function render(Affiliation $affiliation, $year, $period)
     {
         $project       = $affiliation->getProject();
         $contact       = $affiliation->getContact();
         $latestVersion = $this->getProjectService()->getLatestProjectVersion($project);
+
 
         $financialContact = $this->getAffiliationService()->getFinancialContact($affiliation);
 
@@ -42,7 +56,8 @@ class RenderPaymentSheet extends AbstractPlugin
             ->getProjectVersionContributionInformation($affiliation, $latestVersion);
 
         $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod(
-            $affiliation->getProject()->getCall()->getProgram()
+            $affiliation->getProject()->getCall()
+                ->getProgram()
         );
 
 
@@ -436,7 +451,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $currentInvoiceDetails = [];
 
-        if (sizeof($previousInvoices) === 0) {
+        if (count($previousInvoices) === 0) {
             $currentInvoiceDetails[] = [
                 $this->translate("txt-no-invoices-found"),
             ];
@@ -580,7 +595,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $upcomingInvoiceDetails = [];
 
-        if (sizeof($upcomingInvoices) > 0) {
+        if (count($upcomingInvoices) > 0) {
             $pdf->writeHTMLCell(
                 0,
                 0,
@@ -623,6 +638,91 @@ class RenderPaymentSheet extends AbstractPlugin
     }
 
     /**
+     * Gateway to the Project Service.
+     *
+     * @return ProjectService
+     */
+    public function getProjectService()
+    {
+        return $this->getServiceLocator()->get(ProjectService::class);
+    }
+
+    /**
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * @param ServiceLocatorInterface $serviceLocator
+     *
+     * @return $this
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+
+        return $this;
+    }
+
+    /**
+     * Gateway to the Affiliation Service.
+     *
+     * @return AffiliationService
+     */
+    public function getAffiliationService()
+    {
+        return $this->getServiceLocator()->get(AffiliationService::class);
+    }
+
+    /**
+     * Gateway to the Version Service.
+     *
+     * @return VersionService
+     */
+    public function getVersionService()
+    {
+        return $this->getServiceLocator()->get(VersionService::class);
+    }
+
+    /**
+     * Gateway to the Invoice Service.
+     *
+     * @return InvoiceService
+     */
+    public function getInvoiceService()
+    {
+        return $this->getServiceLocator()->get(InvoiceService::class);
+    }
+
+    /**
+     * @return ModuleOptions
+     */
+    public function getModuleOptions()
+    {
+        return $this->getServiceLocator()->get(ModuleOptions::class);
+    }
+
+    /**
+     * Proxy for the flash messenger helper to have the string translated earlier.
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    protected function translate($string)
+    {
+        /**
+         * @var $translate Translate
+         */
+        $translate = $this->getServiceLocator()->get('ViewHelperManager')->get('translate');
+
+        return $translate($string);
+    }
+
+    /**
      * @param $effort
      *
      * @return string
@@ -640,6 +740,26 @@ class RenderPaymentSheet extends AbstractPlugin
     public function parseKiloCost($cost)
     {
         return sprintf("%s kEUR", number_format($cost / 1000, 0, '.', ','));
+    }
+
+    /**
+     * Gateway to the Contact Service.
+     *
+     * @return ContactService
+     */
+    public function getContactService()
+    {
+        return $this->getServiceLocator()->get(ContactService::class);
+    }
+
+    /**
+     * Gateway to the Organisation Service.
+     *
+     * @return OrganisationService
+     */
+    public function getOrganisationService()
+    {
+        return $this->getServiceLocator()->get(OrganisationService::class);
     }
 
     /**

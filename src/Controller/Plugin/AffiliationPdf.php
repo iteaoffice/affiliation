@@ -87,7 +87,7 @@ class AffiliationPdf extends \FPDI
             $counter = 0;
 
             foreach ($row as $column) {
-                if ($lastRow && $rowCounter === (sizeof($data))) {
+                if ($lastRow && $rowCounter === (count($data))) {
                     $this->SetFont('', 'B');
                 }
 
