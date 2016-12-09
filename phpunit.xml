@@ -10,7 +10,7 @@
         syntaxCheck="true"
 >
     <testsuite name="iteaoffice/affiliation">
-        <directory>./tests</directory>
+        <directory>./test</directory>
     </testsuite>
     <filter>
         <whitelist>
