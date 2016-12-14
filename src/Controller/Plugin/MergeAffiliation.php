@@ -186,7 +186,7 @@ class MergeAffiliation extends AbstractPlugin
             $matched = false;
             foreach ($this->getMainAffiliation()->getEffort() as &$mainEffort) {
                 if ($otherEffort->getDateStart()->getTimestamp() === $mainEffort->getDateStart()->getTimestamp()
-                    && $otherEffort->getDateEnd()->->getTimestamp() === $mainEffort->getDateEnd()->getTimestamp()
+                    && $otherEffort->getDateEnd()->getTimestamp() === $mainEffort->getDateEnd()->getTimestamp()
                     && $otherEffort->getWorkpackage()->getId() === $mainEffort->getWorkpackage()->getId()
                 ) {
                     $originalEffort = $mainEffort->getEffort();
