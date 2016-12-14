@@ -69,8 +69,6 @@ class MergeAffiliation extends AbstractPlugin
     ): Affiliation {
         //print("This is not working yet, effort is not correctly transferred");
 
-        echo __FUNCTION__.PHP_EOL;
-
         $this->setMainAffiliation($mainAffiliation);
         $this->setOtherAffiliation($otherAffiliation);
         $this->setCostAndEffortStrategy($costAndEffortStrategy);
@@ -142,13 +140,12 @@ class MergeAffiliation extends AbstractPlugin
      */
     protected function transferCost()
     {
-        echo __FUNCTION__.PHP_EOL;
         foreach ($this->getOtherAffiliation()->getCost() as $otherKey => $otherCost) {
             // We need to check if the $mainAffiliation has already a cost in the given period
             $matched = false;
             foreach ($this->getMainAffiliation()->getCost() as &$mainCost) {
-                if ($otherCost->getDateStart() == $mainCost->getDateStart()
-                    && $otherCost->getDateEnd() == $mainCost->getDateEnd()
+                if ($otherCost->getDateStart()->getTimestamp() === $mainCost->getDateStart()->getTimestamp()
+                    && $otherCost->getDateEnd()->getTimestamp() === $mainCost->getDateEnd()->getTimestamp()
                 ) {
                     switch ($this->getCostAndEffortStrategy()) {
                         case self::STRATEGY_SUM:
@@ -184,14 +181,13 @@ class MergeAffiliation extends AbstractPlugin
      */
     protected function transferEffort()
     {
-        echo __FUNCTION__.PHP_EOL;
         foreach ($this->getOtherAffiliation()->getEffort() as $otherKey => $otherEffort) {
             // We need to check if the $mainAffiliation has already a effort in the given period
             $matched = false;
             foreach ($this->getMainAffiliation()->getEffort() as &$mainEffort) {
-                if ($otherEffort->getDateStart() == $mainEffort->getDateStart()
-                    && $otherEffort->getDateEnd() == $mainEffort->getDateEnd()
-                    && $otherEffort->getWorkpackage()->getId() == $mainEffort->getWorkpackage()->getId()
+                if ($otherEffort->getDateStart()->getTimestamp() === $mainEffort->getDateStart()->getTimestamp()
+                    && $otherEffort->getDateEnd()->->getTimestamp() === $mainEffort->getDateEnd()->getTimestamp()
+                    && $otherEffort->getWorkpackage()->getId() === $mainEffort->getWorkpackage()->getId()
                 ) {
                     $originalEffort = $mainEffort->getEffort();
                     switch ($this->getCostAndEffortStrategy()) {
@@ -245,7 +241,6 @@ class MergeAffiliation extends AbstractPlugin
      */
     protected function transferAffiliationVersions()
     {
-        echo __FUNCTION__.PHP_EOL;
         // Iterate other affiliation versions to find a match with main on project version ID
         /** @var AffiliationVersion $otherAffiliationVersion */
         foreach ($this->getOtherAffiliation()->getVersion() as $otherKey => &$otherAffiliationVersion) {
@@ -291,7 +286,6 @@ class MergeAffiliation extends AbstractPlugin
      */
     protected function transferVersionCost(AffiliationVersion $mainVersion, AffiliationVersion $otherVersion)
     {
-        echo __FUNCTION__.PHP_EOL;
         /** @var CostVersion $otherCostVersion */
         foreach ($otherVersion->getCostVersion() as $otherCostVersion) {
 
@@ -337,7 +331,6 @@ class MergeAffiliation extends AbstractPlugin
      */
     protected function transferVersionEffort(AffiliationVersion $mainVersion, AffiliationVersion $otherVersion)
     {
-        echo __FUNCTION__.PHP_EOL;
         /** @var EffortVersion $otherCostVersion */
         foreach ($otherVersion->getEffortVersion() as $otherEffortVersion) {
 

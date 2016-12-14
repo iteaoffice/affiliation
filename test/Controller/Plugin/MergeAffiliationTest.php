@@ -106,8 +106,6 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortVersion3 = $affiliationVersion2->getEffortVersion()->get(0);
         $this->assertInstanceOf(EffortVersion::class, $effortVersion3);
         $this->assertEquals(0.40, $effortVersion3->getEffort());
-
-
     }
 
     /**
