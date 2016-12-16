@@ -900,7 +900,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return \Project\Entity\Achievement[]
+     * @return Collections\ArrayCollection|\Project\Entity\Achievement[]
      */
     public function getAchievement()
     {
@@ -908,7 +908,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param \Project\Entity\Achievement[] $achievement
+     * @param Collections\ArrayCollection|\Project\Entity\Achievement[] $achievement
      */
     public function setAchievement($achievement)
     {

@@ -13,60 +13,148 @@ namespace AffiliationTest\Service;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Controller\Plugin\MergeAffiliation;
 use Affiliation\Entity\Invoice;
+use Affiliation\Entity\Log as AffiliationLog;
 use Affiliation\Entity\Version as AffiliationVersion;
 use Affiliation\Service\AffiliationService;
 use ApplicationTest\Util\AbstractServiceTest;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use Project\Entity\Achievement;
+use Project\Entity\ChangeRequest\CostChange;
 use Project\Entity\Cost\Cost;
 use Project\Entity\Cost\Version as CostVersion;
+use Project\Entity\Effort\Spent;
 use Project\Entity\Effort\Version as EffortVersion;
+use Project\Entity\Report\EffortSpent;
 use Project\Entity\Version\Version as ProjectVersion;
 use Project\Entity\Effort\Effort;
 use Project\Entity\Workpackage\Workpackage;
+use Project\Entity\Log as ProjectLog;
 use Project\Service\ProjectService;
 
+/**
+ * Class MergeAffiliationTest
+ * @package AffiliationTest\Service
+ */
 class MergeAffiliationTest extends AbstractServiceTest
 {
+    /** @var Affiliation */
+    protected $mainAffiliation;
+
+    /** @var Affiliation */
+    protected $otherAffiliation;
+
+    /** @var MergeAffiliation */
+    protected $mergeAffiliation;
+
     /**
-     * Test merging two affiliations adding cost and effort
-     * @covers \Affiliation\Controller\Plugin\MergeAffiliation
+     * Set up basic properties
+     */
+    public function setUp()
+    {
+        $this->mainAffiliation = $this->createMainAffiliation();
+        $this->otherAffiliation = $this->createOtherAffiliation();
+        $this->mergeAffiliation = new MergeAffiliation();
+        // Set same mocked affiliation service for all tests
+        $this->mergeAffiliation->setAffiliationService($this->setUpAffiliationServiceMock());
+    }
+
+    /**
+     * Test merging of entities that are not affected by the chosen merge strategy
+     * @covers \Affiliation\Controller\Plugin\MergeAffiliation::__invoke
      * @covers \Affiliation\Controller\Plugin\AbstractPlugin::setAffiliationService
      * @covers \Affiliation\Controller\Plugin\AbstractPlugin::getAffiliationService
      * @covers \Affiliation\Controller\Plugin\AbstractPlugin::setProjectService
      * @covers \Affiliation\Controller\Plugin\AbstractPlugin::getProjectService
      */
+    public function testMergeAffiliationGeneral()
+    {
+        $mergeAffiliation = $this->mergeAffiliation;
+        $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
+        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
+
+        // Run the merge
+        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+
+        $this->assertEquals($this->mainAffiliation->getId(), $mergedAffiliation->getId());
+
+        // Assert achievements
+        /** @var Achievement $achievement */
+        $achievement = $mergedAffiliation->getAchievement()->first();
+        $this->assertInstanceOf(Achievement::class, $achievement);
+        $this->assertEquals(1, $achievement->getId());
+
+        // Assert cost changes
+        /** @var CostChange $costChange */
+        $costChange = $mergedAffiliation->getChangeRequestCostChange()->first();
+        $this->assertInstanceOf(CostChange::class, $costChange);
+        $this->assertEquals(1, $costChange->getId());
+
+        // Assert report effort spent
+        /** @var EffortSpent $reportEffortSpent */
+        $reportEffortSpent = $mergedAffiliation->getProjectReportEffortSpent()->first();
+        $this->assertInstanceOf(EffortSpent::class, $reportEffortSpent);
+        $this->assertEquals(1, $reportEffortSpent->getId());
+
+        // Assert project log
+        /** @var ProjectLog $projectLog */
+        $projectLog = $mergedAffiliation->getProjectLog()->first();
+        $this->assertInstanceOf(ProjectLog::class, $projectLog);
+        $this->assertEquals(1, $projectLog->getId());
+
+        // Assert affiliation log
+        /** @var AffiliationLog $affiliationLog */
+        $affiliationLog = $mergedAffiliation->getLog()->first();
+        $this->assertInstanceOf(AffiliationLog::class, $affiliationLog);
+        $this->assertEquals(1, $affiliationLog->getId());
+
+        // Assert invoices
+        /** @var Invoice $invoice */
+        $invoice = $mergedAffiliation->getInvoice()->first();
+        $this->assertInstanceOf(Invoice::class, $invoice);
+        $this->assertEquals(1, $invoice->getId());
+
+        // Assert associates
+        /** @var Contact $associate */
+        $associate = $mergedAffiliation->getAssociate()->first();
+        $this->assertInstanceOf(Contact::class, $associate);
+        $this->assertEquals(1, $associate->getId());
+    }
+
+    /**
+     * Test merging two affiliations using the SUM of cost and effort from both affiliations
+     * @covers \Affiliation\Controller\Plugin\MergeAffiliation
+     */
     public function testMergeAffiliationSum()
     {
-        $mainAffiliation = $this->createMainAffiliation();
-        $otherAffiliation = $this->createOtherAffiliation();
-        $mergeAffiliation = new MergeAffiliation();
+        $mergeAffiliation = $this->mergeAffiliation;
+        $strategy = MergeAffiliation::STRATEGY_SUM;
+        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
 
-        // Set mocked affiliation service
-        $mergeAffiliation->setAffiliationService($this->setUpAffiliationServiceMock($otherAffiliation));
-
-        // Set mocked project service
-        $projectServiceMock = $this->setUpProjectServiceMock(
-            $mainAffiliation,
-            $otherAffiliation,
-            MergeAffiliation::STRATEGY_SUM
-        );
-
-        $mergeAffiliation->setProjectService($projectServiceMock);
-
-        // Run code and assert return value
-        $mergedAffiliation = $mergeAffiliation($mainAffiliation, $otherAffiliation, MergeAffiliation::STRATEGY_SUM);
-
-        $this->assertEquals($mainAffiliation->getId(), $mergedAffiliation->getId());
+        // Run the merge
+        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
 
         // Assert cost
-        $this->assertInstanceOf(Cost::class, $mergedAffiliation->getCost()->first());
-        $this->assertEquals(30, $mergedAffiliation->getCost()->first()->getCosts());
+        $cost = $mergedAffiliation->getCost();
+        $this->assertInstanceOf(Cost::class, $cost->first());
+        $this->assertEquals(30, $cost->first()->getCosts());
+        $this->assertInstanceOf(Cost::class, $cost->get(1));
+        $this->assertEquals(40, $cost->get(1)->getCosts());
 
         // Assert effort
-        $this->assertInstanceOf(Effort::class, $mergedAffiliation->getEffort()->first());
-        $this->assertEquals(1.50, $mergedAffiliation->getEffort()->first()->getEffort());
+        $effort = $mergedAffiliation->getEffort();
+        $this->assertInstanceOf(Effort::class, $effort->first());
+        $this->assertEquals(1.50, $effort->first()->getEffort());
+        $this->assertInstanceOf(Effort::class, $effort->get(1));
+        $this->assertEquals(1.00, $effort->get(1)->getEffort());
+
+        // Assert effort spent
+        $effortSpent = $mergedAffiliation->getSpent();
+        $this->assertInstanceOf(Spent::class, $effortSpent->first());
+        $this->assertEquals(1.00, $effortSpent->first()->getEffort());
+        $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
+        $this->assertEquals(0.10, $effortSpent->get(1)->getEffort());
 
         // Assert version cost & effort
         /** @var AffiliationVersion $affiliationVersion1 */
@@ -78,15 +166,15 @@ class MergeAffiliationTest extends AbstractServiceTest
         $this->assertInstanceOf(CostVersion::class, $costVersion1);
         $this->assertEquals(35, $costVersion1->getCosts());
 
-        /** @var EffortVersion $effortVersion1 */
-        $effortVersion1 = $affiliationVersion1->getEffortVersion()->get(0);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion1);
-        $this->assertEquals(0.40, $effortVersion1->getEffort());
-
         /** @var CostVersion $costVersion2 */
         $costVersion2 = $affiliationVersion1->getCostVersion()->get(1);
         $this->assertInstanceOf(CostVersion::class, $costVersion2);
         $this->assertEquals(30, $costVersion2->getCosts());
+
+        /** @var EffortVersion $effortVersion1 */
+        $effortVersion1 = $affiliationVersion1->getEffortVersion()->get(0);
+        $this->assertInstanceOf(EffortVersion::class, $effortVersion1);
+        $this->assertEquals(0.40, $effortVersion1->getEffort());
 
         /** @var EffortVersion $effortVersion2 */
         $effortVersion2 = $affiliationVersion1->getEffortVersion()->get(1);
@@ -97,7 +185,7 @@ class MergeAffiliationTest extends AbstractServiceTest
         $affiliationVersion2 = $mergedAffiliation->getVersion()->get(1);
         $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
 
-        /** @var CostVersion $costVersion1 */
+        /** @var CostVersion $costVersion3 */
         $costVersion3 = $affiliationVersion2->getCostVersion()->get(0);
         $this->assertInstanceOf(CostVersion::class, $costVersion3);
         $this->assertEquals(40, $costVersion3->getCosts());
@@ -109,35 +197,156 @@ class MergeAffiliationTest extends AbstractServiceTest
     }
 
     /**
-     * Test merging two affiliations using cost eand effort of the main affiliation
-     * @covers MergeAffiliation::__invoke
+     * Test merging two affiliations using cost and effort from the MAIN affiliation
+     * @covers \Affiliation\Controller\Plugin\MergeAffiliation
      */
-    /*public function testMergeAffiliationUseMain()
+    public function testMergeAffiliationUseMain()
     {
-        $mainAffiliation = $this->createMainAffiliation();
-        $otherAffiliation = $this->createMergedAffiliation();
+        $mergeAffiliation = $this->mergeAffiliation;
+        $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
+        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
 
-        $mergeAffiliation = new MergeAffiliation();
-        $mergeAffiliation->setProjectService($this->getProjectServiceMock());
+        // Run the merge
+        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
 
-    }*/
+        // Assert cost
+        $cost = $mergedAffiliation->getCost();
+        $this->assertInstanceOf(Cost::class, $cost->first());
+        $this->assertEquals(10, $cost->first()->getCosts());
+        $this->assertInstanceOf(Cost::class, $cost->get(1));
+        $this->assertEquals(40, $cost->get(1)->getCosts());
+
+        // Assert effort
+        $effort = $mergedAffiliation->getEffort();
+        $this->assertInstanceOf(Effort::class, $effort->first());
+        $this->assertEquals(0.50, $effort->first()->getEffort());
+        $this->assertInstanceOf(Effort::class, $effort->get(1));
+        $this->assertEquals(1.00, $effort->get(1)->getEffort());
+
+        // Assert effort spent
+        $effortSpent = $mergedAffiliation->getSpent();
+        $this->assertInstanceOf(Spent::class, $effortSpent->first());
+        $this->assertEquals(0.40, $effortSpent->first()->getEffort());
+        $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
+        $this->assertEquals(0.10, $effortSpent->get(1)->getEffort());
+
+        // Assert version cost & effort
+        /** @var AffiliationVersion $affiliationVersion1 */
+        $affiliationVersion1 = $mergedAffiliation->getVersion()->get(0);
+        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
+
+        // Affiliation version 1
+        /** @var CostVersion $costVersion1 */
+        $costVersion1 = $affiliationVersion1->getCostVersion()->get(0);
+        $this->assertInstanceOf(CostVersion::class, $costVersion1);
+        $this->assertEquals(15, $costVersion1->getCosts());
+
+        /** @var CostVersion $costVersion2 */
+        $costVersion2 = $affiliationVersion1->getCostVersion()->get(1);
+        $this->assertInstanceOf(CostVersion::class, $costVersion2);
+        $this->assertEquals(30, $costVersion2->getCosts());
+
+        /** @var EffortVersion $effortVersion1 */
+        $effortVersion1 = $affiliationVersion1->getEffortVersion()->get(0);
+        $this->assertInstanceOf(EffortVersion::class, $effortVersion1);
+        $this->assertEquals(0.30, $effortVersion1->getEffort());
+
+        /** @var EffortVersion $effortVersion2 */
+        $effortVersion2 = $affiliationVersion1->getEffortVersion()->get(1);
+        $this->assertInstanceOf(EffortVersion::class, $effortVersion2);
+        $this->assertEquals(0.20, $effortVersion2->getEffort());
+
+        // Affiliation version 2
+        /** @var AffiliationVersion $affiliationVersion2 */
+        $affiliationVersion2 = $mergedAffiliation->getVersion()->get(1);
+        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
+
+        /** @var CostVersion $costVersion3 */
+        $costVersion3 = $affiliationVersion2->getCostVersion()->get(0);
+        $this->assertInstanceOf(CostVersion::class, $costVersion3);
+        $this->assertEquals(40, $costVersion3->getCosts());
+
+        /** @var EffortVersion $effortVersion3 */
+        $effortVersion3 = $affiliationVersion2->getEffortVersion()->get(0);
+        $this->assertInstanceOf(EffortVersion::class, $effortVersion3);
+        $this->assertEquals(0.40, $effortVersion3->getEffort());
+    }
 
     /**
-     * Test merging two affiliations using cost eand effort of the merged (other) affiliation
-     * @covers MergeAffiliation::__invoke
+     * Test merging two affiliations using cost and effort from the OTHER affiliation
+     * @covers \Affiliation\Controller\Plugin\MergeAffiliation
      */
-    /*public function testMergeAffiliationUseOther()
+    public function testMergeAffiliationUseOther()
     {
-        $mainAffiliation = $this->createMainAffiliation();
-        $mergedAffiliation = $this->createMergedAffiliation();
+        $mergeAffiliation = $this->mergeAffiliation;
+        $strategy = MergeAffiliation::STRATEGY_USE_OTHER;
+        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
 
-        $plugin = new MergeAffiliation();
-        $projectServiceMock = $this->getProjectServiceMock();
+        // Run the merge
+        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
 
+        // Assert cost
+        $cost = $mergedAffiliation->getCost();
+        $this->assertInstanceOf(Cost::class, $cost->first());
+        $this->assertEquals(20, $cost->first()->getCosts());
+        $this->assertInstanceOf(Cost::class, $cost->get(1));
+        $this->assertEquals(40, $cost->get(1)->getCosts());
 
-        $plugin->setProjectService($this->getProjectServiceMock());
+        // Assert effort
+        $effort = $mergedAffiliation->getEffort();
+        $this->assertInstanceOf(Effort::class, $effort->first());
+        $this->assertEquals(1.00, $effort->first()->getEffort());
+        $this->assertInstanceOf(Effort::class, $effort->get(1));
+        $this->assertEquals(1.00, $effort->get(1)->getEffort());
 
-    }*/
+        // Assert effort spent
+        $effortSpent = $mergedAffiliation->getSpent();
+        $this->assertInstanceOf(Spent::class, $effortSpent->first());
+        $this->assertEquals(0.60, $effortSpent->first()->getEffort());
+        $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
+        $this->assertEquals(0.10, $effortSpent->get(1)->getEffort());
+
+        // Assert version cost & effort
+        /** @var AffiliationVersion $affiliationVersion1 */
+        $affiliationVersion1 = $mergedAffiliation->getVersion()->get(0);
+        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
+
+        // Affiliation version 1
+        /** @var CostVersion $costVersion1 */
+        $costVersion1 = $affiliationVersion1->getCostVersion()->get(0);
+        $this->assertInstanceOf(CostVersion::class, $costVersion1);
+        $this->assertEquals(20, $costVersion1->getCosts());
+
+        /** @var CostVersion $costVersion2 */
+        $costVersion2 = $affiliationVersion1->getCostVersion()->get(1);
+        $this->assertInstanceOf(CostVersion::class, $costVersion2);
+        $this->assertEquals(30, $costVersion2->getCosts());
+
+        /** @var EffortVersion $effortVersion1 */
+        $effortVersion1 = $affiliationVersion1->getEffortVersion()->get(0);
+        $this->assertInstanceOf(EffortVersion::class, $effortVersion1);
+        $this->assertEquals(0.10, $effortVersion1->getEffort());
+
+        /** @var EffortVersion $effortVersion2 */
+        $effortVersion2 = $affiliationVersion1->getEffortVersion()->get(1);
+        $this->assertInstanceOf(EffortVersion::class, $effortVersion2);
+        $this->assertEquals(0.20, $effortVersion2->getEffort());
+
+        // Affiliation version 2
+        /** @var AffiliationVersion $affiliationVersion2 */
+        $affiliationVersion2 = $mergedAffiliation->getVersion()->get(1);
+        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
+
+        /** @var CostVersion $costVersion3 */
+        $costVersion3 = $affiliationVersion2->getCostVersion()->get(0);
+        $this->assertInstanceOf(CostVersion::class, $costVersion3);
+        $this->assertEquals(40, $costVersion3->getCosts());
+
+        /** @var EffortVersion $effortVersion3 */
+        $effortVersion3 = $affiliationVersion2->getEffortVersion()->get(0);
+        $this->assertInstanceOf(EffortVersion::class, $effortVersion3);
+        $this->assertEquals(0.40, $effortVersion3->getEffort());
+    }
 
     /**
      * Create a main affiliation entity data will be merged into
@@ -147,12 +356,14 @@ class MergeAffiliationTest extends AbstractServiceTest
     {
         $contact = new Contact();
 
+        // Init cost
         $costMatched = new Cost();
         $costMatched->setId(1);
         $costMatched->setCosts(10);
         $costMatched->setDateStart(new \DateTime('2014-01-01'));
         $costMatched->setDateEnd(new \DateTime('2014-12-31'));
 
+        // Init effort
         $workpackageMatched = new Workpackage();
         $workpackageMatched->setId(1);
 
@@ -163,21 +374,29 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortMatched->setDateStart(new \DateTime('2014-01-01'));
         $effortMatched->setDateEnd(new \DateTime('2014-12-31'));
 
+        $effortSpentMatched = new Spent();
+        $effortSpentMatched->setId(1);
+        $effortSpentMatched->setWorkpackage($workpackageMatched);
+        $effortSpentMatched->setEffort(0.4);
+        $effortSpentMatched->setDateStart(new \DateTime('2014-01-01'));
+        $effortSpentMatched->setDateEnd(new \DateTime('2014-12-31'));
+
+        // Create affiliation
         $affiliation = new Affiliation();
         $affiliation->setId(1);
         $affiliation->setContact($contact);
         $affiliation->setCost(new ArrayCollection([$costMatched]));
         $affiliation->setEffort(new ArrayCollection([$effortMatched]));
+        $affiliation->setSpent(new ArrayCollection([$effortSpentMatched]));
 
-        $projectVersionAlsoInOtherAffiliation = new ProjectVersion();
-        $projectVersionAlsoInOtherAffiliation->setId(1);
-
+        // Init cost version
         $affiliationCostVersionMatched = new CostVersion();
         $affiliationCostVersionMatched->setId(1);
         $affiliationCostVersionMatched->setCosts(15.00);
         $affiliationCostVersionMatched->setDateStart(new \DateTime('2014-01-01'));
         $affiliationCostVersionMatched->setDateEnd(new \DateTime('2014-12-31'));
 
+        // Init effort version
         $affiliationEffortVersionMatched = new EffortVersion();
         $affiliationEffortVersionMatched->setId(1);
         $affiliationEffortVersionMatched->setWorkpackage($workpackageMatched);
@@ -185,23 +404,29 @@ class MergeAffiliationTest extends AbstractServiceTest
         $affiliationEffortVersionMatched->setDateStart(new \DateTime('2014-01-01'));
         $affiliationEffortVersionMatched->setDateEnd(new \DateTime('2014-12-31'));
 
+        // Create main affiliation
+        $affiliation = new Affiliation();
+        $affiliation->setId(1);
+        $affiliation->setContact($contact);
+        $affiliation->setCost(new ArrayCollection([$costMatched]));
+        $affiliation->setEffort(new ArrayCollection([$effortMatched]));
+        $affiliation->setSpent(new ArrayCollection([$effortSpentMatched]));
+
+        // Init affiliation version
+        $projectVersionAlsoInOtherAffiliation = new ProjectVersion();
+        $projectVersionAlsoInOtherAffiliation->setId(1);
+
         $affiliationVersion = new AffiliationVersion();
         $affiliationVersion->setId(1);
         $affiliationVersion->setAffiliation($affiliation);
         $affiliationVersion->setVersion($projectVersionAlsoInOtherAffiliation);
         $affiliationVersion->setContact($contact);
-        $affiliationVersion->setCostVersion(new ArrayCollection([
-            $affiliationCostVersionMatched
-        ]));
-        $affiliationVersion->setEffortVersion(new ArrayCollection([
-            $affiliationEffortVersionMatched
-        ]));
-
+        $affiliationVersion->setCostVersion(new ArrayCollection([$affiliationCostVersionMatched]));
+        $affiliationVersion->setEffortVersion(new ArrayCollection([$affiliationEffortVersionMatched]));
 
         $affiliation->setVersion(new ArrayCollection([$affiliationVersion]));
 
         return $affiliation;
-
     }
 
     /**
@@ -222,7 +447,7 @@ class MergeAffiliationTest extends AbstractServiceTest
 
         $costNew = new Cost();
         $costNew->setId(3);
-        $costNew->setCosts(30.00);
+        $costNew->setCosts(40.00);
         $costNew->setDateStart(new \DateTime('2015-01-01'));
         $costNew->setDateEnd(new \DateTime('2015-12-31'));
 
@@ -237,6 +462,13 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortMatched->setDateStart(new \DateTime('2014-01-01'));
         $effortMatched->setDateEnd(new \DateTime('2014-12-31'));
 
+        $effortSpentMatched = new Spent();
+        $effortSpentMatched->setId(2);
+        $effortSpentMatched->setWorkpackage($workpackageMatched);
+        $effortSpentMatched->setEffort(0.60);
+        $effortSpentMatched->setDateStart(new \DateTime('2014-01-01'));
+        $effortSpentMatched->setDateEnd(new \DateTime('2014-12-31'));
+
         $workpackageNew = new Workpackage();
         $workpackageNew->setId(2);
 
@@ -246,6 +478,13 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortNew->setEffort(1.00);
         $effortNew->setDateStart(new \DateTime('2015-01-01'));
         $effortNew->setDateEnd(new \DateTime('2015-12-31'));
+
+        $effortSpentNew = new Spent();
+        $effortSpentNew->setId(3);
+        $effortSpentNew->setWorkpackage($workpackageNew);
+        $effortSpentNew->setEffort(0.10);
+        $effortSpentNew->setDateStart(new \DateTime('2015-01-01'));
+        $effortSpentNew->setDateEnd(new \DateTime('2015-12-31'));
 
         // Init versions
         $versionContact = new Contact();
@@ -316,45 +555,115 @@ class MergeAffiliationTest extends AbstractServiceTest
         $affiliationVersionNew->setAffiliation($affiliation);
         $affiliationVersionNew->setVersion($projectVersionNew);
         $affiliationVersionNew->setContact($versionContact);
-        $affiliationVersionNew->setCostVersion(new ArrayCollection([
-            $affiliationCostVersionNew2
-        ]));
-        $affiliationVersionNew->setEffortVersion(new ArrayCollection([
-            $affiliationEffortVersionNew2
-        ]));
+        $affiliationVersionNew->setCostVersion(new ArrayCollection([$affiliationCostVersionNew2]));
+        $affiliationVersionNew->setEffortVersion(new ArrayCollection([$affiliationEffortVersionNew2]));
 
-        //
+        // Achievements
+        $achievement = new Achievement();
+        $achievement->setId(1);
+        $achievement->setAffiliation(new ArrayCollection([$affiliation]));
 
+        // Cost changes
+        $costChange = new CostChange();
+        $costChange->setId(1);
+        $costChange->setAffiliation($affiliation);
+
+        // Report effort spent
+        $reportEffortSpent = new EffortSpent();
+        $reportEffortSpent->setId(1);
+        $reportEffortSpent->setAffiliation($affiliation);
+
+        // Project log
+        $projectLog = new ProjectLog();
+        $projectLog->setId(1);
+        $projectLog->setAffiliation(new ArrayCollection([$affiliation]));
+
+        // Affiliation log
+        $affiliationLog = new AffiliationLog();
+        $affiliationLog->setId(1);
+        $affiliationLog->setAffiliation($affiliation);
+
+        // Invoice
         $invoice = new Invoice();
+        $invoice->setId(1);
+        $invoice->setAffiliation($affiliation);
 
+        // Associate
+        $associate = new Contact();
+        $associate->setId(1);
+        $associate->setAffiliation(new ArrayCollection([$affiliation]));
 
+        // Set affiliation properties
         $affiliation->setCost(new ArrayCollection([$costMatched, $costNew]));
         $affiliation->setEffort(new ArrayCollection([$effortMatched, $effortNew]));
+        $affiliation->setSpent(new ArrayCollection([$effortSpentMatched, $effortSpentNew]));
         $affiliation->setVersion(new ArrayCollection([$affiliationVersionMatched, $affiliationVersionNew]));
+        $affiliation->setAchievement(new ArrayCollection([$achievement]));
+        $affiliation->setChangeRequestCostChange(new ArrayCollection([$costChange]));
+        $affiliation->setProjectReportEffortSpent(new ArrayCollection([$reportEffortSpent]));
+        $affiliation->setProjectLog(new ArrayCollection([$projectLog]));
+        $affiliation->setLog(new ArrayCollection([$affiliationLog]));
         $affiliation->setInvoice(new ArrayCollection([$invoice]));
+        $affiliation->setAssociate(new ArrayCollection([$associate]));
 
         return $affiliation;
     }
 
     /**
-     * @param Affiliation $mainAffiliation
-     * @param Affiliation $otherAffiliation
-     * @param int $strategy
+     * Set up the project service mock object with expectations depending on the chosen merge strategy.
+     *
+     * @param integer $strategy
      * @return ProjectService|MockObject
      */
-    private function setUpProjectServiceMock(
-        Affiliation $mainAffiliation,
-        Affiliation $otherAffiliation,
-        int $strategy): MockObject
+    private function setUpProjectServiceMock(int $strategy): MockObject
     {
-        $projectServiceMock = $this->getMockBuilder(ProjectService::class)
+        $projectServiceMock =  $this->getMockBuilder(ProjectService::class)
             ->setMethods(['updateEntity', 'removeEntity'])
             ->getMock();
 
+        $params = [];
+        $calls = 0;
         switch ($strategy) {
             case MergeAffiliation::STRATEGY_SUM:
+            case MergeAffiliation::STRATEGY_USE_OTHER:
+                $calls = 14;
+                $params = [
+                    [$this->identicalTo($this->mainAffiliation->getCost()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getCost()->get(1))],
+                    [$this->identicalTo($this->mainAffiliation->getEffort()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getEffort()->get(1))],
+                    [$this->identicalTo($this->mainAffiliation->getSpent()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getSpent()->get(1))],
+                    [$this->identicalTo($this->mainAffiliation->getVersion()->first()->getCostVersion()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
+                    [$this->identicalTo($this->mainAffiliation->getVersion()->first()->getEffortVersion()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getAchievement()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())]
+                ];
+                break;
+            case MergeAffiliation::STRATEGY_USE_MAIN:
+                $calls = 9;
+                $params = [
+                    [$this->identicalTo($this->otherAffiliation->getCost()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getEffort()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getSpent()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getAchievement()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())]
+                ];
                 break;
         }
+
+        $projectServiceMock->expects($this->exactly($calls))
+            ->method('updateEntity')
+            ->withConsecutive(...$params)
+            ->will($this->returnArgument(0));
 
         return $projectServiceMock;
     }
@@ -362,34 +671,31 @@ class MergeAffiliationTest extends AbstractServiceTest
     /**
      * Set up the affiliation service mock object and expectations
      *
-     * @param Affiliation $otherAffiliation
      * @return AffiliationService|MockObject
      */
-    private function setUpAffiliationServiceMock(Affiliation $otherAffiliation): MockObject
+    private function setUpAffiliationServiceMock(): MockObject
     {
         $affiliationServiceMock = $this->getMockBuilder(AffiliationService::class)
             ->setMethods(['updateEntity', 'removeEntity'])
             ->getMock();
 
-        /** @var AffiliationVersion $version */
-        //$version = $otherAffiliation->getVersion()->first();
-        /** @var Invoice $invoice */
-        //$invoice = $otherAffiliation->getInvoice()->first();
-
         // Expect 2 removals
-        $affiliationServiceMock->expects($this->exactly(2)) // 2
+        $affiliationServiceMock->expects($this->exactly(2))
             ->method('removeEntity')
             ->withConsecutive(
                 [$this->isInstanceOf(AffiliationVersion::class)],
-                [$this->equalTo($otherAffiliation)]
+                [$this->identicalTo($this->otherAffiliation)]
             )
             ->will($this->returnValue(true));
 
-        // Expect 2 updates
-        $affiliationServiceMock->expects($this->once()) //2
+        // Expect 3 updates
+        $affiliationServiceMock->expects($this->exactly(4))
             ->method('updateEntity')
             ->withConsecutive(
-                [$this->isInstanceOf(AffiliationVersion::class)]
+                [$this->isInstanceOf(AffiliationVersion::class)],
+                [$this->identicalTo($this->otherAffiliation->getLog()->first())],
+                [$this->identicalTo($this->otherAffiliation->getInvoice()->first())],
+                [$this->identicalTo($this->mainAffiliation)]
             )
             ->will($this->returnArgument(0));
 
