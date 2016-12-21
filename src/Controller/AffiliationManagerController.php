@@ -14,6 +14,9 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Financial;
 use Affiliation\Form\AdminAffiliation;
 use Affiliation\Form\EditAssociate;
+use Affiliation\Form\MissingAffiliationParentFilter;
+use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as PaginatorAdapter;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Search\Form\SearchResult;
 use Search\Paginator\Adapter\SolariumPaginator;
@@ -22,11 +25,12 @@ use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 /**
+ * Class AffiliationManagerController
  *
+ * @package Affiliation\Controller
  */
 class AffiliationManagerController extends AffiliationAbstractController
 {
-
     /**
      * @return ViewModel
      */
@@ -177,12 +181,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $viewParams['arguments'] = http_build_query($filteredData);
 
                 // Result is grouped
-                if (! empty($data['group'])) {
+                if ( ! empty($data['group'])) {
                     $searchService->getQuery()->clearSorts();
                     $searchService->getQuery()->addSort($data['group'], SolariumQuery::SORT_ASC);
                     $groupComponent = $searchService->getQuery()->getGrouping();
                     // Add sorting within group
-                    if (! empty($data['order'])) {
+                    if ( ! empty($data['order'])) {
                         $groupComponent->setSort($data['order'] . ' ' . $data['direction']);
                     }
                     $groupComponent->addField($data['group']);
@@ -269,30 +273,30 @@ class AffiliationManagerController extends AffiliationAbstractController
 
         $data = array_merge($this->getRequest()->getPost()->toArray());
 
-        if ($this->getRequest()->isPost()) {
-            if (isset($data['merge']) && isset($data['submit'])) {
-                //Find the second affiliation
-                $affiliation = $this->getAffiliationService()->findAffiliationById($data['merge']);
+        if ($this->getRequest()->isPost() && isset($data['merge'], $data['submit'])) {
 
-                $this->mergeAffiliation($affiliation, $affiliation);
+            //Find the second affiliation
+            $affiliation = $this->getAffiliationService()->findAffiliationById($data['merge']);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful"),
-                            $affiliation->getOrganisation(),
-                            $affiliation->getOrganisation(),
-                            $affiliation->getProject()
-                        )
-                    );
+            $this->mergeAffiliation($affiliation, $affiliation);
 
-                return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation/view',
-                    [
-                        'id' => $affiliation->getId(),
-                    ]
-                );
-            }
+            $this->flashMessenger()->setNamespace('success')
+                 ->addMessage(
+                     sprintf(
+                         $this->translate('txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful'),
+                         $affiliation->getOrganisation(),
+                         $affiliation->getOrganisation(),
+                         $affiliation->getProject()
+                     )
+                 );
+
+            return $this->redirect()->toRoute(
+                'zfcadmin/affiliation/view',
+                [
+                    'id' => $affiliation->getId(),
+                ]
+            );
+
         }
 
 
@@ -300,7 +304,7 @@ class AffiliationManagerController extends AffiliationAbstractController
             [
                 'affiliationService'  => $this->getAffiliationService(),
                 'affiliation'         => $affiliation,
-                'merge'               => isset($data['merge']) ? $data['merge'] : null,
+                'merge'               => $data['merge'] ?? $data['merge'],
                 'projectService'      => $this->getProjectService(),
                 'organisationService' => $this->getOrganisationService(),
             ]
@@ -329,11 +333,11 @@ class AffiliationManagerController extends AffiliationAbstractController
         $formData['marketAccess']     = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();
 
-        if (! is_null($affiliation->getDateEnd())) {
+        if ( ! is_null($affiliation->getDateEnd())) {
             $formData['dateEnd'] = $affiliation->getDateEnd()->format('Y-m-d');
         }
-        if (! is_null($affiliation->getDateSelfFunded())
-            || $affiliation->getSelfFunded() == Affiliation::SELF_FUNDED
+        if ( ! is_null($affiliation->getDateSelfFunded())
+             || $affiliation->getSelfFunded() == Affiliation::SELF_FUNDED
         ) {
             if (is_null($affiliation->getDateSelfFunded())) {
                 $formData['dateSelfFunded'] = date('Y-m-d');
@@ -345,7 +349,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         /**
          * Only fill the formData of the finanicalOrganisation when this is known
          */
-        if (! is_null($financial = $affiliation->getFinancial())) {
+        if ( ! is_null($financial = $affiliation->getFinancial())) {
             $formData['financialOrganisation'] = $financial->getOrganisation()->getId();
             $formData['financialBranch']       = $financial->getBranch();
             $formData['financialContact']      = $financial->getContact()->getId();
@@ -358,7 +362,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
         $form->get('contact')->injectContact($affiliation->getContact());
         $form->get('organisation')->injectOrganisation($affiliation->getOrganisation());
-        if (! is_null($affiliation->getFinancial())) {
+        if ( ! is_null($affiliation->getFinancial())) {
             $form->get('financialOrganisation')->injectOrganisation($affiliation->getFinancial()->getOrganisation());
             $form->get('financialContact')->injectContact($affiliation->getFinancial()->getContact());
         }
@@ -386,7 +390,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $affiliation->setContact($this->getContactService()->findContactById($formData['contact']));
                 $affiliation->setOrganisation(
                     $this->getOrganisationService()
-                        ->findOrganisationById($formData['organisation'])
+                         ->findOrganisationById($formData['organisation'])
                 );
                 $affiliation->setBranch($formData['branch']);
                 if (empty($formData['dateSelfFunded'])) {
@@ -409,7 +413,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                 //Only update the financial when an financial organisation is chosen
 
-                if (! empty($formData['financialOrganisation'])) {
+                if ( ! empty($formData['financialOrganisation'])) {
                     if (is_null($financial = $affiliation->getFinancial())) {
                         $financial = new Financial();
                         $financial->setAffiliation($affiliation);
@@ -417,11 +421,11 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                     $financial->setOrganisation(
                         $this->getOrganisationService()
-                            ->findOrganisationById($formData['financialOrganisation'])
+                             ->findOrganisationById($formData['financialOrganisation'])
                     );
                     $financial->setContact($this->getContactService()->findContactById($formData['financialContact']));
                     $financial->setBranch($formData['financialBranch']);
-                    if (! empty($formData['emailCC'])) {
+                    if ( ! empty($formData['emailCC'])) {
                         $financial->setEmailCC($formData['emailCC']);
                     }
 
@@ -430,12 +434,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                 }
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                            $affiliation
-                        )
-                    );
+                     ->addMessage(
+                         sprintf(
+                             $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                             $affiliation
+                         )
+                     );
 
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
@@ -486,7 +490,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($this->getRequest()->isPost()) {
-            if (! empty($data['cancel'])) {
+            if ( ! empty($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
                     ['id' => $affiliation->getId()],
@@ -494,17 +498,17 @@ class AffiliationManagerController extends AffiliationAbstractController
                 );
             }
 
-            if (! empty($data['delete'])) {
+            if ( ! empty($data['delete'])) {
                 $affiliation->removeAssociate($contact);
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-associate-%s-has-successfully-been-removed"),
-                            $contact->getDisplayName()
-                        )
-                    );
+                     ->addMessage(
+                         sprintf(
+                             $this->translate("txt-associate-%s-has-successfully-been-removed"),
+                             $contact->getDisplayName()
+                         )
+                     );
 
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
@@ -527,12 +531,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                            $affiliation
-                        )
-                    );
+                     ->addMessage(
+                         sprintf(
+                             $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                             $affiliation
+                         )
+                     );
 
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
@@ -548,6 +552,36 @@ class AffiliationManagerController extends AffiliationAbstractController
                 'projectService' => $this->getProjectService(),
                 'contact'        => $contact,
                 'form'           => $form,
+            ]
+        );
+    }
+
+    /**
+     *
+     */
+    public function missingAffiliationParentAction()
+    {
+        $page                     = $this->params()->fromRoute('page', 1);
+        $filterPlugin             = $this->getAffiliationFilter();
+        $missingAffiliationParent = $this->getAffiliationService()
+                                         ->findMissingAffiliationParent($filterPlugin->getFilter());
+
+        $paginator
+            = new Paginator(new PaginatorAdapter(new ORMPaginator($missingAffiliationParent, false)));
+        $paginator::setDefaultItemCountPerPage(($page === 'all') ? PHP_INT_MAX : 20);
+        $paginator->setCurrentPageNumber($page);
+        $paginator->setPageRange(ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage()));
+
+        $form = new MissingAffiliationParentFilter($this->getEntityManager());
+        $form->setData(['filter' => $filterPlugin->getFilter()]);
+
+        return new ViewModel(
+            [
+                'paginator'     => $paginator,
+                'form'          => $form,
+                'encodedFilter' => urlencode($filterPlugin->getHash()),
+                'order'         => $filterPlugin->getOrder(),
+                'direction'     => $filterPlugin->getDirection(),
             ]
         );
     }

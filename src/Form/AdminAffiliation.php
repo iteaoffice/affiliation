@@ -11,6 +11,8 @@
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use DoctrineORMModule\Form\Element\EntitySelect;
+use Organisation\Entity\Parent\Organisation;
 use Organisation\Service\OrganisationService;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -40,6 +42,37 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'name'    => 'organisation',
                 'options' => [
                     'label' => _("txt-organisation"),
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => EntitySelect::class,
+                'name'       => 'parentOrganisation',
+                'attributes' => [
+                    'label' => _("txt-parent-organisation"),
+
+                ],
+                'options'    => [
+                    'object_manager'  => $organisationService->getEntityManager(),
+                    'target_class'    => Organisation::class,
+                    'find_method'     => [
+                        'name'   => 'findBy',
+                        'params' => [
+                            'criteria' => [],
+                            'orderBy'  => [
+                                'parent' => 'ASC',
+                            ],
+                        ],
+                    ],
+                    'empty_option'    => '--' . "Find a parent-organisation",
+                    'allow_empty'     => true,
+                    'label_generator' => function (Organisation $organisation) {
+                        return sprintf("%s (Parent: %s)", $organisation->getOrganisation(),
+                            $organisation->getParent()->getOrganisation());
+                    },
+                    'help-block'      => _("txt-affiliation-parent-organisation-help-block"),
                 ],
             ]
         );
@@ -168,13 +201,6 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
             ]
         );
 
-
-        $financialOrganisation = [];
-        if (! is_null($financial = $affiliation->getFinancial())) {
-            $financialOrganisation[$financial->getOrganisation()->getId()] = $financial->getOrganisation()
-                ->getOrganisation();
-        }
-
         $this->add(
             [
                 'type'    => 'Organisation\Form\Element\Organisation',
@@ -238,6 +264,9 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return [
+            'parentOrganisation'    => [
+                'required' => false,
+            ],
             'dateEnd'               => [
                 'required' => false,
             ],

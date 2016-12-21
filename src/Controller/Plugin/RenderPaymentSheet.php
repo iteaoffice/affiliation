@@ -12,29 +12,14 @@ namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice as AffiliationInvoice;
-use Affiliation\Options\ModuleOptions;
-use Affiliation\Service\AffiliationService;
-use Contact\Service\ContactService;
 use Invoice\Entity\Method;
-use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
-use Organisation\Service\OrganisationService;
-use Project\Service\ProjectService;
-use Project\Service\VersionService;
-use Zend\I18n\View\Helper\Translate;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class RenderLoi.
  */
 class RenderPaymentSheet extends AbstractPlugin
 {
-    /**
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
     /**
      * @param Affiliation $affiliation
      * @param             $year
@@ -53,14 +38,14 @@ class RenderPaymentSheet extends AbstractPlugin
         $financialContact = $this->getAffiliationService()->getFinancialContact($affiliation);
 
         $versionContributionInformation = $this->getVersionService()
-            ->getProjectVersionContributionInformation($affiliation, $latestVersion);
+                                               ->getProjectVersionContributionInformation($affiliation, $latestVersion);
 
         $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod(
             $affiliation->getProject()->getCall()
-                ->getProgram()
+                        ->getProgram()
         );
 
-
+        /** @var \TCPDF $pdf */
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getPaymentSheetTemplate());
         $pdf->AddPage();
@@ -130,7 +115,8 @@ class RenderPaymentSheet extends AbstractPlugin
             ],
             [
                 $this->translate("txt-version-date"),
-                (! is_null($latestVersion->getDateReviewed()) ? $latestVersion->getDateReviewed()->format("d-m-Y") : ''),
+                ! is_null($latestVersion->getDateReviewed()) ? $latestVersion->getDateReviewed()->format("d-m-Y")
+                    : '',
             ],
         ];
 
@@ -213,7 +199,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
 
-        if (! is_null($financialContact)) {
+        if ( ! is_null($financialContact)) {
             //Financial contact
             $pdf->writeHTMLCell(
                 0,
@@ -249,11 +235,11 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-billing-address"),
-                    (! is_null($financialAddress) ? sprintf(
+                    ! is_null($financialAddress) ? sprintf(
                         "%s \n %s\n%s\n%s %s\n%s",
                         $this->getOrganisationService()->parseOrganisationWithBranch(
                             $affiliation->getFinancial()
-                                ->getBranch(),
+                                        ->getBranch(),
                             $affiliation->getFinancial()->getOrganisation()
                         ),
                         trim(
@@ -264,7 +250,7 @@ class RenderPaymentSheet extends AbstractPlugin
                         $financialAddress->getZipCode(),
                         $financialAddress->getCity(),
                         strtoupper($financialAddress->getCountry())
-                    ) : "No billing address could be found"),
+                    ) : "No billing address could be found",
                 ],
                 [
                     $this->translate("txt-preferred-delivery"),
@@ -272,10 +258,10 @@ class RenderPaymentSheet extends AbstractPlugin
                     || is_null($affiliation->getFinancial()->getOrganisation()->getFinancial())
                         ? 'No billing organisation known'
                         : (($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
-                        === Financial::EMAIL_DELIVERY) ? sprintf(
-                            $this->translate("txt-by-email-to-%s"),
-                            $financialContact->getEmail()
-                        ) : $this->translate("txt-by-postal-mail")),
+                            === Financial::EMAIL_DELIVERY) ? sprintf(
+                        $this->translate("txt-by-email-to-%s"),
+                        $financialContact->getEmail()
+                    ) : $this->translate("txt-by-postal-mail")),
 
                 ],
             ];
@@ -318,7 +304,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $totalDueBasedOnProjectData = 0;
         foreach ($this->getProjectService()->parseYearRange($project, false, $affiliation) as $projectYear) {
             $dueFactor = $this->getAffiliationService()
-                ->parseContributionFactorDue($affiliation, $projectYear, $year, $period);
+                              ->parseContributionFactorDue($affiliation, $projectYear, $year, $period);
 
             $yearData = [];
 
@@ -326,9 +312,9 @@ class RenderPaymentSheet extends AbstractPlugin
 
             if ($this->getAffiliationService()->isSelfFunded($affiliation)) {
                 $yearData[] = $this->translate("txt-self-funded");
-            } elseif (! is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
+            } elseif ( ! is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
                 $yearData[] = $this->getAffiliationService()->getFundingInYear($affiliation, $projectYear)->getStatus()
-                    ->getStatusFunding();
+                                   ->getStatusFunding();
             } else {
                 $yearData[] = "-";
             }
@@ -336,7 +322,8 @@ class RenderPaymentSheet extends AbstractPlugin
             if ($invoiceMethod->getId() === Method::METHOD_PERCENTAGE) {
                 if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
                     $dueInYear  = $versionContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()
-                            ->findProjectFeeByYear($projectYear)->getPercentage();
+                                                                                                   ->findProjectFeeByYear($projectYear)
+                                                                                                   ->getPercentage();
                     $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
                 } else {
                     $dueInYear  = 0;
@@ -346,7 +333,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
                     $yearData[] = $this->parsePercent(
                         $this->getProjectService()->findProjectFeeByYear($projectYear)
-                            ->getPercentage()
+                             ->getPercentage()
                     );
                 } else {
                     $yearData[] = $this->parsePercent(0);
@@ -354,7 +341,8 @@ class RenderPaymentSheet extends AbstractPlugin
             } else {
                 if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
                     $dueInYear  = $versionContributionInformation->effort[$projectYear] * $this->getProjectService()
-                            ->findProjectFeeByYear($projectYear)->getContribution();
+                                                                                               ->findProjectFeeByYear($projectYear)
+                                                                                               ->getContribution();
                     $yearData[] = $this->parseEffort($versionContributionInformation->effort[$projectYear]);
                 } else {
                     $dueInYear  = 0;
@@ -364,7 +352,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
                     $yearData[] = $this->parseCost(
                         $this->getProjectService()->findProjectFeeByYear($projectYear)
-                            ->getContribution()
+                             ->getContribution()
                     );
                 } else {
                     $yearData[] = $this->parseCost(0);
@@ -402,7 +390,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable($header, $fundingDetails, [15, 25, 35, 25, 25, 25, 35], true);
 
         $contributionDue  = $this->getAffiliationService()
-            ->parseContributionDue($affiliation, $latestVersion, $year, $period);
+                                 ->parseContributionDue($affiliation, $latestVersion, $year, $period);
         $contributionPaid = $this->getAffiliationService()->parseContributionPaid($affiliation, $year, $period);
 
         $balance      = $this->getAffiliationService()->parseBalance($affiliation, $latestVersion, $year, $period);
@@ -441,9 +429,9 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $previousInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if (! is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
-                && ($affiliationInvoice->getYear() < $year
-                    || ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() < $period))
+            if ( ! is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
+                 && ($affiliationInvoice->getYear() < $year
+                     || ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() < $period))
             ) {
                 $previousInvoices[] = $affiliationInvoice;
             }
@@ -466,7 +454,9 @@ class RenderPaymentSheet extends AbstractPlugin
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
                     $this->parseCost($this->getInvoiceService()->parseSumAmount($affiliationInvoice->getInvoice())),
                     (! is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
-                        ->getBookingDate()->format('d-m-Y') : ''),
+                                                                                                         ->getBookingDate()
+                                                                                                         ->format('d-m-Y')
+                        : ''),
                     $this->parseCost($this->getInvoiceService()->parseTotal($affiliationInvoice->getInvoice())),
                 ];
             }
@@ -548,7 +538,7 @@ class RenderPaymentSheet extends AbstractPlugin
                     $this->translate("txt-%s-contribution-for-%s"),
                     $this->parsePercent(
                         $this->getAffiliationService()
-                            ->parseContributionFactor($affiliation, $year, $period) * 100
+                             ->parseContributionFactor($affiliation, $year, $period) * 100
                     ),
                     $year
                 ),
@@ -584,10 +574,10 @@ class RenderPaymentSheet extends AbstractPlugin
         $upcomingInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
             if ($affiliationInvoice->getYear() > $year
-                || $affiliationInvoice->getYear() === $year
-                && $affiliationInvoice->getPeriod() > $period
+                || ($affiliationInvoice->getYear() === $year
+                    && $affiliationInvoice->getPeriod() > $period)
             ) {
-                if (! is_null($affiliationInvoice->getInvoice()->getDateSent())) {
+                if ( ! is_null($affiliationInvoice->getInvoice()->getDateSent())) {
                     $upcomingInvoices[] = $affiliationInvoice;
                 }
             }
@@ -624,7 +614,9 @@ class RenderPaymentSheet extends AbstractPlugin
                     sprintf("%s-%s", $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
                     (! is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
-                        ->getBookingDate()->format('d-m-Y') : ''),
+                                                                                                         ->getBookingDate()
+                                                                                                         ->format('d-m-Y')
+                        : ''),
                     $this->parseCost($this->getInvoiceService()->parseSumAmount($affiliationInvoice->getInvoice())),
                     $this->parseCost($this->getInvoiceService()->parseTotal($affiliationInvoice->getInvoice())),
                 ];
@@ -635,91 +627,6 @@ class RenderPaymentSheet extends AbstractPlugin
 
 
         return $pdf;
-    }
-
-    /**
-     * Gateway to the Project Service.
-     *
-     * @return ProjectService
-     */
-    public function getProjectService()
-    {
-        return $this->getServiceLocator()->get(ProjectService::class);
-    }
-
-    /**
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * @param ServiceLocatorInterface $serviceLocator
-     *
-     * @return $this
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-
-        return $this;
-    }
-
-    /**
-     * Gateway to the Affiliation Service.
-     *
-     * @return AffiliationService
-     */
-    public function getAffiliationService()
-    {
-        return $this->getServiceLocator()->get(AffiliationService::class);
-    }
-
-    /**
-     * Gateway to the Version Service.
-     *
-     * @return VersionService
-     */
-    public function getVersionService()
-    {
-        return $this->getServiceLocator()->get(VersionService::class);
-    }
-
-    /**
-     * Gateway to the Invoice Service.
-     *
-     * @return InvoiceService
-     */
-    public function getInvoiceService()
-    {
-        return $this->getServiceLocator()->get(InvoiceService::class);
-    }
-
-    /**
-     * @return ModuleOptions
-     */
-    public function getModuleOptions()
-    {
-        return $this->getServiceLocator()->get(ModuleOptions::class);
-    }
-
-    /**
-     * Proxy for the flash messenger helper to have the string translated earlier.
-     *
-     * @param $string
-     *
-     * @return string
-     */
-    protected function translate($string)
-    {
-        /**
-         * @var $translate Translate
-         */
-        $translate = $this->getServiceLocator()->get('ViewHelperManager')->get('translate');
-
-        return $translate($string);
     }
 
     /**
@@ -740,26 +647,6 @@ class RenderPaymentSheet extends AbstractPlugin
     public function parseKiloCost($cost)
     {
         return sprintf("%s kEUR", number_format($cost / 1000, 0, '.', ','));
-    }
-
-    /**
-     * Gateway to the Contact Service.
-     *
-     * @return ContactService
-     */
-    public function getContactService()
-    {
-        return $this->getServiceLocator()->get(ContactService::class);
-    }
-
-    /**
-     * Gateway to the Organisation Service.
-     *
-     * @return OrganisationService
-     */
-    public function getOrganisationService()
-    {
-        return $this->getServiceLocator()->get(OrganisationService::class);
     }
 
     /**

@@ -60,10 +60,15 @@ class AffiliationLink extends LinkAbstract
             [
                 'name'                => $this->getAffiliation(),
                 'organisation'        => $this->getAffiliation()->getOrganisation()->getOrganisation(),
+                'parent-organisation' =>
+                    is_null($this->getAffiliation()->getParentOrganisation())
+                        ? 'Parent not known'
+                        : $this->getAffiliation()->getParentOrganisation()->getOrganisation(),
                 'organisation-branch' => $this->getAffiliation()->parseBranchedName(),
             ]
         );
-        if (! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
+
+        if ( ! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
             return $this->getAction() !== 'view-community' ? ''
                 : $this->getAffiliation()->getOrganisation()->getOrganisation();
         }

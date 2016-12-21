@@ -14,7 +14,9 @@ use Project\Acl\Assertion\Project as ProjectAssertion;
 use Zend\View\Model\ViewModel;
 
 /**
- * @category    Affiliation
+ * Class CommunityController
+ *
+ * @package Affiliation\Controller
  */
 class CommunityController extends AffiliationAbstractController
 {
@@ -99,18 +101,18 @@ class CommunityController extends AffiliationAbstractController
         $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period);
         $response           = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
-            ->addHeaderLine(
-                'Content-Disposition',
-                'attachment; filename="' . sprintf(
-                    "payment_sheet_%s_%s_%sH.pdf",
-                    $affiliation->getOrganisation()->getDocRef(),
-                    $year,
-                    $period
-                ) . '"'
-            )
-            ->addHeaderLine('Content-Type: application/pdf')
-            ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
+                 ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
+                 ->addHeaderLine(
+                     'Content-Disposition',
+                     'attachment; filename="' . sprintf(
+                         "payment_sheet_%s_%s_%sH.pdf",
+                         $affiliation->getOrganisation()->getDocRef(),
+                         $year,
+                         $period
+                     ) . '"'
+                 )
+                 ->addHeaderLine('Content-Type: application/pdf')
+                 ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
         $response->setContent($renderPaymentSheet->getPDFData());
 
         return $response;

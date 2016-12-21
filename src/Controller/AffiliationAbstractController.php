@@ -45,6 +45,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      Plugin\RenderPaymentSheet renderPaymentSheet()
  * @method      Plugin\RenderDoa renderDoa()
  * @method      Plugin\RenderLoi renderLoi()
+ * @method      Plugin\GetFilter getAffiliationFilter
  * @method      Plugin\MergeAffiliation mergeAffiliation($mainAffiliation, $affiliation)
  *
  */

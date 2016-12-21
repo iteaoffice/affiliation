@@ -45,6 +45,11 @@ return [
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/missing-affiliation-parent',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/edit-associate',
                     'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => AffiliationAssertion::class,

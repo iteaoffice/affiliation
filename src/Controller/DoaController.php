@@ -17,14 +17,14 @@ use Zend\Validator\File\FilesSize;
 use Zend\View\Model\ViewModel;
 
 /**
- * @category    Affiliation
+ * Class DoaController
+ *
+ * @package Affiliation\Controller
  */
 class DoaController extends AffiliationAbstractController
 {
     /**
-     * Upload a DOA for a project (based on the affiliation).
-     *
-     * @return ViewModel
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function uploadAction()
     {
@@ -93,14 +93,7 @@ class DoaController extends AffiliationAbstractController
     }
 
     /**
-     * Action to replace an mis-uploaded DoA.
-     *
-     * @return ViewModel
-     *
-     * @throws \Zend\Form\Exception\InvalidArgumentException
-     * @throws \InvalidArgumentException
-     * @throws \Zend\Mvc\Exception\DomainException
-     * @throws \Zend\Form\Exception\DomainException
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function replaceAction()
     {

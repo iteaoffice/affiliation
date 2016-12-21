@@ -24,6 +24,7 @@ class RenderDoa extends AbstractPlugin
      */
     public function renderProjectDoa(Doa $doa): AffiliationPdf
     {
+        /** @var \TCPDF $pdf */
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
         $pdf->AddPage();
@@ -52,10 +53,10 @@ class RenderDoa extends AbstractPlugin
         $ndaContent = $twig->render(
             'affiliation/pdf/doa-project',
             [
-            'contact'        => $doa->getContact(),
-            'project'        => $doa->getAffiliation()->getProject(),
-            'organisation'   => $doa->getAffiliation()->getOrganisation(),
-            'contactService' => $this->getContactService(),
+                'contact'        => $doa->getContact(),
+                'project'        => $doa->getAffiliation()->getProject(),
+                'organisation'   => $doa->getAffiliation()->getOrganisation(),
+                'contactService' => $this->getContactService(),
             ]
         );
         $pdf->writeHTMLCell(0, 0, 14, 85, $ndaContent);

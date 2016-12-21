@@ -51,15 +51,17 @@ $config = [
     ],
     'controller_plugins' => [
         'aliases'   => [
-            'renderPaymentSheet' => Controller\Plugin\RenderPaymentSheet::class,
-            'renderDoa'          => Controller\Plugin\RenderDoa::class,
-            'renderLoi'          => Controller\Plugin\RenderLoi::class,
-            'mergeAffiliation'   => Controller\Plugin\MergeAffiliation::class,
+            'renderPaymentSheet'   => Controller\Plugin\RenderPaymentSheet::class,
+            'renderDoa'            => Controller\Plugin\RenderDoa::class,
+            'renderLoi'            => Controller\Plugin\RenderLoi::class,
+            'getAffiliationFilter' => Controller\Plugin\GetFilter::class,
+            'mergeAffiliation'     => Controller\Plugin\MergeAffiliation::class,
         ],
         'factories' => [
             Controller\Plugin\RenderPaymentSheet::class => Controller\Factory\PluginFactory::class,
             Controller\Plugin\RenderDoa::class          => Controller\Factory\PluginFactory::class,
             Controller\Plugin\RenderLoi::class          => Controller\Factory\PluginFactory::class,
+            Controller\Plugin\GetFilter::class          => Controller\Factory\PluginFactory::class,
             Controller\Plugin\MergeAffiliation::class   => Controller\Factory\PluginFactory::class,
         ],
     ],

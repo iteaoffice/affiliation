@@ -59,8 +59,14 @@
             <dd>{{ organisationLink(organisation,'view-admin', 'name') }}
                 {{ affiliationLink(affiliation,'view-community', 'icon') }}
             </dd>
-            <dt>{{ translate("txt-branch") }}</dt>
-            <dd><code>{{ affiliation.branch }}</code></dd>
+            <dt>{{ translate("txt-parent-organisation-name") }}</dt>
+            <dd>{{ parentOrganisationLink(affiliation.parentOrganisation,'view', 'organisation') }}</dd>
+            <dt>{{ translate("txt-parent-name") }}</dt>
+            <dd>{{ parentLink(affiliation.parentOrganisation.parent,'view', 'parent') }}</dd>
+            {% if affiliation.branch %}
+                <dt>{{ translate("txt-branch") }}</dt>
+                <dd><code>{{ affiliation.branch }}</code></dd>
+            {% endif %}
             <dt>{{ translate("txt-branched-name") }}</dt>
             <dd>{{ affiliation.parseBranchedName() }}</dd>
 
@@ -316,72 +322,35 @@
 
 
         <h4>{{ translate("txt-costs-and-effort-overview") }}</h4>
-        {% if affiliation.version.count() > 0 %}
-            <table class="table table-hover table-striped table-condensed">
-                <thead>
-                <tr>
+        <table class="table table-hover table-striped table-condensed">
+            <thead>
+            <tr>
 
-                    <th></th>
-                    <th>{{ translate("txt-type") }}</th>
+                <th></th>
+                <th>{{ translate("txt-type") }}</th>
 
-                    {% for year in projectService.parseYearRange(project) %}
-                        <th>{{ year }}</th>
-                    {% endfor %}
-                    <th>{{ translate("txt-total") }}</th>
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for affiliationVersion in affiliation.version %}
-                    {% set version = affiliationVersion.version %}
-                    <tr>
-                        <th colspan="{{ 4 + projectService.parseYearRange(project)|length }}">{{ versionLink(version,'view-admin','description') }}</th>
-                    </tr>
-                    <tr>
-
-                        <td>{{ versionService.parseStatus(affiliationVersion.version) }}</td>
-                        <td>{{ translate("txt-effort") }}</td>
-
-                        {% for year in projectService.parseYearRange(project) %}
-                            {% set yearTotal = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, version)[year] %}
-                            <td>{{ yearTotal|parse_effort }}</td>
-                        {% endfor %}
-                        <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliation, version)|parse_effort }}</td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td></td>
-                        <td>{{ translate("txt-costs") }}</td>
-
-                        {% for year in projectService.parseYearRange(affiliation.project) %}
-
-                            {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
-
-                            <td>{{ yearTotal.costs|parse_cost }}</td>
-                        {% endfor %}
-                        <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
-                    </tr>
-
+                {% for year in projectService.parseYearRange(project) %}
+                    <th>{{ year }}</th>
                 {% endfor %}
-
+                <th>{{ translate("txt-total") }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for affiliationVersion in affiliation.version %}
+                {% set version = affiliationVersion.version %}
                 <tr>
-                    <th colspan="{{ 4 + projectService.parseYearRange(affiliation.project)|length }}">{{ translate("txt-draft") }}</th>
+                    <th colspan="{{ 4 + projectService.parseYearRange(project)|length }}">{{ versionLink(version,'view-admin','description') }}</th>
                 </tr>
                 <tr>
 
-                    <td></td>
+                    <td>{{ versionService.parseStatus(affiliationVersion.version) }}</td>
                     <td>{{ translate("txt-effort") }}</td>
 
-                    {% for year in projectService.parseYearRange(affiliation.project) %}
-
-
-                        {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
-
+                    {% for year in projectService.parseYearRange(project) %}
+                        {% set yearTotal = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, version)[year] %}
                         <td>{{ yearTotal|parse_effort }}</td>
                     {% endfor %}
-                    <td>{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</td>
+                    <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliation, version)|parse_effort }}</td>
 
                 </tr>
 
@@ -392,17 +361,61 @@
 
                     {% for year in projectService.parseYearRange(affiliation.project) %}
 
-                        {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliation)[year] %}
+                        {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
 
-                        <td>{{ yearTotal|parse_cost }}</td>
+                        <td>{{ yearTotal.costs|parse_cost }}</td>
                     {% endfor %}
-                    <td>{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</td>
+                    <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
                 </tr>
-                </tbody>
-            </table>
-        {% else %}
-            {{ ztbalert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
-        {% endif %}
+
+            {% endfor %}
+
+            <tr>
+                <th colspan="{{ 4 + projectService.parseYearRange(affiliation.project)|length }}">{{ translate("txt-draft") }}</th>
+            </tr>
+            <tr>
+
+                <td></td>
+                <td>{{ translate("txt-effort") }}</td>
+
+                {% for year in projectService.parseYearRange(affiliation.project) %}
+
+
+                    {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
+
+                    <td>{{ yearTotal|parse_effort }}</td>
+                {% endfor %}
+                <td>{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</td>
+
+            </tr>
+
+            <tr>
+                <td></td>
+                <td>{{ translate("txt-costs") }}</td>
+
+                {% for year in projectService.parseYearRange(affiliation.project) %}
+
+                    {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliation)[year] %}
+
+                    <td>{{ yearTotal|parse_cost }}</td>
+                {% endfor %}
+                <td>{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>{{ translate("txt-funding-national") }}</td>
+                <td colspan="{{ projectService.parseYearRange(affiliation.project)|length }}"></td>
+                <td>{{ projectService.findTotalFundingNationalByAffiliation(affiliation)|parse_funding }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>{{ translate("txt-funding-eu") }}</td>
+                <td colspan="{{ projectService.parseYearRange(affiliation.project)|length }}"></td>
+                <td>{{ projectService.findTotalFundingEuByAffiliation(affiliation)|parse_funding }}</td>
+            </tr>
+            </tbody>
+        </table>
+
 
         <h4>{{ translate("txt-funding") }}</h4>
 

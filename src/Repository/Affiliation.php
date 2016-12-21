@@ -76,6 +76,20 @@ class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return Query
+     */
+    public function findMissingAffiliationParent(): Query
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.parentOrganisation'));
+
+        return $qb->getQuery();
+    }
+
 
     /**
      * Returns affiliation_entity_affiliation list of affiliations which do not have an DOA.

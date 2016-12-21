@@ -27,7 +27,7 @@ return [
                         ],
                         'may_terminate' => false,
                         'child_routes'  => [
-                            'list'           => [
+                            'list'                       => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/list[/f-:encodedFilter][/page-:page].html',
@@ -37,7 +37,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'list-csv'       => [
+                            'list-csv'                   => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/list[/f-:encodedFilter].csv',
@@ -47,7 +47,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'view'           => [
+                            'view'                       => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/view/[:id].html',
@@ -57,7 +57,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'edit'           => [
+                            'edit'                       => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/edit/[:id].html',
@@ -67,7 +67,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'merge'          => [
+                            'merge'                      => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/merge/[:id].html',
@@ -77,7 +77,16 @@ return [
                                     ],
                                 ],
                             ],
-                            'edit-associate' => [
+                            'missing-affiliation-parent' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/missing-affiliation-parent[/f-:encodedFilter][/page-:page].html',
+                                    'defaults' => [
+                                        'action' => 'missing-affiliation-parent',
+                                    ],
+                                ],
+                            ],
+                            'edit-associate'             => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/edit-associate/affiliation-[:affiliation]/contact-[:contact].html',
@@ -87,7 +96,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'loi'            => [
+                            'loi'                        => [
                                 'type'          => 'Segment',
                                 'priority'      => 1000,
                                 'options'       => [
@@ -199,7 +208,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'doa'            => [
+                            'doa'                        => [
                                 'type'          => 'Segment',
                                 'priority'      => 1000,
                                 'options'       => [

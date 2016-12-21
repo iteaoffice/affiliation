@@ -10,23 +10,26 @@
 
 namespace Affiliation\Controller\Factory;
 
+use Affiliation\Controller\Plugin\AbstractPlugin;
 use Affiliation\Options\ModuleOptions;
 use Affiliation\Service\AffiliationService;
 use Contact\Service\ContactService;
 use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
-use Affiliation\Controller\Plugin\AbstractPlugin;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
+use Zend\Http\Request;
 use Zend\Mvc\Controller\PluginManager;
+use Zend\Router\Http\RouteMatch;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\View\HelperPluginManager;
 use ZfcTwig\View\TwigRenderer;
 
 /**
  * Class PluginFactory
+ *
  * @package Affiliation\Controller\Factory
  */
 final class PluginFactory implements FactoryInterface
@@ -46,6 +49,14 @@ final class PluginFactory implements FactoryInterface
         /** @var HelperPluginManager $helperPluginManager */
         $helperPluginManager = $container->get('ViewHelperManager');
         $plugin->setHelperPluginManager($helperPluginManager);
+
+        /** @var RouteMatch $routeMatch */
+        $routeMatch = $container->get('application')->getMvcEvent()->getRouteMatch();
+        $plugin->setRouteMatch($routeMatch);
+
+        /** @var Request $request */
+        $request = $container->get('application')->getMvcEvent()->getRequest();
+        $plugin->setRequest($request);
 
         /** @var AffiliationService $affiliationService */
         $affiliationService = $container->get(AffiliationService::class);

@@ -417,7 +417,7 @@
                             ) %}
                                 <i class="fa pull-left"></i>
                                 <a id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
-                                   href="#" class="funding" data-type="text"
+                                   href="#" class="workpackage" data-type="text"
                                    data-pk="{{ affiliation.id }},{{ workpackage.id }},{{ year }}"
                                    data-url="{{ url('json/update-effort') }}"
                                    data-title="{{ translate("txt-update-effort") }}">{{ effortInCurrentYear|parse_effort }}</a>
@@ -691,7 +691,7 @@
         //turn to inline mode
         $.fn.editable.defaults.mode = 'popup';
         $('.affiliation').editable();
-        $('.funding').editable();
+        $('.workpackage').editable();
     });
 
 </script>

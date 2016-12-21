@@ -1,12 +1,12 @@
 <?php
 /**
-* ITEA Office copyright message placeholder.
-*
-* @category    Affiliation
-*
-* @author      Johan van der Heide <johan.van.der.heide@itea3.org>
-* @copyright   Copyright (c) 2004-2016 ITEA Office (https://itea3.org)
-*/
+ * ITEA Office copyright message placeholder.
+ *
+ * @category    Affiliation
+ *
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2016 ITEA Office (https://itea3.org)
+ */
 
 namespace Affiliation\Controller\Plugin;
 
@@ -18,13 +18,16 @@ use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
+use Zend\Http\Request;
 use Zend\I18n\View\Helper\Translate;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin as ZendAbstractPlugin;
+use Zend\Router\Http\RouteMatch;
 use Zend\View\HelperPluginManager;
 use ZfcTwig\View\TwigRenderer;
 
 /**
  * Class AbstractPlugin
+ *
  * @package Affiliation\Controller\Plugin
  */
 class AbstractPlugin extends ZendAbstractPlugin
@@ -73,11 +76,18 @@ class AbstractPlugin extends ZendAbstractPlugin
      * @var ModuleOptions
      */
     protected $moduleOptions;
-
     /**
      * @var TwigRenderer
      */
     protected $twigRenderer;
+    /**
+     * @var RouteMatch
+     */
+    protected $routeMatch;
+    /**
+     * @var Request
+     */
+    protected $request;
 
     /**
      * @return HelperPluginManager
@@ -89,11 +99,13 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param HelperPluginManager $helperPluginManager
+     *
      * @return AbstractPlugin
      */
     public function setHelperPluginManager(HelperPluginManager $helperPluginManager): AbstractPlugin
     {
         $this->helperPluginManager = $helperPluginManager;
+
         return $this;
     }
 
@@ -107,11 +119,13 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param AffiliationService $affiliationService
+     *
      * @return AbstractPlugin
      */
     public function setAffiliationService(AffiliationService $affiliationService): AbstractPlugin
     {
         $this->affiliationService = $affiliationService;
+
         return $this;
     }
 
@@ -126,11 +140,13 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param ProjectService $projectService
+     *
      * @return AbstractPlugin
      */
     public function setProjectService(ProjectService $projectService): AbstractPlugin
     {
         $this->projectService = $projectService;
+
         return $this;
     }
 
@@ -152,21 +168,25 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param OrganisationService $organisationService
+     *
      * @return AbstractPlugin
      */
     public function setOrganisationService(OrganisationService $organisationService): AbstractPlugin
     {
         $this->organisationService = $organisationService;
+
         return $this;
     }
 
     /**
      * @param ContactService $contactService
+     *
      * @return AbstractPlugin
      */
     public function setContactService(ContactService $contactService): AbstractPlugin
     {
         $this->contactService = $contactService;
+
         return $this;
     }
 
@@ -180,11 +200,13 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param ModuleOptions $moduleOptions
+     *
      * @return AbstractPlugin
      */
     public function setModuleOptions(ModuleOptions $moduleOptions): AbstractPlugin
     {
         $this->moduleOptions = $moduleOptions;
+
         return $this;
     }
 
@@ -198,11 +220,13 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param GeneralService $generalService
+     *
      * @return AbstractPlugin
      */
     public function setGeneralService(GeneralService $generalService): AbstractPlugin
     {
         $this->generalService = $generalService;
+
         return $this;
     }
 
@@ -216,11 +240,13 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param TwigRenderer $twigRenderer
+     *
      * @return AbstractPlugin
      */
     public function setTwigRenderer(TwigRenderer $twigRenderer): AbstractPlugin
     {
         $this->twigRenderer = $twigRenderer;
+
         return $this;
     }
 
@@ -234,11 +260,13 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param VersionService $versionService
+     *
      * @return AbstractPlugin
      */
     public function setVersionService(VersionService $versionService): AbstractPlugin
     {
         $this->versionService = $versionService;
+
         return $this;
     }
 
@@ -252,23 +280,68 @@ class AbstractPlugin extends ZendAbstractPlugin
 
     /**
      * @param InvoiceService $invoiceService
+     *
      * @return AbstractPlugin
      */
     public function setInvoiceService(InvoiceService $invoiceService): AbstractPlugin
     {
         $this->invoiceService = $invoiceService;
+
         return $this;
     }
 
     /**
      * Translate a string
+     *
      * @param $string
+     *
      * @return string
      */
     protected function translate($string): string
     {
         /** @var Translate $translator */
         $translator = $this->getHelperPluginManager()->get('translate');
+
         return $translator ? $translator($string) : $string;
+    }
+
+    /**
+     * @return RouteMatch
+     */
+    public function getRouteMatch(): RouteMatch
+    {
+        return $this->routeMatch;
+    }
+
+    /**
+     * @param RouteMatch $routeMatch
+     *
+     * @return AbstractPlugin
+     */
+    public function setRouteMatch(RouteMatch $routeMatch): AbstractPlugin
+    {
+        $this->routeMatch = $routeMatch;
+
+        return $this;
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest(): Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return AbstractPlugin
+     */
+    public function setRequest(Request $request): AbstractPlugin
+    {
+        $this->request = $request;
+
+        return $this;
     }
 }

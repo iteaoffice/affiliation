@@ -172,6 +172,16 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $organisation;
     /**
+     * @ORM\ManyToOne(targetEntity="Organisation\Entity\Parent\Organisation", inversedBy="affiliation", cascade={"persist"})
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="parent_organisation_id", referencedColumnName="parent_organisation_id", nullable=true)
+     * })
+     * @Annotation\Exclude()
+     *
+     * @var \Organisation\Entity\Parent\Organisation|null
+     */
+    private $parentOrganisation;
+    /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Project", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="project_id", referencedColumnName="project_id", nullable=true)
@@ -267,13 +277,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $associate;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
-     *
-     * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
-     */
-    private $cost;
-    /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
@@ -281,12 +284,26 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $funding;
     /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
+     */
+    private $cost;
+    /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
      */
     private $effort;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funded", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Funding\Funded[]|Collections\ArrayCollection()
+     */
+    private $funded;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Spent", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -364,8 +381,9 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->log                      = new Collections\ArrayCollection();
         $this->version                  = new Collections\ArrayCollection();
         $this->associate                = new Collections\ArrayCollection();
-        $this->cost                     = new Collections\ArrayCollection();
         $this->funding                  = new Collections\ArrayCollection();
+        $this->cost                     = new Collections\ArrayCollection();
+        $this->funded                   = new Collections\ArrayCollection();
         $this->effort                   = new Collections\ArrayCollection();
         $this->spent                    = new Collections\ArrayCollection();
         $this->doaReminder              = new Collections\ArrayCollection();
@@ -383,7 +401,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @return array
      */
-    public static function getSelfFundedTemplates()
+    public static function getSelfFundedTemplates(): array
     {
         return self::$selfFundedTemplates;
     }
@@ -410,11 +428,21 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @param $property
+     *
+     * @return bool
+     */
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    /**
      * ToString.
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->parseBranchedName();
     }
@@ -422,8 +450,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * @return string
      */
-    public function parseBranchedName()
+    public function parseBranchedName(): string
     {
+        if ( ! is_null($this->getParentOrganisation())) {
+            return OrganisationService::parseBranch($this->getBranch(),
+                (string)$this->getParentOrganisation()->getOrganisation());
+        }
+
         return OrganisationService::parseBranch($this->getBranch(), (string)$this->getOrganisation());
     }
 
@@ -464,7 +497,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function addAssociate(Contact $contact)
     {
-        if (! $this->associate->contains($contact)) {
+        if ( ! $this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
@@ -991,6 +1024,46 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setStrategicImportance($strategicImportance)
     {
         $this->strategicImportance = $strategicImportance;
+
+        return $this;
+    }
+
+    /**
+     * @return null|\Organisation\Entity\Parent\Organisation
+     */
+    public function getParentOrganisation()
+    {
+        return $this->parentOrganisation;
+    }
+
+    /**
+     * @param null|\Organisation\Entity\Parent\Organisation $parentOrganisation
+     *
+     * @return Affiliation
+     */
+    public function setParentOrganisation($parentOrganisation)
+    {
+        $this->parentOrganisation = $parentOrganisation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Funding\Funded[]
+     */
+    public function getFunded()
+    {
+        return $this->funded;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Funding\Funded[] $funded
+     *
+     * @return Affiliation
+     */
+    public function setFunded($funded)
+    {
+        $this->funded = $funded;
 
         return $this;
     }

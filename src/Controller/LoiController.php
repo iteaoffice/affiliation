@@ -17,14 +17,14 @@ use Zend\Validator\File\FilesSize;
 use Zend\View\Model\ViewModel;
 
 /**
- * @category    Affiliation
+ * Class LoiController
+ *
+ * @package Affiliation\Controller
  */
 class LoiController extends AffiliationAbstractController
 {
-    /**
-     * Upload the LOI for a project (based on the affiliation).
-     *
-     * @return ViewModel
+    /***
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function uploadAction()
     {
@@ -61,20 +61,20 @@ class LoiController extends AffiliationAbstractController
                 $loi->setDateSigned(new \DateTime());
                 $loi->setContentType(
                     $this->getGeneralService()
-                        ->findContentTypeByContentTypeName($fileData['file']['type'])
+                         ->findContentTypeByContentTypeName($fileData['file']['type'])
                 );
                 $loi->setContact($this->zfcUserAuthentication()->getIdentity());
                 $loi->setAffiliation($affiliation);
                 $loiObject->setLoi($loi);
                 $this->getAffiliationService()->newEntity($loiObject);
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            _("txt-loi-for-organisation-%s-project-%s-has-been-uploaded"),
-                            $affiliation->getOrganisation(),
-                            $affiliation->getProject()
-                        )
-                    );
+                     ->addMessage(
+                         sprintf(
+                             _("txt-loi-for-organisation-%s-project-%s-has-been-uploaded"),
+                             $affiliation->getOrganisation(),
+                             $affiliation->getProject()
+                         )
+                     );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -94,14 +94,7 @@ class LoiController extends AffiliationAbstractController
     }
 
     /**
-     * Action to replace an mis-uploaded LoI.
-     *
-     * @return ViewModel
-     *
-     * @throws \Zend\Form\Exception\InvalidArgumentException
-     * @throws \InvalidArgumentException
-     * @throws \Zend\Mvc\Exception\DomainException
-     * @throws \Zend\Form\Exception\DomainException
+     * @return array|\Zend\Http\Response|ViewModel
      */
     public function replaceAction()
     {
@@ -120,11 +113,11 @@ class LoiController extends AffiliationAbstractController
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
                 return $this->redirect()
-                    ->toRoute(
-                        'community/affiliation/affiliation',
-                        ['id' => $loi->getAffiliation()->getId()],
-                        ['fragment' => 'details']
-                    );
+                            ->toRoute(
+                                'community/affiliation/affiliation',
+                                ['id' => $loi->getAffiliation()->getId()],
+                                ['fragment' => 'details']
+                            );
             }
 
             if ($form->isValid()) {
@@ -145,25 +138,25 @@ class LoiController extends AffiliationAbstractController
                 $loi->setDateSigned(new \DateTime());
                 $loi->setContentType(
                     $this->getGeneralService()
-                        ->findContentTypeByContentTypeName($fileData['file']['type'])
+                         ->findContentTypeByContentTypeName($fileData['file']['type'])
                 );
                 $affiliationLoiObject->setLoi($loi);
                 $this->getAffiliationService()->newEntity($affiliationLoiObject);
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-replaced"),
-                            $loi->getAffiliation()->getOrganisation(),
-                            $loi->getAffiliation()->getProject()
-                        )
-                    );
+                     ->addMessage(
+                         sprintf(
+                             _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-replaced"),
+                             $loi->getAffiliation()->getOrganisation(),
+                             $loi->getAffiliation()->getProject()
+                         )
+                     );
 
                 return $this->redirect()
-                    ->toRoute(
-                        'community/affiliation/affiliation',
-                        ['id' => $loi->getAffiliation()->getId()],
-                        ['fragment' => 'details']
-                    );
+                            ->toRoute(
+                                'community/affiliation/affiliation',
+                                ['id' => $loi->getAffiliation()->getId()],
+                                ['fragment' => 'details']
+                            );
             }
         }
 
@@ -190,10 +183,11 @@ class LoiController extends AffiliationAbstractController
         $renderProjectLoi = $this->renderLoi()->renderProjectLoi($programLoi);
         $response         = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
-            ->addHeaderLine('Content-Disposition', 'attachment; filename="' . $programLoi->parseFileName() . '.pdf"')
-            ->addHeaderLine('Content-Type: application/pdf')
-            ->addHeaderLine('Content-Length', strlen($renderProjectLoi->getPDFData()));
+                 ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
+                 ->addHeaderLine('Content-Disposition',
+                     'attachment; filename="' . $programLoi->parseFileName() . '.pdf"')
+                 ->addHeaderLine('Content-Type: application/pdf')
+                 ->addHeaderLine('Content-Length', strlen($renderProjectLoi->getPDFData()));
         $response->setContent($renderProjectLoi->getPDFData());
 
         return $response;
@@ -220,13 +214,13 @@ class LoiController extends AffiliationAbstractController
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine(
+                 ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine(
                 'Content-Disposition',
                 'attachment; filename="' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '"'
             )
-            ->addHeaderLine("Pragma: public")->addHeaderLine(
+                 ->addHeaderLine("Pragma: public")->addHeaderLine(
                 'Content-Type: ' . $loi->getContentType()
-                    ->getContentType()
+                                       ->getContentType()
             )->addHeaderLine('Content-Length: ' . $loi->getSize());
 
         return $this->response;

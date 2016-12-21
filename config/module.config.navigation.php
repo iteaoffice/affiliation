@@ -153,6 +153,11 @@ return [
                         'order' => 15,
                         'route' => 'zfcadmin/affiliation/list',
                     ],
+                    'missing-affiliation-parent' => [
+                        'label' => _("txt-nav-missing-affiliation-parent"),
+                        'order' => 20,
+                        'route' => 'zfcadmin/affiliation/missing-affiliation-parent',
+                    ],
                     'doa-approval'     => [
                         'label' => _("txt-nav-doa-approval"),
                         'order' => 80,

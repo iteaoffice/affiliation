@@ -1,3 +1,9 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-edit-contact-to-affiliation-%s-in-%s")|format(
+affiliation.parseBranchedName(),
+affiliation.project.parseFullName()
+)) %}
+
 <h1>{{ translate("txt-edit-contact-to-affiliation-%s-in-%s")|format(
     affiliation.parseBranchedName(),
     affiliation.project.parseFullName()

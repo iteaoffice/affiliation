@@ -73,14 +73,21 @@ class Version extends EntityAbstract
      * @var \Project\Entity\Effort\Version[]|ArrayCollection
      */
     private $effortVersion;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Version", cascade={"persist","remove"}, mappedBy="affiliationVersion")
+     *
+     * @var \Project\Entity\Funding\Version[]|ArrayCollection
+     */
+    private $fundingVersion;
 
     /**
      * Version constructor.
      */
     public function __construct()
     {
-        $this->costVersion   = new ArrayCollection();
-        $this->effortVersion = new ArrayCollection();
+        $this->costVersion    = new ArrayCollection();
+        $this->effortVersion  = new ArrayCollection();
+        $this->fundingVersion = new ArrayCollection();
     }
 
     /**
@@ -105,9 +112,19 @@ class Version extends EntityAbstract
     }
 
     /**
+     * @param $property
+     *
+     * @return bool
+     */
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf(
             "%s in %s (%s)",
@@ -233,6 +250,26 @@ class Version extends EntityAbstract
     public function setEffortVersion($effortVersion)
     {
         $this->effortVersion = $effortVersion;
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|\Project\Entity\Funding\Version[]
+     */
+    public function getFundingVersion()
+    {
+        return $this->fundingVersion;
+    }
+
+    /**
+     * @param ArrayCollection|\Project\Entity\Funding\Version[] $fundingVersion
+     *
+     * @return Version
+     */
+    public function setFundingVersion($fundingVersion)
+    {
+        $this->fundingVersion = $fundingVersion;
 
         return $this;
     }
