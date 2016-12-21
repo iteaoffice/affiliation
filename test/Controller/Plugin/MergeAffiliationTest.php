@@ -10,6 +10,7 @@
 
 namespace AffiliationTest\Service;
 
+use Admin\Service\AdminService;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Controller\Plugin\MergeAffiliation;
 use Affiliation\Entity\Invoice;
@@ -19,6 +20,8 @@ use Affiliation\Service\AffiliationService;
 use ApplicationTest\Util\AbstractServiceTest;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Project\Entity\Achievement;
 use Project\Entity\ChangeRequest\CostChange;
@@ -31,7 +34,6 @@ use Project\Entity\Version\Version as ProjectVersion;
 use Project\Entity\Effort\Effort;
 use Project\Entity\Workpackage\Workpackage;
 use Project\Entity\Log as ProjectLog;
-use Project\Service\ProjectService;
 
 /**
  * Class MergeAffiliationTest
@@ -56,68 +58,62 @@ class MergeAffiliationTest extends AbstractServiceTest
         $this->mainAffiliation = $this->createMainAffiliation();
         $this->otherAffiliation = $this->createOtherAffiliation();
         $this->mergeAffiliation = new MergeAffiliation();
-        // Set same mocked affiliation service for all tests
-        $this->mergeAffiliation->setAffiliationService($this->setUpAffiliationServiceMock());
     }
 
     /**
      * Test merging of entities that are not affected by the chosen merge strategy
-     * @covers \Affiliation\Controller\Plugin\MergeAffiliation::__invoke
-     * @covers \Affiliation\Controller\Plugin\AbstractPlugin::setAffiliationService
-     * @covers \Affiliation\Controller\Plugin\AbstractPlugin::getAffiliationService
-     * @covers \Affiliation\Controller\Plugin\AbstractPlugin::setProjectService
-     * @covers \Affiliation\Controller\Plugin\AbstractPlugin::getProjectService
+     * @covers \Affiliation\Controller\Plugin\MergeAffiliation
      */
     public function testMergeAffiliationGeneral()
     {
         $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
-        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
+        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
+        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
         // Run the merge
-        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
-
-        $this->assertEquals($this->mainAffiliation->getId(), $mergedAffiliation->getId());
+        $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $this->assertEquals(true, $response['success']);
 
         // Assert achievements
         /** @var Achievement $achievement */
-        $achievement = $mergedAffiliation->getAchievement()->first();
+        $achievement = $this->mainAffiliation->getAchievement()->first();
         $this->assertInstanceOf(Achievement::class, $achievement);
         $this->assertEquals(1, $achievement->getId());
 
         // Assert cost changes
         /** @var CostChange $costChange */
-        $costChange = $mergedAffiliation->getChangeRequestCostChange()->first();
+        $costChange = $this->mainAffiliation->getChangeRequestCostChange()->first();
         $this->assertInstanceOf(CostChange::class, $costChange);
         $this->assertEquals(1, $costChange->getId());
 
         // Assert report effort spent
         /** @var EffortSpent $reportEffortSpent */
-        $reportEffortSpent = $mergedAffiliation->getProjectReportEffortSpent()->first();
+        $reportEffortSpent = $this->mainAffiliation->getProjectReportEffortSpent()->first();
         $this->assertInstanceOf(EffortSpent::class, $reportEffortSpent);
         $this->assertEquals(1, $reportEffortSpent->getId());
 
         // Assert project log
         /** @var ProjectLog $projectLog */
-        $projectLog = $mergedAffiliation->getProjectLog()->first();
+        $projectLog = $this->mainAffiliation->getProjectLog()->first();
         $this->assertInstanceOf(ProjectLog::class, $projectLog);
         $this->assertEquals(1, $projectLog->getId());
 
         // Assert affiliation log
         /** @var AffiliationLog $affiliationLog */
-        $affiliationLog = $mergedAffiliation->getLog()->first();
+        $affiliationLog = $this->mainAffiliation->getLog()->first();
         $this->assertInstanceOf(AffiliationLog::class, $affiliationLog);
         $this->assertEquals(1, $affiliationLog->getId());
 
         // Assert invoices
         /** @var Invoice $invoice */
-        $invoice = $mergedAffiliation->getInvoice()->first();
+        $invoice = $this->mainAffiliation->getInvoice()->first();
         $this->assertInstanceOf(Invoice::class, $invoice);
         $this->assertEquals(1, $invoice->getId());
 
         // Assert associates
         /** @var Contact $associate */
-        $associate = $mergedAffiliation->getAssociate()->first();
+        $associate = $this->mainAffiliation->getAssociate()->first();
         $this->assertInstanceOf(Contact::class, $associate);
         $this->assertEquals(1, $associate->getId());
     }
@@ -130,27 +126,29 @@ class MergeAffiliationTest extends AbstractServiceTest
     {
         $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_SUM;
-        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
+        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
+        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
         // Run the merge
-        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $this->assertEquals(true, $response['success']);
 
         // Assert cost
-        $cost = $mergedAffiliation->getCost();
+        $cost = $this->mainAffiliation->getCost();
         $this->assertInstanceOf(Cost::class, $cost->first());
         $this->assertEquals(30, $cost->first()->getCosts());
         $this->assertInstanceOf(Cost::class, $cost->get(1));
         $this->assertEquals(40, $cost->get(1)->getCosts());
 
         // Assert effort
-        $effort = $mergedAffiliation->getEffort();
+        $effort = $this->mainAffiliation->getEffort();
         $this->assertInstanceOf(Effort::class, $effort->first());
         $this->assertEquals(1.50, $effort->first()->getEffort());
         $this->assertInstanceOf(Effort::class, $effort->get(1));
         $this->assertEquals(1.00, $effort->get(1)->getEffort());
 
         // Assert effort spent
-        $effortSpent = $mergedAffiliation->getSpent();
+        $effortSpent = $this->mainAffiliation->getSpent();
         $this->assertInstanceOf(Spent::class, $effortSpent->first());
         $this->assertEquals(1.00, $effortSpent->first()->getEffort());
         $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
@@ -158,7 +156,7 @@ class MergeAffiliationTest extends AbstractServiceTest
 
         // Assert version cost & effort
         /** @var AffiliationVersion $affiliationVersion1 */
-        $affiliationVersion1 = $mergedAffiliation->getVersion()->get(0);
+        $affiliationVersion1 = $this->mainAffiliation->getVersion()->get(0);
         $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
 
         /** @var CostVersion $costVersion1 */
@@ -182,7 +180,7 @@ class MergeAffiliationTest extends AbstractServiceTest
         $this->assertEquals(0.20, $effortVersion2->getEffort());
 
         /** @var AffiliationVersion $affiliationVersion2 */
-        $affiliationVersion2 = $mergedAffiliation->getVersion()->get(1);
+        $affiliationVersion2 = $this->mainAffiliation->getVersion()->get(1);
         $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
 
         /** @var CostVersion $costVersion3 */
@@ -204,27 +202,29 @@ class MergeAffiliationTest extends AbstractServiceTest
     {
         $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
-        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
+        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
+        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
         // Run the merge
-        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $this->assertEquals(true, $response['success']);
 
         // Assert cost
-        $cost = $mergedAffiliation->getCost();
+        $cost = $this->mainAffiliation->getCost();
         $this->assertInstanceOf(Cost::class, $cost->first());
         $this->assertEquals(10, $cost->first()->getCosts());
         $this->assertInstanceOf(Cost::class, $cost->get(1));
         $this->assertEquals(40, $cost->get(1)->getCosts());
 
         // Assert effort
-        $effort = $mergedAffiliation->getEffort();
+        $effort = $this->mainAffiliation->getEffort();
         $this->assertInstanceOf(Effort::class, $effort->first());
         $this->assertEquals(0.50, $effort->first()->getEffort());
         $this->assertInstanceOf(Effort::class, $effort->get(1));
         $this->assertEquals(1.00, $effort->get(1)->getEffort());
 
         // Assert effort spent
-        $effortSpent = $mergedAffiliation->getSpent();
+        $effortSpent = $this->mainAffiliation->getSpent();
         $this->assertInstanceOf(Spent::class, $effortSpent->first());
         $this->assertEquals(0.40, $effortSpent->first()->getEffort());
         $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
@@ -232,7 +232,7 @@ class MergeAffiliationTest extends AbstractServiceTest
 
         // Assert version cost & effort
         /** @var AffiliationVersion $affiliationVersion1 */
-        $affiliationVersion1 = $mergedAffiliation->getVersion()->get(0);
+        $affiliationVersion1 = $this->mainAffiliation->getVersion()->get(0);
         $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
 
         // Affiliation version 1
@@ -258,7 +258,7 @@ class MergeAffiliationTest extends AbstractServiceTest
 
         // Affiliation version 2
         /** @var AffiliationVersion $affiliationVersion2 */
-        $affiliationVersion2 = $mergedAffiliation->getVersion()->get(1);
+        $affiliationVersion2 = $this->mainAffiliation->getVersion()->get(1);
         $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
 
         /** @var CostVersion $costVersion3 */
@@ -280,27 +280,29 @@ class MergeAffiliationTest extends AbstractServiceTest
     {
         $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_USE_OTHER;
-        $mergeAffiliation->setProjectService($this->setUpProjectServiceMock($strategy));
+        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
+        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
         // Run the merge
-        $mergedAffiliation = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $this->assertEquals(true, $response['success']);
 
         // Assert cost
-        $cost = $mergedAffiliation->getCost();
+        $cost = $this->mainAffiliation->getCost();
         $this->assertInstanceOf(Cost::class, $cost->first());
         $this->assertEquals(20, $cost->first()->getCosts());
         $this->assertInstanceOf(Cost::class, $cost->get(1));
         $this->assertEquals(40, $cost->get(1)->getCosts());
 
         // Assert effort
-        $effort = $mergedAffiliation->getEffort();
+        $effort = $this->mainAffiliation->getEffort();
         $this->assertInstanceOf(Effort::class, $effort->first());
         $this->assertEquals(1.00, $effort->first()->getEffort());
         $this->assertInstanceOf(Effort::class, $effort->get(1));
         $this->assertEquals(1.00, $effort->get(1)->getEffort());
 
         // Assert effort spent
-        $effortSpent = $mergedAffiliation->getSpent();
+        $effortSpent = $this->mainAffiliation->getSpent();
         $this->assertInstanceOf(Spent::class, $effortSpent->first());
         $this->assertEquals(0.60, $effortSpent->first()->getEffort());
         $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
@@ -308,7 +310,7 @@ class MergeAffiliationTest extends AbstractServiceTest
 
         // Assert version cost & effort
         /** @var AffiliationVersion $affiliationVersion1 */
-        $affiliationVersion1 = $mergedAffiliation->getVersion()->get(0);
+        $affiliationVersion1 = $this->mainAffiliation->getVersion()->get(0);
         $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
 
         // Affiliation version 1
@@ -334,7 +336,7 @@ class MergeAffiliationTest extends AbstractServiceTest
 
         // Affiliation version 2
         /** @var AffiliationVersion $affiliationVersion2 */
-        $affiliationVersion2 = $mergedAffiliation->getVersion()->get(1);
+        $affiliationVersion2 = $this->mainAffiliation->getVersion()->get(1);
         $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
 
         /** @var CostVersion $costVersion3 */
@@ -346,6 +348,22 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortVersion3 = $affiliationVersion2->getEffortVersion()->get(0);
         $this->assertInstanceOf(EffortVersion::class, $effortVersion3);
         $this->assertEquals(0.40, $effortVersion3->getEffort());
+    }
+
+    /**
+     * Test merging two affiliations during which an exception occurs
+     * @covers \Affiliation\Controller\Plugin\MergeAffiliation::__invoke
+     */
+    public function testMergeAffiliationException()
+    {
+        $mergeAffiliation = $this->mergeAffiliation;
+        $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
+        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy, true));
+
+        // Run the merge
+        $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
+        $this->assertEquals(false, $response['success']);
+        $this->assertEquals('Oops!', $response['errorMessage']);
     }
 
     /**
@@ -610,23 +628,56 @@ class MergeAffiliationTest extends AbstractServiceTest
     }
 
     /**
-     * Set up the project service mock object with expectations depending on the chosen merge strategy.
+     * Set up the admin service mock object.
      *
-     * @param integer $strategy
-     * @return ProjectService|MockObject
+     * @return AdminService|MockObject
      */
-    private function setUpProjectServiceMock(int $strategy): MockObject
+    private function setUpAdminServiceMock(): MockObject
     {
-        $projectServiceMock =  $this->getMockBuilder(ProjectService::class)
-            ->setMethods(['updateEntity', 'removeEntity'])
+        $adminServiceMock = $this->getMockBuilder(AdminService::class)
+            ->setMethods(['flushPermitsByEntityAndId'])
             ->getMock();
 
+        $adminServiceMock->expects($this->exactly(1))
+            ->method('flushPermitsByEntityAndId')
+            ->with(
+                $this->identicalTo($this->mainAffiliation->get('underscore_entity_name')),
+                $this->identicalTo($this->mainAffiliation->getId())
+            )
+            ->will($this->returnValue(true));
+
+        return $adminServiceMock;
+    }
+
+    /**
+     * Set up the entity manager mock object with expectations depending on the chosen merge strategy.
+     *
+     * @param integer $strategy
+     * @param bool $throwException
+     * @return EntityManager|MockObject
+     */
+    private function setUpEntityManagerMock(int $strategy, $throwException = false): MockObject
+    {
+        $entityManagerMock = $this->getMockBuilder(EntityManager::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['persist', 'remove', 'flush'])
+            ->getMock();
+
+        // Short circuit when an exception should be thrown
+        if ($throwException) {
+            $exception = new ORMException('Oops!');
+            $entityManagerMock->expects($this->any())->method('persist')->will($this->throwException($exception));
+            $entityManagerMock->expects($this->any())->method('remove')->will($this->throwException($exception));
+            $entityManagerMock->expects($this->any())->method('flush')->will($this->throwException($exception));
+
+            return $entityManagerMock;
+        }
+
+        // Setup the parameters depending on merge strategy
         $params = [];
-        $calls = 0;
         switch ($strategy) {
             case MergeAffiliation::STRATEGY_SUM:
             case MergeAffiliation::STRATEGY_USE_OTHER:
-                $calls = 14;
                 $params = [
                     [$this->identicalTo($this->mainAffiliation->getCost()->first())],
                     [$this->identicalTo($this->otherAffiliation->getCost()->get(1))],
@@ -638,67 +689,54 @@ class MergeAffiliationTest extends AbstractServiceTest
                     [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
                     [$this->identicalTo($this->mainAffiliation->getVersion()->first()->getEffortVersion()->first())],
                     [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getVersion()->get(1))],
                     [$this->identicalTo($this->otherAffiliation->getAchievement()->first())],
                     [$this->identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
                     [$this->identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
-                    [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())]
+                    [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getLog()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getInvoice()->first())],
+                    [$this->identicalTo($this->mainAffiliation)]
                 ];
                 break;
             case MergeAffiliation::STRATEGY_USE_MAIN:
-                $calls = 9;
                 $params = [
                     [$this->identicalTo($this->otherAffiliation->getCost()->get(1))],
                     [$this->identicalTo($this->otherAffiliation->getEffort()->get(1))],
                     [$this->identicalTo($this->otherAffiliation->getSpent()->get(1))],
                     [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
                     [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
+                    [$this->identicalTo($this->otherAffiliation->getVersion()->get(1))],
                     [$this->identicalTo($this->otherAffiliation->getAchievement()->first())],
                     [$this->identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
                     [$this->identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
-                    [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())]
+                    [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getLog()->first())],
+                    [$this->identicalTo($this->otherAffiliation->getInvoice()->first())],
+                    [$this->identicalTo($this->mainAffiliation)]
                 ];
                 break;
         }
 
-        $projectServiceMock->expects($this->exactly($calls))
-            ->method('updateEntity')
-            ->withConsecutive(...$params)
-            ->will($this->returnArgument(0));
+        $entityManagerMock->expects($this->exactly(count($params)))
+            ->method('persist')
+            ->withConsecutive(...$params);
 
-        return $projectServiceMock;
-    }
+        $params = [
+            [$this->identicalTo($this->otherAffiliation->getCost()->first())],
+            [$this->identicalTo($this->otherAffiliation->getEffort()->first())],
+            [$this->identicalTo($this->otherAffiliation->getSpent()->first())],
+            [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->first())],
+            [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->first())],
+            [$this->identicalTo($this->otherAffiliation->getVersion()->first())],
+            [$this->identicalTo($this->otherAffiliation)]
+        ];
+        $entityManagerMock->expects($this->exactly(count($params)))
+            ->method('remove')
+            ->withConsecutive(...$params);
 
-    /**
-     * Set up the affiliation service mock object and expectations
-     *
-     * @return AffiliationService|MockObject
-     */
-    private function setUpAffiliationServiceMock(): MockObject
-    {
-        $affiliationServiceMock = $this->getMockBuilder(AffiliationService::class)
-            ->setMethods(['updateEntity', 'removeEntity'])
-            ->getMock();
+        $entityManagerMock->expects($this->once())->method('flush');
 
-        // Expect 2 removals
-        $affiliationServiceMock->expects($this->exactly(2))
-            ->method('removeEntity')
-            ->withConsecutive(
-                [$this->isInstanceOf(AffiliationVersion::class)],
-                [$this->identicalTo($this->otherAffiliation)]
-            )
-            ->will($this->returnValue(true));
-
-        // Expect 3 updates
-        $affiliationServiceMock->expects($this->exactly(4))
-            ->method('updateEntity')
-            ->withConsecutive(
-                [$this->isInstanceOf(AffiliationVersion::class)],
-                [$this->identicalTo($this->otherAffiliation->getLog()->first())],
-                [$this->identicalTo($this->otherAffiliation->getInvoice()->first())],
-                [$this->identicalTo($this->mainAffiliation)]
-            )
-            ->will($this->returnArgument(0));
-
-        return $affiliationServiceMock;
+        return $entityManagerMock;
     }
 }

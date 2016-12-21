@@ -10,9 +10,12 @@
 
 namespace Affiliation\Controller\Factory;
 
+use Admin\Service\AdminService;
+use Affiliation\Controller\Plugin\MergeAffiliation;
 use Affiliation\Options\ModuleOptions;
 use Affiliation\Service\AffiliationService;
 use Contact\Service\ContactService;
+use Doctrine\ORM\EntityManager;
 use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Affiliation\Controller\Plugin\AbstractPlugin;
@@ -82,6 +85,17 @@ final class PluginFactory implements FactoryInterface
         /** @var TwigRenderer $twigRenderer */
         $twigRenderer = $container->get('ZfcTwigRenderer');
         $plugin->setTwigRenderer($twigRenderer);
+
+        // Merge affiliation plugin has specific dependencies
+        if ($plugin instanceof MergeAffiliation) {
+            /** @var EntityManager $entityManager */
+            $entityManager = $container->get(EntityManager::class);
+            /** @var MergeAffiliation $plugin */
+            $plugin->setEntityManager($entityManager);
+            /** @var AdminService $adminService */
+            $adminService = $container->get(AdminService::class);
+            $plugin->setAdminService($adminService);
+        }
 
         return $plugin;
     }
