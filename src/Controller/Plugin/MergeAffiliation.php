@@ -15,14 +15,18 @@
 
 namespace Affiliation\Controller\Plugin;
 
+use Admin\Service\AdminService;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Version as AffiliationVersion;
-use Program\Version\Version as ProjectVersion;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMException;
 use Project\Entity\Cost\Version as CostVersion;
 use Project\Entity\Effort\Version as EffortVersion;
+use Project\Entity\Version\Version as ProjectVersion;
 
 /**
  * Class MergeAffiliation
+ *
  * @package Affiliation\Controller\Plugin
  */
 class MergeAffiliation extends AbstractPlugin
@@ -52,101 +56,122 @@ class MergeAffiliation extends AbstractPlugin
      */
     protected $debug = [];
 
+    /**
+     * @var AdminService
+     */
+    protected $adminService;
+
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
 
     /**
      * MergeAffiliation magic invokable
      *
      * @param Affiliation $mainAffiliation
      * @param Affiliation $otherAffiliation
-     * @param int $costAndEffortStrategy
+     * @param int         $costAndEffortStrategy
      *
-     * @return Affiliation
+     * @return array
      */
     public function __invoke(
         Affiliation $mainAffiliation,
         Affiliation $otherAffiliation,
         int $costAndEffortStrategy = self::STRATEGY_SUM
-    ): Affiliation {
-
+    ): array {
         $this->setMainAffiliation($mainAffiliation);
         $this->setOtherAffiliation($otherAffiliation);
         $this->setCostAndEffortStrategy($costAndEffortStrategy);
 
-        // Step 1: Transfer cost
-        $this->transferCost();
+        $response = ['success' => true, 'errorMessage' => ''];
 
-        // Step 2: Transfer effort
-        $this->transferEffort();
+        try {
+            // Step 1: Transfer cost
+            $this->transferCost();
 
-        // Step 3: Transfer the effort spent
-        $this->transferEffortSpent();
+            // Step 2: Transfer effort
+            $this->transferEffort();
 
-        // Step 4: Transfer affiliation versions incl. version cost and version effort
-        $this->transferAffiliationVersions();
+            // Step 3: Transfer the effort spent
+            $this->transferEffortSpent();
 
-        // Step 5: Move the achievements
-        foreach ($otherAffiliation->getAchievement() as $key => $achievement) {
-            $achievement->getAffiliation()->add($mainAffiliation);
-            $achievement->getAffiliation()->removeElement($otherAffiliation);
-            $this->getProjectService()->updateEntity($achievement);
-            $mainAffiliation->getAchievement()->add($achievement);
-            $otherAffiliation->getAchievement()->remove($key);
-        }
+            // Step 4: Transfer affiliation versions incl. version cost and version effort
+            $this->transferAffiliationVersions();
 
-        // Step 6: Move the cost changes
-        foreach ($otherAffiliation->getChangeRequestCostChange() as $key => $costChange) {
-            $costChange->setAffiliation($mainAffiliation);
-            $this->getProjectService()->updateEntity($costChange);
-            $mainAffiliation->getChangeRequestCostChange()->add($costChange);
-            $otherAffiliation->getChangeRequestCostChange()->remove($key);
-        }
-
-        // Step 7: Move the effort spent from the PPR
-        foreach ($otherAffiliation->getProjectReportEffortSpent() as $key => $reportEffortSpent) {
-            $reportEffortSpent->setAffiliation($mainAffiliation);
-            $this->getProjectService()->updateEntity($reportEffortSpent);
-            $mainAffiliation->getProjectReportEffortSpent()->add($reportEffortSpent);
-            $otherAffiliation->getProjectReportEffortSpent()->remove($key);
-        }
-
-        // Step 8: Move the dedicated project logs
-        foreach ($otherAffiliation->getProjectLog() as $key => $projectLog) {
-            $projectLog->getAffiliation()->add($mainAffiliation);
-            $projectLog->getAffiliation()->removeElement($otherAffiliation);
-            $this->getProjectService()->updateEntity($projectLog);
-            $mainAffiliation->getProjectLog()->add($projectLog);
-            $otherAffiliation->getProjectLog()->remove($key);
-        }
-
-        // Step 9: Move the affiliation logs
-        foreach ($otherAffiliation->getLog() as $key => $affiliationLog) {
-            $affiliationLog->setAffiliation($mainAffiliation);
-            $this->getAffiliationService()->updateEntity($affiliationLog);
-            $mainAffiliation->getLog()->add($affiliationLog);
-            $otherAffiliation->getLog()->remove($key);
-        }
-
-        // Step 10: Move the invoices
-        foreach ($otherAffiliation->getInvoice() as $key => $invoice) {
-            $invoice->setAffiliation($mainAffiliation);
-            $this->getAffiliationService()->updateEntity($invoice);
-            $mainAffiliation->getInvoice()->add($invoice);
-            $otherAffiliation->getInvoice()->remove($key);
-        }
-
-        // Step 10: Move the associates
-        foreach ($otherAffiliation->getAssociate() as $key => $associate) {
-            if (!$mainAffiliation->getAssociate()->contains($associate)) {
-                $this->getAffiliationService()->updateEntity($mainAffiliation);
-                $mainAffiliation->getAssociate()->add($associate);
+            // Step 5: Move the achievements
+            foreach ($otherAffiliation->getAchievement() as $key => $achievement) {
+                $achievement->getAffiliation()->add($mainAffiliation);
+                $achievement->getAffiliation()->removeElement($otherAffiliation);
+                $this->getEntityManager()->persist($achievement);
+                $mainAffiliation->getAchievement()->add($achievement);
+                $otherAffiliation->getAchievement()->remove($key);
             }
-            $otherAffiliation->getAssociate()->remove($key);
+
+            // Step 6: Move the cost changes
+            foreach ($otherAffiliation->getChangeRequestCostChange() as $key => $costChange) {
+                $costChange->setAffiliation($mainAffiliation);
+                $this->getEntityManager()->persist($costChange);
+                $mainAffiliation->getChangeRequestCostChange()->add($costChange);
+                $otherAffiliation->getChangeRequestCostChange()->remove($key);
+            }
+
+            // Step 7: Move the effort spent from the PPR
+            foreach ($otherAffiliation->getProjectReportEffortSpent() as $key => $reportEffortSpent) {
+                $reportEffortSpent->setAffiliation($mainAffiliation);
+                $this->getEntityManager()->persist($reportEffortSpent);
+                $mainAffiliation->getProjectReportEffortSpent()->add($reportEffortSpent);
+                $otherAffiliation->getProjectReportEffortSpent()->remove($key);
+            }
+
+            // Step 8: Move the dedicated project logs
+            foreach ($otherAffiliation->getProjectLog() as $key => $projectLog) {
+                $projectLog->getAffiliation()->add($mainAffiliation);
+                $projectLog->getAffiliation()->removeElement($otherAffiliation);
+                $this->getEntityManager()->persist($projectLog);
+                $mainAffiliation->getProjectLog()->add($projectLog);
+                $otherAffiliation->getProjectLog()->remove($key);
+            }
+
+            // Step 9: Move the affiliation logs
+            foreach ($otherAffiliation->getLog() as $key => $affiliationLog) {
+                $affiliationLog->setAffiliation($mainAffiliation);
+                $this->getEntityManager()->persist($affiliationLog);
+                $mainAffiliation->getLog()->add($affiliationLog);
+                $otherAffiliation->getLog()->remove($key);
+            }
+
+            // Step 10: Move the invoices
+            foreach ($otherAffiliation->getInvoice() as $key => $invoice) {
+                $invoice->setAffiliation($mainAffiliation);
+                $this->getEntityManager()->persist($invoice);
+                $mainAffiliation->getInvoice()->add($invoice);
+                $otherAffiliation->getInvoice()->remove($key);
+            }
+
+            // Step 11: Move the associates
+            foreach ($otherAffiliation->getAssociate() as $key => $associate) {
+                if ( ! $mainAffiliation->getAssociate()->contains($associate)) {
+                    $mainAffiliation->getAssociate()->add($associate);
+                }
+                $otherAffiliation->getAssociate()->remove($key);
+            }
+
+            // Step 12: Persist main affiliation, remove the other + flush and update permissions
+            $this->getEntityManager()->persist($mainAffiliation);
+            $this->getEntityManager()->remove($otherAffiliation);
+            $this->getEntityManager()->flush();
+            $this->getAdminService()->flushPermitsByEntityAndId(
+                $mainAffiliation->get('underscore_entity_name'), $mainAffiliation->getId()
+            );
+
+        } catch (ORMException $e) {
+            $response = ['success' => false, 'errorMessage' => $e->getMessage()];
+            error_log($e->getFile() . ':' . $e->getLine() . ' ' . $e->getMessage());
         }
 
-        // Step 11: Remove the merged affiliation
-        $this->getAffiliationService()->removeEntity($otherAffiliation);
-
-        return $mainAffiliation;
+        return $response;
     }
 
 
@@ -155,26 +180,28 @@ class MergeAffiliation extends AbstractPlugin
      */
     protected function transferCost()
     {
+
+
         foreach ($this->getOtherAffiliation()->getCost() as $otherKey => $otherCost) {
             // Check whether the main affiliation already has cost in the same period
             $matched = false;
             foreach ($this->getMainAffiliation()->getCost() as &$mainCost) {
-                if ($otherCost->getDateStart()->getTimestamp() === $mainCost->getDateStart()->getTimestamp()
-                    && $otherCost->getDateEnd()->getTimestamp() === $mainCost->getDateEnd()->getTimestamp()
+                if ($otherCost->getDateStart()->format('dmY') === $mainCost->getDateStart()->format('dmY')
+                    && $otherCost->getDateEnd()->format('dmY') === $mainCost->getDateEnd()->format('dmY')
                 ) {
                     switch ($this->getCostAndEffortStrategy()) {
                         case self::STRATEGY_SUM:
                             $mainCost->setCosts($mainCost->getCosts() + $otherCost->getCosts());
-                            $this->getProjectService()->updateEntity($mainCost);
+                            $this->getEntityManager()->persist($mainCost);
                             break;
                         case self::STRATEGY_USE_MAIN: // Do nothing
                             break;
                         case self::STRATEGY_USE_OTHER:
                             $mainCost->setCosts($otherCost->getCosts());
-                            $this->getProjectService()->updateEntity($mainCost);
+                            $this->getEntityManager()->persist($mainCost);
                             break;
                     }
-                    $this->getProjectService()->removeEntity($otherCost);
+                    $this->getEntityManager()->remove($otherCost);
                     $matched = true;
 
                     break;
@@ -182,9 +209,9 @@ class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if ( ! $matched) {
                 $otherCost->setAffiliation($this->getMainAffiliation());
-                $this->getProjectService()->updateEntity($otherCost);
+                $this->getEntityManager()->persist($otherCost);
                 $this->getMainAffiliation()->getCost()->add($otherCost);
             }
 
@@ -201,15 +228,16 @@ class MergeAffiliation extends AbstractPlugin
             // Check whether the main affiliation already has effort in the same period for the same workpackage
             $matched = false;
             foreach ($this->getMainAffiliation()->getEffort() as &$mainEffort) {
-                if ($otherEffort->getDateStart()->getTimestamp() === $mainEffort->getDateStart()->getTimestamp()
-                    && $otherEffort->getDateEnd()->getTimestamp() === $mainEffort->getDateEnd()->getTimestamp()
+                if ($otherEffort->getDateStart()->format('dmY') === $mainEffort->getDateStart()->format('dmY')
+                    && $otherEffort->getDateEnd()->format('dmY') === $mainEffort->getDateEnd()->format('dmY')
                     && $otherEffort->getWorkpackage()->getId() === $mainEffort->getWorkpackage()->getId()
                 ) {
                     $originalEffort = $mainEffort->getEffort();
+                    $debugTemplate  = '';
                     switch ($this->getCostAndEffortStrategy()) {
                         case self::STRATEGY_SUM:
                             $mainEffort->setEffort($originalEffort + $otherEffort->getEffort());
-                            $this->getProjectService()->updateEntity($mainEffort);
+                            $this->getEntityManager()->persist($mainEffort);
                             $debugTemplate = 'Effort found and added %f (main) + %f (other) = %f';
                             break;
                         case self::STRATEGY_USE_MAIN: // Do nothing
@@ -217,11 +245,11 @@ class MergeAffiliation extends AbstractPlugin
                             break;
                         case self::STRATEGY_USE_OTHER:
                             $mainEffort->setEffort($otherEffort->getEffort());
-                            $this->getProjectService()->updateEntity($mainEffort);
+                            $this->getEntityManager()->persist($mainEffort);
                             $debugTemplate = 'Used other effort %2$f';
                             break;
                     }
-                    $this->getProjectService()->removeEntity($otherEffort);
+                    $this->getEntityManager()->remove($otherEffort);
                     $matched = true;
 
                     $this->debug[] = sprintf(
@@ -233,9 +261,9 @@ class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if ( ! $matched) {
                 $otherEffort->setAffiliation($this->getMainAffiliation());
-                $this->getProjectService()->updateEntity($otherEffort);
+                $this->getEntityManager()->persist($otherEffort);
                 $this->getMainAffiliation()->getEffort()->add($otherEffort);
                 $debugTemplate = 'Effort not found in main affiliation, moved from %s to %s';
 
@@ -258,15 +286,16 @@ class MergeAffiliation extends AbstractPlugin
             // same period for the same workpackage
             $matched = false;
             foreach ($this->getMainAffiliation()->getSpent() as &$mainSpent) {
-                if ($otherSpent->getDateStart()->getTimestamp() === $mainSpent->getDateStart()->getTimestamp()
-                    && $otherSpent->getDateEnd()->getTimestamp() === $mainSpent->getDateEnd()->getTimestamp()
+                if ($otherSpent->getDateStart()->format('dmY') === $mainSpent->getDateStart()->format('dmY')
+                    && $otherSpent->getDateEnd()->format('dmY') === $mainSpent->getDateEnd()->format('dmY')
                     && $otherSpent->getWorkpackage()->getId() === $mainSpent->getWorkpackage()->getId()
                 ) {
                     $originalSpent = $mainSpent->getEffort();
+                    $debugTemplate = '';
                     switch ($this->getCostAndEffortStrategy()) {
                         case self::STRATEGY_SUM:
                             $mainSpent->setEffort($originalSpent + $otherSpent->getEffort());
-                            $this->getProjectService()->updateEntity($mainSpent);
+                            $this->getEntityManager()->persist($mainSpent);
                             $debugTemplate = 'Effort spent found and added %f (main) + %f (other) = %f';
                             break;
                         case self::STRATEGY_USE_MAIN: // Do nothing
@@ -274,11 +303,11 @@ class MergeAffiliation extends AbstractPlugin
                             break;
                         case self::STRATEGY_USE_OTHER:
                             $mainSpent->setEffort($otherSpent->getEffort());
-                            $this->getProjectService()->updateEntity($mainSpent);
+                            $this->getEntityManager()->persist($mainSpent);
                             $debugTemplate = 'Used other effort spent %2$f';
                             break;
                     }
-                    $this->getProjectService()->removeEntity($otherSpent);
+                    $this->getEntityManager()->remove($otherSpent);
                     $matched = true;
 
                     $this->debug[] = sprintf(
@@ -293,9 +322,9 @@ class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if ( ! $matched) {
                 $otherSpent->setAffiliation($this->getMainAffiliation());
-                $this->getProjectService()->updateEntity($otherSpent);
+                $this->getEntityManager()->persist($otherSpent);
                 $this->getMainAffiliation()->getSpent()->add($otherSpent);
                 $debugTemplate = 'Effort spent not found in main affiliation, moved from %s to %s';
 
@@ -318,7 +347,7 @@ class MergeAffiliation extends AbstractPlugin
         foreach ($this->getOtherAffiliation()->getVersion() as $otherKey => &$otherAffiliationVersion) {
             /** @var ProjectVersion $otherProjectVersion */
             $otherProjectVersion = $otherAffiliationVersion->getVersion();
-            $matched = false;
+            $matched             = false;
 
             /** @var AffiliationVersion $mainAffiliationVersion */
             foreach ($this->getMainAffiliation()->getVersion() as &$mainAffiliationVersion) {
@@ -332,7 +361,7 @@ class MergeAffiliation extends AbstractPlugin
                     $this->transferVersionEffort($mainAffiliationVersion, $otherAffiliationVersion);
 
                     // Remove leftover other affiliation version
-                    $this->getAffiliationService()->removeEntity($otherAffiliationVersion);
+                    $this->getEntityManager()->remove($otherAffiliationVersion);
                     $this->getOtherAffiliation()->getVersion()->remove($otherKey);
 
                     $matched = true;
@@ -341,11 +370,11 @@ class MergeAffiliation extends AbstractPlugin
             }
 
             // Not matched with main affiliation version, add it to main
-            if (!$matched) {
+            if ( ! $matched) {
                 // No match with a main affiliation version, add it to main affiliation
                 $otherAffiliationVersion->setAffiliation($this->getMainAffiliation());
-                $this->getAffiliationService()->updateEntity($otherAffiliationVersion);
                 $this->getMainAffiliation()->getVersion()->add($otherAffiliationVersion);
+                $this->getEntityManager()->persist($otherAffiliationVersion);
             }
         }
     }
@@ -365,32 +394,34 @@ class MergeAffiliation extends AbstractPlugin
             /** @var CostVersion $mainCostVersion */
             foreach ($mainVersion->getCostVersion() as &$mainCostVersion) {
                 // Check for a match with main cost version on start and end date
-                if ($otherCostVersion->getDateStart()->getTimestamp() === $mainCostVersion->getDateStart()->getTimestamp()
-                    && $otherCostVersion->getDateEnd()->getTimestamp() === $mainCostVersion->getDateEnd()->getTimestamp()
+                if ($otherCostVersion->getDateStart()->format('dmY') === $mainCostVersion->getDateStart()
+                                                                                         ->format('dmY')
+                    && $otherCostVersion->getDateEnd()->format('dmY') === $mainCostVersion->getDateEnd()
+                                                                                          ->format('dmY')
                 ) {
                     switch ($this->getCostAndEffortStrategy()) {
                         case self::STRATEGY_SUM:
                             $mainCostVersion->setCosts($mainCostVersion->getCosts() + $otherCostVersion->getCosts());
-                            $this->getProjectService()->updateEntity($mainCostVersion);
+                            $this->getEntityManager()->persist($mainCostVersion);
                             break;
                         case self::STRATEGY_USE_MAIN: // Do nothing
                             break;
                         case self::STRATEGY_USE_OTHER:
                             $mainCostVersion->setCosts($otherCostVersion->getCosts());
-                            $this->getProjectService()->updateEntity($mainCostVersion);
+                            $this->getEntityManager()->persist($mainCostVersion);
                             break;
                     }
-                    $this->getProjectService()->removeEntity($otherCostVersion);
+                    $this->getEntityManager()->remove($otherCostVersion);
                     $matched = true;
                     break;
                 }
             }
 
-            if (!$matched) {
+            if ( ! $matched) {
                 // No match with a main affiliation version cost, add it to main version
                 $otherCostVersion->setAffiliationVersion($mainVersion);
-                $this->getProjectService()->updateEntity($otherCostVersion);
                 $mainVersion->getCostVersion()->add($otherCostVersion);
+                $this->getEntityManager()->persist($otherCostVersion);
             }
         }
     }
@@ -410,33 +441,36 @@ class MergeAffiliation extends AbstractPlugin
             /** @var EffortVersion $mainCostVersion */
             foreach ($mainVersion->getEffortVersion() as &$mainEffortVersion) {
                 // Check for a match with main effort version on start date, end date and workpackage
-                if ($otherEffortVersion->getDateStart()->getTimestamp() === $mainEffortVersion->getDateStart()->getTimestamp()
-                    && $otherEffortVersion->getDateEnd()->getTimestamp() === $mainEffortVersion->getDateEnd()->getTimestamp()
+                if ($otherEffortVersion->getDateStart()->format('dmY') === $mainEffortVersion->getDateStart()
+                                                                                             ->format('dmY')
+                    && $otherEffortVersion->getDateEnd()->format('dmY') === $mainEffortVersion->getDateEnd()
+                                                                                              ->format('dmY')
                     && $otherEffortVersion->getWorkpackage()->getId() === $mainEffortVersion->getWorkpackage()->getId()
                 ) {
                     switch ($this->getCostAndEffortStrategy()) {
                         case self::STRATEGY_SUM:
-                            $mainEffortVersion->setEffort($mainEffortVersion->getEffort() + $otherEffortVersion->getEffort());
-                            $this->getProjectService()->updateEntity($mainEffortVersion);
+                            $mainEffortVersion->setEffort($mainEffortVersion->getEffort()
+                                                          + $otherEffortVersion->getEffort());
+                            $this->getEntityManager()->persist($mainEffortVersion);
                             break;
                         case self::STRATEGY_USE_MAIN: // Do nothing
                             break;
                         case self::STRATEGY_USE_OTHER:
                             $mainEffortVersion->setEffort($otherEffortVersion->getEffort());
-                            $this->getProjectService()->updateEntity($mainEffortVersion);
+                            $this->getEntityManager()->persist($mainEffortVersion);
                             break;
                     }
-                    $this->getProjectService()->removeEntity($otherEffortVersion);
+                    $this->getEntityManager()->remove($otherEffortVersion);
                     $matched = true;
                     break;
                 }
             }
 
-            if (!$matched) {
+            if ( ! $matched) {
                 // No match with a main affiliation version effort, add it to main version
                 $otherEffortVersion->setAffiliationVersion($mainVersion);
-                $this->getProjectService()->updateEntity($otherEffortVersion);
                 $mainVersion->getEffortVersion()->add($otherEffortVersion);
+                $this->getEntityManager()->persist($otherEffortVersion);
             }
         }
     }
@@ -457,6 +491,7 @@ class MergeAffiliation extends AbstractPlugin
     protected function setOtherAffiliation(Affiliation $otherAffiliation): MergeAffiliation
     {
         $this->otherAffiliation = $otherAffiliation;
+
         return $this;
     }
 
@@ -476,6 +511,7 @@ class MergeAffiliation extends AbstractPlugin
     protected function setMainAffiliation(Affiliation $mainAffiliation): MergeAffiliation
     {
         $this->mainAffiliation = $mainAffiliation;
+
         return $this;
     }
 
@@ -489,11 +525,53 @@ class MergeAffiliation extends AbstractPlugin
 
     /**
      * @param int $costAndEffortStrategy
+     *
      * @return MergeAffiliation
      */
     protected function setCostAndEffortStrategy(int $costAndEffortStrategy): MergeAffiliation
     {
         $this->costAndEffortStrategy = $costAndEffortStrategy;
+
+        return $this;
+    }
+
+    /**
+     * @return AdminService
+     */
+    public function getAdminService(): AdminService
+    {
+        return $this->adminService;
+    }
+
+    /**
+     * @param AdminService $adminService
+     *
+     * @return MergeAffiliation
+     */
+    public function setAdminService(AdminService $adminService): MergeAffiliation
+    {
+        $this->adminService = $adminService;
+
+        return $this;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager(): EntityManager
+    {
+        return $this->entityManager;
+    }
+
+    /**
+     * @param EntityManager $entityManager
+     *
+     * @return MergeAffiliation
+     */
+    public function setEntityManager(EntityManager $entityManager): MergeAffiliation
+    {
+        $this->entityManager = $entityManager;
+
         return $this;
     }
 }

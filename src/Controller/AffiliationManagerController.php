@@ -21,6 +21,7 @@ use Project\Acl\Assertion\Project as ProjectAssertion;
 use Search\Form\SearchResult;
 use Search\Paginator\Adapter\SolariumPaginator;
 use Solarium\QueryType\Select\Query\Query as SolariumQuery;
+use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
@@ -266,49 +267,48 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function mergeAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
-        if (is_null($affiliation)) {
+        $mainAffiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+
+        if (is_null($mainAffiliation)) {
             return $this->notFoundAction();
         }
 
-        $data = array_merge($this->getRequest()->getPost()->toArray());
+        $data = $this->getRequest()->getPost()->toArray();
 
-        if ($this->getRequest()->isPost() && isset($data['merge'], $data['submit'])) {
+        if (isset($data['merge'], $data['submit']) && $this->getRequest()->isPost()) {
 
-            //Find the second affiliation
-            $affiliation = $this->getAffiliationService()->findAffiliationById($data['merge']);
+            // Find the second affiliation
+            $otherAffiliation  = $this->getAffiliationService()->findAffiliationById($data['merge']);
+            $otherOrganisation = $otherAffiliation->getOrganisation();
 
-            $this->mergeAffiliation($affiliation, $affiliation);
+            $result = $this->mergeAffiliation($mainAffiliation, $otherAffiliation);
 
-            $this->flashMessenger()->setNamespace('success')
-                 ->addMessage(
-                     sprintf(
-                         $this->translate('txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful'),
-                         $affiliation->getOrganisation(),
-                         $affiliation->getOrganisation(),
-                         $affiliation->getProject()
-                     )
-                 );
+            if ($result['success'] === true) {
+                $this->flashMessenger()->setNamespace(FlashMessenger::NAMESPACE_SUCCESS)
+                     ->addMessage(sprintf(
+                         $this->translate("txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful"),
+                         $mainAffiliation->getOrganisation(),
+                         $otherOrganisation,
+                         $mainAffiliation->getProject()
+                     ));
+            } else {
+                $this->flashMessenger()->setNamespace(FlashMessenger::NAMESPACE_ERROR)
+                     ->addMessage(sprintf($this->translate('txt-merge-failed:-%s'), $result['errorMessage']));
+            }
 
             return $this->redirect()->toRoute(
-                'zfcadmin/affiliation/view',
-                [
-                    'id' => $affiliation->getId(),
-                ]
+                'zfcadmin/affiliation/view', ['id' => $mainAffiliation->getId()]
             );
-
         }
 
+        return new ViewModel([
+            'affiliationService'  => $this->getAffiliationService(),
+            'affiliation'         => $mainAffiliation,
+            'merge'               => isset($data['merge']) ? $data['merge'] : null,
+            'projectService'      => $this->getProjectService(),
+            'organisationService' => $this->getOrganisationService(),
+        ]);
 
-        return new ViewModel(
-            [
-                'affiliationService'  => $this->getAffiliationService(),
-                'affiliation'         => $affiliation,
-                'merge'               => $data['merge'] ?? $data['merge'],
-                'projectService'      => $this->getProjectService(),
-                'organisationService' => $this->getOrganisationService(),
-            ]
-        );
     }
 
     /**
