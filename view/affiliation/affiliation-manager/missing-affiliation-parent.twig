@@ -1,0 +1,67 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-missing-affiliation-parents")) %}
+
+{% do form.prepare() %}
+{{ form().openTag(form)|raw }}
+{% set filter = form.get('filter') %}
+
+<input type="hidden" name="filter[order]" value="{{ order }}">
+<input type="hidden" name="filter[direction]" value="{{ direction }}">
+
+<div class="row">
+    <div class="col-md-10">
+        <h1>{{ translate("txt-missing-affiliation-parents") }}</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <p class="lead">{{ translate("txt-achievement-type-list-explanation") }}</p>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    {{ formelement(filter.get('search')) }}
+                    <span class="input-group-btn">{{ formelement(form.get('submit')) }}</span></div>
+            </div>
+        </div>
+
+        {% if paginator.pageRange > 0 %}
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                <tr>
+                    <th>{{ translate("txt-amount-of-achievements") }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for affiliation in paginator.getCurrentItems() %}
+                    <tr>
+                        <td>
+                            {{ type.id }}
+                            {{ achievementTypeLink(type,'edit','icon') }}
+                        </td>
+                        <td>{{ achievementTypeLink(type,'view-admin','name') }}</td>
+                        <td>{{ achievementCategoryLink(type.category, 'view') }}</td>
+                        <td>{{ type.sequence }}</td>
+                        <td>{{ type.achievement.count() }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% include 'project/partial/pagination-control' %}
+        {% else %}
+            {{ ztbalert().info(translate("txt-affiliation-with-missing-parent-organisation"))|raw }}
+        {% endif %}
+    </div>
+    <div class="col-md-2">
+        <div class="well well-sm">
+            <fieldset>
+
+                <div class="form-group">
+                    {{ ztbformelement(form.get('submit')) }}
+                    {{ ztbformelement(form.get('clear')) }}
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}
+
