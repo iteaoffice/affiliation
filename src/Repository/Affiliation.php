@@ -1,11 +1,11 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
  * @category  Affiliation
  *
  * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Repository;
@@ -54,7 +54,7 @@ class Affiliation extends EntityRepository
                 $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
-                throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
         $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
@@ -215,7 +215,7 @@ class Affiliation extends EntityRepository
                 $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
-                throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
 
         /*
@@ -264,7 +264,7 @@ class Affiliation extends EntityRepository
                 $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
-                throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
 
         /*
@@ -316,7 +316,7 @@ class Affiliation extends EntityRepository
                 $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
-                throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
 
         /*
@@ -369,7 +369,7 @@ class Affiliation extends EntityRepository
                 $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
-                throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
 
         return $qb->getQuery()->getResult();
@@ -406,7 +406,7 @@ class Affiliation extends EntityRepository
      *
      * @return int
      */
-    public function findAmountOfAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, $which)
+    public function findAmountOfAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, $which): int
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation) amount');
@@ -427,7 +427,7 @@ class Affiliation extends EntityRepository
                 $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
-                throw new InvalidArgumentException(sprintf("Incorrect value (%s) for which", $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
 
         $qb->addGroupBy('affiliation_entity_affiliation.project');
@@ -445,14 +445,14 @@ class Affiliation extends EntityRepository
      *
      * @return int
      */
-    public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call)
+    public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call): int
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
         $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
-        $qb->join('affiliation_entity_affiliation.project', 'p');
-        $qb->where('p.call = ?1');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
+        $qb->where('project_entity_project.call = ?1');
         $qb->andWhere('organisation_entity_organisation.country = ?2');
         $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
         $qb->setParameter(1, $call);
@@ -463,16 +463,17 @@ class Affiliation extends EntityRepository
     }
 
     /**
-     * @return Entity\Affiliation[]
+     * @return array
      */
-    public function findAffiliationInProjectLog()
+    public function findAffiliationInProjectLog(): array
     {
         $queryBuilder = $this->_em->createQueryBuilder();
-        $queryBuilder->select('affiliation_entity_affiliation', 'p', 'organisation_entity_organisation');
+        $queryBuilder->select('affiliation_entity_affiliation', 'project_entity_project',
+            'organisation_entity_organisation');
         $queryBuilder->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
 
-        $queryBuilder->innerJoin("affiliation_entity_affiliation.projectLog", 'l');
-        $queryBuilder->innerJoin("affiliation_entity_affiliation.project", 'p');
+        $queryBuilder->innerJoin("affiliation_entity_affiliation.projectLog", 'project_entity_log');
+        $queryBuilder->innerJoin("affiliation_entity_affiliation.project", 'project_entity_project');
         $queryBuilder->innerJoin("affiliation_entity_affiliation.organisation", 'organisation_entity_organisation');
 
         return $queryBuilder->getQuery()->getArrayResult();

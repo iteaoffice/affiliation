@@ -1,13 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
- * PHP Version 5
+ * PHP Version 7
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   2004-2015 ITEA Office
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/affiliation for the canonical source repository
@@ -51,11 +51,11 @@ class FormService extends ServiceAbstract
      */
     public function getForm($className = null, EntityAbstract $entity = null, bool $bind = true): Form
     {
-        if (! is_null($className) && is_null($entity)) {
+        if ( ! is_null($className) && is_null($entity)) {
             $entity = new $className();
         }
 
-        if (! is_object($entity)) {
+        if ( ! is_object($entity)) {
             throw new \InvalidArgumentException("No entity created given");
         }
 
@@ -66,7 +66,7 @@ class FormService extends ServiceAbstract
          * The filter and the form can dynamically be created by pulling the form from the serviceManager
          * if the form or filter is not give in the serviceManager we will create it by default
          */
-        if (! $this->getServiceLocator()->has($formName)) {
+        if ( ! $this->getServiceLocator()->has($formName)) {
             $form = new CreateObject($this->getEntityManager(), new $entity());
         } else {
             $form = $this->getServiceLocator()->get($formName);

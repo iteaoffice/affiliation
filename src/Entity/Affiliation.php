@@ -5,7 +5,7 @@
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Entity;
@@ -458,6 +458,26 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         }
 
         return OrganisationService::parseBranch($this->getBranch(), (string)$this->getOrganisation());
+    }
+
+    /**
+     * @return null|\Organisation\Entity\Parent\Organisation
+     */
+    public function getParentOrganisation()
+    {
+        return $this->parentOrganisation;
+    }
+
+    /**
+     * @param null|\Organisation\Entity\Parent\Organisation $parentOrganisation
+     *
+     * @return Affiliation
+     */
+    public function setParentOrganisation($parentOrganisation)
+    {
+        $this->parentOrganisation = $parentOrganisation;
+
+        return $this;
     }
 
     /**
@@ -1024,26 +1044,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setStrategicImportance($strategicImportance)
     {
         $this->strategicImportance = $strategicImportance;
-
-        return $this;
-    }
-
-    /**
-     * @return null|\Organisation\Entity\Parent\Organisation
-     */
-    public function getParentOrganisation()
-    {
-        return $this->parentOrganisation;
-    }
-
-    /**
-     * @param null|\Organisation\Entity\Parent\Organisation $parentOrganisation
-     *
-     * @return Affiliation
-     */
-    public function setParentOrganisation($parentOrganisation)
-    {
-        $this->parentOrganisation = $parentOrganisation;
 
         return $this;
     }

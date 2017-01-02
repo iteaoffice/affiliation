@@ -1,12 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2016 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
+declare(strict_types = 1);
 
 namespace Affiliation\Controller\Factory;
 
@@ -44,7 +45,7 @@ final class PluginFactory implements FactoryInterface
      *
      * @return AbstractPlugin
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): AbstractPlugin
     {
         /** @var AbstractPlugin $plugin */
         $plugin = new $requestedName($options);

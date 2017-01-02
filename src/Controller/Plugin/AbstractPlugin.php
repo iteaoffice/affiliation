@@ -1,11 +1,11 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2016 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Controller\Plugin;
@@ -90,26 +90,6 @@ class AbstractPlugin extends ZendAbstractPlugin
     protected $request;
 
     /**
-     * @return HelperPluginManager
-     */
-    public function getHelperPluginManager(): HelperPluginManager
-    {
-        return $this->helperPluginManager;
-    }
-
-    /**
-     * @param HelperPluginManager $helperPluginManager
-     *
-     * @return AbstractPlugin
-     */
-    public function setHelperPluginManager(HelperPluginManager $helperPluginManager): AbstractPlugin
-    {
-        $this->helperPluginManager = $helperPluginManager;
-
-        return $this;
-    }
-
-    /**
      * @return AffiliationService
      */
     public function getAffiliationService(): AffiliationService
@@ -128,7 +108,6 @@ class AbstractPlugin extends ZendAbstractPlugin
 
         return $this;
     }
-
 
     /**
      * @return ProjectService
@@ -159,6 +138,18 @@ class AbstractPlugin extends ZendAbstractPlugin
     }
 
     /**
+     * @param ContactService $contactService
+     *
+     * @return AbstractPlugin
+     */
+    public function setContactService(ContactService $contactService): AbstractPlugin
+    {
+        $this->contactService = $contactService;
+
+        return $this;
+    }
+
+    /**
      * @return OrganisationService
      */
     public function getOrganisationService(): OrganisationService
@@ -174,18 +165,6 @@ class AbstractPlugin extends ZendAbstractPlugin
     public function setOrganisationService(OrganisationService $organisationService): AbstractPlugin
     {
         $this->organisationService = $organisationService;
-
-        return $this;
-    }
-
-    /**
-     * @param ContactService $contactService
-     *
-     * @return AbstractPlugin
-     */
-    public function setContactService(ContactService $contactService): AbstractPlugin
-    {
-        $this->contactService = $contactService;
 
         return $this;
     }
@@ -291,21 +270,6 @@ class AbstractPlugin extends ZendAbstractPlugin
     }
 
     /**
-     * Translate a string
-     *
-     * @param $string
-     *
-     * @return string
-     */
-    protected function translate($string): string
-    {
-        /** @var Translate $translator */
-        $translator = $this->getHelperPluginManager()->get('translate');
-
-        return $translator ? $translator($string) : $string;
-    }
-
-    /**
      * @return RouteMatch
      */
     public function getRouteMatch(): RouteMatch
@@ -341,6 +305,41 @@ class AbstractPlugin extends ZendAbstractPlugin
     public function setRequest(Request $request): AbstractPlugin
     {
         $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Translate a string
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    protected function translate($string): string
+    {
+        /** @var Translate $translator */
+        $translator = $this->getHelperPluginManager()->get('translate');
+
+        return $translator ? $translator($string) : $string;
+    }
+
+    /**
+     * @return HelperPluginManager
+     */
+    public function getHelperPluginManager(): HelperPluginManager
+    {
+        return $this->helperPluginManager;
+    }
+
+    /**
+     * @param HelperPluginManager $helperPluginManager
+     *
+     * @return AbstractPlugin
+     */
+    public function setHelperPluginManager(HelperPluginManager $helperPluginManager): AbstractPlugin
+    {
+        $this->helperPluginManager = $helperPluginManager;
 
         return $this;
     }

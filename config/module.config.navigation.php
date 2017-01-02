@@ -5,7 +5,7 @@
  * @category    Affiliation
  * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2016 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 return [
     'navigation' => [
@@ -148,7 +148,7 @@ return [
             'organisation' => [
                 // And finally, here is where we define our page hierarchy
                 'pages' => [
-                    'affiliation-list' => [
+                    'affiliation-list'           => [
                         'label' => _("txt-nav-affiliation-list-statistics"),
                         'order' => 15,
                         'route' => 'zfcadmin/affiliation/list',
@@ -158,7 +158,7 @@ return [
                         'order' => 20,
                         'route' => 'zfcadmin/affiliation/missing-affiliation-parent',
                     ],
-                    'doa-approval'     => [
+                    'doa-approval'               => [
                         'label' => _("txt-nav-doa-approval"),
                         'order' => 80,
                         'route' => 'zfcadmin/affiliation/doa/approval',
@@ -178,7 +178,7 @@ return [
                             ],
                         ],
                     ],
-                    'doa-missing'      => [
+                    'doa-missing'                => [
                         'label' => _("txt-nav-missing-doa"),
                         'order' => 90,
                         'route' => 'zfcadmin/affiliation/doa/missing',
@@ -195,12 +195,12 @@ return [
                             ],
                         ],
                     ],
-                    'loi-approval'     => [
+                    'loi-approval'               => [
                         'label' => _("txt-nav-loi-approval"),
                         'order' => 100,
                         'route' => 'zfcadmin/affiliation/loi/approval',
                     ],
-                    'loi-missing'      => [
+                    'loi-missing'                => [
                         'label' => _("txt-nav-missing-loi"),
                         'order' => 110,
                         'route' => 'zfcadmin/affiliation/loi/missing',

@@ -1,13 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
- * PHP Version 5
+ * PHP Version 7
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   2004-2015 ITEA Office
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        https://itea3.org
@@ -32,7 +32,7 @@ use Zend\View\Model\ViewModel;
  * @category   Affiliation
  *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright  2004-2015 ITEA Office
+ * @copyright  Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  * @license    https://itea3.org/license.txt proprietary
  *
  * @link       https://itea3.org
@@ -157,14 +157,14 @@ class DoaManagerController extends AffiliationAbstractController
             $this->getDoaService()->newEntity($doaReminder);
 
             $this->flashMessenger()->setNamespace('success')
-                ->addMessage(
-                    sprintf(
-                        $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
-                        $affiliation->getOrganisation(),
-                        $affiliation->getProject(),
-                        $this->getContactService()->findContactById($form->getData()['receiver'])->getEmail()
-                    )
-                );
+                 ->addMessage(
+                     sprintf(
+                         $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                         $affiliation->getOrganisation(),
+                         $affiliation->getProject(),
+                         $this->getContactService()->findContactById($form->getData()['receiver'])->getEmail()
+                     )
+                 );
 
             return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
         }
@@ -184,7 +184,7 @@ class DoaManagerController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById(
             $this->getEvent()->getRouteMatch()
-                ->getParam('affiliationId')
+                 ->getParam('affiliationId')
         );
 
         return new ViewModel(
@@ -241,13 +241,13 @@ class DoaManagerController extends AffiliationAbstractController
 
             if (isset($data['delete'])) {
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
-                            $doa->getAffiliation()->getOrganisation(),
-                            $doa->getAffiliation()->getProject()
-                        )
-                    );
+                     ->addMessage(
+                         sprintf(
+                             $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
+                             $doa->getAffiliation()->getOrganisation(),
+                             $doa->getAffiliation()->getProject()
+                         )
+                     );
 
                 $this->getDoaService()->removeEntity($doa);
 
@@ -263,7 +263,7 @@ class DoaManagerController extends AffiliationAbstractController
                     /*
                      * Replace the content of the object
                      */
-                    if (! $doa->getObject()->isEmpty()) {
+                    if ( ! $doa->getObject()->isEmpty()) {
                         $doa->getObject()->first()->setObject(
                             file_get_contents($fileData['affiliation_entity_doa']['file']['tmp_name'])
                         );
@@ -282,20 +282,20 @@ class DoaManagerController extends AffiliationAbstractController
                     $doa->setSize($fileSizeValidator->size);
                     $doa->setContentType(
                         $this->getGeneralService()
-                            ->findContentTypeByContentTypeName($fileData['affiliation_entity_doa']['file']['type'])
+                             ->findContentTypeByContentTypeName($fileData['affiliation_entity_doa']['file']['type'])
                     );
                 }
 
                 $this->getDoaService()->updateEntity($doa);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated"),
-                            $doa->getAffiliation()->getOrganisation(),
-                            $doa->getAffiliation()->getProject()
-                        )
-                    );
+                     ->addMessage(
+                         sprintf(
+                             $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated"),
+                             $doa->getAffiliation()->getOrganisation(),
+                             $doa->getAffiliation()->getProject()
+                         )
+                     );
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/doa/view', ['id' => $doa->getId()]);
             }
@@ -329,7 +329,7 @@ class DoaManagerController extends AffiliationAbstractController
             );
         }
 
-        if (! \DateTime::createFromFormat('Y-h-d', $dateSigned)) {
+        if ( ! \DateTime::createFromFormat('Y-h-d', $dateSigned)) {
             return new JsonModel(
                 [
                     'result' => 'error',

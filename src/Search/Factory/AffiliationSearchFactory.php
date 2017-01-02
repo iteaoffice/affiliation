@@ -1,13 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
- * PHP Version 5
+ * PHP Version 7
  *
  * @category    Achievement
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   2004-2016 ITEA Office
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/main for the canonical source repository
@@ -36,9 +36,11 @@ final class AffiliationSearchFactory implements FactoryInterface
      *
      * @return AffiliationSearchService
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null
-    ): AffiliationSearchService
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ): AffiliationSearchService {
         /** @var AffiliationSearchService $searchService */
         $searchService = new $requestedName($options);
         $searchService->setServiceLocator($container);

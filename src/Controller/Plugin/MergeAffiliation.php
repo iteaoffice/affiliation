@@ -1,13 +1,13 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
- * PHP Version 5
+ * PHP Version 7
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   2004-2015 ITEA Office
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/affiliation for the canonical source repository
@@ -35,37 +35,30 @@ class MergeAffiliation extends AbstractPlugin
     const STRATEGY_SUM = 0;       // Add other cost and effort to main
     const STRATEGY_USE_MAIN = 1;  // Use cost and effort of main affiliation
     const STRATEGY_USE_OTHER = 2; // Use cost and effort of other affiliation
-
-    /**
-     * @var Affiliation
-     */
-    private $otherAffiliation;
-
-    /**
-     * @var Affiliation
-     */
-    private $mainAffiliation;
-
-    /**
-     * @var int
-     */
-    private $costAndEffortStrategy;
-
     /**
      * @var array
      */
     protected $debug = [];
-
     /**
      * @var AdminService
      */
     protected $adminService;
-
     /**
      * @var EntityManager
      */
     protected $entityManager;
-
+    /**
+     * @var Affiliation
+     */
+    private $otherAffiliation;
+    /**
+     * @var Affiliation
+     */
+    private $mainAffiliation;
+    /**
+     * @var int
+     */
+    private $costAndEffortStrategy;
 
     /**
      * MergeAffiliation magic invokable
@@ -217,6 +210,86 @@ class MergeAffiliation extends AbstractPlugin
 
             $this->getOtherAffiliation()->getCost()->remove($otherKey);
         }
+    }
+
+    /**
+     * @return Affiliation
+     */
+    protected function getOtherAffiliation(): Affiliation
+    {
+        return $this->otherAffiliation;
+    }
+
+    /**
+     * @param Affiliation $otherAffiliation
+     *
+     * @return MergeAffiliation
+     */
+    protected function setOtherAffiliation(Affiliation $otherAffiliation): MergeAffiliation
+    {
+        $this->otherAffiliation = $otherAffiliation;
+
+        return $this;
+    }
+
+    /**
+     * @return Affiliation
+     */
+    protected function getMainAffiliation(): Affiliation
+    {
+        return $this->mainAffiliation;
+    }
+
+    /**
+     * @param Affiliation $mainAffiliation
+     *
+     * @return MergeAffiliation
+     */
+    protected function setMainAffiliation(Affiliation $mainAffiliation): MergeAffiliation
+    {
+        $this->mainAffiliation = $mainAffiliation;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getCostAndEffortStrategy(): int
+    {
+        return $this->costAndEffortStrategy;
+    }
+
+    /**
+     * @param int $costAndEffortStrategy
+     *
+     * @return MergeAffiliation
+     */
+    protected function setCostAndEffortStrategy(int $costAndEffortStrategy): MergeAffiliation
+    {
+        $this->costAndEffortStrategy = $costAndEffortStrategy;
+
+        return $this;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager(): EntityManager
+    {
+        return $this->entityManager;
+    }
+
+    /**
+     * @param EntityManager $entityManager
+     *
+     * @return MergeAffiliation
+     */
+    public function setEntityManager(EntityManager $entityManager): MergeAffiliation
+    {
+        $this->entityManager = $entityManager;
+
+        return $this;
     }
 
     /**
@@ -476,66 +549,6 @@ class MergeAffiliation extends AbstractPlugin
     }
 
     /**
-     * @return Affiliation
-     */
-    protected function getOtherAffiliation(): Affiliation
-    {
-        return $this->otherAffiliation;
-    }
-
-    /**
-     * @param Affiliation $otherAffiliation
-     *
-     * @return MergeAffiliation
-     */
-    protected function setOtherAffiliation(Affiliation $otherAffiliation): MergeAffiliation
-    {
-        $this->otherAffiliation = $otherAffiliation;
-
-        return $this;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    protected function getMainAffiliation(): Affiliation
-    {
-        return $this->mainAffiliation;
-    }
-
-    /**
-     * @param Affiliation $mainAffiliation
-     *
-     * @return MergeAffiliation
-     */
-    protected function setMainAffiliation(Affiliation $mainAffiliation): MergeAffiliation
-    {
-        $this->mainAffiliation = $mainAffiliation;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    protected function getCostAndEffortStrategy(): int
-    {
-        return $this->costAndEffortStrategy;
-    }
-
-    /**
-     * @param int $costAndEffortStrategy
-     *
-     * @return MergeAffiliation
-     */
-    protected function setCostAndEffortStrategy(int $costAndEffortStrategy): MergeAffiliation
-    {
-        $this->costAndEffortStrategy = $costAndEffortStrategy;
-
-        return $this;
-    }
-
-    /**
      * @return AdminService
      */
     public function getAdminService(): AdminService
@@ -551,26 +564,6 @@ class MergeAffiliation extends AbstractPlugin
     public function setAdminService(AdminService $adminService): MergeAffiliation
     {
         $this->adminService = $adminService;
-
-        return $this;
-    }
-
-    /**
-     * @return EntityManager
-     */
-    public function getEntityManager(): EntityManager
-    {
-        return $this->entityManager;
-    }
-
-    /**
-     * @param EntityManager $entityManager
-     *
-     * @return MergeAffiliation
-     */
-    public function setEntityManager(EntityManager $entityManager): MergeAffiliation
-    {
-        $this->entityManager = $entityManager;
 
         return $this;
     }

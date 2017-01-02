@@ -1,11 +1,11 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Controller\Plugin;
@@ -14,6 +14,7 @@ use Affiliation\Entity\Loi;
 
 /**
  * Class RenderLoi
+ *
  * @package Affiliation\Controller\Plugin
  */
 class RenderLoi extends AbstractPlugin

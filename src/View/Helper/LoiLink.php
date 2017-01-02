@@ -1,12 +1,12 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\View\Helper;
@@ -53,7 +53,7 @@ class LoiLink extends LinkAbstract
                 'name' => $this->getLoi(),
             ]
         );
-        if (! $this->hasAccess(
+        if ( ! $this->hasAccess(
             $this->getLoi(),
             LoiAssertion::class,
             $this->getAction()
@@ -62,7 +62,7 @@ class LoiLink extends LinkAbstract
             return '';
         }
 
-        if (! is_null($loi)) {
+        if ( ! is_null($loi)) {
             $this->addRouterParam('id', $this->getLoi()->getId());
             $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
         }
@@ -112,7 +112,7 @@ class LoiLink extends LinkAbstract
         /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
-        if (! is_null($affiliation)) {
+        if ( ! is_null($affiliation)) {
             $this->getLoi()->setAffiliation($affiliation);
         }
     }

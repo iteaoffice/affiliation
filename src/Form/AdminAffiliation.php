@@ -1,19 +1,19 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use Organisation\Entity\Parent\Organisation;
-use Organisation\Service\OrganisationService;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
@@ -25,10 +25,10 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
     /**
      * AdminAffiliation constructor.
      *
-     * @param Affiliation         $affiliation
-     * @param OrganisationService $organisationService
+     * @param Affiliation   $affiliation
+     * @param EntityManager $entityManager
      */
-    public function __construct(Affiliation $affiliation, OrganisationService $organisationService)
+    public function __construct(Affiliation $affiliation, EntityManager $entityManager)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -55,7 +55,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
 
                 ],
                 'options'    => [
-                    'object_manager'  => $organisationService->getEntityManager(),
+                    'object_manager'  => $entityManager,
                     'target_class'    => Organisation::class,
                     'find_method'     => [
                         'name'   => 'findBy',

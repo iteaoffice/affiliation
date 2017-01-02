@@ -1,11 +1,11 @@
 <?php
 /**
- * ITEA Office copyright message placeholder.
+ * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Service;
@@ -164,7 +164,7 @@ abstract class ServiceAbstract implements ServiceInterface
         //The dependencies for this, but for now we can use this trick
         if ($entity instanceof Affiliation) {
             $this->getAdminService()
-                ->flushPermitsByEntityAndId('project_entity_project', $entity->getProject()->getId());
+                 ->flushPermitsByEntityAndId('project_entity_project', $entity->getProject()->getId());
         }
 
         return $entity;
@@ -193,7 +193,7 @@ abstract class ServiceAbstract implements ServiceInterface
          * @var AssertionAbstract
          */
         $assertion = $this->getServiceLocator()->get($assertion);
-        if (! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
+        if ( ! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
             $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }
