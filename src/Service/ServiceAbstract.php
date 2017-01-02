@@ -193,7 +193,7 @@ abstract class ServiceAbstract implements ServiceInterface
          * @var AssertionAbstract
          */
         $assertion = $this->getServiceLocator()->get($assertion);
-        if ( ! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
+        if (! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
             $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }

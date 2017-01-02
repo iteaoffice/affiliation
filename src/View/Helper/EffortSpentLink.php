@@ -53,7 +53,7 @@ class EffortSpentLink extends LinkAbstract
                 'update' => $this->translate('txt-update'),
             ]
         );
-        if ( ! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
+        if (! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
             return '';
         }
 

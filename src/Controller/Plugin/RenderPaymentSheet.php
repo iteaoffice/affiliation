@@ -199,7 +199,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
 
-        if ( ! is_null($financialContact)) {
+        if (! is_null($financialContact)) {
             //Financial contact
             $pdf->writeHTMLCell(
                 0,
@@ -259,9 +259,9 @@ class RenderPaymentSheet extends AbstractPlugin
                         ? 'No billing organisation known'
                         : (($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
                             === Financial::EMAIL_DELIVERY) ? sprintf(
-                        $this->translate("txt-by-email-to-%s"),
-                        $financialContact->getEmail()
-                    ) : $this->translate("txt-by-postal-mail")),
+                                $this->translate("txt-by-email-to-%s"),
+                                $financialContact->getEmail()
+                            ) : $this->translate("txt-by-postal-mail")),
 
                 ],
             ];
@@ -312,7 +312,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
             if ($this->getAffiliationService()->isSelfFunded($affiliation)) {
                 $yearData[] = $this->translate("txt-self-funded");
-            } elseif ( ! is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
+            } elseif (! is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
                 $yearData[] = $this->getAffiliationService()->getFundingInYear($affiliation, $projectYear)->getStatus()
                                    ->getStatusFunding();
             } else {
@@ -429,7 +429,7 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $previousInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if ( ! is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
+            if (! is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
                  && ($affiliationInvoice->getYear() < $year
                      || ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() < $period))
             ) {
@@ -577,7 +577,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 || ($affiliationInvoice->getYear() === $year
                     && $affiliationInvoice->getPeriod() > $period)
             ) {
-                if ( ! is_null($affiliationInvoice->getInvoice()->getDateSent())) {
+                if (! is_null($affiliationInvoice->getInvoice()->getDateSent())) {
                     $upcomingInvoices[] = $affiliationInvoice;
                 }
             }

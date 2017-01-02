@@ -452,9 +452,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function parseBranchedName(): string
     {
-        if ( ! is_null($this->getParentOrganisation())) {
-            return OrganisationService::parseBranch($this->getBranch(),
-                (string)$this->getParentOrganisation()->getOrganisation());
+        if (! is_null($this->getParentOrganisation())) {
+            return OrganisationService::parseBranch(
+                $this->getBranch(),
+                (string)$this->getParentOrganisation()->getOrganisation()
+            );
         }
 
         return OrganisationService::parseBranch($this->getBranch(), (string)$this->getOrganisation());
@@ -517,7 +519,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function addAssociate(Contact $contact)
     {
-        if ( ! $this->associate->contains($contact)) {
+        if (! $this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }

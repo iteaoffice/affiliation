@@ -140,7 +140,7 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument                 = $update->createDocument();
         $affiliationDocument->affiliation_id = $affiliation->getId();
         $affiliationDocument->date_created   = $affiliation->getDateCreated()->format(static::DATE_SOLR);
-        if ( ! is_null($affiliation->getDateEnd())) {
+        if (! is_null($affiliation->getDateEnd())) {
             $affiliationDocument->date_end = $affiliation->getDateEnd()->format(static::DATE_SOLR);
         }
         $descriptionMerged = '';
@@ -152,7 +152,7 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument->value_chain       = $affiliation->getValueChain();
         $affiliationDocument->market_access     = $affiliation->getMarketAccess();
         $affiliationDocument->main_contribution = $affiliation->getMainContribution();
-        if ( ! is_null($affiliation->getDateSelfFunded())) {
+        if (! is_null($affiliation->getDateSelfFunded())) {
             $affiliationDocument->date_self_funded = $affiliation->getDateSelfFunded()->format(static::DATE_SOLR);
         }
 
@@ -175,20 +175,20 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument->project_draft_effort = $projectService->findTotalEffortByProject($project);
 
         $latestVersion = $projectService->getLatestProjectVersion($project, null, null, true, false);
-        if ( ! is_null($latestVersion)) {
+        if (! is_null($latestVersion)) {
             $affiliationDocument->project_latest_version_id     = $latestVersion->getId();
             $affiliationDocument->project_latest_version_type   = $latestVersion->getVersionType()->getType();
             $affiliationDocument->project_latest_version_status = $versionService->parseStatus($latestVersion);
             $affiliationDocument->project_latest_version_cost
                                                                 = $versionService->findTotalCostVersionByAffiliationAndVersion(
-                $affiliation,
-                $latestVersion
-            );
+                                                                    $affiliation,
+                                                                    $latestVersion
+                                                                );
             $affiliationDocument->project_latest_version_effort
                                                                 = $versionService->findTotalEffortVersionByAffiliationAndVersion(
-                $affiliation,
-                $latestVersion
-            );
+                                                                    $affiliation,
+                                                                    $latestVersion
+                                                                );
         }
 
         // Contact
@@ -196,7 +196,7 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument->contact_id    = $contact->getId();
         $affiliationDocument->contact_email = $contact->getEmail();
         $contactVisitAddress                = $this->getContactService()->getVisitAddress($contact);
-        if ( ! is_null($contactVisitAddress)) {
+        if (! is_null($contactVisitAddress)) {
             $affiliationDocument->contact_address = $contactVisitAddress->getAddress();
             $affiliationDocument->contact_zip     = $contactVisitAddress->getZipCode();
             $affiliationDocument->contact_city    = $contactVisitAddress->getCity();
@@ -220,14 +220,14 @@ class AffiliationSearchService extends AbstractSearchService
             $affiliationDocumentClone->project_version_status  = $versionService->parseStatus($version);
             $affiliationDocumentClone->project_version_effort
                                                                = $versionService->findTotalEffortVersionByAffiliationAndVersion(
-                $affiliation,
-                $version
-            );
+                                                                   $affiliation,
+                                                                   $version
+                                                               );
             $affiliationDocumentClone->project_version_cost
                                                                = $versionService->findTotalCostVersionByAffiliationAndVersion(
-                $affiliation,
-                $version
-            );
+                                                                   $affiliation,
+                                                                   $version
+                                                               );
 
             // Add the version to the documents
             $documents[] = $affiliationDocumentClone;

@@ -40,7 +40,7 @@ class Loi extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if ( ! $loi instanceof LoiEntity && ! is_null($id)) {
+        if (! $loi instanceof LoiEntity && ! is_null($id)) {
             /** @var LoiEntity $loi */
             $loi = $this->getAffiliationService()->findEntityById(LoiEntity::class, $id);
         }

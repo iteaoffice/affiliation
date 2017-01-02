@@ -26,6 +26,8 @@
   },
   "require-dev": {
     "iteaoffice/testing": "dev-master",
+    "iteaoffice/contact": "dev-develop",
+    "iteaoffice/organisation": "dev-develop",
     "doctrine/doctrine-orm-module": "~1.1",
     "pdepend/pdepend": "@stable",
     "phpmd/phpmd": "@stable",

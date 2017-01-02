@@ -230,13 +230,13 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     public function getId()
     {
-        if ( ! is_null($id = $this->getRequest()->getPost('id'))) {
+        if (! is_null($id = $this->getRequest()->getPost('id'))) {
             return (int)$id;
         }
         if (is_null($this->getRouteMatch())) {
             return null;
         }
-        if ( ! is_null($id = $this->getRouteMatch()->getParam('id'))) {
+        if (! is_null($id = $this->getRouteMatch()->getParam('id'))) {
             return (int)$id;
         }
 
@@ -380,7 +380,7 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     protected function rolesHaveAccess($roles)
     {
-        if ( ! is_array($roles)) {
+        if (! is_array($roles)) {
             $roles = [$roles];
         }
 

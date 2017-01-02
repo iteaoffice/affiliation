@@ -7,7 +7,7 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Affiliation\Form;
 
@@ -188,10 +188,10 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                                 }
 
                                 if (abs(
-                                        ($context['effort']
+                                    ($context['effort']
                                          - $this->effortPlanned)
                                         / $this->effortPlanned
-                                    ) > 0.2
+                                ) > 0.2
                                 ) {
                                     return strlen($value) > 0;
                                 }

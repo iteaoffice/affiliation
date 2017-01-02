@@ -69,8 +69,11 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                     'empty_option'    => '--' . "Find a parent-organisation",
                     'allow_empty'     => true,
                     'label_generator' => function (Organisation $organisation) {
-                        return sprintf("%s (Parent: %s)", $organisation->getOrganisation(),
-                            $organisation->getParent()->getOrganisation());
+                        return sprintf(
+                            "%s (Parent: %s)",
+                            $organisation->getOrganisation(),
+                            $organisation->getParent()->getOrganisation()
+                        );
                     },
                     'help-block'      => _("txt-affiliation-parent-organisation-help-block"),
                 ],

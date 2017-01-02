@@ -182,12 +182,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $viewParams['arguments'] = http_build_query($filteredData);
 
                 // Result is grouped
-                if ( ! empty($data['group'])) {
+                if (! empty($data['group'])) {
                     $searchService->getQuery()->clearSorts();
                     $searchService->getQuery()->addSort($data['group'], SolariumQuery::SORT_ASC);
                     $groupComponent = $searchService->getQuery()->getGrouping();
                     // Add sorting within group
-                    if ( ! empty($data['order'])) {
+                    if (! empty($data['order'])) {
                         $groupComponent->setSort($data['order'] . ' ' . $data['direction']);
                     }
                     $groupComponent->addField($data['group']);
@@ -276,7 +276,6 @@ class AffiliationManagerController extends AffiliationAbstractController
         $data = $this->getRequest()->getPost()->toArray();
 
         if (isset($data['merge'], $data['submit']) && $this->getRequest()->isPost()) {
-
             // Find the second affiliation
             $otherAffiliation  = $this->getAffiliationService()->findAffiliationById($data['merge']);
             $otherOrganisation = $otherAffiliation->getOrganisation();
@@ -297,7 +296,8 @@ class AffiliationManagerController extends AffiliationAbstractController
             }
 
             return $this->redirect()->toRoute(
-                'zfcadmin/affiliation/view', ['id' => $mainAffiliation->getId()]
+                'zfcadmin/affiliation/view',
+                ['id' => $mainAffiliation->getId()]
             );
         }
 
@@ -308,7 +308,6 @@ class AffiliationManagerController extends AffiliationAbstractController
             'projectService'      => $this->getProjectService(),
             'organisationService' => $this->getOrganisationService(),
         ]);
-
     }
 
     /**
@@ -333,10 +332,10 @@ class AffiliationManagerController extends AffiliationAbstractController
         $formData['marketAccess']     = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();
 
-        if ( ! is_null($affiliation->getDateEnd())) {
+        if (! is_null($affiliation->getDateEnd())) {
             $formData['dateEnd'] = $affiliation->getDateEnd()->format('Y-m-d');
         }
-        if ( ! is_null($affiliation->getDateSelfFunded())
+        if (! is_null($affiliation->getDateSelfFunded())
              || $affiliation->getSelfFunded() == Affiliation::SELF_FUNDED
         ) {
             if (is_null($affiliation->getDateSelfFunded())) {
@@ -349,7 +348,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         /**
          * Only fill the formData of the finanicalOrganisation when this is known
          */
-        if ( ! is_null($financial = $affiliation->getFinancial())) {
+        if (! is_null($financial = $affiliation->getFinancial())) {
             $formData['financialOrganisation'] = $financial->getOrganisation()->getId();
             $formData['financialBranch']       = $financial->getBranch();
             $formData['financialContact']      = $financial->getContact()->getId();
@@ -362,7 +361,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
         $form->get('contact')->injectContact($affiliation->getContact());
         $form->get('organisation')->injectOrganisation($affiliation->getOrganisation());
-        if ( ! is_null($affiliation->getFinancial())) {
+        if (! is_null($affiliation->getFinancial())) {
             $form->get('financialOrganisation')->injectOrganisation($affiliation->getFinancial()->getOrganisation());
             $form->get('financialContact')->injectContact($affiliation->getFinancial()->getContact());
         }
@@ -413,7 +412,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                 //Only update the financial when an financial organisation is chosen
 
-                if ( ! empty($formData['financialOrganisation'])) {
+                if (! empty($formData['financialOrganisation'])) {
                     if (is_null($financial = $affiliation->getFinancial())) {
                         $financial = new Financial();
                         $financial->setAffiliation($affiliation);
@@ -425,7 +424,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                     );
                     $financial->setContact($this->getContactService()->findContactById($formData['financialContact']));
                     $financial->setBranch($formData['financialBranch']);
-                    if ( ! empty($formData['emailCC'])) {
+                    if (! empty($formData['emailCC'])) {
                         $financial->setEmailCC($formData['emailCC']);
                     }
 
@@ -490,7 +489,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($this->getRequest()->isPost()) {
-            if ( ! empty($data['cancel'])) {
+            if (! empty($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
                     ['id' => $affiliation->getId()],
@@ -498,7 +497,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 );
             }
 
-            if ( ! empty($data['delete'])) {
+            if (! empty($data['delete'])) {
                 $affiliation->removeAssociate($contact);
                 $this->getAffiliationService()->updateEntity($affiliation);
 

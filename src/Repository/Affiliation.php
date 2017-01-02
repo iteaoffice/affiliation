@@ -468,8 +468,11 @@ class Affiliation extends EntityRepository
     public function findAffiliationInProjectLog(): array
     {
         $queryBuilder = $this->_em->createQueryBuilder();
-        $queryBuilder->select('affiliation_entity_affiliation', 'project_entity_project',
-            'organisation_entity_organisation');
+        $queryBuilder->select(
+            'affiliation_entity_affiliation',
+            'project_entity_project',
+            'organisation_entity_organisation'
+        );
         $queryBuilder->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
 
         $queryBuilder->innerJoin("affiliation_entity_affiliation.projectLog", 'project_entity_log');

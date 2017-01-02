@@ -67,8 +67,10 @@ class PaymentSheet extends LinkAbstract
                 'invoiceService'                 => $this->getInvoiceService(),
                 'versionService'                 => $this->getVersionService(),
                 'versionContributionInformation' => $this->getVersionService()
-                                                         ->getProjectVersionContributionInformation($affiliation,
-                                                             $latestVersion),
+                                                         ->getProjectVersionContributionInformation(
+                                                             $affiliation,
+                                                             $latestVersion
+                                                         ),
             ]
         );
     }

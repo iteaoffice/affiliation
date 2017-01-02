@@ -68,7 +68,7 @@ class AffiliationLink extends LinkAbstract
             ]
         );
 
-        if ( ! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
+        if (! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
             return $this->getAction() !== 'view-community' ? ''
                 : $this->getAffiliation()->getOrganisation()->getOrganisation();
         }

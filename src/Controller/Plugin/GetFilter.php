@@ -54,23 +54,23 @@ class GetFilter extends AbstractPlugin
         }
 
         //Create a new filter if not set already
-        if ( ! $filter) {
+        if (! $filter) {
             $filter = [];
         }
 
         //Add a default order and direction if not known in the filter
-        if ( ! isset($filter['order'])) {
+        if (! isset($filter['order'])) {
             $filter['order']     = 'id';
             $filter['direction'] = 'desc';
         }
 
         //Overrule the order if set in the query
-        if ( ! is_null($order)) {
+        if (! is_null($order)) {
             $filter['order'] = $order;
         }
 
         //Overrule the direction if set in the query
-        if ( ! is_null($direction)) {
+        if (! is_null($direction)) {
             $filter['direction'] = $direction;
         }
 

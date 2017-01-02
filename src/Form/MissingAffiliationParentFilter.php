@@ -13,7 +13,7 @@
  *
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Affiliation\Form;
 

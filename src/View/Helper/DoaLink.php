@@ -53,11 +53,11 @@ class DoaLink extends LinkAbstract
                 'name' => $this->getDoa(),
             ]
         );
-        if ( ! $this->hasAccess($this->getDoa(), DoaAssertion::class, $this->getAction())) {
+        if (! $this->hasAccess($this->getDoa(), DoaAssertion::class, $this->getAction())) {
             return '';
         }
 
-        if ( ! is_null($doa)) {
+        if (! is_null($doa)) {
             $this->addRouterParam('id', $this->getDoa()->getId());
             $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
         }
@@ -109,7 +109,7 @@ class DoaLink extends LinkAbstract
         /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
-        if ( ! is_null($affiliation)) {
+        if (! is_null($affiliation)) {
             $this->getDoa()->setAffiliation($affiliation);
         }
     }

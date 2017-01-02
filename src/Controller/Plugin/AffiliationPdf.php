@@ -32,7 +32,7 @@ class AffiliationPdf extends \FPDI
     public function header()
     {
         if (is_null($this->_tplIdx)) {
-            if ( ! file_exists($this->template)) {
+            if (! file_exists($this->template)) {
                 throw new \InvalidArgumentException(sprintf("Template %s cannot be found", $this->template));
             }
             $this->setSourceFile($this->template);
