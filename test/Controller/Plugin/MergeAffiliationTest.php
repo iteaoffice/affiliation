@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
-namespace AffiliationTest\Service;
+namespace AffiliationTest\Controller\Plugin;
 
 use Admin\Service\AdminService;
 use Affiliation\Controller\Plugin\MergeAffiliation;

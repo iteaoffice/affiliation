@@ -58,11 +58,13 @@
             <dt>{{ translate("txt-organisation-name") }}</dt>
             <dd>{{ organisationLink(organisation,'view-admin', 'name') }}
                 {{ affiliationLink(affiliation,'view-community', 'icon') }}
+                ({{ translate("txt-legacy") }})
             </dd>
-            <dt>{{ translate("txt-parent-organisation-name") }}</dt>
-            <dd>{{ parentOrganisationLink(affiliation.parentOrganisation,'view', 'organisation') }}</dd>
             <dt>{{ translate("txt-parent-name") }}</dt>
             <dd>{{ parentLink(affiliation.parentOrganisation.parent,'view', 'parent') }}</dd>
+            <dt>{{ translate("txt-parent-organisation-name") }}</dt>
+            <dd>{{ parentOrganisationLink(affiliation.parentOrganisation,'view', 'organisation') }}</dd>
+
             {% if affiliation.branch %}
                 <dt>{{ translate("txt-branch") }}</dt>
                 <dd><code>{{ affiliation.branch }}</code></dd>

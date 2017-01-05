@@ -31,6 +31,7 @@ use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
+use Organisation\Service\ParentService;
 use Program\Options\ModuleOptions as ProgramModuleOptions;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
@@ -103,6 +104,10 @@ final class ControllerFactory implements FactoryInterface
         /** @var OrganisationService $organisationService */
         $organisationService = $container->get(OrganisationService::class);
         $controller->setOrganisationService($organisationService);
+
+        /** @var ParentService $parentService */
+        $parentService = $container->get(ParentService::class);
+        $controller->setParentService($parentService);
 
         /** @var DeeplinkService $deeplinkService */
         $deeplinkService = $container->get(DeeplinkService::class);

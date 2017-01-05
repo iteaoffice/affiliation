@@ -26,6 +26,7 @@ use General\Service\GeneralService;
 use Invoice\Service\InvoiceService;
 use Mailing\Service\MailingService;
 use Organisation\Service\OrganisationService;
+use Organisation\Service\ParentService;
 use Program\Options\ModuleOptions as ProgramModuleOptions;
 use Program\Service\ProgramService;
 use Project\Service\ProjectService;
@@ -80,6 +81,10 @@ abstract class AffiliationAbstractController extends AbstractActionController
      * @var OrganisationService
      */
     protected $organisationService;
+    /**
+     * @var ParentService
+     */
+    protected $parentService;
     /**
      * @var ProjectService
      */
@@ -273,6 +278,26 @@ abstract class AffiliationAbstractController extends AbstractActionController
     public function setOrganisationService($organisationService)
     {
         $this->organisationService = $organisationService;
+
+        return $this;
+    }
+
+    /**
+     * @return ParentService
+     */
+    public function getParentService(): ParentService
+    {
+        return $this->parentService;
+    }
+
+    /**
+     * @param ParentService $parentService
+     *
+     * @return AffiliationAbstractController
+     */
+    public function setParentService(ParentService $parentService): AffiliationAbstractController
+    {
+        $this->parentService = $parentService;
 
         return $this;
     }

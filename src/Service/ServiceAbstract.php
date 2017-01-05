@@ -102,7 +102,7 @@ abstract class ServiceAbstract implements ServiceInterface
      * @param string $entity
      * @param        $id
      *
-     * @return null|Affiliation|Doa|Loi|Version
+     * @return null|EntityAbstract|object
      */
     public function findEntityById($entity, $id)
     {

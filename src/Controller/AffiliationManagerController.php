@@ -17,6 +17,8 @@ use Affiliation\Form\EditAssociate;
 use Affiliation\Form\MissingAffiliationParentFilter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as PaginatorAdapter;
+use Organisation\Entity\Name;
+use Organisation\Entity\Parent\Organisation;
 use Project\Acl\Assertion\Project as ProjectAssertion;
 use Search\Form\SearchResult;
 use Search\Paginator\Adapter\SolariumPaginator;
@@ -332,6 +334,20 @@ class AffiliationManagerController extends AffiliationAbstractController
         $formData['marketAccess']     = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();
 
+        //Try to populate the form based on the organisation known already
+        if (is_null($affiliation->getParentOrganisation())) {
+            $organisation = $affiliation->getOrganisation();
+            if (! is_null($organisation->getParent())) {
+                $formData['parent'] = $organisation->getParent()->getId();
+            }
+            if (! is_null($organisation->getParentOrganisation())) {
+                $formData['parentOrganisation'] = $organisation->getParentOrganisation()->getId();
+            }
+        } else {
+            $formData['parent']             = $affiliation->getParentOrganisation()->getParent()->getId();
+            $formData['parentOrganisation'] = $affiliation->getParentOrganisation()->getId();
+        }
+
         if (! is_null($affiliation->getDateEnd())) {
             $formData['dateEnd'] = $affiliation->getDateEnd()->format('Y-m-d');
         }
@@ -382,15 +398,77 @@ class AffiliationManagerController extends AffiliationAbstractController
             if ($form->isValid()) {
                 $formData = $form->getData();
 
+                //Find the selected organisation
+                $organisation = $this->getOrganisationService()
+                                     ->findOrganisationById($formData['organisation']);
+                $contact      = $this->getContactService()->findContactById($formData['contact']);
+
+                switch (true) {
+                    case ! empty($formData['parentOrganisation']):
+                        /** @var Organisation $parentOrganisation */
+                        $parentOrganisation = $this->getParentService()->findEntityById(
+                            Organisation::class,
+                            $formData['parentOrganisation']
+                        );
+                        $affiliation->setParentOrganisation($parentOrganisation);
+                        break;
+                    case ! empty($formData['parent']):
+                        //When a parent is selected, use that to find the $parent
+                        $parent             = $this->getParentService()->findParentById($formData['parent']);
+                        $parentOrganisation = $this->getParentService()->findParentOrganisationInParentByOrganisation(
+                            $parent,
+                            $organisation
+                        );
+
+                        if (is_null($parentOrganisation)) {
+                            $parentOrganisation = new Organisation();
+                            $parentOrganisation->setOrganisation($organisation);
+                            $parentOrganisation->setParent($parent);
+                            $parentOrganisation->setContact($this->getContactService()
+                                                                 ->findContactById($formData['contact']));
+                            $this->getParentService()->newEntity($parentOrganisation);
+                        }
+                        $affiliation->setParentOrganisation($parentOrganisation);
+                        break;
+                    case $formData['createParentFromOrganisation'] === '1':
+                        //Find first the organisation
+                        $organisation       = $this->getOrganisationService()
+                                                   ->findOrganisationById($formData['organisation']);
+                        $parentOrganisation = $this->getParentService()
+                                                   ->createParentAndParentOrganisationFromOrganisation(
+                                                       $organisation,
+                                                       $affiliation->getContact()
+                                                   );
+
+                        $affiliation->setParentOrganisation($parentOrganisation);
+                        break;
+                    default:
+                        $parentOrganisation = $affiliation->getParentOrganisation();
+                        break;
+                }
+
+                //The partner has been updated now, so we need to store the name of the organiation and the project
+                if (! is_null($parentOrganisation)
+                     && is_null($this->getOrganisationService()
+                                     ->findOrganisationNameByNameAndProject(
+                                         $parentOrganisation->getOrganisation(),
+                                         $organisation->getOrganisation(),
+                                         $affiliation->getProject()
+                                     ))
+                ) {
+                    $name = new Name();
+                    $name->setOrganisation($parentOrganisation->getOrganisation());
+                    $name->setName($organisation->getOrganisation());
+                    $name->setProject($affiliation->getProject());
+                    $this->getOrganisationService()->newEntity($name);
+                }
+
 
                 /**
                  * Update the affiliation based on the form information
                  */
-                $affiliation->setContact($this->getContactService()->findContactById($formData['contact']));
-                $affiliation->setOrganisation(
-                    $this->getOrganisationService()
-                         ->findOrganisationById($formData['organisation'])
-                );
+                $affiliation->setContact($contact);
+                $affiliation->setOrganisation($organisation);
                 $affiliation->setBranch($formData['branch']);
                 if (empty($formData['dateSelfFunded'])) {
                     $affiliation->setSelfFunded(Affiliation::NOT_SELF_FUNDED);

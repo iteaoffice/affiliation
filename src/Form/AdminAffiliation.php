@@ -13,6 +13,7 @@ namespace Affiliation\Form;
 use Affiliation\Entity\Affiliation;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
+use Organisation\Entity\OParent;
 use Organisation\Entity\Parent\Organisation;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -70,12 +71,54 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                     'allow_empty'     => true,
                     'label_generator' => function (Organisation $organisation) {
                         return sprintf(
-                            "%s (Parent: %s)",
+                            "%s (Parent: %s [%s])",
                             $organisation->getOrganisation(),
-                            $organisation->getParent()->getOrganisation()
+                            $organisation->getParent()->getOrganisation(),
+                            $organisation->getParent()->getOrganisation()->getCountry()
                         );
                     },
                     'help-block'      => _("txt-affiliation-parent-organisation-help-block"),
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => EntitySelect::class,
+                'name'       => 'parent',
+                'attributes' => [
+                    'label' => _("txt-parent"),
+
+                ],
+                'options'    => [
+                    'object_manager'  => $entityManager,
+                    'target_class'    => OParent::class,
+                    'find_method'     => [
+                        'name'   => 'findBy',
+                        'params' => [
+                            'criteria' => [],
+                            'orderBy'  => [
+                                'id' => 'ASC',
+                            ],
+                        ],
+                    ],
+                    'empty_option'    => '--' . "Find a parent",
+                    'allow_empty'     => true,
+                    'label_generator' => function (OParent $parent) {
+                        return sprintf("%s (%s)", $parent->getOrganisation(), $parent->getOrganisation()->getCountry());
+                    },
+                    'help-block'      => _("txt-affiliation-parent-help-block"),
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'    => 'Zend\Form\Element\Checkbox',
+                'name'    => 'createParentFromOrganisation',
+                'options' => [
+                    'label'      => _("txt-create-parent-from-organisation-label"),
+                    'help-block' => _("txt-create-parent-from-organisation-help-block"),
                 ],
             ]
         );
@@ -267,22 +310,28 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return [
-            'parentOrganisation'    => [
+            'parent'                       => [
                 'required' => false,
             ],
-            'dateEnd'               => [
+            'parentOrganisation'           => [
                 'required' => false,
             ],
-            'dateSelfFunded'        => [
+            'createParentFromOrganisation' => [
                 'required' => false,
             ],
-            'financialOrganisation' => [
+            'dateEnd'                      => [
                 'required' => false,
             ],
-            'financialContact'      => [
+            'dateSelfFunded'               => [
                 'required' => false,
             ],
-            'emailCC'               => [
+            'financialOrganisation'        => [
+                'required' => false,
+            ],
+            'financialContact'             => [
+                'required' => false,
+            ],
+            'emailCC'                      => [
                 'required' => false,
             ],
         ];
