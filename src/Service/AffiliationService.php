@@ -56,7 +56,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return bool
      */
-    public function isActive(Affiliation $affiliation)
+    public function isActive(Affiliation $affiliation): bool
     {
         return is_null($affiliation->getDateEnd());
     }
@@ -127,8 +127,46 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * @param Affiliation $affiliation
+     *
+     * @return null|\Organisation\Entity\Financial
+     */
+    public function findOrganisationFinancial(Affiliation $affiliation)
+    {
+        $organisation = null;
+
+        //We need to find the financial organisation and will do that in order of importance
+        //We will first try to find the organisation is if we can find this return the financial in the end
+        if (! is_null($affiliation->getParentOrganisation())) {
+            //We have to deal with the parent system
+            $parent = $affiliation->getParentOrganisation()->getParent();
+
+            $organisation = $parent->getOrganisation();
+            if (! is_null($parent->getFinancial())) {
+                $organisation = $parent->getFinancial()->getOrganisation();
+            }
+        }
+
+        //Organisation still not found, try to find it via the old way
+        if (is_null($organisation)) {
+            $organisation = $affiliation->getOrganisation();
+
+            if (! is_null($affiliation->getFinancial())) {
+                $organisation = $affiliation->getFinancial()->getOrganisation();
+            }
+        }
+
+        if (is_null($organisation) || is_null($organisation->getFinancial())) {
+            return null;
+        }
+
+        return $organisation->getFinancial();
+    }
+
+
+    /**
      * The VATnumber is first checked in the financial organisation. If that cannot be found we do a fallback
-     * tot he organisation > finanical
+     * tot he organisation > financial
      *
      * @param Affiliation $affiliation
      *
@@ -136,24 +174,13 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseVatNumber(Affiliation $affiliation)
     {
-        //Find first the corresponding organisation
-        switch (true) {
-            case ! is_null($affiliation->getFinancial()):
-                $organisation = $affiliation->getFinancial()->getOrganisation();
-                break;
-            default:
-                $organisation = $affiliation->getOrganisation();
-                break;
-        }
+        $financial = $this->findOrganisationFinancial($affiliation);
 
-        /**
-         * Return the VAT number is there is a financial organisation
-         */
-        if (is_null($organisation->getFinancial())) {
+        if (is_null($financial)) {
             return null;
         }
 
-        return $organisation->getFinancial()->getVat();
+        return $financial->getVat();
     }
 
     /**
@@ -190,7 +217,7 @@ class AffiliationService extends ServiceAbstract
             case is_null($affiliation->getFinancial()):
                 $errors[] = 'No financial organisation (affiliation financial) set for this partner';
                 break;
-            case ! is_null($affiliation->getDateEnd()):
+            case ! $this->isActive($affiliation):
                 $errors[] = 'Partner is de-activated';
                 break;
             case is_null($affiliation->getFinancial()->getOrganisation()->getFinancial()):
@@ -530,7 +557,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseContributionPaid(Affiliation $affiliation, $year, $period)
     {
-        $countribitionPaid = 0;
+        $countributionPaid = 0;
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year   = (int)$year;
         $period = (int)$period;
@@ -541,11 +568,11 @@ class AffiliationService extends ServiceAbstract
             if (! is_null($invoice->getInvoice()->getDayBookNumber())
                  && (($invoice->getPeriod() < $period && $invoice->getYear() == $year) || $invoice->getYear() < $year)
             ) {
-                $countribitionPaid += $invoice->getAmountInvoiced();
+                $countributionPaid += $invoice->getAmountInvoiced();
             }
         }
 
-        return $countribitionPaid;
+        return $countributionPaid;
     }
 
     /**
@@ -703,8 +730,9 @@ class AffiliationService extends ServiceAbstract
         $affiliations = $repository->findAffiliationByProjectAndWhich($project, $which);
         $result       = [];
         foreach ($affiliations as $affiliation) {
-            $result[$affiliation->getOrganisation()->getCountry()->getCountry()] = $affiliation->getOrganisation()
-                                                                                               ->getCountry();
+            $country = $affiliation->getOrganisation()->getCountry();
+
+            $result[$country->getCountry()] = $country;
         }
 
         ksort($result);
@@ -738,6 +766,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Organisation $organisation
      *
+     * @deprecated
      * @return ArrayCollection|Affiliation[]
      */
     public function findAffiliationByOrganisation(Organisation $organisation): ArrayCollection
@@ -746,6 +775,19 @@ class AffiliationService extends ServiceAbstract
         $repository = $this->getEntityManager()->getRepository(Affiliation::class);
 
         return new ArrayCollection($repository->findAffiliationByOrganisation($organisation));
+    }
+
+    /**
+     * @param Organisation $organisation
+     *
+     * @return ArrayCollection|Affiliation[]
+     */
+    public function findAffiliationByOrganisationViaParentOrganisation(Organisation $organisation): ArrayCollection
+    {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+
+        return new ArrayCollection($repository->findAffiliationByOrganisationViaParentOrganisation($organisation));
     }
 
     /**
@@ -767,14 +809,17 @@ class AffiliationService extends ServiceAbstract
             return null;
         }
         foreach ($project->getAffiliation() as $affiliation) {
-            if ($which === self::WHICH_ONLY_ACTIVE && ! is_null($affiliation->getDateEnd())) {
+            if ($which === self::WHICH_ONLY_ACTIVE && ! $this->isActive($affiliation)) {
                 continue;
             }
-            if ($which === self::WHICH_ONLY_INACTIVE && is_null($affiliation->getDateEnd())) {
+            if ($which === self::WHICH_ONLY_INACTIVE && $this->isActive($affiliation)) {
                 continue;
             }
-            if ($affiliation->getOrganisation()->getId() === $contact->getContactOrganisation()->getOrganisation()
-                                                                     ->getId()
+
+            //Do a match on the organisation or technical contact
+            if ($affiliation->getContact() === $contact
+                || $affiliation->getOrganisation()->getId() ===
+                   $contact->getContactOrganisation()->getOrganisation()->getId()
             ) {
                 return $affiliation;
             }

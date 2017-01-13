@@ -377,7 +377,7 @@ class Affiliation extends EntityRepository
 
     /**
      * @param Organisation $organisation
-     *
+     * @deprecated
      * @return Entity\Affiliation[]
      */
     public function findAffiliationByOrganisation(Organisation $organisation)
@@ -388,6 +388,27 @@ class Affiliation extends EntityRepository
         $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
 
         $qb->andWhere('affiliation_entity_affiliation.organisation = ?1');
+        $qb->setParameter(1, $organisation);
+
+        $qb->addOrderBy('project_entity_project.number', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param Organisation $organisation
+     *
+     * @return Entity\Affiliation[]
+     */
+    public function findAffiliationByOrganisationViaParentOrganisation(Organisation $organisation)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
+        $qb->join('affiliation_entity_affiliation.parentOrganisation', 'project_entity_parent_organisation');
+
+        $qb->andWhere('project_entity_parent_organisation.organisation = ?1');
         $qb->setParameter(1, $organisation);
 
         $qb->addOrderBy('project_entity_project.number', 'DESC');
