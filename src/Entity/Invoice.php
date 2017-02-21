@@ -26,7 +26,7 @@ use Zend\Form\Annotation;
 class Invoice extends EntityAbstract
 {
     /**
-     * @ORM\Column(name="affiliation_invoice_id", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_invoice_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -34,13 +34,13 @@ class Invoice extends EntityAbstract
      */
     private $id;
     /**
-     * @ORM\Column(name="period", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="period", type="integer", nullable=false)
      *
      * @var integer
      */
     private $period;
     /**
-     * @ORM\Column(name="year", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="year", type="integer", nullable=false)
      *
      * @var integer
      */

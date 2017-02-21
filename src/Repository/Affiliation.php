@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
 use InvalidArgumentException;
+use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
 use Program\Entity\Call\Call;
 use Project\Entity\Project;
@@ -30,7 +31,7 @@ class Affiliation extends EntityRepository
      * Returns the affiliations based on the which.
      *
      * @param Project $project
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -59,6 +60,59 @@ class Affiliation extends EntityRepository
         $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         return $qb->getQuery()->getResult();
+    }
+
+
+    /**
+     * @param Project $project
+     * @param int $which
+     * @param int $criterion
+     * @return Entity\Affiliation[]
+     */
+    public function findAffiliationByProjectAndWhichAndCriterion(Project $project, int $criterion, int $which)
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder->select('affiliation_entity_affiliation');
+        $queryBuilder->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $queryBuilder->join(
+            'affiliation_entity_affiliation.parentOrganisation',
+            'organisation_entity_parent_organisation'
+        );
+        $queryBuilder->join('organisation_entity_parent_organisation.parent', 'organisation_entity_parent');
+
+        $queryBuilder->where('affiliation_entity_affiliation.project = ?1');
+        $queryBuilder->setParameter(1, $project);
+
+        switch ($which) {
+            case AffiliationService::WHICH_ALL:
+                break;
+            case AffiliationService::WHICH_ONLY_ACTIVE:
+                $queryBuilder->andWhere($queryBuilder->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
+                break;
+            case AffiliationService::WHICH_ONLY_INACTIVE:
+                $queryBuilder->andWhere($queryBuilder->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
+                break;
+            default:
+                throw new \InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
+        }
+
+        switch ($criterion) {
+            case OParent::CRITERION_C_CHAMBER:
+                /** @var \Organisation\Repository\OParent $parentRepository */
+                $parentRepository = $this->_em->getRepository(\Organisation\Entity\OParent::class);
+                $queryBuilder = $parentRepository->limitCChambers($queryBuilder);
+                break;
+            case OParent::CRITERION_FREE_RIDER:
+                /** @var \Organisation\Repository\OParent $parentRepository */
+                $parentRepository = $this->_em->getRepository(OParent::class);
+                $queryBuilder = $parentRepository->limitFreeRiders($queryBuilder);
+                break;
+            default:
+                throw new \InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
+        }
+        $queryBuilder->addOrderBy('organisation_entity_parent.organisation', 'ASC');
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**
@@ -110,7 +164,7 @@ class Affiliation extends EntityRepository
          * @var $projectRepository \Project\Repository\Project
          */
         $projectRepository = $this->getEntityManager()->getRepository(Project::class);
-        $qb                = $projectRepository->onlyActiveProject($qb);
+        $qb = $projectRepository->onlyActiveProject($qb);
 
         /*
          * Fetch the corresponding projects
@@ -161,7 +215,7 @@ class Affiliation extends EntityRepository
          * @var $projectRepository \Project\Repository\Project
          */
         $projectRepository = $this->getEntityManager()->getRepository(Project::class);
-        $qb                = $projectRepository->onlyActiveProject($qb);
+        $qb = $projectRepository->onlyActiveProject($qb);
 
         /*
          * Exclude the found LOIs the corresponding projects
@@ -193,7 +247,7 @@ class Affiliation extends EntityRepository
      * Returns the affiliations based on the which.
      *
      * @param Version $version
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -235,12 +289,52 @@ class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+
+    /**
+     * This function will create a list of affiliations per parent
+     *
+     * @param OParent $parent
+     * @param $which
+     * @return Entity\Affiliation[]
+     */
+    public function findAffiliationByParentAndWhich(OParent $parent, int $which)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
+        $qb->join('project_entity_project.call', 'program_entity_call');
+
+        switch ($which) {
+            case AffiliationService::WHICH_ALL:
+                break;
+            case AffiliationService::WHICH_ONLY_ACTIVE:
+                $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
+                break;
+            case AffiliationService::WHICH_ONLY_INACTIVE:
+                $qb->andWhere($qb->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
+                break;
+            default:
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
+        }
+
+        $qb->join('affiliation_entity_affiliation.parentOrganisation', 'organisation_entity_parent_organisation');
+        $qb->where('organisation_entity_parent_organisation.parent = :parent');
+        $qb->setParameter('parent', $parent);
+
+        $qb->addOrderBy('program_entity_call.id', 'ASC');
+        $qb->addOrderBy('project_entity_project.docRef', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+
     /**
      * Returns the affiliations based on the which.
      *
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -289,7 +383,7 @@ class Affiliation extends EntityRepository
      *
      * @param Version $version
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -342,7 +436,7 @@ class Affiliation extends EntityRepository
      *
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -421,7 +515,7 @@ class Affiliation extends EntityRepository
      *
      * @param Project $project
      * @param Country $country
-     * @param int     $which
+     * @param int $which
      *
      * @throws InvalidArgumentException
      *
@@ -460,7 +554,7 @@ class Affiliation extends EntityRepository
      * Returns the number of affiliations per Country and Call.
      *
      * @param Country $country
-     * @param Call    $call
+     * @param Call $call
      *
      * @throws InvalidArgumentException
      *

@@ -27,7 +27,7 @@ use Zend\Form\Annotation;
 class Log extends EntityAbstract
 {
     /**
-     * @ORM\Column(name="log_id", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="log_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -35,13 +35,13 @@ class Log extends EntityAbstract
      */
     private $id;
     /**
-     * @ORM\Column(name="year", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="year", type="integer", nullable=false)
      *
      * @var integer
      */
     private $year;
     /**
-     * @ORM\Column(name="period", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="period", type="integer", nullable=false)
      *
      * @var integer
      */

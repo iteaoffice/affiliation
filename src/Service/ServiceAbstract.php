@@ -20,6 +20,7 @@ use BjyAuthorize\Service\Authorize;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
+use Organisation\Service\ParentService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -65,6 +66,10 @@ abstract class ServiceAbstract implements ServiceInterface
      * @var Affiliation
      */
     protected $affiliation;
+    /**
+     * @var ParentService
+     */
+    protected $parentService;
 
 
     /**
@@ -319,6 +324,25 @@ abstract class ServiceAbstract implements ServiceInterface
     public function setInvoiceService($invoiceService)
     {
         $this->invoiceService = $invoiceService;
+
+        return $this;
+    }
+
+    /**
+     * @return ParentService
+     */
+    public function getParentService(): ParentService
+    {
+        return $this->parentService;
+    }
+
+    /**
+     * @param ParentService $parentService
+     * @return ServiceAbstract
+     */
+    public function setParentService(ParentService $parentService): ServiceAbstract
+    {
+        $this->parentService = $parentService;
 
         return $this;
     }

@@ -27,7 +27,7 @@ use Zend\Form\Annotation;
 class LoiReminder extends EntityAbstract
 {
     /**
-     * @ORM\Column(name="reminder_id", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="reminder_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *

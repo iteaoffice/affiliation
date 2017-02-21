@@ -49,7 +49,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
             self::SELF_FUNDED     => 'txt-self-funded',
         ];
     /**
-     * @ORM\Column(name="affiliation_id", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
@@ -58,7 +58,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $id;
     /**
-     * @ORM\Column(name="branch", type="string", length=40, nullable=true)
+     * @ORM\Column(name="branch", type="string", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-branch"})
      *
@@ -298,7 +298,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $effort;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funded", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funded", cascade={"persist","remove"}, mappedBy="affiliation", orphanRemoval=true)
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Funding\Funded[]|Collections\ArrayCollection()

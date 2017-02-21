@@ -27,7 +27,7 @@ use Zend\Form\Annotation;
 class Description extends EntityAbstract
 {
     /**
-     * @ORM\Column(name="description_id", length=10, type="integer", nullable=false)
+     * @ORM\Column(name="description_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()

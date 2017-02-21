@@ -12,6 +12,7 @@
  *
  * @link        http://github.com/iteaoffice/main for the canonical source repository
  */
+
 namespace Affiliation\Factory;
 
 use Admin\Service\AdminService;
@@ -21,6 +22,7 @@ use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
+use Organisation\Service\ParentService;
 use Project\Service\VersionService;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
@@ -33,8 +35,8 @@ final class AffiliationServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
-     * @param string             $requestedName
-     * @param array|null         $options
+     * @param string $requestedName
+     * @param array|null $options
      *
      * @return AffiliationService
      */
@@ -58,6 +60,10 @@ final class AffiliationServiceFactory implements FactoryInterface
         /** @var VersionService $versionService */
         $versionService = $container->get(VersionService::class);
         $affiliationService->setVersionService($versionService);
+
+        /** @var ParentService $parentService */
+        $parentService = $container->get(ParentService::class);
+        $affiliationService->setParentService($parentService);
 
         /** @var OrganisationService $organisationService */
         $organisationService = $container->get(OrganisationService::class);
