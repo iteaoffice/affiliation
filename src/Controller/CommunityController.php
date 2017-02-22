@@ -48,7 +48,6 @@ class CommunityController extends AffiliationAbstractController
                     $affiliation->getProject()
                 )->versionType,
                 'hasProjectEditRights'  => $hasProjectEditRights,
-                'requirePartnership'    => $this->getProgramModuleOptions()->getRequirePartnership(),
                 'reportService'         => $this->getReportService(),
                 'versionService'        => $this->getVersionService(),
                 'invoiceService'        => $this->getInvoiceService(),
@@ -69,7 +68,7 @@ class CommunityController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $year   = (int)$this->params('year');
+        $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
         return new ViewModel(
@@ -94,25 +93,25 @@ class CommunityController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $year   = (int)$this->params('year');
+        $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
 
         $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period);
-        $response           = $this->getResponse();
+        $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-                 ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
-                 ->addHeaderLine(
-                     'Content-Disposition',
-                     'attachment; filename="' . sprintf(
-                         "payment_sheet_%s_%s_%sH.pdf",
-                         $affiliation->getOrganisation()->getDocRef(),
-                         $year,
-                         $period
-                     ) . '"'
-                 )
-                 ->addHeaderLine('Content-Type: application/pdf')
-                 ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
+            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
+            ->addHeaderLine(
+                'Content-Disposition',
+                'attachment; filename="' . sprintf(
+                    "payment_sheet_%s_%s_%sH.pdf",
+                    $affiliation->getOrganisation()->getDocRef(),
+                    $year,
+                    $period
+                ) . '"'
+            )
+            ->addHeaderLine('Content-Type: application/pdf')
+            ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
         $response->setContent($renderPaymentSheet->getPDFData());
 
         return $response;

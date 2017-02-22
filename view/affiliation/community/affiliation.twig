@@ -72,21 +72,6 @@
         </dl>
 
         <dl class="dl-horizontal">
-
-            {% if (requirePartnership) %}
-                <dt>{{ translate("txt-partnership") }}</dt>
-                <dd>
-                    {% if affiliation.organisation.partner %}
-                        {#{{ partnerLink(affiliation.organisation.partner,'view','name') }}#}
-                        {{ translate("txt-organsation-%s-is-partner-type-%s-since-%s")|format(affiliation.organisation,affiliation.organisation.partner.type,affiliation.organisation.partner.dateCreated|time_diff) }}
-                    {% elseif (affiliation.organisation.applicant) %}
-                        {{ applicantLink(affiliation.organisation.applicant,'view','text') }}
-                    {% else %}
-                        {{ applicantLink(null,'apply','text', null, null, null, affiliation.organisation) }}
-                    {% endif %}
-                </dd>
-            {% endif %}
-
             {% if affiliation.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
                 <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
                 <dd>{% for programDoa in affiliation.organisation.programDoa if programDoa.program.id == project.call.program.id %}
