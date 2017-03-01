@@ -138,6 +138,9 @@ class Affiliation extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+
+        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.parentOrganisation'));
 

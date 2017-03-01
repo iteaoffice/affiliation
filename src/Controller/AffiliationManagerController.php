@@ -655,8 +655,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     {
         $page = $this->params()->fromRoute('page', 1);
         $filterPlugin = $this->getAffiliationFilter();
-        $missingAffiliationParent = $this->getAffiliationService()
-            ->findMissingAffiliationParent($filterPlugin->getFilter());
+        $missingAffiliationParent = $this->getAffiliationService()->findMissingAffiliationParent();
 
         $paginator
             = new Paginator(new PaginatorAdapter(new ORMPaginator($missingAffiliationParent, false)));
