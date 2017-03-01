@@ -125,38 +125,38 @@
 	<field name="affiliation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
 	<field name="date_created" type="date" indexed="true" stored="true"/>
 	<field name="date_end" type="date" indexed="true" stored="true"/>
-	<field name="description" type="text_en_splitting" indexed="true" stored="true"/>
-	<field name="branch" type="c_text" indexed="true" stored="true" omitNorms="true"/>
-	<field name="value_chain" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-	<field name="market_access" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-	<field name="main_contribution" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+	<field name="description" type="string" indexed="true" stored="true"/>
+	<field name="branch" type="string" indexed="true" stored="true" omitNorms="true"/>
+	<field name="value_chain" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+	<field name="market_access" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+	<field name="main_contribution" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="date_self_funded" type="date" indexed="true" stored="true"/>
 
-	<field name="organisation" type="c_text" indexed="true" stored="true" omitNorms="true"  multiValued="false"/>
+	<field name="organisation" type="string" indexed="true" stored="true" omitNorms="true"  multiValued="false"/>
 	<field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="organisation" dest="organisation_sort"/>
 	<field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="organisation" dest="organisation_group"/>
 	<field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="organisation_type" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+	<field name="organisation_type" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="organisation_type_group" type="string" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="organisation_type" dest="organisation_type_group"/>
-	<field name="organisation_country" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+	<field name="organisation_country" type="string" indexed="true" stored="true" omitNorms="true"/>
 	<field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="organisation_country" dest="organisation_country_group"/>
 
-	<field name="project" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+	<field name="project" type="string" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
         <copyField source="project" dest="project_sort"/>
  	<field name="project_group" type="string" indexed="true" stored="false" multiValued="false"/>
         <copyField source="project" dest="project_group"/>
 	<field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_title" type="text_en_splitting" indexed="true" stored="true"/>
-	<field name="project_status" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_call" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+	<field name="project_title" type="string" indexed="true" stored="true"/>
+	<field name="project_status" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+	<field name="project_call" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_program" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+	<field name="project_program" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="project_program" dest="project_program_group"/>
 	<field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
@@ -176,19 +176,19 @@
         <field name="project_version_cost" type="double" indexed="true" stored="true" omitNorms="true"/>
         <field name="project_version_effort" type="double" indexed="true" stored="true" omitNorms="true"/>
 
-	<field name="contact" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+	<field name="contact" type="string" indexed="true" stored="true" omitNorms="true"/>
 	<field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
         <copyField source="contact" dest="contact_sort"/>
 	<field name="contact_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="contact_email" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-	<field name="contact_address" type="c_text" indexed="true" stored="true" omitNorms="true"/>
-	<field name="contact_zip" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-	<field name="contact_city" type="c_text" indexed="true" stored="true" omitNorms="true"/>
-	<field name="contact_country" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+	<field name="contact_email" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+	<field name="contact_address" type="string" indexed="true" stored="true" omitNorms="true"/>
+	<field name="contact_zip" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+	<field name="contact_city" type="string" indexed="true" stored="true" omitNorms="true"/>
+	<field name="contact_country" type="string" indexed="true" stored="true" omitNorms="true"/>
 
 	<!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
-	<field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+	<field name="text" type="string" indexed="true" stored="false" multiValued="true"/>
 
 	<!-- catchall text field that indexes tokens both normally and in reverse for efficient
         leading wildcard queries. -->
@@ -226,8 +226,8 @@
 	<dynamicField name="*_ss" type="string"  indexed="true"  stored="true" multiValued="true"/>
 	<dynamicField name="*_l"  type="long"   indexed="true"  stored="true"/>
 	<dynamicField name="*_ls" type="long"   indexed="true"  stored="true"  multiValued="true"/>
-	<dynamicField name="*_t"  type="text_general"    indexed="true"  stored="true"/>
-	<dynamicField name="*_txt" type="text_general"   indexed="true"  stored="true" multiValued="true"/>
+	<dynamicField name="*_t"  type="text_en_splitting"    indexed="true"  stored="true"/>
+	<dynamicField name="*_txt" type="text_en_splitting"   indexed="true"  stored="true" multiValued="true"/>
 	<dynamicField name="*_en"  type="text_en"    indexed="true"  stored="true" multiValued="true"/>
 	<dynamicField name="*_b"  type="boolean" indexed="true" stored="true"/>
 	<dynamicField name="*_bs" type="boolean" indexed="true" stored="true"  multiValued="true"/>
@@ -253,7 +253,7 @@
 	<dynamicField name="*_c"   type="currency" indexed="true"  stored="true"/>
 
 	<dynamicField name="ignored_*" type="ignored" multiValued="true"/>
-	<dynamicField name="attr_*" type="text_general" indexed="true" stored="true" multiValued="true"/>
+	<dynamicField name="attr_*" type="string" indexed="true" stored="true" multiValued="true"/>
 
 	<dynamicField name="random_*" type="random" />
 

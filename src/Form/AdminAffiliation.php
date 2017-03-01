@@ -11,10 +11,10 @@
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
-use Doctrine\ORM\EntityManager;
-use DoctrineORMModule\Form\Element\EntitySelect;
 use Organisation\Entity\OParent;
-use Organisation\Entity\Parent\Organisation;
+use Organisation\Service\ParentService;
+use Zend\Form\Element\Radio;
+use Zend\Form\Element\Select;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
@@ -25,11 +25,10 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
 {
     /**
      * AdminAffiliation constructor.
-     *
-     * @param Affiliation   $affiliation
-     * @param EntityManager $entityManager
+     * @param Affiliation $affiliation
+     * @param ParentService $parentService
      */
-    public function __construct(Affiliation $affiliation, EntityManager $entityManager)
+    public function __construct(Affiliation $affiliation, ParentService $parentService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -42,72 +41,97 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'type'    => 'Organisation\Form\Element\Organisation',
                 'name'    => 'organisation',
                 'options' => [
-                    'label' => _("txt-organisation"),
+                    'label'      => _("txt-organisation"),
+                    'help-block' => _("txt-edit-affiliation-organisation-help-block"),
                 ],
             ]
         );
 
+        //Try to find parentOrganisations based on the 'name' of the original organisation
+        $parentOrganisationLike = $parentService->findParentOrganisationByNameLike($affiliation->getOrganisation()->getOrganisation());
+        $parentOrganisations = ['' => '-- None of the options'];
+        foreach ($parentOrganisationLike as $parentOrganisation) {
+            $parentOrganisations[$parentOrganisation->getId()] = sprintf('%s (%s)',
+                $parentOrganisation->getOrganisation(),
+                $parentOrganisation->getOrganisation()->getCountry()->getIso3());
+        }
+
         $this->add(
             [
-                'type'       => EntitySelect::class,
+                'type'       => Radio::class,
+                'name'       => 'parentOrganisationLike',
+                'attributes' => [
+                    'label' => _("txt-suggested-parent-organisation"),
+
+                ],
+                'options'    => [
+                    'empty_option'  => '--' . "Find a parent organisation",
+                    'allow_empty'   => true,
+                    'value_options' => $parentOrganisations,
+                    'help-block'    => _("txt-suggested-affiliation-parent-organisation-help-block"),
+                ],
+            ]
+        );
+
+        //Create a list of all parentOrganisations
+        /** @var OParent[] $parents */
+        $parents = $parentService->findAll(OParent::class);
+
+        $parentsAndOrganisations = [];
+        $parentOptions = [];
+
+        foreach ($parents as $parent) {
+            $parentOrganisations = [];
+            foreach ($parent->getParentOrganisation() as $parentOrganisation) {
+                $parentOrganisations[$parentOrganisation->getId()] = sprintf('%s (%s)',
+                    $parentOrganisation->getOrganisation(),
+                    $parentOrganisation->getOrganisation()->getCountry()->getIso3());
+            }
+            asort($parentOrganisations);
+
+            //Only add the parent to the array if there are 1 or more organisations in the parent
+            if (count($parentOrganisations) > 0) {
+                $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()] = ['label' => $parent->getOrganisation()->getOrganisation()];
+                $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()]['options'] = $parentOrganisations;
+            }
+
+            $parentOptions[$parent->getId()] = sprintf('%s (%s)', $parent->getOrganisation(),
+                $parent->getOrganisation()->getCountry()->getIso3());
+        }
+
+        ksort($parentsAndOrganisations);
+        asort($parentOptions);
+
+        $this->add(
+            [
+                'type'       => Select::class,
                 'name'       => 'parentOrganisation',
                 'attributes' => [
                     'label' => _("txt-parent-organisation"),
 
                 ],
                 'options'    => [
-                    'object_manager'  => $entityManager,
-                    'target_class'    => Organisation::class,
-                    'find_method'     => [
-                        'name'   => 'findBy',
-                        'params' => [
-                            'criteria' => [],
-                            'orderBy'  => [
-                                'parent' => 'ASC',
-                            ],
-                        ],
-                    ],
-                    'empty_option'    => '--' . "Find a parent-organisation",
-                    'allow_empty'     => true,
-                    'label_generator' => function (Organisation $organisation) {
-                        return sprintf(
-                            "%s (Parent: %s [%s])",
-                            $organisation->getOrganisation(),
-                            $organisation->getParent()->getOrganisation(),
-                            $organisation->getParent()->getOrganisation()->getCountry()
-                        );
-                    },
-                    'help-block'      => _("txt-affiliation-parent-organisation-help-block"),
+                    'empty_option'  => '--' . "Find a parent organisation",
+                    'allow_empty'   => true,
+                    'value_options' => $parentsAndOrganisations,
+                    'help-block'    => _("txt-affiliation-parent-organisation-help-block"),
                 ],
             ]
         );
 
         $this->add(
             [
-                'type'       => EntitySelect::class,
+                'type'       => Select::class,
                 'name'       => 'parent',
                 'attributes' => [
                     'label' => _("txt-parent"),
 
                 ],
                 'options'    => [
-                    'object_manager'  => $entityManager,
-                    'target_class'    => OParent::class,
-                    'find_method'     => [
-                        'name'   => 'findBy',
-                        'params' => [
-                            'criteria' => [],
-                            'orderBy'  => [
-                                'id' => 'ASC',
-                            ],
-                        ],
-                    ],
-                    'empty_option'    => '--' . "Find a parent",
-                    'allow_empty'     => true,
-                    'label_generator' => function (OParent $parent) {
-                        return sprintf("%s (%s)", $parent->getOrganisation(), $parent->getOrganisation()->getCountry());
-                    },
-                    'help-block'      => _("txt-affiliation-parent-help-block"),
+                    'empty_option'  => '--' . "Find a parent",
+                    'allow_empty'   => true,
+                    'value_options' => $parentOptions,
+                    'help-block'    => _("txt-affiliation-parent-help-block"),
                 ],
             ]
         );
@@ -162,7 +186,8 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'type'    => 'Contact\Form\Element\Contact',
                 'name'    => 'contact',
                 'options' => [
-                    'label' => _("txt-technical-contact"),
+                    'label'      => _("txt-technical-contact"),
+                    'help-block' => _("txt-edit-affiliation-technical-contact-help-block"),
                 ],
             ]
         );
@@ -307,13 +332,16 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'parent'                       => [
                 'required' => false,
             ],
             'parentOrganisation'           => [
+                'required' => false,
+            ],
+            'parentOrganisationLike'       => [
                 'required' => false,
             ],
             'createParentFromOrganisation' => [

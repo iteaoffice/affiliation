@@ -70,7 +70,7 @@ class Invoice extends EntityAbstract
      */
     private $affiliation;
     /**
-     * @ORM\OneToOne(targetEntity="Invoice\Entity\Invoice", inversedBy="affiliationInvoice", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Invoice\Entity\Invoice", inversedBy="affiliationInvoice", cascade={"persist","remove"})
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="invoice_id", referencedColumnName="invoice_id", nullable=false)
      * })

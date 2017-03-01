@@ -62,38 +62,38 @@ class AffiliationSearchService extends AbstractSearchService
      * <field name="affiliation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="date_created" type="date" indexed="true" stored="true"/>
      * <field name="date_end" type="date" indexed="true" stored="true"/>
-     * <field name="description" type="text_en_splitting" indexed="true" stored="true"/>
-     * <field name="branch" type="c_text" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="value_chain" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="market_access" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="main_contribution" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="description" type="string" indexed="true" stored="true"/>
+     * <field name="branch" type="string" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="value_chain" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="market_access" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="main_contribution" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
      * <field name="date_self_funded" type="date" indexed="true" stored="true"/>
      *
-     * <field name="organisation" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="organisation" type="string" indexed="true" stored="true" omitNorms="true"/>
      * <field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="organisation" dest="organisation_sort"/>
      * <field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="organisation" dest="organisation_group"/>
      * <field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="organisation_type" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="organisation_type" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
      * <field name="organisation_type_group" type="string" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="organisation_type" dest="organisation_type_group"/>
-     * <field name="organisation_country" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="organisation_country" type="string" indexed="true" stored="true" omitNorms="true"/>
      * <field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="organisation_country" dest="organisation_country_group"/>
      *
-     * <field name="project" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project" type="string" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="project" dest="project_sort"/>
      * <field name="project_group" type="string" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="project" dest="project_group"/>
      * <field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="project_title" type="text_en_splitting" indexed="true" stored="true"/>
-     * <field name="project_status" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="project_call" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_title" type="string" indexed="true" stored="true"/>
+     * <field name="project_status" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_call" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="project_program" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="project_program" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="project_program" dest="project_program_group"/>
      * <field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
@@ -113,15 +113,15 @@ class AffiliationSearchService extends AbstractSearchService
      * <field name="project_version_cost" type="double" indexed="true" stored="true" omitNorms="true"/>
      * <field name="project_version_effort" type="double" indexed="true" stored="true" omitNorms="true"/>
      *
-     * <field name="contact" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="contact" type="string" indexed="true" stored="true" omitNorms="true"/>
      * <field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
      * <copyField source="contact" dest="contact_sort"/>
      * <field name="contact_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="contact_email" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="contact_address" type="c_text" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="contact_zip" type="lowercase" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="contact_city" type="c_text" indexed="true" stored="true" omitNorms="true"/>
-     * <field name="contact_country" type="c_text" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="contact_email" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="contact_address" type="string" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="contact_zip" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="contact_city" type="string" indexed="true" stored="true" omitNorms="true"/>
+     * <field name="contact_country" type="string" indexed="true" stored="true" omitNorms="true"/>
      *
      * @return \Solarium\Core\Query\Result\ResultInterface
      * @throws \Solarium\Exception\HttpException
@@ -140,7 +140,7 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument                 = $update->createDocument();
         $affiliationDocument->affiliation_id = $affiliation->getId();
         $affiliationDocument->date_created   = $affiliation->getDateCreated()->format(static::DATE_SOLR);
-        if (! is_null($affiliation->getDateEnd())) {
+        if ( ! is_null($affiliation->getDateEnd())) {
             $affiliationDocument->date_end = $affiliation->getDateEnd()->format(static::DATE_SOLR);
         }
         $descriptionMerged = '';
@@ -152,7 +152,7 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument->value_chain       = $affiliation->getValueChain();
         $affiliationDocument->market_access     = $affiliation->getMarketAccess();
         $affiliationDocument->main_contribution = $affiliation->getMainContribution();
-        if (! is_null($affiliation->getDateSelfFunded())) {
+        if ( ! is_null($affiliation->getDateSelfFunded())) {
             $affiliationDocument->date_self_funded = $affiliation->getDateSelfFunded()->format(static::DATE_SOLR);
         }
 
@@ -175,20 +175,20 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument->project_draft_effort = $projectService->findTotalEffortByProject($project);
 
         $latestVersion = $projectService->getLatestProjectVersion($project, null, null, true, false);
-        if (! is_null($latestVersion)) {
+        if ( ! is_null($latestVersion)) {
             $affiliationDocument->project_latest_version_id     = $latestVersion->getId();
             $affiliationDocument->project_latest_version_type   = $latestVersion->getVersionType()->getType();
             $affiliationDocument->project_latest_version_status = $versionService->parseStatus($latestVersion);
             $affiliationDocument->project_latest_version_cost
                                                                 = $versionService->findTotalCostVersionByAffiliationAndVersion(
-                                                                    $affiliation,
-                                                                    $latestVersion
-                                                                );
+                $affiliation,
+                $latestVersion
+            );
             $affiliationDocument->project_latest_version_effort
                                                                 = $versionService->findTotalEffortVersionByAffiliationAndVersion(
-                                                                    $affiliation,
-                                                                    $latestVersion
-                                                                );
+                $affiliation,
+                $latestVersion
+            );
         }
 
         // Contact
@@ -196,7 +196,7 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument->contact_id    = $contact->getId();
         $affiliationDocument->contact_email = $contact->getEmail();
         $contactVisitAddress                = $this->getContactService()->getVisitAddress($contact);
-        if (! is_null($contactVisitAddress)) {
+        if ( ! is_null($contactVisitAddress)) {
             $affiliationDocument->contact_address = $contactVisitAddress->getAddress();
             $affiliationDocument->contact_zip     = $contactVisitAddress->getZipCode();
             $affiliationDocument->contact_city    = $contactVisitAddress->getCity();
@@ -220,14 +220,14 @@ class AffiliationSearchService extends AbstractSearchService
             $affiliationDocumentClone->project_version_status  = $versionService->parseStatus($version);
             $affiliationDocumentClone->project_version_effort
                                                                = $versionService->findTotalEffortVersionByAffiliationAndVersion(
-                                                                   $affiliation,
-                                                                   $version
-                                                               );
+                $affiliation,
+                $version
+            );
             $affiliationDocumentClone->project_version_cost
                                                                = $versionService->findTotalCostVersionByAffiliationAndVersion(
-                                                                   $affiliation,
-                                                                   $version
-                                                               );
+                $affiliation,
+                $version
+            );
 
             // Add the version to the documents
             $documents[] = $affiliationDocumentClone;
