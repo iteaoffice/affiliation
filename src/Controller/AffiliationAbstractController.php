@@ -74,6 +74,10 @@ abstract class AffiliationAbstractController extends AbstractActionController
      */
     protected $invoiceService;
     /**
+     * @var \Invoice\Options\ModuleOptions;
+     */
+    protected $invoiceModuleOptions;
+    /**
      * @var DeeplinkService
      */
     protected $deeplinkService;
@@ -238,6 +242,25 @@ abstract class AffiliationAbstractController extends AbstractActionController
     public function setInvoiceService($invoiceService)
     {
         $this->invoiceService = $invoiceService;
+
+        return $this;
+    }
+
+    /**
+     * @return \Invoice\Options\ModuleOptions
+     */
+    public function getInvoiceModuleOptions(): \Invoice\Options\ModuleOptions
+    {
+        return $this->invoiceModuleOptions;
+    }
+
+    /**
+     * @param \Invoice\Options\ModuleOptions $invoiceModuleOptions
+     * @return AffiliationAbstractController
+     */
+    public function setInvoiceModuleOptions(\Invoice\Options\ModuleOptions $invoiceModuleOptions
+    ): AffiliationAbstractController {
+        $this->invoiceModuleOptions = $invoiceModuleOptions;
 
         return $this;
     }

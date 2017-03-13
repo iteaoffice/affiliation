@@ -16,7 +16,6 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice;
 use Affiliation\Entity\Log as AffiliationLog;
 use Affiliation\Entity\Version as AffiliationVersion;
-use Testing\Util\AbstractServiceTest;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
@@ -33,6 +32,7 @@ use Project\Entity\Log as ProjectLog;
 use Project\Entity\Report\EffortSpent;
 use Project\Entity\Version\Version as ProjectVersion;
 use Project\Entity\Workpackage\Workpackage;
+use Testing\Util\AbstractServiceTest;
 
 /**
  * Class MergeAffiliationTest
@@ -55,7 +55,7 @@ class MergeAffiliationTest extends AbstractServiceTest
      */
     public function setUp()
     {
-        $this->mainAffiliation  = $this->createMainAffiliation();
+        $this->mainAffiliation = $this->createMainAffiliation();
         $this->otherAffiliation = $this->createOtherAffiliation();
         $this->mergeAffiliation = new MergeAffiliation();
     }
@@ -328,12 +328,11 @@ class MergeAffiliationTest extends AbstractServiceTest
     /**
      * Test merging of entities that are not affected by the chosen merge strategy
      *
-     * @covers \Affiliation\Controller\Plugin\MergeAffiliation
      */
     public function testMergeAffiliationGeneral()
     {
         $mergeAffiliation = $this->mergeAffiliation;
-        $strategy         = MergeAffiliation::STRATEGY_USE_MAIN;
+        $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
         $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
         $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
@@ -388,16 +387,16 @@ class MergeAffiliationTest extends AbstractServiceTest
      * Set up the entity manager mock object with expectations depending on the chosen merge strategy.
      *
      * @param integer $strategy
-     * @param bool    $throwException
+     * @param bool $throwException
      *
      * @return EntityManager|MockObject
      */
     private function setUpEntityManagerMock(int $strategy, $throwException = false): MockObject
     {
         $entityManagerMock = $this->getMockBuilder(EntityManager::class)
-                                  ->disableOriginalConstructor()
-                                  ->setMethods(['persist', 'remove', 'flush'])
-                                  ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['persist', 'remove', 'flush'])
+            ->getMock();
 
         // Short circuit when an exception should be thrown
         if ($throwException) {
@@ -455,8 +454,8 @@ class MergeAffiliationTest extends AbstractServiceTest
         }
 
         $entityManagerMock->expects($this->exactly(count($params)))
-                          ->method('persist')
-                          ->withConsecutive(...$params);
+            ->method('persist')
+            ->withConsecutive(...$params);
 
         $params = [
             [$this->identicalTo($this->otherAffiliation->getCost()->first())],
@@ -468,8 +467,8 @@ class MergeAffiliationTest extends AbstractServiceTest
             [$this->identicalTo($this->otherAffiliation)],
         ];
         $entityManagerMock->expects($this->exactly(count($params)))
-                          ->method('remove')
-                          ->withConsecutive(...$params);
+            ->method('remove')
+            ->withConsecutive(...$params);
 
         $entityManagerMock->expects($this->once())->method('flush');
 
@@ -484,16 +483,16 @@ class MergeAffiliationTest extends AbstractServiceTest
     private function setUpAdminServiceMock(): MockObject
     {
         $adminServiceMock = $this->getMockBuilder(AdminService::class)
-                                 ->setMethods(['flushPermitsByEntityAndId'])
-                                 ->getMock();
+            ->setMethods(['flushPermitsByEntityAndId'])
+            ->getMock();
 
         $adminServiceMock->expects($this->exactly(1))
-                         ->method('flushPermitsByEntityAndId')
-                         ->with(
-                             $this->identicalTo($this->mainAffiliation->get('underscore_entity_name')),
-                             $this->identicalTo($this->mainAffiliation->getId())
-                         )
-                         ->will($this->returnValue(true));
+            ->method('flushPermitsByEntityAndId')
+            ->with(
+                $this->identicalTo($this->mainAffiliation->get('underscore_entity_name')),
+                $this->identicalTo($this->mainAffiliation->getId())
+            )
+            ->will($this->returnValue(true));
 
         return $adminServiceMock;
     }
@@ -506,7 +505,7 @@ class MergeAffiliationTest extends AbstractServiceTest
     public function testMergeAffiliationSum()
     {
         $mergeAffiliation = $this->mergeAffiliation;
-        $strategy         = MergeAffiliation::STRATEGY_SUM;
+        $strategy = MergeAffiliation::STRATEGY_SUM;
         $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
         $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
@@ -583,7 +582,7 @@ class MergeAffiliationTest extends AbstractServiceTest
     public function testMergeAffiliationUseMain()
     {
         $mergeAffiliation = $this->mergeAffiliation;
-        $strategy         = MergeAffiliation::STRATEGY_USE_MAIN;
+        $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
         $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
         $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
@@ -662,7 +661,7 @@ class MergeAffiliationTest extends AbstractServiceTest
     public function testMergeAffiliationUseOther()
     {
         $mergeAffiliation = $this->mergeAffiliation;
-        $strategy         = MergeAffiliation::STRATEGY_USE_OTHER;
+        $strategy = MergeAffiliation::STRATEGY_USE_OTHER;
         $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
         $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
@@ -741,7 +740,7 @@ class MergeAffiliationTest extends AbstractServiceTest
     public function testMergeAffiliationException()
     {
         $mergeAffiliation = $this->mergeAffiliation;
-        $strategy         = MergeAffiliation::STRATEGY_USE_MAIN;
+        $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
         $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy, true));
 
         // Run the merge

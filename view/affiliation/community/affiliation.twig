@@ -42,8 +42,11 @@
     {% if projectService.isLabelled(affiliation.project) %}
         <li><a href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
     {% endif %}
-    {% if isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial') %}
+    {% if not invoiceViaParent and (isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial')) %}
         <li><a href="#invoicing" data-toggle="tab">{{ translate("txt-invoicing") }}</a></li>
+    {% endif %}
+    {% if invoiceViaParent %}
+        <li><a href="#parent" data-toggle="tab">{{ translate("txt-membership") }}</a></li>
     {% endif %}
 </ul>
 
@@ -558,7 +561,7 @@
     {% endif %}
 
 
-    {% if isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial') %}
+    {% if not invoiceViaParent and (isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial')) %}
         <br>
         <div class="tab-pane" id="invoicing">
 
@@ -587,25 +590,20 @@
                             <dd>{{ financialAddress.country|upper }}</dd>
                         </dl>
 
-                    {% else %}
-                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliation))|raw }}
-                    {% endif %}
-
-
-                    {% if affiliation.organisation.financial %}
                         <dl class="dl-horizontal">
                             <dt>{{ translate('txt-vat-number') }}</dt>
-                            <dd>{{ affiliation.organisation.financial.vat }}</dd>
+                            <dd>{{ affiliation.financial.organisation.financial.vat }}</dd>
 
                             <dt>{{ translate("txt-preferred-delivery") }}</dt>
-                            {% if affiliation.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
+                            {% if affiliation.financial.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
                                 <dd>{{ translate("txt-by-email-to-%s")|format(affiliation.financial.contact.email) }}</dd>
                             {% else %}
                                 <dd>{{ translate("txt-by-postal-mail") }}</dd>
                             {% endif %}
                         </dl>
+
                     {% else %}
-                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-the-organisation-%s")|format(affiliation.organisation))|raw }}
+                        {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliation))|raw }}
                     {% endif %}
 
                     {{ affiliationLink(affiliation, 'edit-financial','button') }}
@@ -656,6 +654,32 @@
                     </tab>
                 {% endif %}
             </tabset>
+        </div>
+    {% endif %}
+
+
+    {% if invoiceViaParent %}
+        <div class="tab-pane" id="parent">
+
+            <h4>{{ translate("txt-project-partner-parent-information") }}</h4>
+
+            {% if affiliation.parentOrganisation %}
+
+                <dl class="dl-horizontal">
+                    <dt>{{ translate("txt-parent") }}</dt>
+                    <dd>{{ affiliation.parentOrganisation.parent.organisation }}
+                        ({{ affiliation.parentOrganisation.parent.organisation.country }})
+                    </dd>
+                    <dt>{{ translate("txt-organisation-type") }}</dt>
+                    <dd>{{ affiliation.parentOrganisation.parent.organisation.type }}</dd>
+                    <dt>{{ translate("txt-parent-type") }}</dt>
+                    <dd>{{ affiliation.parentOrganisation.parent.type }}</dd>
+                </dl>
+
+                <p>{{ translate("txt-parent-status-incorrect-contact-the-office-message") }}</p>
+            {% else %}
+                {{ ztbalert().info(translate("txt-affiliation-%s-%s-is-not-member-of-the-organisation")|format(affilation.organisation, affiliation.organisation.country))|raw }}
+            {% endif %}
         </div>
     {% endif %}
 </div>

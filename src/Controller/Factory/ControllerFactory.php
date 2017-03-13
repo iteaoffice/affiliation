@@ -51,8 +51,8 @@ final class ControllerFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface|ControllerManager $container
-     * @param string                               $requestedName
-     * @param array|null                           $options
+     * @param string $requestedName
+     * @param array|null $options
      *
      * @return AffiliationAbstractController
      */
@@ -128,6 +128,10 @@ final class ControllerFactory implements FactoryInterface
         /** @var InvoiceService $invoiceService */
         $invoiceService = $container->get(InvoiceService::class);
         $controller->setInvoiceService($invoiceService);
+
+        /** @var \Invoice\Options\ModuleOptions $invoiceModuleOptions */
+        $invoiceModuleOptions = $container->get(\Invoice\Options\ModuleOptions::class);
+        $controller->setInvoiceModuleOptions($invoiceModuleOptions);
 
         /** @var ReportService $reportService */
         $reportService = $container->get(ReportService::class);

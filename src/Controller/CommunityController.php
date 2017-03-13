@@ -53,6 +53,7 @@ class CommunityController extends AffiliationAbstractController
                 'invoiceService'        => $this->getInvoiceService(),
                 'contactService'        => $this->getContactService(),
                 'organisationService'   => $this->getOrganisationService(),
+                'invoiceViaParent'      => $this->getInvoiceModuleOptions()->getInvoiceViaParent()
             ]
         );
     }
