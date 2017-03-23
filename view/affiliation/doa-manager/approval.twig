@@ -7,39 +7,43 @@
 
 <h1>{{ translate("txt-unapproved-affiliation-doa") }}</h1>
 
-<p>{{ translate("txt-unapproved-affiliation-doa-explanation") }}</p>
+{% if doa|length > 0 %}
+    <p>{{ translate("txt-unapproved-affiliation-doa-explanation") }}</p>
 
-<table class="table table-hover table-condensed table-striped">
-    <thead>
-    <tr>
-        <th>{{ translate("txt-organisation") }}</th>
-        <th>{{ translate("txt-country") }}</th>
-        <th>{{ translate("txt-project") }}</th>
-        <th>{{ translate("txt-operations") }}</th>
-        <th>{{ translate("txt-signer") }}</th>
-        <th>{{ translate("txt-date-signed") }}</th>
-        <th>{{ translate("txt-approve") }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for doa in doa %}
-        <tr id="doa-{{ doa.id }}">
-            <td>{{ affiliationLink(doa.affiliation,'view-community','name') }}</td>
-            <td>{{ doa.affiliation.organisation.country }}</td>
-            <td>{{ projectLink(doa.affiliation.project,'view-admin','name') }}</td>
-            <td>{{ doaLink(doa,'view-admin','icon') }} {{ doaLink(doa,'download','icon') }}</td>
-            <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('contact').setValue(doa.contact.id)) }}</td>
-            <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('dateSigned')) }}</td>
-            <td>
-                <button type="button" rel="{{ doa.id }}" data-complete-text="Approved"
-                        class="btn btn-info approveButton"
-                        autocomplete="off"><i class="fa fa-check"></i>
-                    {{ translate("txt-approve") }}</button>
-            </td>
+    <table class="table table-hover table-condensed table-striped">
+        <thead>
+        <tr>
+            <th>{{ translate("txt-organisation") }}</th>
+            <th>{{ translate("txt-country") }}</th>
+            <th>{{ translate("txt-project") }}</th>
+            <th>{{ translate("txt-operations") }}</th>
+            <th>{{ translate("txt-signer") }}</th>
+            <th>{{ translate("txt-date-signed") }}</th>
+            <th>{{ translate("txt-approve") }}</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for doa in doa %}
+            <tr id="doa-{{ doa.id }}">
+                <td>{{ affiliationLink(doa.affiliation,'view-community','name') }}</td>
+                <td>{{ doa.affiliation.organisation.country }}</td>
+                <td>{{ projectLink(doa.affiliation.project,'view-admin','name') }}</td>
+                <td>{{ doaLink(doa,'view-admin','icon') }} {{ doaLink(doa,'download','icon') }}</td>
+                <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('contact').setValue(doa.contact.id)) }}</td>
+                <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('dateSigned')) }}</td>
+                <td>
+                    <button type="button" rel="{{ doa.id }}" data-complete-text="Approved"
+                            class="btn btn-info approveButton"
+                            autocomplete="off"><i class="fa fa-check"></i>
+                        {{ translate("txt-approve") }}</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {{ ztbalert().info(translate('txt-no-affiliation-doa-are-waiting-for-approval'))|raw }}
+{% endif %}
 
 <script type="text/javascript">
 

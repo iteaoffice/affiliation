@@ -6,38 +6,41 @@
 ) %}
 
 <h1>{{ translate("txt-unapproved-affiliation-loi") }}</h1>
-
-<table class="table table-hover table-condensed table-striped">
-    <thead>
-    <tr>
-        <th>{{ translate("txt-organisation") }}</th>
-        <th>{{ translate("txt-country") }}</th>
-        <th>{{ translate("txt-project") }}</th>
-        <th>{{ translate("txt-operations") }}</th>
-        <th>{{ translate("txt-signer") }}</th>
-        <th>{{ translate("txt-date-signed") }}</th>
-        <th>{{ translate("txt-approve") }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for loi in loi %}
-        <tr id="loi-{{ loi.id }}">
-            <td>{{ affiliationLink(loi.affiliation,'view-community','name') }}</td>
-            <td>{{ loi.affiliation.organisation.country }}</td>
-            <td>{{ projectLink(loi.affiliation.project,'view-admin','name') }}</td>
-            <td>{{ loiLink(loi,'view-admin','icon') }} {{ loiLink(loi,'download','icon') }}</td>
-            <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact').setValue(loi.contact.id)) }}</td>
-            <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('dateSigned')) }}</td>
-            <td>
-                <button type="button" rel="{{ loi.id }}" data-complete-text="Approved"
-                        class="btn btn-info approveButton"
-                        autocomplete="off"><i class="fa fa-check"></i>
-                    {{ translate("txt-approve") }}</button>
-            </td>
+{% if loi|length > 0 %}
+    <table class="table table-hover table-condensed table-striped">
+        <thead>
+        <tr>
+            <th>{{ translate("txt-organisation") }}</th>
+            <th>{{ translate("txt-country") }}</th>
+            <th>{{ translate("txt-project") }}</th>
+            <th>{{ translate("txt-operations") }}</th>
+            <th>{{ translate("txt-signer") }}</th>
+            <th>{{ translate("txt-date-signed") }}</th>
+            <th>{{ translate("txt-approve") }}</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for loi in loi %}
+            <tr id="loi-{{ loi.id }}">
+                <td>{{ affiliationLink(loi.affiliation,'view-community','name') }}</td>
+                <td>{{ loi.affiliation.organisation.country }}</td>
+                <td>{{ projectLink(loi.affiliation.project,'view-admin','name') }}</td>
+                <td>{{ loiLink(loi,'view-admin','icon') }} {{ loiLink(loi,'download','icon') }}</td>
+                <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact').setValue(loi.contact.id)) }}</td>
+                <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('dateSigned')) }}</td>
+                <td>
+                    <button type="button" rel="{{ loi.id }}" data-complete-text="Approved"
+                            class="btn btn-info approveButton"
+                            autocomplete="off"><i class="fa fa-check"></i>
+                        {{ translate("txt-approve") }}</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {{ ztbalert().info(translate("txt-no-loi-are-waiting-for-approval"))|raw }}
+{% endif %}
 
 <script type="text/javascript">
 

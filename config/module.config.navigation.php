@@ -150,7 +150,7 @@ return [
                 'pages' => [
                     'affiliation-list'           => [
                         'label' => _("txt-nav-affiliation-list-statistics"),
-                        'order' => 15,
+                        'order' => 115,
                         'route' => 'zfcadmin/affiliation/list',
                     ],
                     'missing-affiliation-parent' => [

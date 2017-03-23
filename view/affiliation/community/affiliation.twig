@@ -637,15 +637,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for affilaitionInvoice in affiliation.invoice %}
-                                {% if invoiceService.isSent(affilaitionInvoice.invoice) %}
+                            {% for affiliationInvoice in affiliation.invoice %}
+                                {% if invoiceService.isSent(affiliationInvoice.invoice) %}
                                     <tr>
-                                        <td>{{ affilaitionInvoice.invoice.invoiceNr }}</td>
-                                        <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
-                                        <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
-                                        <td>{{ invoiceService.parseTotal(affilaitionInvoice.invoice)|localizedcurrency("EUR") }}</td>
-                                        <td>{{ invoiceService.parseStatus(affilaitionInvoice.invoice)['name'] }}</td>
-                                        <td>{{ invoiceLink(affilaitionInvoice.invoice,'download','icon') }}</td>
+                                        <td>{{ affiliationInvoice.invoice.invoiceNr }}</td>
+                                        <td>{{ affiliationInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
+                                        <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}</td>
+                                        <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|localizedcurrency("EUR") }}</td>
+                                        <td>{{ invoiceService.parseStatus(affiliationInvoice.invoice)['name'] }}</td>
+                                        <td>{{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -678,7 +678,7 @@
 
                 <p>{{ translate("txt-parent-status-incorrect-contact-the-office-message") }}</p>
             {% else %}
-                {{ ztbalert().info(translate("txt-affiliation-%s-%s-is-not-member-of-the-organisation")|format(affilation.organisation, affiliation.organisation.country))|raw }}
+                {{ ztbalert().info(translate("txt-affiliation-%s-%s-is-not-member-of-the-organisation")|format(affiliation.organisation, affiliation.organisation.country))|raw }}
             {% endif %}
         </div>
     {% endif %}

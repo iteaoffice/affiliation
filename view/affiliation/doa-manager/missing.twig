@@ -3,31 +3,34 @@
 
 <h1>{{ translate("txt-missing-affiliation-doa") }}</h1>
 
-<table class="table table-hover table-consended table-striped">
-    <thead>
-    <tr>
-        <th>{{ translate("txt-partner") }}</th>
-        <th>{{ translate("txt-organisation-type") }}</th>
-        <th>{{ translate("txt-country") }}</th>
-        <th>{{ translate("txt-project") }}</th>
-        <th>{{ translate("txt-reminders") }}</th>
-        <th>{{ translate("txt-remind") }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for affiliation in affiliation %}
-        <tr id="affiliation-{{ affiliation.id }}">
-            <td>{{ affiliationLink(affiliation,'view-admin','name') }}</td>
-            <td>{{ affiliation.organisation.type }}</td>
-            <td>{{ affiliation.organisation.country }}</td>
-            <td>{{ projectLink(affiliation.project,'view-admin','name') }}</td>
-            <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}<br>
-                {% if affiliation.doaReminder.last.dateCreated %}
-                    <small>{{ affiliation.doaReminder.last.dateCreated|string_date }}</small>
-                {% endif %}
-            </td>
-            <td>{{ doaLink(null, 'remind-admin', 'button', affiliation) }}</td>
+{% if affiliation|length > 0 %}
+    <table class="table table-hover table-condensed table-striped">
+        <thead>
+        <tr>
+            <th>{{ translate("txt-partner") }}</th>
+            <th>{{ translate("txt-country") }}</th>
+            <th>{{ translate("txt-project") }}</th>
+            <th>{{ translate("txt-reminders") }}</th>
+            <th>{{ translate("txt-remind") }}</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for affiliation in affiliation %}
+            <tr id="affiliation-{{ affiliation.id }}">
+                <td>{{ affiliationLink(affiliation,'view-admin','name') }} ({{ affiliation.organisation.type.type }})
+                </td>
+                <td>{{ affiliation.organisation.country.iso3 }}</td>
+                <td>{{ projectLink(affiliation.project,'view-admin','name') }}</td>
+                <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}<br>
+                    {% if affiliation.doaReminder.last.dateCreated %}
+                        <small>{{ affiliation.doaReminder.last.dateCreated|string_date }}</small>
+                    {% endif %}
+                </td>
+                <td>{{ doaLink(null, 'remind-admin', 'button', affiliation) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {{ ztbalert().info(translate("txt-no-affiliations-need-to-be-reminded-for-a-missing-doa"))|raw }}
+{% endif %}

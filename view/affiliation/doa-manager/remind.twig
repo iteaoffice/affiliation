@@ -35,6 +35,13 @@ affiliation.project
 {{ ztbformelement(form.get('deeplinkTarget')) }}
 {{ ztbformelement(form.get('message')) }}
 
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{ translate("txt-sender") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-static">{{ webInfo.sender }} {{ webInfoLink(webInfo,'edit','icon') }}</p>
+    </div>
+</div>
 <hr>
 
 

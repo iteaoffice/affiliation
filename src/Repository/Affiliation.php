@@ -110,6 +110,8 @@ class Affiliation extends EntityRepository
             default:
                 throw new \InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
+
+
         $queryBuilder->addOrderBy('organisation_entity_parent.organisation', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();
@@ -213,6 +215,7 @@ class Affiliation extends EntityRepository
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
         $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
         $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
+        $qb->join('project_entity_project.call', 'program_entity_programcall');
 
         /**
          * @var $projectRepository \Project\Repository\Project
@@ -240,6 +243,7 @@ class Affiliation extends EntityRepository
 
         //Exclude de-activated partners
         $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
+        $qb->andWhere($qb->expr()->eq('program_entity_programcall.loiRequirement', Call::LOI_REQUIRED));
 
         $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 

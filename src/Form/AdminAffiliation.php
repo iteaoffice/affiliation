@@ -51,9 +51,11 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
         $parentOrganisationLike = $parentService->findParentOrganisationByNameLike($affiliation->getOrganisation()->getOrganisation());
         $parentOrganisations = ['' => '-- None of the options'];
         foreach ($parentOrganisationLike as $parentOrganisation) {
-            $parentOrganisations[$parentOrganisation->getId()] = sprintf('%s (%s)',
+            $parentOrganisations[$parentOrganisation->getId()] = sprintf(
+                '%s (%s)',
                 $parentOrganisation->getOrganisation(),
-                $parentOrganisation->getOrganisation()->getCountry()->getIso3());
+                $parentOrganisation->getOrganisation()->getCountry()->getIso3()
+            );
         }
 
         $this->add(
@@ -83,9 +85,11 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
         foreach ($parents as $parent) {
             $parentOrganisations = [];
             foreach ($parent->getParentOrganisation() as $parentOrganisation) {
-                $parentOrganisations[$parentOrganisation->getId()] = sprintf('%s (%s)',
+                $parentOrganisations[$parentOrganisation->getId()] = sprintf(
+                    '%s (%s)',
                     $parentOrganisation->getOrganisation(),
-                    $parentOrganisation->getOrganisation()->getCountry()->getIso3());
+                    $parentOrganisation->getOrganisation()->getCountry()->getIso3()
+                );
             }
             asort($parentOrganisations);
 
@@ -95,8 +99,11 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()]['options'] = $parentOrganisations;
             }
 
-            $parentOptions[$parent->getId()] = sprintf('%s (%s)', $parent->getOrganisation(),
-                $parent->getOrganisation()->getCountry()->getIso3());
+            $parentOptions[$parent->getId()] = sprintf(
+                '%s (%s)',
+                $parent->getOrganisation(),
+                $parent->getOrganisation()->getCountry()->getIso3()
+            );
         }
 
         ksort($parentsAndOrganisations);

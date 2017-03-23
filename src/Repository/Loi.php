@@ -20,18 +20,18 @@ use Organisation\Entity\Organisation;
 class Loi extends EntityRepository
 {
     /**
-     * @return LoiEntity[]
+     * @return iterable
      */
-    public function findNotApprovedLoi()
+    public function findNotApprovedLoi(): iterable
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('l');
-        $qb->from('Affiliation\Entity\Loi', 'l');
-        $qb->join('l.affiliation', 'a');
-        $qb->andWhere($qb->expr()->isNull('l.dateApproved'));
-        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+        $qb->select('affiliation_entity_loi');
+        $qb->from(LoiEntity::class, 'affiliation_entity_loi');
+        $qb->join('affiliation_entity_loi.affiliation', 'affiliation_entity_affiliation');
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_loi.dateApproved'));
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
 
-        $qb->addOrderBy('l.dateCreated', 'ASC');
+        $qb->addOrderBy('affiliation_entity_loi.dateCreated', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -41,17 +41,17 @@ class Loi extends EntityRepository
      *
      * @return LoiEntity[]
      */
-    public function findLoiByOrganisation(Organisation $organisation)
+    public function findLoiByOrganisation(Organisation $organisation): iterable
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('l');
-        $qb->from('Affiliation\Entity\Loi', 'l');
-        $qb->join('l.affiliation', 'a');
+        $qb->select('affiliation_entity_loi');
+        $qb->from(LoiEntity::class, 'affiliation_entity_loi');
+        $qb->join('affiliation_entity_loi.affiliation', 'affiliation_entity_affiliation');
 
-        $qb->andWhere('a.organisation = :organisation');
+        $qb->andWhere('affiliation_entity_affiliation.organisation = :organisation');
         $qb->setParameter('organisation', $organisation);
 
-        $qb->addOrderBy('l.dateCreated', 'ASC');
+        $qb->addOrderBy('affiliation_entity_loi.dateCreated', 'ASC');
 
         return $qb->getQuery()->getResult();
     }

@@ -17,7 +17,7 @@ return [
         'connection' => [
             'affiliation' => [
                 'endpoint' => [
-                    'affiliation' => [
+                    'server' => [
                         'host'     => '10.213.157.15',
                         'port'     => '8983',
                         'path'     => '/solr/affiliation',

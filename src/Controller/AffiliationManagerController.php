@@ -649,7 +649,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     }
 
     /**
-     *
+     * @return ViewModel
      */
     public function missingAffiliationParentAction()
     {
