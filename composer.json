@@ -2,7 +2,7 @@
   "name": "iteaoffice/affiliation",
   "type": "library",
   "license": "proprietary",
-  "description": "General code for  Affiliations",
+  "description": "Code to manage affiliation",
   "keywords": [
     "affiliation"
   ],
@@ -21,39 +21,26 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^7",
+    "php": "^7.1",
     "zendframework/zendframework": "~3.0"
   },
   "require-dev": {
-    "iteaoffice/testing": "dev-master",
-    "iteaoffice/organisation": "dev-develop",
-    "iteaoffice/project": "dev-develop",
-    "doctrine/doctrine-orm-module": "~1.1",
-    "pdepend/pdepend": "@stable",
-    "phpmd/phpmd": "@stable",
-    "sebastian/phpcpd": "@stable",
-    "squizlabs/php_codesniffer": "@stable",
-    "friendsofphp/php-cs-fixer": "@stable",
-    "jakub-onderka/php-parallel-lint": "@stable",
-    "jakub-onderka/php-console-highlighter": "@stable"
-  },
-  "config": {
-    "secure-http": false
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "3.0-dev",
-      "dev-develop": "3.1-dev"
-    }
+    "iteaoffice/testing": "dev-master"
   },
   "autoload": {
     "psr-4": {
-      "Affiliation\\": "src"
+      "Affiliation\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "AffiliationTest\\": "test"
+      "AffiliationTest\\": "tests/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "3.0.x-dev",
+      "dev-develop": "3.1-dev"
     }
   }
 }
