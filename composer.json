@@ -25,7 +25,9 @@
     "zendframework/zendframework": "~3.0"
   },
   "require-dev": {
-    "iteaoffice/testing": "^1.0"
+    "iteaoffice/testing": "^1.0",
+    "iteaoffice/contact": "^3.1",
+    "iteaoffice/organisation": "^3.1"
   },
   "autoload": {
     "psr-4": {
@@ -40,7 +42,7 @@
   "extra": {
     "branch-alias": {
       "dev-master": "3.0.x-dev",
-      "dev-develop": "3.1-dev"
+      "dev-develop": "3.1.x-dev"
     }
   }
 }
