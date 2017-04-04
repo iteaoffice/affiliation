@@ -27,7 +27,9 @@
   "require-dev": {
     "iteaoffice/testing": "^1.0",
     "iteaoffice/contact": "^3.1",
-    "iteaoffice/organisation": "^3.1"
+    "iteaoffice/organisation": "^3.1",
+    "iteaoffice/general": "^3.1",
+    "iteaoffice/project": "^3.1"
   },
   "autoload": {
     "psr-4": {

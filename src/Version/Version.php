@@ -18,5 +18,5 @@ final class Version
     /**
      * Affiliation version identification
      */
-    const VERSION = '3.1.0-dev';
+    const VERSION = '3.1.0-DEV';
 }
