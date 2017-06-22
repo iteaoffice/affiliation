@@ -23,6 +23,7 @@ use Affiliation\Form\DoaReminder;
 use Deeplink\Entity\Target;
 use Deeplink\View\Helper\DeeplinkLink;
 use Zend\Validator\File\FilesSize;
+use Zend\Validator\File\MimeType;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
@@ -283,10 +284,10 @@ class DoaManagerController extends AffiliationAbstractController
                     $fileSizeValidator = new FilesSize(PHP_INT_MAX);
                     $fileSizeValidator->isValid($fileData['affiliation_entity_doa']['file']);
                     $doa->setSize($fileSizeValidator->size);
-                    $doa->setContentType(
-                        $this->getGeneralService()
-                            ->findContentTypeByContentTypeName($fileData['affiliation_entity_doa']['file']['type'])
-                    );
+
+                    $fileTypeValidator = new MimeType();
+                    $fileTypeValidator->isValid($fileData['affiliation_entity_doa']['file']);
+                    $doa->setContentType($this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type));
                 }
 
                 $this->getDoaService()->updateEntity($doa);

@@ -149,7 +149,7 @@ class Loi extends EntityAbstract implements ResourceInterface
      *
      * @return string
      */
-    public function parseFileName()
+    public function parseFileName(): string
     {
         return sprintf("LOI_%s_%s", $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
     }

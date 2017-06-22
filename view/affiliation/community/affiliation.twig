@@ -3,8 +3,8 @@
 
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
 
-{% set years = projectService.parseYearRange(affiliation.project, false, affiliation) %}
-{% set projectYears = projectService.parseYearRange(affiliation.project, true) %}
+{% set years = projectService.parseYearRange(affiliation.project) %}
+{% set projectYears = projectService.parseYearRange(affiliation.project) %}
 
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
@@ -505,10 +505,18 @@
                         {% if effortSpent %}
                             <tr>
                                 <td></td>
-                                <td colspan="4"><strong>{{ translate("txt-summary") }}
-                                        : </strong>{{ effortSpent.summary|nl2br|default(translate("txt-not-provided")) }}
+                                <td colspan="4"><strong>{{ translate("txt-main-results-during-reporting-period") }}: </strong>{{ effortSpent.summary|nl2br|default(translate("txt-not-provided")) }}
                                 </td>
                             </tr>
+                        {% endif %}
+                        {% if effortSpent.comment %}
+                            <tr>
+                                <td></td>
+                                <td colspan="4"><strong>{{ translate("txt-descrepancy-explanation") }}
+                                        : </strong>{{ effortSpent.comment }}
+                                </td>
+                            </tr>
+                            <tr><td colspan="5"></td></tr>
                         {% endif %}
                     {% endfor %}
                     </tbody>

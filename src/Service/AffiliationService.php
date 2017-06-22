@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
 use Invoice\Entity\Method;
+use Organisation\Entity\Financial;
 use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
@@ -108,7 +109,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @return Affiliation[]
      */
-    public function findNotValidatedSelfFundedAffiliation()
+    public function findNotValidatedSelfFundedAffiliation(): array
     {
         /** @var \Affiliation\Repository\Affiliation $repository */
         $repository = $this->getEntityManager()->getRepository(Affiliation::class);
@@ -132,7 +133,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return null|\Organisation\Entity\Financial
      */
-    public function findOrganisationFinancial(Affiliation $affiliation)
+    public function findOrganisationFinancial(Affiliation $affiliation): ?Financial
     {
         $organisation = null;
 
@@ -173,7 +174,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return string|null
      */
-    public function parseVatNumber(Affiliation $affiliation)
+    public function parseVatNumber(Affiliation $affiliation):?string
     {
         $financial = $this->findOrganisationFinancial($affiliation);
 
@@ -189,7 +190,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return Contact
      */
-    public function getFinancialContact(Affiliation $affiliation)
+    public function getFinancialContact(Affiliation $affiliation): ?Contact
     {
         if (is_null($affiliation->getFinancial())) {
             return null;
@@ -275,11 +276,11 @@ class AffiliationService extends ServiceAbstract
     public function parseTotal(Affiliation $affiliation, Version $version, $year, $period): float
     {
         return $this->parseContribution($affiliation, $version, $year, $period) + $this->parseBalance(
-            $affiliation,
-            $version,
-            $year,
-            $period
-        );
+                $affiliation,
+                $version,
+                $year,
+                $period
+            );
     }
 
 
@@ -455,9 +456,9 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_FUNDING:
                 //The payment factor for funding is the factor divided by 3 in three years
                 return ($this->getParentService()->parseInvoiceFactor(
-                    $parent,
-                    $year
-                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
+                            $parent,
+                            $year
+                        ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
             default:
                 throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
         }
@@ -1064,10 +1065,10 @@ class AffiliationService extends ServiceAbstract
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                $contact->getContactOrganisation()
                     ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                $contact->getContactOrganisation()->getOrganisation()
+            );
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -1081,10 +1082,10 @@ class AffiliationService extends ServiceAbstract
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->getOrganisationService()->parseOrganisationWithBranch(
-                        $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                         ->getBranch(),
-                        $contact->getContactOrganisation()->getOrganisation()
-                    );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
             }
             /**
              * Go over the clusters

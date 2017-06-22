@@ -39,9 +39,9 @@ class GetFilter extends AbstractPlugin
      */
     public function __invoke()
     {
-        $encodedFilter = urldecode($this->getRouteMatch()->getParam('encodedFilter'));
+        $encodedFilter = urldecode((string)$this->getRouteMatch()->getParam('encodedFilter'));
 
-        $order     = $this->getRequest()->getQuery('order');
+        $order = $this->getRequest()->getQuery('order');
         $direction = $this->getRequest()->getQuery('direction');
 
         //Take the filter from the URL
@@ -49,28 +49,28 @@ class GetFilter extends AbstractPlugin
 
 
         //If the form is submitted, refresh the URL
-        if ($this->getRequest()->isGet() && ! is_null($this->getRequest()->getQuery('submit'))) {
+        if ($this->getRequest()->isGet() && !is_null($this->getRequest()->getQuery('submit'))) {
             $filter = $this->getRequest()->getQuery()->toArray()['filter'];
         }
 
         //Create a new filter if not set already
-        if (! $filter) {
+        if (!$filter) {
             $filter = [];
         }
 
         //Add a default order and direction if not known in the filter
-        if (! isset($filter['order'])) {
-            $filter['order']     = 'id';
+        if (!isset($filter['order'])) {
+            $filter['order'] = 'id';
             $filter['direction'] = 'desc';
         }
 
         //Overrule the order if set in the query
-        if (! is_null($order)) {
+        if (!is_null($order)) {
             $filter['order'] = $order;
         }
 
         //Overrule the direction if set in the query
-        if (! is_null($direction)) {
+        if (!is_null($direction)) {
             $filter['direction'] = $direction;
         }
 

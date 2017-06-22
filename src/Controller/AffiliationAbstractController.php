@@ -258,9 +258,9 @@ abstract class AffiliationAbstractController extends AbstractActionController
      * @param \Invoice\Options\ModuleOptions $invoiceModuleOptions
      * @return AffiliationAbstractController
      */
-    public function setInvoiceModuleOptions(\Invoice\Options\ModuleOptions $invoiceModuleOptions
-    ): AffiliationAbstractController
-    {
+    public function setInvoiceModuleOptions(
+        \Invoice\Options\ModuleOptions $invoiceModuleOptions
+    ): AffiliationAbstractController {
         $this->invoiceModuleOptions = $invoiceModuleOptions;
 
         return $this;

@@ -23,7 +23,7 @@ use Project\Acl\Assertion\Project as ProjectAssertion;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Zend\Http\Request;
-use Zend\Mvc\Router\RouteMatch;
+use Zend\Router\Http\RouteMatch;
 use Zend\Permissions\Acl\Assertion\AssertionInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 

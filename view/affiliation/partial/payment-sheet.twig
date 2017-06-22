@@ -156,7 +156,7 @@
     </thead>
     <tbody>
     {% set totalDueBasedOnProjectData = 0 %}
-    {% for projectYear in projectService.parseYearRange(affiliation.project, false, affiliation) %}
+    {% for projectYear in projectService.parseYearRange(affiliation.project) %}
         {% set dueFactor = affiliationService.parseContributionFactorDue(affiliation, projectYear, year, period) %}
         <tr>
             <th>{{ projectYear }}</th>

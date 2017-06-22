@@ -7,10 +7,6 @@
 
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
 
-{% set years = projectService.parseYearRange(project, false, affiliation) %}
-
-{% set projectYears = projectService.parseYearRange(project, true) %}
-
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-admin','button') %}
 
@@ -46,6 +42,7 @@
     <li><a href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a></li>
     <li><a href="#invoice" data-toggle="tab">{{ translate("txt-invoices") }}</a></li>
     <li><a href="#version" data-toggle="tab">{{ translate("txt-version") }}</a></li>
+    <li><a href="#funding" data-toggle="tab">{{ translate("txt-funding") }}</a></li>
     <li><a href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
 </ul>
 
@@ -290,7 +287,7 @@
         </tabset>
     </div>
     <div class="tab-pane" id="version">
-        <h4>{{ translate("txt-version-information") }}</h4>
+        <h3>{{ translate("txt-version-information") }}</h3>
 
         {% if affiliation.version.count() > 0 %}
             <table class="table table-hover table-striped table-condensed">
@@ -299,21 +296,25 @@
                     <th>{{ translate("txt-version") }}</th>
                     <th>{{ translate("txt-id") }}</th>
                     <th>{{ translate("txt-status") }}</th>
-                    <th>{{ translate("txt-date-submitted") }}</th>
+                    <th>{{ translate("txt-date-reviewed") }}</th>
                     <th>{{ translate("txt-total-effort") }}</th>
                     <th>{{ translate("txt-total-cost") }}</th>
+                    <th>{{ translate("txt-funding-national") }}</th>
+                    <th>{{ translate("txt-funding-eu") }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for affiliationVersion in affiliation.version %}
                     <tr>
                         {% set version = affiliationVersion.version %}
-                        <td>{{ versionLink(version,'view-admin','name') }}</td>
+                        <td>{{ versionLink(version,'view-admin','description') }}</td>
                         <td>{{ affiliationVersion.id }}</td>
                         <td>{{ versionService.parseStatus(version) }}</td>
                         <td>{{ version.dateReviewed|string_date }}</td>
                         <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
                         <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_cost }}</td>
+                        <td>{{ versionService.findTotalFundingNationalVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_funding }}</td>
+                        <td>{{ versionService.findTotalFundingEuVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_funding }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -365,7 +366,32 @@
 
                         {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
 
-                        <td>{{ yearTotal.costs|parse_cost }}</td>
+                        <td>{% if yearTotal %}
+                                <a id="cost_{{ year }}"
+                                   href="#" class="cost" data-type="text"
+                                   data-pk="{{ yearTotal.id }}"
+                                   data-url="{{ url('zfcadmin/project/version/update-cost') }}"
+                                   data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost_edit }}</a>
+                            {% else %}
+                                {# find the affiliationVersion by going over the versions, #}
+                                {% set affiliationVersionId = null %}
+                                {% for affiliationVersion in version.affiliationVersion if affiliationVersion.affiliation.id == affiliation.id %}
+                                    {% set affiliationVersionId = affiliationVersion.id %}
+                                {% endfor %}
+
+                                {% if affiliationVersionId %}
+                                    <a id="cost_{{ year }}"
+                                       href="#" class="cost"
+                                       data-type="text"
+                                       data-params="{'year':{{ year }},'affiliationVersionId':{{ affiliationVersionId }}}"
+                                       data-pk=""
+                                       data-url="{{ url('zfcadmin/project/version/new-cost') }}"
+                                       data-title="{{ translate("txt-new-cost") }}">{{ 0|parse_cost_edit }}</a>
+                                {% else %}
+                                    0
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     {% endfor %}
                     <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
                 </tr>
@@ -419,7 +445,9 @@
         </table>
 
 
-        <h4>{{ translate("txt-funding") }}</h4>
+    </div>
+    <div class="tab-pane" id="funding">
+        <h3>{{ translate("txt-funding") }}</h3>
 
         {% if affiliation.funding.count() > 0 %}
             <table class="table table-hover table-striped table-condensed">
@@ -475,8 +503,8 @@
                     {% endif %}
 
                     <tr {% if report.dateFinal %}class="success"{% endif %}>
-                        <td>{{ report.parseName() }}</td>
-                        <td>{{ report.contact.displayName }}</td>
+                        <td>{{ reportLink(report,'report-admin', 'name') }}</td>
+                        <td>{{ contactLink(report.contact,'view-admin','name') }}</td>
                         <td>{{ totalPlannedEffort|parse_effort }} [{{ translate("txt-py") }}]</td>
                         {% if effortSpent %}
                             <td {% if effortSpent.comment|length > 0 %}title="{{ effortSpent.comment }}{% endif %}">{{ effortSpent.effort|parse_effort }}
@@ -579,3 +607,13 @@
     </div>
 </div>
 
+<script type="text/javascript">
+    /**
+     * Calculate the sum per year
+     */
+    $(document).ready(function () {
+        //turn to inline mode
+        $.fn.editable.defaults.mode = 'popup';
+        $('.cost').editable();
+    });
+</script>

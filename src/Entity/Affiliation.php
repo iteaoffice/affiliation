@@ -252,6 +252,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $version;
     /**
+     * @ORM\ManyToMany(targetEntity="Project\Entity\Contract", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Contract[]|Collections\ArrayCollection()
+     */
+    private $contract;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\ContractVersion", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Affiliation\Entity\Version[]|Collections\ArrayCollection()
+     */
+    private $contractVersion;
+    /**
      * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", inversedBy="associate", cascade={"persist"})
      * @ORM\OrderBy=({"Lastname"="ASC"})
      * @ORM\JoinTable(name="associate",
@@ -290,6 +304,13 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
      */
     private $cost;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Contract\Cost", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Contract\Cost[]|Collections\ArrayCollection()
+     */
+    private $contractCost;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -375,23 +396,26 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function __construct()
     {
-        $this->ictOrganisation          = new Collections\ArrayCollection();
-        $this->description              = new Collections\ArrayCollection();
-        $this->invoice                  = new Collections\ArrayCollection();
-        $this->log                      = new Collections\ArrayCollection();
-        $this->version                  = new Collections\ArrayCollection();
-        $this->associate                = new Collections\ArrayCollection();
-        $this->funding                  = new Collections\ArrayCollection();
-        $this->cost                     = new Collections\ArrayCollection();
-        $this->funded                   = new Collections\ArrayCollection();
-        $this->effort                   = new Collections\ArrayCollection();
-        $this->spent                    = new Collections\ArrayCollection();
-        $this->doaReminder              = new Collections\ArrayCollection();
-        $this->loiReminder              = new Collections\ArrayCollection();
-        $this->achievement              = new Collections\ArrayCollection();
+        $this->ictOrganisation = new Collections\ArrayCollection();
+        $this->description = new Collections\ArrayCollection();
+        $this->invoice = new Collections\ArrayCollection();
+        $this->log = new Collections\ArrayCollection();
+        $this->version = new Collections\ArrayCollection();
+        $this->contract = new Collections\ArrayCollection();
+        $this->contractVersion = new Collections\ArrayCollection();
+        $this->associate = new Collections\ArrayCollection();
+        $this->funding = new Collections\ArrayCollection();
+        $this->cost = new Collections\ArrayCollection();
+        $this->contractCost = new Collections\ArrayCollection();
+        $this->funded = new Collections\ArrayCollection();
+        $this->effort = new Collections\ArrayCollection();
+        $this->spent = new Collections\ArrayCollection();
+        $this->doaReminder = new Collections\ArrayCollection();
+        $this->loiReminder = new Collections\ArrayCollection();
+        $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changerequestCostChange  = new Collections\ArrayCollection();
-        $this->projectLog               = new Collections\ArrayCollection();
+        $this->changerequestCostChange = new Collections\ArrayCollection();
+        $this->projectLog = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -452,7 +476,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function parseBranchedName(): string
     {
-        if (! is_null($this->getParentOrganisation())) {
+        if (!is_null($this->getParentOrganisation())) {
             return OrganisationService::parseBranch(
                 $this->getBranch(),
                 (string)$this->getParentOrganisation()->getOrganisation()
@@ -519,7 +543,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function addAssociate(Contact $contact)
     {
-        if (! $this->associate->contains($contact)) {
+        if (!$this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
@@ -1066,6 +1090,63 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setFunded($funded)
     {
         $this->funded = $funded;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Contract[]
+     */
+    public function getContract()
+    {
+        return $this->contract;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Contract[] $contract
+     * @return Affiliation
+     */
+    public function setContract($contract)
+    {
+        $this->contract = $contract;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContractVersion()
+    {
+        return $this->contractVersion;
+    }
+
+    /**
+     * @param mixed $contractVersion
+     * @return Affiliation
+     */
+    public function setContractVersion($contractVersion)
+    {
+        $this->contractVersion = $contractVersion;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Contract\Cost[]
+     */
+    public function getContractCost()
+    {
+        return $this->contractCost;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Contract\Cost[] $contractCost
+     * @return Affiliation
+     */
+    public function setContractCost($contractCost)
+    {
+        $this->contractCost = $contractCost;
 
         return $this;
     }

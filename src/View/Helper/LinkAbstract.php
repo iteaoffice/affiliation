@@ -115,7 +115,8 @@ abstract class LinkAbstract extends AbstractViewHelper
         return sprintf(
             $uri,
             $serverUrl() . $url(
-                $this->router, $this->routerParams,
+                $this->router,
+                $this->routerParams,
                 is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
             ),
             htmlentities($this->text),

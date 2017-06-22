@@ -98,7 +98,7 @@ class DoaObject extends EntityAbstract
     }
 
     /**
-     * @param resource $object
+     * @param string $object
      *
      * @return DoaObject
      */
