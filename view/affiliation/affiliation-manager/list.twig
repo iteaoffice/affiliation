@@ -9,50 +9,46 @@
 
         <h1>{{ translate("txt-affiliation-list") }}</h1>
 
+        <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
+
         <div class="row">
-            <div class="col-md-4">
-                <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
-                <p>
-                    <a href="{{ url('zfcadmin/affiliation/list-csv') }}{% if fullArguments %}?{{ fullArguments }}{% endif %}"
-                       class="btn btn-primary">{{ translate("txt-download-as-csv") }}</a>
-                </p>
-            </div>
-            <div class="col-md-4">
-                <p>
-                <div>
+            <div class="col-md-9">
                     <div class="form-group">{{ formelement(form.get('query')) }}</div>
-                    {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
-                </div>
-                </p>
-                <p>
-                <div>
+                    <p>
+                        <a href="{{ url('zfcadmin/affiliation/list-csv') }}{% if fullArguments %}?{{ fullArguments }}{% endif %}"
+                           class="btn btn-primary">{{ translate("txt-download-as-csv") }}</a>
+                    </p>
+                {#<p>
                     <div class="form-group">{{ formelement(form.get('group')) }}</div>
                     {{ formelement(form.get('apply')) }}
                     {% if groups %}
                         {{ formbutton(form.get('btn-collapse')) }}
                         {{ formelement(form.get('collapse')) }}
                     {% endif %}
-                </div>
-                </p>
+                </p>#}
                 {% if paginator %}
                     <p class="text-muted">
                         {{ translate("txt-%s-items-on-%s-pages")|format(paginator.adapter.count, paginator.pageRange) }}
+                        <span class="pull-right"><span class="label" style="background-color: #f2dede;">&nbsp;</span> = {{ translate('txt-inactive-affiliation') }}</span>
                     </p>
-                {% elseif groups %}
+                    {#{% elseif groups %}
                     <p class="text-muted">
                         {{ translate("txt-%s-items-in-%s-groups")|format(groups.getMatches(), groups.getNumberOfGroups()) }}
-                    </p>
+                    </p>#}
                 {% endif %}
-                <div><span class="label" style="background-color: #f2dede;">&nbsp;</span>
-                    = {{ translate('txt-inactive-affiliation') }}</div>
             </div>
-            <div class="col-md-4">
+            <!--<div class="col-md-4">
                 <div class="row">
-                    {{ ztbformelement(form.get('cols')) }}
+                    {#{{ ztbformelement(form.get('cols')) }}#}
                 </div>
+            </div>-->
+            <div class="col-md-3">
+                <p>
+                    {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
+                </p>
             </div>
         </div>
-        {% if groups %}
+        {#{% if groups %}
             <hr>
             <table id="tbl-list" class="table table-striped table-condensed">
                 <thead>
@@ -212,14 +208,15 @@
                 </tfoot>
             </table>
 
-        {% elseif paginator and (paginator.pageRange > 0) %}
+        {% elseif paginator and (paginator.pageRange > 0) %}#}
+        {% if paginator and (paginator.pageRange > 0) %}
             <table id="tbl-list" class="table table-striped">
                 <thead>
                 <tr>
                     <th class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}">
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'organisation_sort', 'text': translate('txt-affiliation')} %}
                     </th>
-                    <th class="col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
+                    {#<th class="col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'cost_draft', 'text': translate('txt-project-draft-cost')} %}
                     </th>
                     <th class="col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">
@@ -248,7 +245,7 @@
                     </th>
                     <th class="col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'effort_latest', 'text': translate('txt-latest-version-effort')} %}
-                    </th>
+                    </th>#}
                     <th class="col-project{% if 'col-project' not in cols %} hidden{% endif %}">
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_sort', 'text': translate('txt-project')} %}
                     </th>
@@ -262,11 +259,11 @@
                 </thead>
                 <tbody>
                 {% for result in paginator.getCurrentItems() %}
-                    <tr{% if result.fields.date_end %} class="danger"{% endif %}>
+                    <tr{% if not result.fields.is_active %} class="danger"{% endif %}>
                         <td class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}">
                             <a href="{{ url('zfcadmin/affiliation/view',{'id':result.fields.affiliation_id }) }}">{{ result.fields.organisation }}</a>
                         </td>
-                        <td class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
+                        {#<td class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
                             {{ result.fields.project_draft_cost|parse_cost }} k&euro;
                         </td>
                         <td class="text-right col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">
@@ -299,7 +296,7 @@
                         </td>
                         <td class="text-right col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">
                             {{ result.fields.project_latest_version_effort|parse_effort }} {{ translate("txt-py") }}
-                        </td>
+                        </td>#}
                         <td class="col-project{% if 'col-project' not in cols %} hidden{% endif %}">
                             <a href="{{ url('zfcadmin/project/project/view',{'id':result.fields.project_id }) }}">{{ result.fields.project }}</a>
                         </td>
@@ -332,7 +329,7 @@
 
 {{ form().closeTag()|raw }}
 
-<script type="text/javascript">
+<script>
     $(function () {
         var facetCheckBoxes = $('div.well input[type="checkbox"]'),
             colCheckboxes = $('#control-group-cols');
@@ -345,13 +342,13 @@
             }
             $('#search').submit();
         });
-        colCheckboxes.find('input[type="checkbox"]').on('change', function () {
+        {#colCheckboxes.find('input[type="checkbox"]').on('change', function () {
             var $self = $(this);
             $('#tbl-list .' + $self.attr('value')).toggleClass('hidden', !$self.is(':checked'));
         });
         {% if groups %}$('#btn-collapse').click(function () {
             $('#hid-collapse').val(($('#tbl-list tbody tr').not('.row-totals').is(':hidden') ? 0 : 1));
             $('#search').submit();
-        });{% endif %}
+        });{% endif %}#}
     });
 </script>
