@@ -34,7 +34,7 @@ use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Mvc\Controller\Plugin\FlashMessenger;
+use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Zend\View\HelperPluginManager;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 

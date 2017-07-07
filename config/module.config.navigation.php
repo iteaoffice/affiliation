@@ -149,7 +149,7 @@ return [
                 // And finally, here is where we define our page hierarchy
                 'pages' => [
                     'affiliation-list'           => [
-                        'label' => _("txt-nav-affiliation-list-statistics"),
+                        'label' => _("txt-nav-affiliation-list"),
                         'order' => 115,
                         'route' => 'zfcadmin/affiliation/list',
                     ],

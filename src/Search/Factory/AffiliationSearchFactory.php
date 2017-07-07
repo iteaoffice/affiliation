@@ -58,8 +58,8 @@ final class AffiliationSearchFactory implements FactoryInterface
         //$searchService->setVersionService($versionService);
 
         /** @var ContactService $contactService */
-        $contactService = $container->get(ContactService::class);
-        $searchService->setContactService($contactService);
+        /*$contactService = $container->get(ContactService::class);
+        $searchService->setContactService($contactService);*/
 
         return $searchService;
     }
