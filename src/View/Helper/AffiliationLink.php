@@ -22,11 +22,6 @@ use Affiliation\Entity\Affiliation;
 class AffiliationLink extends LinkAbstract
 {
     /**
-     * @var Affiliation
-     */
-    protected $affiliation;
-
-    /**
      * @param Affiliation $affiliation
      * @param             $action
      * @param             $show
@@ -46,7 +41,7 @@ class AffiliationLink extends LinkAbstract
         $year = null,
         $period = null,
         $fragment = null
-    ) {
+    ): string {
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
@@ -81,35 +76,11 @@ class AffiliationLink extends LinkAbstract
     }
 
     /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return $this
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-
-        return $this;
-    }
-
-    /**
      * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
      */
-    public function parseAction()
+    public function parseAction(): void
     {
         switch ($this->getAction()) {
             case 'view-community':

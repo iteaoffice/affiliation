@@ -32,7 +32,7 @@ class AffiliationLabel extends AbstractNavigationInvokable
      *
      * @return void
      */
-    public function __invoke(Mvc $page)
+    public function __invoke(Mvc $page): void
     {
         if ($this->getEntities()->containsKey(Affiliation::class)) {
             /** @var Affiliation $affiliation */

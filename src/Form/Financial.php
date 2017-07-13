@@ -18,18 +18,17 @@ use Organisation\Entity\Financial as FinancialOrganisation;
 use Zend\Form\Form;
 
 /**
- *
+ * Class Financial
+ * @package Affiliation\Form
  */
 class Financial extends Form
 {
     /**
      * Financial constructor.
-     *
-     * @param Affiliation    $affiliation
-     * @param GeneralService $generalService
-     * @param EntityManager  $entityManager
+     * @param Affiliation $affiliation
+     * @param EntityManager $entityManager
      */
-    public function __construct(Affiliation $affiliation, GeneralService $generalService, EntityManager $entityManager)
+    public function __construct(Affiliation $affiliation, EntityManager $entityManager)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -122,7 +121,7 @@ class Financial extends Form
          * Add all the financial contacts form other projects
          */
         foreach ($organisation->getAffiliation() as $affiliation) {
-            if (! is_null($affiliation->getFinancial())) {
+            if (!is_null($affiliation->getFinancial())) {
                 $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
                     = $affiliation->getFinancial()->getContact()->getFormName();
             }

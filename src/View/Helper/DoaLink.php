@@ -16,48 +16,41 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 
 /**
- * Create a link to an doa.
- *
- * @category    Affiliation
+ * Class DoaLink
+ * @package Affiliation\View\Helper
  */
 class DoaLink extends LinkAbstract
 {
     /**
-     * @var Doa
-     */
-    protected $doa;
-    /**
-     * @var Affiliation
-     */
-    protected $affiliation;
-
-    /**
-     * @param Doa         $doa
-     * @param string      $action
-     * @param string      $show
+     * @param Doa $doa
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string
      */
-    public function __invoke(Doa $doa = null, $action = 'view', $show = 'name', Affiliation $affiliation = null)
+    public function __invoke(Doa $doa = null, $action = 'view', $show = 'name', Affiliation $affiliation = null): string
     {
         $this->setDoa($doa);
         $this->setAction($action);
         $this->setShow($show);
         $this->setAffiliation($affiliation);
+
+        if (!$this->hasAccess($this->getDoa(), DoaAssertion::class, $this->getAction())) {
+            return '';
+        }
+
         /*
          * Set the non-standard options needed to give an other link value
          */
         $this->setShowOptions(
             [
-                'name' => $this->getDoa(),
+                'name' => (string)$this->getDoa(),
             ]
         );
-        if (! $this->hasAccess($this->getDoa(), DoaAssertion::class, $this->getAction())) {
-            return '';
-        }
 
-        if (! is_null($doa)) {
+
+        if (!is_null($doa)) {
             $this->addRouterParam('id', $this->getDoa()->getId());
             $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
         }
@@ -66,37 +59,6 @@ class DoaLink extends LinkAbstract
         return $this->createLink();
     }
 
-    /**
-     * @return Doa
-     */
-    public function getDoa()
-    {
-        if (is_null($this->doa)) {
-            $this->doa = new Doa();
-        }
-
-        return $this->doa;
-    }
-
-    /**
-     * @param Doa $doa
-     */
-    public function setDoa($doa)
-    {
-        $this->doa = $doa;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
 
     /**
      * @param Affiliation $affiliation
@@ -109,7 +71,7 @@ class DoaLink extends LinkAbstract
         /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
-        if (! is_null($affiliation)) {
+        if (!is_null($affiliation)) {
             $this->getDoa()->setAffiliation($affiliation);
         }
     }
@@ -119,7 +81,7 @@ class DoaLink extends LinkAbstract
      *
      * @throws \Exception
      */
-    public function parseAction()
+    public function parseAction(): void
     {
         switch ($this->getAction()) {
             case 'upload':

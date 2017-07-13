@@ -33,7 +33,7 @@ class LoiLabel extends AbstractNavigationInvokable
      *
      * @return void
      */
-    public function __invoke(Mvc $page)
+    public function __invoke(Mvc $page): void
     {
         if ($this->getEntities()->containsKey(Loi::class)) {
             /** @var Loi $loi */

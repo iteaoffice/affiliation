@@ -33,6 +33,8 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
+use Search\Service\AbstractSearchService;
+use Zend\Http\Response;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Zend\View\HelperPluginManager;
@@ -49,6 +51,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      Plugin\RenderLoi renderLoi()
  * @method      Plugin\GetFilter getAffiliationFilter
  * @method      Plugin\MergeAffiliation mergeAffiliation($mainAffiliation, $affiliation)
+ * @method      Response csvExport(AbstractSearchService $searchService, array $fields, bool $header = true)
  *
  */
 abstract class AffiliationAbstractController extends AbstractActionController
@@ -549,7 +552,7 @@ abstract class AffiliationAbstractController extends AbstractActionController
     /**
      * @return AffiliationSearchService
      */
-    public function getAffiliationSearchService()
+    public function getAffiliationSearchService(): AffiliationSearchService
     {
         return $this->affiliationSearchService;
     }
@@ -559,7 +562,7 @@ abstract class AffiliationAbstractController extends AbstractActionController
      *
      * @return AffiliationAbstractController
      */
-    public function setAffiliationSearchService($affiliationSearchService)
+    public function setAffiliationSearchService($affiliationSearchService): AffiliationAbstractController
     {
         $this->affiliationSearchService = $affiliationSearchService;
 

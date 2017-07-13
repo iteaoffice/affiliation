@@ -190,10 +190,10 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                                 }
 
                                 if (abs(
-                                        ($context['effort']
+                                    ($context['effort']
                                             - $this->effortPlanned)
                                         / $this->effortPlanned
-                                    ) > 0.2
+                                ) > 0.2
                                 ) {
                                     return strlen($value) > 0;
                                 }

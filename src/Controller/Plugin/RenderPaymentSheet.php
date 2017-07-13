@@ -259,9 +259,9 @@ class RenderPaymentSheet extends AbstractPlugin
                         ? 'No billing organisation known'
                         : (($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
                             === Financial::EMAIL_DELIVERY) ? sprintf(
-                        $this->translate("txt-by-email-to-%s"),
-                        $financialContact->getEmail()
-                    ) : $this->translate("txt-by-postal-mail")),
+                                $this->translate("txt-by-email-to-%s"),
+                                $financialContact->getEmail()
+                            ) : $this->translate("txt-by-postal-mail")),
 
                 ],
             ];

@@ -16,30 +16,20 @@ use Affiliation\Entity\Affiliation;
 use Project\Entity\Report\Report;
 
 /**
- * Create a link to an report.
- *
- * @category    Affiliation
+ * Class EffortSpentLink
+ * @package Affiliation\View\Helper
  */
 class EffortSpentLink extends LinkAbstract
 {
     /**
-     * @var Report
-     */
-    protected $report;
-    /**
-     * @var Affiliation
-     */
-    protected $affiliation;
-
-    /**
-     * @param Report      $report
-     * @param string      $action
-     * @param string      $show
+     * @param Report $report
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string
      */
-    public function __invoke(Affiliation $affiliation, $action, $show, Report $report)
+    public function __invoke(Affiliation $affiliation, $action, $show, Report $report): string
     {
         $this->setReport($report);
         $this->setAffiliation($affiliation);
@@ -53,7 +43,7 @@ class EffortSpentLink extends LinkAbstract
                 'update' => $this->translate('txt-update'),
             ]
         );
-        if (! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
+        if (!$this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
             return '';
         }
 
@@ -63,54 +53,13 @@ class EffortSpentLink extends LinkAbstract
         return $this->createLink();
     }
 
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return void
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-    }
-
-    /**
-     * @return Report
-     */
-    public function getReport()
-    {
-        if (is_null($this->report)) {
-            $this->report = new Report();
-        }
-
-        return $this->report;
-    }
-
-    /**
-     * @param Report $report
-     */
-    public function setReport($report)
-    {
-        $this->report = $report;
-    }
 
     /**
      * Extract the relevant parameters based on the action.
      *
      * @throws \Exception
      */
-    public function parseAction()
+    public function parseAction(): void
     {
         switch ($this->getAction()) {
             case 'update-effort-spent':

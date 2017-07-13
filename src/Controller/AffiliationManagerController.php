@@ -28,14 +28,13 @@ use Zend\Http\Response;
 use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
-use Search\Service\AbstractSearchService;
 
 /**
  * Class AffiliationManagerController
  *
  * @package Affiliation\Controller
  *
- * @method Response csvExport(AbstractSearchService $searchService, array $fields, bool $header = true)
+ *
  */
 class AffiliationManagerController extends AffiliationAbstractController
 {
@@ -47,11 +46,12 @@ class AffiliationManagerController extends AffiliationAbstractController
         /** @var Request $request */
         $request = $this->getRequest();
         $searchService = $this->getAffiliationSearchService();
-        $data = array_merge([
-                'order'     => '',
-                'direction' => '',
-                'query'     => '',
-                'facet'     => []
+        $data = array_merge(
+            [
+            'order'     => '',
+            'direction' => '',
+            'query'     => '',
+            'facet'     => []
             ],
             $request->getQuery()->toArray()
         );
@@ -134,8 +134,8 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $paginator->setPageRange(
                     ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage())
                 );
-                $viewParams['paginator']          = $paginator;
-                $viewParams['highlighting']       = $paginator->getCurrentItems()->getHighlighting();
+                $viewParams['paginator'] = $paginator;
+                $viewParams['highlighting'] = $paginator->getCurrentItems()->getHighlighting();
                 $viewParams['highlightingFields'] = [
                     'description'          => $this->translate('txt-description'),
                     'main_contribution'    => $this->translate('txt-main-contribution'),
@@ -563,7 +563,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         $paginator->setCurrentPageNumber($page);
         $paginator->setPageRange(ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage()));
 
-        $form = new MissingAffiliationParentFilter($this->getEntityManager());
+        $form = new MissingAffiliationParentFilter();
         $form->setData(['filter' => $filterPlugin->getFilter()]);
 
         return new ViewModel([

@@ -42,7 +42,8 @@ final class AffiliationServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): AffiliationService
     {
-        $affiliationService = new AffiliationService($options);
+        /** @var AffiliationService $affiliationService */
+        $affiliationService = new $requestedName($options);
         $affiliationService->setServiceLocator($container);
 
         /** @var EntityManager $entityManager */

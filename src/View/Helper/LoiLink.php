@@ -23,15 +23,6 @@ use Affiliation\Entity\Loi;
 class LoiLink extends LinkAbstract
 {
     /**
-     * @var Loi
-     */
-    protected $loi;
-    /**
-     * @var Affiliation
-     */
-    protected $affiliation;
-
-    /**
      * @param Loi         $loi
      * @param string      $action
      * @param string      $show
@@ -39,7 +30,7 @@ class LoiLink extends LinkAbstract
      *
      * @return string
      */
-    public function __invoke(Loi $loi = null, $action = 'view', $show = 'name', Affiliation $affiliation = null)
+    public function __invoke(Loi $loi = null, $action = 'view', $show = 'name', Affiliation $affiliation = null): string
     {
         $this->setLoi($loi);
         $this->setAffiliation($affiliation);
@@ -72,41 +63,9 @@ class LoiLink extends LinkAbstract
     }
 
     /**
-     * @return Loi
-     */
-    public function getLoi()
-    {
-        if (is_null($this->loi)) {
-            $this->loi = new Loi();
-        }
-
-        return $this->loi;
-    }
-
-    /**
-     * @param Loi $loi
-     */
-    public function setLoi($loi)
-    {
-        $this->loi = $loi;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
      * @param Affiliation $affiliation
      */
-    public function setAffiliation($affiliation)
+    public function setAffiliation($affiliation): void
     {
         $this->affiliation = $affiliation;
         /*
@@ -122,7 +81,7 @@ class LoiLink extends LinkAbstract
      *
      * @throws \Exception
      */
-    public function parseAction()
+    public function parseAction(): void
     {
         switch ($this->getAction()) {
             case 'upload':

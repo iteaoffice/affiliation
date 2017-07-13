@@ -276,11 +276,11 @@ class AffiliationService extends ServiceAbstract
     public function parseTotal(Affiliation $affiliation, Version $version, $year, $period): float
     {
         return $this->parseContribution($affiliation, $version, $year, $period) + $this->parseBalance(
-                $affiliation,
-                $version,
-                $year,
-                $period
-            );
+            $affiliation,
+            $version,
+            $year,
+            $period
+        );
     }
 
 
@@ -456,9 +456,9 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_FUNDING:
                 //The payment factor for funding is the factor divided by 3 in three years
                 return ($this->getParentService()->parseInvoiceFactor(
-                            $parent,
-                            $year
-                        ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
+                    $parent,
+                    $year
+                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
             default:
                 throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
         }
@@ -1065,10 +1065,10 @@ class AffiliationService extends ServiceAbstract
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch(
-                $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                     ->getBranch(),
-                $contact->getContactOrganisation()->getOrganisation()
-            );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -1082,10 +1082,10 @@ class AffiliationService extends ServiceAbstract
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                        $contact->getContactOrganisation()
                         ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                        $contact->getContactOrganisation()->getOrganisation()
+                    );
             }
             /**
              * Go over the clusters

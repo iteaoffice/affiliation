@@ -479,17 +479,17 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         if (!is_null($this->getParentOrganisation())) {
             return OrganisationService::parseBranch(
                 $this->getBranch(),
-                (string)$this->getParentOrganisation()->getOrganisation()
+                $this->getParentOrganisation()->getOrganisation()
             );
         }
 
-        return OrganisationService::parseBranch($this->getBranch(), (string)$this->getOrganisation());
+        return OrganisationService::parseBranch($this->getBranch(), $this->getOrganisation());
     }
 
     /**
      * @return null|\Organisation\Entity\Parent\Organisation
      */
-    public function getParentOrganisation()
+    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
     {
         return $this->parentOrganisation;
     }
@@ -499,7 +499,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setParentOrganisation($parentOrganisation)
+    public function setParentOrganisation($parentOrganisation): Affiliation
     {
         $this->parentOrganisation = $parentOrganisation;
 

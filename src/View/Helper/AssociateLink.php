@@ -37,7 +37,7 @@ class AssociateLink extends LinkAbstract
         $action = 'view',
         $show = 'name',
         Contact $contact = null
-    ) {
+    ): string {
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
@@ -62,7 +62,7 @@ class AssociateLink extends LinkAbstract
      *
      * @throws \Exception
      */
-    public function parseAction()
+    public function parseAction(): void
     {
         switch ($this->getAction()) {
             case 'edit':
