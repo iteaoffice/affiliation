@@ -221,8 +221,10 @@ class EditController extends AffiliationAbstractController
         $organisationFinancial = null;
 
         if (!is_null($affiliation->getFinancial())) {
+
             $organisationFinancial = $affiliation->getFinancial()->getOrganisation()->getFinancial();
             $branch = $affiliation->getFinancial()->getBranch();
+
             $formData['attention'] = $affiliation->getFinancial()->getContact()->getDisplayName();
 
             /** @var ContactService $contactService */
@@ -240,11 +242,18 @@ class EditController extends AffiliationAbstractController
                 $formData['city'] = $financialAddress->getCity();
                 $formData['country'] = $financialAddress->getCountry()->getId();
             }
+
+            $formData['organisation'] = $this->getOrganisationService()
+                ->parseOrganisationWithBranch($branch, $affiliation->getFinancial()->getOrganisation());
+            $formData['registeredCountry'] = $affiliation->getFinancial()->getOrganisation()->getCountry()->getId();
         }
 
-        $formData['organisation'] = $this->getOrganisationService()
-            ->parseOrganisationWithBranch($branch, $affiliation->getOrganisation());
-        $formData['registeredCountry'] = $affiliation->getOrganisation()->getCountry()->getId();
+
+        if (is_null($affiliation->getFinancial())) {
+            $formData['organisation'] = $this->getOrganisationService()
+                ->parseOrganisationWithBranch($branch, $affiliation->getOrganisation());
+            $formData['registeredCountry'] = $affiliation->getOrganisation()->getCountry()->getId();
+        }
 
         if (!is_null($organisationFinancial)) {
             $formData['preferredDelivery'] = $organisationFinancial->getEmail();

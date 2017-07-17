@@ -227,9 +227,9 @@
                         <dt>{{ translate("txt-billing-organisation") }}</dt>
                         <dd>{{ organisationLink(affiliation.financial.organisation,'view-admin','name') }}</dd>
                         <dt>{{ translate("txt-country") }}</dt>
-                        <dd>{{ organisation.country }}</dd>
+                        <dd>{{ affiliation.financial.organisation.country }}</dd>
                         <dt>{{ translate("txt-financial-contact") }}</dt>
-                        <dd>{{ contactLink(contact, 'view-admin','name') }}</dd>
+                        <dd>{{ contactLink(affiliation.financial.contact, 'view-admin','name') }}</dd>
 
 
                         <dt>{{ translate("txt-address-label") }}</dt>
@@ -249,16 +249,16 @@
                         <dd>{{ financialAddress.country|upper }}</dd>
 
                         <dt>{{ translate('txt-vat-number') }}</dt>
-                        {% if organisation.financial %}
-                            <dd>{{ organisation.financial.vat }}</dd>
+                        {% if affiliation.financial.organisation.financial %}
+                            <dd>{{ affiliation.financial.organisation.financial.vat }}</dd>
                         {% else %}
-                            <dd>{{ translate("txt-no-finanical-organisation-for-%s")|format(organisation) }}</dd>
+                            <dd>{{ translate("txt-no-finanical-organisation-for-%s")|format(affiliation.financial.organisation) }}</dd>
                         {% endif %}
 
 
                         <dt>{{ translate("txt-preferred-delivery") }}</dt>
                         {% if organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-                            <dd>{{ translate("txt-by-email-to-%s")|format(contact.email) }}</dd>
+                            <dd>{{ translate("txt-by-email-to-%s")|format(affiliation.financial.contact.email) }}</dd>
                         {% else %}
                             <dd>{{ translate("txt-by-postal-mail") }}</dd>
                         {% endif %}

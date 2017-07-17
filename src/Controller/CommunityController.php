@@ -84,7 +84,7 @@ class CommunityController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|\Zend\Http\PhpEnvironment\Response|\Zend\Stdlib\ResponseInterface
+     * @return \Zend\Stdlib\ResponseInterface|ViewModel
      */
     public function paymentSheetPdfAction()
     {
