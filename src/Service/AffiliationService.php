@@ -48,7 +48,7 @@ class AffiliationService extends ServiceAbstract
      *
      * @return null|Affiliation|object
      */
-    public function findAffiliationById($id)
+    public function findAffiliationById($id):?Affiliation
     {
         return $this->getEntityManager()->getRepository(Affiliation::class)->find($id);
     }
@@ -273,31 +273,30 @@ class AffiliationService extends ServiceAbstract
      *
      * @return float
      */
-    public function parseTotal(Affiliation $affiliation, Version $version, $year, $period): float
+    public function parseTotal(Affiliation $affiliation, Version $version, int $year, int $period = null): float
     {
         return $this->parseContribution($affiliation, $version, $year, $period) + $this->parseBalance(
-            $affiliation,
-            $version,
-            $year,
-            $period
-        );
+                $affiliation,
+                $version,
+                $year,
+                $period
+            );
     }
 
 
     /**
      * @param Affiliation $affiliation
-     * @param  Version $version
-     * @param             $year
-     * @param             $period
-     *
+     * @param Version $version
+     * @param int $year
+     * @param int|null $period
      * @return float
      */
-    public function parseContribution(Affiliation $affiliation, Version $version, $year, $period): float
+    public function parseContribution(Affiliation $affiliation, Version $version, int $year, int $period = null): float
     {
         //Depending on the invoice method we setup the contribution roles
         switch ($this->parseInvoiceMethod($version)) {
             case Method::METHOD_FUNDING:
-                $contribution = $this->parseContributionBase($affiliation, $version, $year)
+                return $this->parseContributionBase($affiliation, $version, $year)
                     * $this->parseContributionFee(
                         $version,
                         $year,
@@ -306,8 +305,12 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_CONTRIBUTION:
             case Method::METHOD_PERCENTAGE:
-            default:
-                $contribution = $this->parseContributionBase($affiliation, $version, $year)
+
+                if (is_null($period)) {
+                    return $this->parseContributionFee($version, $year);
+                }
+
+                return $this->parseContributionBase($affiliation, $version, $year)
                     * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
                         $version,
                         $year
@@ -316,7 +319,7 @@ class AffiliationService extends ServiceAbstract
         }
 
 
-        return $contribution;
+        return 0;
     }
 
 
@@ -417,13 +420,13 @@ class AffiliationService extends ServiceAbstract
      *
      * @return null|Funding
      */
-    public function getFundingInYear(Affiliation $affiliation, $year, $source = Source::SOURCE_OFFICE)
+    public function getFundingInYear(Affiliation $affiliation, $year, $source = Source::SOURCE_OFFICE):?Funding
     {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
 
         foreach ($affiliation->getFunding() as $funding) {
-            if ((int)$funding->getDateStart()->format("Y") === $year && $funding->getSource()->getId() === $source) {
+            if ((int)$funding->getDateStart()->format('Y') === $year && $funding->getSource()->getId() === $source) {
                 return $funding;
             }
         };
@@ -454,11 +457,16 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_CONTRIBUTION:
                 return $fee->getContribution();
             case Method::METHOD_FUNDING:
+
+                if (is_null($parent)) {
+                    throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
+                }
+
                 //The payment factor for funding is the factor divided by 3 in three years
                 return ($this->getParentService()->parseInvoiceFactor(
-                    $parent,
-                    $year
-                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
+                            $parent,
+                            $year
+                        ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
             default:
                 throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
         }
@@ -466,41 +474,35 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param  Version $version
-     * @param             $year
-     * @param             $period
-     *
-     * @return float|int
+     * @param Version $version
+     * @param int $year
+     * @param int|null $period
+     * @return float
      */
-    public function parseBalance(Affiliation $affiliation, Version $version, int $year, int $period)
+    public function parseBalance(Affiliation $affiliation, Version $version, int $year, int $period = null): float
     {
-        return $this->parseContributionDue($affiliation, $version, $year, $period)
-            - $this->parseContributionPaid($affiliation, $year, $period);
+        return $this->parseContributionDue($affiliation, $version, $year,
+                $period) - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
     /**
      * @param Affiliation $affiliation
      * @param Version $version
-     * @param             $year
-     * @param             $period
-     *
-     * @return float|int
-     * @throws \Exception
+     * @param int $year
+     * @param int|null $period
+     * @return float
      */
-    public function parseContributionDue(Affiliation $affiliation, Version $version, $year, $period)
-    {
+    public function parseContributionDue(
+        Affiliation $affiliation,
+        Version $version,
+        int $year,
+        int $period = null
+    ): float {
         $contributionDue = 0;
-        //Cast to ints as some values can originate form templates (== twig > might be string)
-        $year = (int)$year;
-        $period = (int)$period;
-
-
-        if (is_null($year) || is_null($period)) {
-            throw new \InvalidArgumentException("Year and/or period cannot be null");
-        }
 
         switch ($this->parseInvoiceMethod($version)) {
             case Method::METHOD_PERCENTAGE:
+
                 //Fix the versionService
                 $costsPerYear = $this->getVersionService()
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
@@ -528,7 +530,7 @@ class AffiliationService extends ServiceAbstract
                     $fee = $this->getProjectService()->findProjectFeeByYear($year);
 
                     switch (true) {
-                        case $period === 3:
+                        case is_null($period);
                             //costs in the past
                             $factor = 1;
                             break;
@@ -547,30 +549,27 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * This function calculates the factor to which the contribution should be calculated.
-     * We removed the switch on office to facilitate the contribution based invoicing
-     *
      * @param Affiliation $affiliation
-     * @param  int $projectYear
-     * @param  int $year
-     * @param  int $period
-     *
-     * @return float|int
+     * @param $projectYear
+     * @param int $year
+     * @param int|null $period
+     * @return int
      */
-    public function parseContributionFactorDue(Affiliation $affiliation, $projectYear, $year, $period)
-    {
+    public function parseContributionFactorDue(
+        Affiliation $affiliation,
+        $projectYear,
+        int $year,
+        int $period = null
+    ): int {
         //Cast to ints as some values can originate form templates (== twig > might be string)
-        $year = (int)$year;
-        $period = (int)$period;
-
         switch (true) {
             case !$this->isFundedInYear($affiliation, $projectYear):
                 return 0;
-            case $projectYear < $year:
+            case is_null($period) || $projectYear < $year:
                 return 1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
-                return 1 - ($this->parseContributionFactor($affiliation, $year, $period));
+                return 1 - $this->parseContributionFactor($affiliation, $year, $period);
             default:
                 return 0;
         }
@@ -591,29 +590,35 @@ class AffiliationService extends ServiceAbstract
      * Exclude of course the credit notes
      *
      * @param Affiliation $affiliation
-     * @param             $year
-     * @param             $period
+     * @param int $year
+     * @param int|null $period
      *
-     * @return float|int
+     * @return float
      */
-    public function parseContributionPaid(Affiliation $affiliation, $year, $period)
+    public function parseContributionPaid(Affiliation $affiliation, int $year, int $period = null): float
     {
-        $countributionPaid = 0;
-        //Cast to ints as some values can originate form templates (== twig > might be string)
-        $year = (int)$year;
-        $period = (int)$period;
+        $contributionPaid = 0;
 
         //Sum the invoiced amount of all invoices for this affiliation
         foreach ($affiliation->getInvoice() as $invoice) {
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
-            if (!is_null($invoice->getInvoice()->getDayBookNumber())
-                && (($invoice->getPeriod() < $period && $invoice->getYear() == $year) || $invoice->getYear() < $year)
-            ) {
-                $countributionPaid += $invoice->getAmountInvoiced();
+            if (!is_null($invoice->getInvoice()->getDayBookNumber())) {
+
+                if (!is_null($period)) {
+                    //When we have a period, we also take the period fo the current year into account
+                    if ($invoice->getYear() < $year || ($invoice->getPeriod() < $period && $invoice->getYear() === $year)) {
+                        $contributionPaid += $invoice->getAmountInvoiced();
+                    }
+                } else {
+                    //We have no period, so only count the invoices of the last year
+                    if ($invoice->getYear() < $year) {
+                        $contributionPaid += $invoice->getAmountInvoiced();
+                    }
+                }
             }
         }
 
-        return $countributionPaid;
+        return (float)$contributionPaid;
     }
 
     /**
@@ -701,7 +706,7 @@ class AffiliationService extends ServiceAbstract
      * @param Project $project
      * @param int $criterion
      * @param int $which
-     * @return ArrayCollection
+     * @return ArrayCollection|Affiliation[]
      */
     public function findAffiliationByProjectAndWhichAndCriterion(
         Project $project,
@@ -1065,10 +1070,10 @@ class AffiliationService extends ServiceAbstract
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                $contact->getContactOrganisation()
                     ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                $contact->getContactOrganisation()->getOrganisation()
+            );
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -1082,10 +1087,10 @@ class AffiliationService extends ServiceAbstract
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->getOrganisationService()->parseOrganisationWithBranch(
-                        $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                         ->getBranch(),
-                        $contact->getContactOrganisation()->getOrganisation()
-                    );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
             }
             /**
              * Go over the clusters

@@ -620,7 +620,7 @@
                     <tab heading="{{ translate("txt-payment-sheet") }}">
 
 
-                        {% set year =  "now"|date("Y") %}
+                        {% set year =  "now"|date('Y') %}
                         {% set period = ("now"|date("n") <= 6) ? 1 : 2 %}
 
                         <h3>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliation,'payment-sheet-pdf','icon', year, period) }}</h3>

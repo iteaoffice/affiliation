@@ -79,6 +79,7 @@ class Affiliation extends EntityRepository
             'organisation_entity_parent_organisation'
         );
         $queryBuilder->join('organisation_entity_parent_organisation.parent', 'organisation_entity_parent');
+        $queryBuilder->join('organisation_entity_parent.organisation', 'organisation_entity_organisation');
 
         $queryBuilder->where('affiliation_entity_affiliation.project = ?1');
         $queryBuilder->setParameter(1, $project);
@@ -112,7 +113,7 @@ class Affiliation extends EntityRepository
         }
 
 
-        $queryBuilder->addOrderBy('organisation_entity_parent.organisation', 'ASC');
+        $queryBuilder->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();
     }

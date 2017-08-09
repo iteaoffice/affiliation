@@ -44,12 +44,12 @@ class ContractVersion extends EntityAbstract
      */
     private $affiliation;
     /**
-     * @ORM\ManyToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="affiliationVersion")
+     * @ORM\ManyToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="affiliationVersion", cascade={"persist"})
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
      * })
      *
-     * @var \Project\Entity\Version\Version
+     * @var \Project\Entity\Contract\Version
      */
     private $version;
     /**
@@ -150,18 +150,18 @@ class ContractVersion extends EntityAbstract
     }
 
     /**
-     * @return \Project\Entity\Version\Version
+     * @return \Project\Entity\Contract\Version
      */
-    public function getVersion(): \Project\Entity\Version\Version
+    public function getVersion(): \Project\Entity\Contract\Version
     {
         return $this->version;
     }
 
     /**
-     * @param \Project\Entity\Version\Version $version
+     * @param \Project\Entity\Contract\Version $version
      * @return ContractVersion
      */
-    public function setVersion(\Project\Entity\Version\Version $version): ContractVersion
+    public function setVersion(\Project\Entity\Contract\Version $version): ContractVersion
     {
         $this->version = $version;
 

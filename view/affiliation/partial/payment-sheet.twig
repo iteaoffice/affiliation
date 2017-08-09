@@ -106,7 +106,7 @@
         </tr>
         <tr>
             <td>{{ translate("txt-email") }}</td>
-            <td>{{ financialcontact.email|default(translate("txt-unknown")) }}</td>
+            <td>{{ financialContact.email|default(translate("txt-unknown")) }}</td>
         </tr>
         <tr>
             <td>{{ translate("txt-vat-number") }}</td>
@@ -131,7 +131,7 @@
             {% elseif not affiliation.financial.organisation.financial %}
                 <td class="col-md-4">{{ translate("txt-no-financial-information-for-the-billing-organisation") }}</td>
             {% elseif affiliation.financial.organisation.financial.email == constant("Organisation\\Entity\\Financial::EMAIL_DELIVERY") %}
-                <td class="col-md-4">{{ translate("txt-by-email-to-%s")|format(financialcontact.email) }}</td>
+                <td class="col-md-4">{{ translate("txt-by-email-to-%s")|format(financialContact.email) }}</td>
             {% else %}
                 <td class="col-md-4">{{ translate("txt-by-postal-mail") }}</td>
             {% endif %}

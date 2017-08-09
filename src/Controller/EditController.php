@@ -221,7 +221,6 @@ class EditController extends AffiliationAbstractController
         $organisationFinancial = null;
 
         if (!is_null($affiliation->getFinancial())) {
-
             $organisationFinancial = $affiliation->getFinancial()->getOrganisation()->getFinancial();
             $branch = $affiliation->getFinancial()->getBranch();
 
