@@ -276,11 +276,11 @@ class AffiliationService extends ServiceAbstract
     public function parseTotal(Affiliation $affiliation, Version $version, int $year, int $period = null): float
     {
         return $this->parseContribution($affiliation, $version, $year, $period) + $this->parseBalance(
-                $affiliation,
-                $version,
-                $year,
-                $period
-            );
+            $affiliation,
+            $version,
+            $year,
+            $period
+        );
     }
 
 
@@ -305,7 +305,6 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_CONTRIBUTION:
             case Method::METHOD_PERCENTAGE:
-
                 if (is_null($period)) {
                     return $this->parseContributionFee($version, $year);
                 }
@@ -457,16 +456,15 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_CONTRIBUTION:
                 return $fee->getContribution();
             case Method::METHOD_FUNDING:
-
                 if (is_null($parent)) {
                     throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
                 }
 
                 //The payment factor for funding is the factor divided by 3 in three years
                 return ($this->getParentService()->parseInvoiceFactor(
-                            $parent,
-                            $year
-                        ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
+                    $parent,
+                    $year
+                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
             default:
                 throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
         }
@@ -481,8 +479,12 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseBalance(Affiliation $affiliation, Version $version, int $year, int $period = null): float
     {
-        return $this->parseContributionDue($affiliation, $version, $year,
-                $period) - $this->parseContributionPaid($affiliation, $year, $period);
+        return $this->parseContributionDue(
+            $affiliation,
+            $version,
+            $year,
+            $period
+        ) - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
     /**
@@ -502,7 +504,6 @@ class AffiliationService extends ServiceAbstract
 
         switch ($this->parseInvoiceMethod($version)) {
             case Method::METHOD_PERCENTAGE:
-
                 //Fix the versionService
                 $costsPerYear = $this->getVersionService()
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
@@ -530,7 +531,7 @@ class AffiliationService extends ServiceAbstract
                     $fee = $this->getProjectService()->findProjectFeeByYear($year);
 
                     switch (true) {
-                        case is_null($period);
+                        case is_null($period):
                             //costs in the past
                             $factor = 1;
                             break;
@@ -603,7 +604,6 @@ class AffiliationService extends ServiceAbstract
         foreach ($affiliation->getInvoice() as $invoice) {
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
             if (!is_null($invoice->getInvoice()->getDayBookNumber())) {
-
                 if (!is_null($period)) {
                     //When we have a period, we also take the period fo the current year into account
                     if ($invoice->getYear() < $year || ($invoice->getPeriod() < $period && $invoice->getYear() === $year)) {
@@ -1070,10 +1070,10 @@ class AffiliationService extends ServiceAbstract
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch(
-                $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                     ->getBranch(),
-                $contact->getContactOrganisation()->getOrganisation()
-            );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -1087,10 +1087,10 @@ class AffiliationService extends ServiceAbstract
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                        $contact->getContactOrganisation()
                         ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                        $contact->getContactOrganisation()->getOrganisation()
+                    );
             }
             /**
              * Go over the clusters
