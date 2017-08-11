@@ -110,12 +110,13 @@ final class AffiliationSearchService extends AbstractSearchService
 
     /**
      * @param string $searchTerm
+     * @param array  $searchFields
      * @param string $order
      * @param string $direction
      *
      * @return AffiliationSearchService
      */
-    public function setSearch($searchTerm, $order = '', $direction = Query::SORT_ASC)
+    public function setSearch($searchTerm, $searchFields = [], $order = '', $direction = Query::SORT_ASC)
     {
         $this->setQuery($this->getSolrClient()->createSelect());
 
@@ -133,18 +134,7 @@ final class AffiliationSearchService extends AbstractSearchService
             $highlighting->setSimplePostfix('</mark>');
         }
 
-        $this->getQuery()->setQuery(static::parseQuery(
-            $searchTerm,
-            [
-                'description',
-                'main_contribution',
-                'market_access',
-                'value_chain',
-                'strategic_importance',
-                'project',
-                'organisation',
-            ]
-        ));
+        $this->getQuery()->setQuery(static::parseQuery($searchTerm, $searchFields));
 
         switch ($order) {
             case 'organisation_sort':

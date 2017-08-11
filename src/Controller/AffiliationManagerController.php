@@ -33,7 +33,7 @@ use Zend\View\Model\ViewModel;
  * Class AffiliationManagerController
  *
  * @package Affiliation\Controller
- *
+ * @method Response csvExport()
  *
  */
 class AffiliationManagerController extends AffiliationAbstractController
@@ -45,19 +45,33 @@ class AffiliationManagerController extends AffiliationAbstractController
     {
         /** @var Request $request */
         $request = $this->getRequest();
+        $requestQuery = $request->getQuery()->toArray();
         $searchService = $this->getAffiliationSearchService();
-        $data = array_merge(
-            [
-            'order'     => '',
-            'direction' => '',
-            'query'     => '',
-            'facet'     => []
+        $data = array_merge([
+                'order'     => '',
+                'direction' => '',
+                'query'     => '*',
+                'facet'     => [],
+                'fields'    => []
             ],
-            $request->getQuery()->toArray()
+            $requestQuery
         );
+        $searchFieldValues = [
+            'description'          => $this->translate('txt-affiliation-description'),
+            'main_contribution'    => $this->translate('txt-main-contribution'),
+            'market_access'        => $this->translate('txt-market-access'),
+            'value_chain'          => $this->translate('txt-value-chain'),
+            'strategic_importance' => $this->translate('txt-strategic-importance'),
+            'project'              => $this->translate('txt-project'),
+            'organisation'         => $this->translate('txt-organisation'),
+        ];
+        // Set all fields enabled by default
+        if (empty($requestQuery)) {
+            $data['fields'] = array_keys($searchFieldValues);
+        }
 
         if ($request->isGet()) {
-            $searchService->setSearch($data['query'], $data['order'], $data['direction']);
+            $searchService->setSearch($data['query'], $data['fields'], $data['order'], $data['direction']);
             if (isset($data['facet'])) {
                 foreach ($data['facet'] as $facetField => $values) {
                     $quotedValues = [];
@@ -92,7 +106,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
             // Default paginated html view
             default:
-                $form = new SearchResult();
+                $form = new SearchResult($searchFieldValues);
 
                 // Set facet data in the form
                 if ($request->isGet()) {
