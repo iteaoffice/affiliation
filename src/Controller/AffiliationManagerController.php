@@ -47,7 +47,8 @@ class AffiliationManagerController extends AffiliationAbstractController
         $request = $this->getRequest();
         $requestQuery = $request->getQuery()->toArray();
         $searchService = $this->getAffiliationSearchService();
-        $data = array_merge([
+        $data = array_merge(
+            [
                 'order'     => '',
                 'direction' => '',
                 'query'     => '*',

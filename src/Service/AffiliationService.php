@@ -145,7 +145,7 @@ class AffiliationService extends ServiceAbstract
 
             $organisation = $parent->getOrganisation();
             if (!is_null($parent->getFinancial())) {
-                $organisation = $parent->getFinancial()->getOrganisation();
+                $organisation = $parent->getFinancial()->first()->getOrganisation();
             }
         }
 
