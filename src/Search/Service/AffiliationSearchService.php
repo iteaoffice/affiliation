@@ -19,6 +19,7 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Service\AffiliationService;
 use Project\Service\ProjectService;
 use Search\Service\AbstractSearchService;
+use Search\Service\SearchServiceInterface;
 use Solarium\QueryType\Select\Query\Query;
 
 /**
@@ -114,9 +115,14 @@ final class AffiliationSearchService extends AbstractSearchService
      * @param string $order
      * @param string $direction
      *
-     * @return AffiliationSearchService
+     * @return SearchServiceInterface
      */
-    public function setSearch($searchTerm, $searchFields = [], $order = '', $direction = Query::SORT_ASC)
+    public function setSearch(
+        string $searchTerm,
+        array $searchFields = [],
+        string $order = '',
+        string $direction = Query::SORT_ASC
+    ): SearchServiceInterface
     {
         $this->setQuery($this->getSolrClient()->createSelect());
 
@@ -132,6 +138,7 @@ final class AffiliationSearchService extends AbstractSearchService
             ]);
             $highlighting->setSimplePrefix('<mark>');
             $highlighting->setSimplePostfix('</mark>');
+            $highlighting->setSnippets(10);
         }
 
         $this->getQuery()->setQuery(static::parseQuery($searchTerm, $searchFields));

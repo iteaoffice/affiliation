@@ -73,13 +73,13 @@
 	<field name="date_created" type="date" indexed="true" stored="true"/>
 	<field name="is_active" type="boolean" indexed="true" stored="true"/>
 	<field name="description" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="branch" type="string" indexed="true" stored="true" omitNorms="true"/>
+	<field name="branch" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="value_chain" type="text_general_edge_ngram" indexed="true" stored="true"/>
 	<field name="market_access" type="text_general_edge_ngram" indexed="true" stored="true"/>
 	<field name="main_contribution" type="text_general_edge_ngram" indexed="true" stored="true"/>
 	<field name="strategic_importance" type="text_general_edge_ngram" indexed="true" stored="true"/>
 
-	<field name="organisation" type="string" indexed="true" stored="true" omitNorms="true"  multiValued="false"/>
+	<field name="organisation" type="string_ci" indexed="true" stored="true" omitNorms="true"  multiValued="false"/>
 	<field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="organisation" dest="organisation_sort"/>
 	<field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
@@ -92,12 +92,12 @@
 	<field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="organisation_country" dest="organisation_country_group"/>
 
-	<field name="project" type="string" indexed="true" stored="true" omitNorms="true"/>
+	<field name="project" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
     <copyField source="project" dest="project_sort"/>
 	<field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_title" type="string" indexed="true" stored="true"/>
+	<field name="project_title" type="string_ci" indexed="true" stored="true"/>
 	<field name="project_status" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_call" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
@@ -107,7 +107,7 @@
 	<field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
 	<copyField source="project_program" dest="project_program_group"/>
 
-	<field name="contact" type="string" indexed="true" stored="true" omitNorms="true"/>
+	<field name="contact" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
 	<field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
     <copyField source="contact" dest="contact_sort"/>
 	<field name="contact_id" type="int" indexed="true" stored="true" omitNorms="true"/>
