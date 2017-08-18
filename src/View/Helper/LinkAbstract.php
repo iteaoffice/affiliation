@@ -136,7 +136,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                 $this->routerParams,
                 is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
             ),
-            htmlentities($this->text),
+            htmlentities((string) $this->text),
             implode(' ', $this->classes),
             in_array($this->getShow(), ['icon', 'button', 'alternativeShow'], true) ? implode('', $this->linkContent)
                 : htmlentities(implode('', $this->linkContent))

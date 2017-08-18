@@ -556,7 +556,7 @@ class AffiliationService extends ServiceAbstract
                 break;
         }
 
-        return $contributionDue;
+        return (float) $contributionDue;
     }
 
     /**
@@ -571,18 +571,18 @@ class AffiliationService extends ServiceAbstract
         $projectYear,
         int $year,
         int $period = null
-    ): int {
+    ): float {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         switch (true) {
             case !$this->isFundedInYear($affiliation, $projectYear):
-                return 0;
+                return (float) 0;
             case is_null($period) || $projectYear < $year:
-                return 1; //in the past is always 100% due
+                return (float) 1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
-                return 1 - $this->parseContributionFactor($affiliation, $year, $period);
+                return (float) 1 - $this->parseContributionFactor($affiliation, $year, $period);
             default:
-                return 0;
+                return (float) 0;
         }
     }
 
