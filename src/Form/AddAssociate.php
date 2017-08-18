@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
@@ -23,7 +25,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class AddAssociate extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Affiliation    $affiliation
+     * @param Affiliation $affiliation
      * @param ContactService $contactService
      */
     public function __construct(Affiliation $affiliation, ContactService $contactService)
@@ -81,7 +83,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'contact' => [

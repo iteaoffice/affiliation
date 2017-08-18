@@ -9,6 +9,8 @@
  */
 declare(strict_types=1);
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller\Factory;
 
 use Admin\Service\AdminService;
@@ -39,9 +41,9 @@ use ZfcTwig\View\TwigRenderer;
 final class PluginFactory implements FactoryInterface
 {
     /**
-     * @param ContainerInterface|PluginManager     $container
+     * @param ContainerInterface|PluginManager $container
      * @param                                      $requestedName
-     * @param array|null                           $options
+     * @param array|null $options
      *
      * @return AbstractPlugin
      */

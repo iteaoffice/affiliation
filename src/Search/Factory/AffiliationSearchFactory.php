@@ -12,6 +12,8 @@
  *
  * @link        http://github.com/iteaoffice/main for the canonical source repository
  */
+declare(strict_types=1);
+
 namespace Affiliation\Search\Factory;
 
 use Affiliation\Search\Service\AffiliationSearchService;
@@ -31,8 +33,8 @@ final class AffiliationSearchFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
-     * @param string             $requestedName
-     * @param array|null         $options
+     * @param string $requestedName
+     * @param array|null $options
      *
      * @return AffiliationSearchService
      */

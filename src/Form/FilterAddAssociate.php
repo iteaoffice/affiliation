@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2015 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Form;
 
 use Zend\InputFilter\InputFilter;

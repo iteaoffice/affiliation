@@ -14,6 +14,8 @@
  */
 declare(strict_types=1);
 
+declare(strict_types=1);
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity\EntityAbstract;
@@ -33,7 +35,7 @@ class CreateObject extends Form
     /**
      * CreateObject constructor.
      *
-     * @param EntityManager  $entityManager
+     * @param EntityManager $entityManager
      * @param EntityAbstract $object
      */
     public function __construct(EntityManager $entityManager, EntityAbstract $object)

@@ -14,6 +14,8 @@
  */
 declare(strict_types=1);
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller\Factory;
 
 use Affiliation\Controller\AffiliationAbstractController;

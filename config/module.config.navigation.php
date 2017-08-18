@@ -144,11 +144,62 @@ return [
             'organisation' => [
                 // And finally, here is where we define our page hierarchy
                 'pages' => [
-                    'affiliation-list'           => [
+                    'affiliation-list' => [
                         'label' => _("txt-nav-affiliation-list"),
                         'order' => 115,
                         'route' => 'zfcadmin/affiliation/list',
                     ],
+                ],
+            ],
+            'project'      => [
+                'pages' => [
+                    'project-list' => [
+                        'pages' => [
+                            'project-view' => [
+                                'pages' => [
+                                    'affiliation' => [
+                                        'label'   => _("txt-nav-project-partner"),
+                                        'route'   => 'zfcadmin/affiliation/view',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities'   => [
+                                                'id' => Affiliation\Entity\Affiliation::class,
+                                            ],
+                                            'invokables' => [
+                                                Affiliation\Navigation\Invokable\AffiliationLabel::class,
+                                            ],
+                                        ],
+                                        'pages'   => [
+                                            'edit'  => [
+                                                'label'   => _('txt-nav-edit'),
+                                                'route'   => 'zfcadmin/affiliation/edit',
+                                                'visible' => false,
+                                                'params'  => [
+                                                    'entities' => [
+                                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                                    ],
+                                                ],
+                                            ],
+                                            'merge' => [
+                                                'label'   => _('txt-merge-with-other'),
+                                                'route'   => 'zfcadmin/affiliation/merge',
+                                                'visible' => false,
+                                                'params'  => [
+                                                    'entities' => [
+                                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'tools'        => [
+                'pages' => [
                     'missing-affiliation-parent' => [
                         'label' => _("txt-nav-missing-affiliation-parent"),
                         'order' => 20,
@@ -201,56 +252,8 @@ return [
                         'order' => 110,
                         'route' => 'zfcadmin/affiliation/loi/missing',
                     ],
-
-                ],
-            ],
-            'project'      => [
-                'pages' => [
-                    'project-list' => [
-                        'pages' => [
-                            'project-view' => [
-                                'pages' => [
-                                    'affiliation' => [
-                                        'label'   => _("txt-nav-project-partner"),
-                                        'route'   => 'zfcadmin/affiliation/view',
-                                        'visible' => false,
-                                        'params'  => [
-                                            'entities'   => [
-                                                'id' => Affiliation\Entity\Affiliation::class,
-                                            ],
-                                            'invokables' => [
-                                                Affiliation\Navigation\Invokable\AffiliationLabel::class,
-                                            ],
-                                        ],
-                                        'pages'   => [
-                                            'edit'  => [
-                                                'label'   => _('txt-nav-edit'),
-                                                'route'   => 'zfcadmin/affiliation/edit',
-                                                'visible' => false,
-                                                'params'  => [
-                                                    'entities' => [
-                                                        'id' => \Affiliation\Entity\Affiliation::class,
-                                                    ],
-                                                ],
-                                            ],
-                                            'merge' => [
-                                                'label'   => _('txt-merge-with-other'),
-                                                'route'   => 'zfcadmin/affiliation/merge',
-                                                'visible' => false,
-                                                'params'  => [
-                                                    'entities' => [
-                                                        'id' => \Affiliation\Entity\Affiliation::class,
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
+                ]
+            ]
         ],
     ],
 ];

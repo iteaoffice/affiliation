@@ -13,6 +13,8 @@
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Search\Service;
 
 use Affiliation\Entity\Affiliation;
@@ -50,47 +52,47 @@ final class AffiliationSearchService extends AbstractSearchService
      */
     public function updateDocument($affiliation)
     {
-        $update         = $this->getSolrClient()->createUpdate();
-        $project        = $affiliation->getProject();
-        $contact        = $affiliation->getContact();
-        $now            = new \DateTime();
+        $update = $this->getSolrClient()->createUpdate();
+        $project = $affiliation->getProject();
+        $contact = $affiliation->getContact();
+        $now = new \DateTime();
 
         // Affiliation
         $affiliationDocument = $update->createDocument();
-        $affiliationDocument->id             = $affiliation->getResourceId();
+        $affiliationDocument->id = $affiliation->getResourceId();
         $affiliationDocument->affiliation_id = $affiliation->getId();
-        $affiliationDocument->date_created   = $affiliation->getDateCreated()->format(static::DATE_SOLR);
-        $affiliationDocument->is_active      = (is_null($affiliation->getDateEnd()) || ($affiliation->getDateEnd() > $now));
+        $affiliationDocument->date_created = $affiliation->getDateCreated()->format(static::DATE_SOLR);
+        $affiliationDocument->is_active = (is_null($affiliation->getDateEnd()) || ($affiliation->getDateEnd() > $now));
 
         $descriptionMerged = '';
         foreach ($affiliation->getDescription() as $description) {
             $descriptionMerged .= $description->getDescription() . "\n\n";
         }
-        $affiliationDocument->description          = $descriptionMerged;
-        $affiliationDocument->branch               = $affiliation->getBranch();
-        $affiliationDocument->value_chain          = $affiliation->getValueChain();
-        $affiliationDocument->market_access        = $affiliation->getMarketAccess();
-        $affiliationDocument->main_contribution    = $affiliation->getMainContribution();
+        $affiliationDocument->description = $descriptionMerged;
+        $affiliationDocument->branch = $affiliation->getBranch();
+        $affiliationDocument->value_chain = $affiliation->getValueChain();
+        $affiliationDocument->market_access = $affiliation->getMarketAccess();
+        $affiliationDocument->main_contribution = $affiliation->getMainContribution();
         $affiliationDocument->strategic_importance = $affiliation->getStrategicImportance();
 
         // Organisation
-        $affiliationDocument->organisation         = (string)$affiliation->getOrganisation();
-        $affiliationDocument->organisation_id      = $affiliation->getOrganisation()->getId();
-        $affiliationDocument->organisation_type    = (string)$affiliation->getOrganisation()->getType();
+        $affiliationDocument->organisation = (string)$affiliation->getOrganisation();
+        $affiliationDocument->organisation_id = $affiliation->getOrganisation()->getId();
+        $affiliationDocument->organisation_type = (string)$affiliation->getOrganisation()->getType();
         $affiliationDocument->organisation_country = (string)$affiliation->getOrganisation()->getCountry();
 
         // Project
-        $affiliationDocument->project         = $project->getProject();
-        $affiliationDocument->project_id      = $project->getId();
-        $affiliationDocument->project_number  = $project->getNumber();
-        $affiliationDocument->project_title   = $project->getTitle();
-        $affiliationDocument->project_status  = $this->projectService->parseStatus($project);
-        $affiliationDocument->project_call    = (string)$project->getCall()->shortName();
+        $affiliationDocument->project = $project->getProject();
+        $affiliationDocument->project_id = $project->getId();
+        $affiliationDocument->project_number = $project->getNumber();
+        $affiliationDocument->project_title = $project->getTitle();
+        $affiliationDocument->project_status = $this->projectService->parseStatus($project);
+        $affiliationDocument->project_call = (string)$project->getCall()->shortName();
         $affiliationDocument->project_call_id = $project->getCall()->getId();
         $affiliationDocument->project_program = (string)$project->getCall()->getProgram();
 
         // Contact
-        $affiliationDocument->contact    = $contact->parseFullName();
+        $affiliationDocument->contact = $contact->parseFullName();
         $affiliationDocument->contact_id = $contact->getId();
 
         $update->addDocument($affiliationDocument);
@@ -110,13 +112,12 @@ final class AffiliationSearchService extends AbstractSearchService
 
     /**
      * @param string $searchTerm
-     * @param array  $searchFields
      * @param string $order
      * @param string $direction
      *
      * @return AffiliationSearchService
      */
-    public function setSearch($searchTerm, $searchFields = [], $order = '', $direction = Query::SORT_ASC)
+    public function setSearch($searchTerm, $order = '', $direction = Query::SORT_ASC)
     {
         $this->setQuery($this->getSolrClient()->createSelect());
 
@@ -134,7 +135,18 @@ final class AffiliationSearchService extends AbstractSearchService
             $highlighting->setSimplePostfix('</mark>');
         }
 
-        $this->getQuery()->setQuery(static::parseQuery($searchTerm, $searchFields));
+        $this->getQuery()->setQuery(static::parseQuery(
+            $searchTerm,
+            [
+                'description',
+                'main_contribution',
+                'market_access',
+                'value_chain',
+                'strategic_importance',
+                'project',
+                'organisation',
+            ]
+        ));
 
         switch ($order) {
             case 'organisation_sort':

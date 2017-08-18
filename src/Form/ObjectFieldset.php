@@ -37,7 +37,7 @@ use Zend\Form\Fieldset;
 class ObjectFieldset extends Fieldset
 {
     /**
-     * @param EntityManager         $entityManager
+     * @param EntityManager $entityManager
      * @param Entity\EntityAbstract $object
      */
     public function __construct(EntityManager $entityManager, Entity\EntityAbstract $object)
@@ -60,8 +60,8 @@ class ObjectFieldset extends Fieldset
             ) {
                 $element->setOptions(array_merge($element->getOptions(), ['object_manager' => $entityManager]));
             }
-            if ($element instanceof Radio && ! $element instanceof EntityRadio) {
-                $attributes        = $element->getAttributes();
+            if ($element instanceof Radio && !$element instanceof EntityRadio) {
+                $attributes = $element->getAttributes();
                 $valueOptionsArray = 'get' . ucfirst($attributes['array']);
 
                 $element->setOptions(

@@ -179,7 +179,8 @@
             {% if invoiceMethod.id is constant("\\Invoice\\Entity\\Method::METHOD_CONTRIBUTION") %}
                 {% set dueInYear = versionContributionInformation.effort[projectYear] * projectService.findProjectFeeByYear(projectYear).contribution %}
                 <td>{{ versionContributionInformation.effort[projectYear]|parse_effort }} {{ translate("txt-py") }}</td>
-                <td>&euro; {% if affiliationService.isFundedInYear(affiliation, year) %}{{ projectService.findProjectFeeByYear(year).contribution|number_format(2) }}{% else %}0{% endif %}</td>
+                <td>
+                    &euro; {% if affiliationService.isFundedInYear(affiliation, year) %}{{ projectService.findProjectFeeByYear(year).contribution|number_format(2) }}{% else %}0{% endif %}</td>
                 <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|localizedcurrency('EUR') }}{% else %}{{ 0|localizedcurrency('EUR') }}{% endif %}</td>
             {% endif %}
             <td>{{ dueFactor|localizednumber('percent') }}</td>

@@ -24,7 +24,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class DoaReminder extends Form implements InputFilterProviderInterface
 {
     /**
-     * @param Affiliation    $affiliation
+     * @param Affiliation $affiliation
      * @param ContactService $contactService
      */
     public function __construct(
@@ -97,7 +97,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                         ],
                     ],
                     'label_generator' => function (Target $targetEntity) {
-                        return sprintf("%s (%s)", $targetEntity->getTarget(), $targetEntity->getRoute());
+                        return sprintf('%s (%s)', $targetEntity->getTarget(), $targetEntity->getRoute());
                     },
                 ],
             ]
@@ -131,7 +131,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [];
     }

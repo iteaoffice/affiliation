@@ -28,7 +28,7 @@ class DoaApproval extends Form implements InputFilterProviderInterface
      * DoaApproval constructor.
      *
      * @param ArrayCollection $doaList
-     * @param ContactService  $contactService
+     * @param ContactService $contactService
      */
     public function __construct(ArrayCollection $doaList, ContactService $contactService)
     {
@@ -103,7 +103,7 @@ class DoaApproval extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [];
     }

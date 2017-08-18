@@ -13,6 +13,8 @@
  * @link        http://github.com/iteaoffice/partner for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 /**

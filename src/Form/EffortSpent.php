@@ -9,6 +9,8 @@
  */
 declare(strict_types=1);
 
+declare(strict_types=1);
+
 namespace Affiliation\Form;
 
 use Zend\Form\Form;

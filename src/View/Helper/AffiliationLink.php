@@ -9,6 +9,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
@@ -25,9 +27,9 @@ class AffiliationLink extends LinkAbstract
      * @param Affiliation $affiliation
      * @param             $action
      * @param             $show
-     * @param int         $year
-     * @param int         $period
-     * @param null        $fragment
+     * @param int $year
+     * @param int $period
+     * @param null $fragment
      *
      * @return string
      *
@@ -63,7 +65,7 @@ class AffiliationLink extends LinkAbstract
             ]
         );
 
-        if (! $this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
+        if (!$this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
             return $this->getAction() !== 'view-community' ? ''
                 : $this->getAffiliation()->getOrganisation()->getOrganisation();
         }

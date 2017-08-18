@@ -8,16 +8,18 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace AffiliationTest\Service;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Form\AddAssociate;
-use Testing\Util\AbstractFormTest;
 use Contact\Entity\Contact;
 use Contact\Service\ContactService;
 use Doctrine\ORM\EntityManager;
 use Organisation\Entity\Organisation;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use Testing\Util\AbstractFormTest;
 
 /**
  * Class AddAssociateTest
@@ -37,7 +39,7 @@ class AddAssociateTest extends AbstractFormTest
     public function setUp()
     {
         $this->affiliation = new Affiliation();
-        $organisation      = new Organisation();
+        $organisation = new Organisation();
         $organisation->setId(1);
         $this->affiliation->setOrganisation($organisation);
     }
@@ -51,7 +53,7 @@ class AddAssociateTest extends AbstractFormTest
         $entityManager = $this->getEntityManagerMock();
 
         $contactService = $this->setUpContactServiceMock();
-        $addAssociate   = new AddAssociate($this->affiliation, $contactService);
+        $addAssociate = new AddAssociate($this->affiliation, $contactService);
 
         $this->assertInstanceOf(AddAssociate::class, $addAssociate);
         $this->assertArrayHasKey('contact', $addAssociate->getInputFilterSpecification());
@@ -69,14 +71,14 @@ class AddAssociateTest extends AbstractFormTest
         $contact->setId(1);
 
         $contactServiceMock = $this->getMockBuilder(ContactService::class)
-                                   ->setMethods(['findContactsInOrganisation'])
-                                   ->getMock();
+            ->setMethods(['findContactsInOrganisation'])
+            ->getMock();
 
         $contactServiceMock->expects($this->exactly(1))
-                           ->method('findContactsInOrganisation')
-                           ->with($this->affiliation->getOrganisation())
-                           ->will($this->returnValue([$contact]
-                           ));
+            ->method('findContactsInOrganisation')
+            ->with($this->affiliation->getOrganisation())
+            ->will($this->returnValue([$contact]
+            ));
 
         return $contactServiceMock;
     }

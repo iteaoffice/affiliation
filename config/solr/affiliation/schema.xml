@@ -18,7 +18,7 @@
 -->
 
 <schema name="affiliation" version="1.5">
-	<!-- Valid attributes for fields:
+    <!-- Valid attributes for fields:
      name: mandatory - the name for the field
      type: mandatory - the name of a field type from the 
        <types> fieldType section
@@ -53,122 +53,122 @@
        when adding a document.
    -->
 
-	<!-- If you remove this field, you must _also_ disable the update log in solrconfig.xml
+    <!-- If you remove this field, you must _also_ disable the update log in solrconfig.xml
       or Solr won't start. _version_ and update log are required for SolrCloud
-   --> 
-	<field name="_version_" type="long" indexed="true" stored="true"/>
+   -->
+    <field name="_version_" type="long" indexed="true" stored="true"/>
 
-	<!-- points to the root document of a block of nested documents. Required for nested
+    <!-- points to the root document of a block of nested documents. Required for nested
       document support, may be removed otherwise
    -->
-	<field name="_root_" type="string" indexed="true" stored="false"/>
+    <field name="_root_" type="string" indexed="true" stored="false"/>
 
-	<!-- Only remove the "id" field if you have a very good reason to. While not strictly
+    <!-- Only remove the "id" field if you have a very good reason to. While not strictly
      required, it is highly recommended. A <uniqueKey> is present in almost all Solr 
      installations. See the <uniqueKey> declaration below where <uniqueKey> is set to "id".
-   -->   
-	<field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
+   -->
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false"/>
 
-	<field name="affiliation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="date_created" type="date" indexed="true" stored="true"/>
-	<field name="is_active" type="boolean" indexed="true" stored="true"/>
-	<field name="description" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="branch" type="string" indexed="true" stored="true" omitNorms="true"/>
-	<field name="value_chain" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="market_access" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="main_contribution" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="strategic_importance" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="affiliation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="date_created" type="date" indexed="true" stored="true"/>
+    <field name="is_active" type="boolean" indexed="true" stored="true"/>
+    <field name="description" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="branch" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="value_chain" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="market_access" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="main_contribution" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="strategic_importance" type="text_general_edge_ngram" indexed="true" stored="true"/>
 
-	<field name="organisation" type="string" indexed="true" stored="true" omitNorms="true"  multiValued="false"/>
-	<field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation" dest="organisation_sort"/>
-	<field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation" dest="organisation_group"/>
-	<field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="organisation_type" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="organisation_type_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation_type" dest="organisation_type_group"/>
-	<field name="organisation_country" type="string" indexed="true" stored="true" omitNorms="true"/>
-	<field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation_country" dest="organisation_country_group"/>
+    <field name="organisation" type="string" indexed="true" stored="true" omitNorms="true" multiValued="false"/>
+    <field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation" dest="organisation_sort"/>
+    <field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation" dest="organisation_group"/>
+    <field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="organisation_type" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="organisation_type_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation_type" dest="organisation_type_group"/>
+    <field name="organisation_country" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation_country" dest="organisation_country_group"/>
 
-	<field name="project" type="string" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+    <field name="project" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
     <copyField source="project" dest="project_sort"/>
-	<field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_title" type="string" indexed="true" stored="true"/>
-	<field name="project_status" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_call" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="project_call" dest="project_call_group"/>
-	<field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_program" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="project_program" dest="project_program_group"/>
+    <field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_title" type="string" indexed="true" stored="true"/>
+    <field name="project_status" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_call" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="project_call" dest="project_call_group"/>
+    <field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_program" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="project_program" dest="project_program_group"/>
 
-	<field name="contact" type="string" indexed="true" stored="true" omitNorms="true"/>
-	<field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+    <field name="contact" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
     <copyField source="contact" dest="contact_sort"/>
-	<field name="contact_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="contact_id" type="int" indexed="true" stored="true" omitNorms="true"/>
 
-	<!-- Field to use to determine and enforce document uniqueness. 
+    <!-- Field to use to determine and enforce document uniqueness.
       Unless this field is marked with required="false", it will be a required field
    -->
-	<uniqueKey>id</uniqueKey>
+    <uniqueKey>id</uniqueKey>
 
-	<fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
-	<fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
-	<fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
-	<fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
-	<fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
-	<fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
-	<fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
-	<fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
-	<!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
-	<fieldType name="binary" class="solr.BinaryField"/>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+    <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+    <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
+    <fieldType name="binary" class="solr.BinaryField"/>
 
-	<!-- Case insensitive string -->
-	<fieldType name="string_ci" class="solr.TextField"
-		sortMissingLast="true" omitNorms="true">
-		<analyzer>
-			<tokenizer class="solr.KeywordTokenizerFactory"/>
-			<filter class="solr.LowerCaseFilterFactory" />
-		</analyzer>
-	</fieldType>
+    <!-- Case insensitive string -->
+    <fieldType name="string_ci" class="solr.TextField"
+               sortMissingLast="true" omitNorms="true">
+        <analyzer>
+            <tokenizer class="solr.KeywordTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
 
-	<fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
-		<analyzer type="index">
-			<tokenizer class="solr.LowerCaseTokenizerFactory"/>
-			<filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="15"/>
-		</analyzer>
-		<analyzer type="query">
-			<tokenizer class="solr.LowerCaseTokenizerFactory"/>
-		</analyzer>
-	</fieldType>
+    <fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
+        <analyzer type="index">
+            <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+            <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="15"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+        </analyzer>
+    </fieldType>
 
-	<!-- A simple custom lower case text field without fancy text_general features -->
-	<fieldType name="c_text" class="solr.TextField">
-		<analyzer type="index">
-			<tokenizer class="solr.WhitespaceTokenizerFactory"/>
-			<filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
-			<filter class="solr.LowerCaseFilterFactory"/>
-		</analyzer>
-		<analyzer type="query">
-			<tokenizer class="solr.WhitespaceTokenizerFactory"/>
-			<filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
-			<filter class="solr.LowerCaseFilterFactory"/>
-		</analyzer>
-	</fieldType>
-	
-	<!-- A c_text field type suitable for sorting -->
-	<fieldType name="c_text_sort" class="solr.TextField">
-		<analyzer>
-			<tokenizer class="solr.KeywordTokenizerFactory"/>
-			<filter class="solr.TrimFilterFactory" />
-			<filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
-			<filter class="solr.LowerCaseFilterFactory"/>
-		</analyzer>
-	</fieldType>
+    <!-- A simple custom lower case text field without fancy text_general features -->
+    <fieldType name="c_text" class="solr.TextField">
+        <analyzer type="index">
+            <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
+
+    <!-- A c_text field type suitable for sorting -->
+    <fieldType name="c_text_sort" class="solr.TextField">
+        <analyzer>
+            <tokenizer class="solr.KeywordTokenizerFactory"/>
+            <filter class="solr.TrimFilterFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
 
 </schema>

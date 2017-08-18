@@ -8,11 +8,13 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace AffiliationTest\Service;
 
 use Affiliation\InputFilter\AffiliationFilter;
-use Testing\Util\AbstractInputFilterTest;
 use Doctrine\ORM\EntityManager;
+use Testing\Util\AbstractInputFilterTest;
 
 /**
  * Class AffiliationFilterTest
