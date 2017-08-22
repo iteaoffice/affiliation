@@ -9,6 +9,8 @@
  */
 declare(strict_types=1);
 
+declare(strict_types=1);
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity;
@@ -35,7 +37,7 @@ class Affiliation extends Form
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
         $technicalContactValueOptions = [];
-        $affiliationValueOptions      = [];
+        $affiliationValueOptions = [];
         foreach ($affiliationService->parseRenameOptions($affiliation) as $country => $options) {
             $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
@@ -62,9 +64,9 @@ class Affiliation extends Form
          * This array starts from the technical contacts
          */
         $financialContactValueOptions = $technicalContactValueOptions;
-        $organisation                 = $affiliation->getOrganisation();
+        $organisation = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $affiliation) {
-            if (! is_null($affiliation->getFinancial())) {
+            if (!is_null($affiliation->getFinancial())) {
                 if (is_null($affiliation->getFinancial()->getContact()->getDateEnd())) {
                     $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
                         = $affiliation->getFinancial()->getContact()->getFormName();

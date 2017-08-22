@@ -8,14 +8,13 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Service;
 
 use Admin\Service\AdminService;
 use Affiliation\Entity\Affiliation;
-use Affiliation\Entity\Doa;
 use Affiliation\Entity\EntityAbstract;
-use Affiliation\Entity\Loi;
-use Affiliation\Entity\Version;
 use BjyAuthorize\Service\Authorize;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
@@ -169,7 +168,7 @@ abstract class ServiceAbstract implements ServiceInterface
         //The dependencies for this, but for now we can use this trick
         if ($entity instanceof Affiliation) {
             $this->getAdminService()
-                 ->flushPermitsByEntityAndId('project_entity_project', $entity->getProject()->getId());
+                ->flushPermitsByEntityAndId('project_entity_project', $entity->getProject()->getId());
         }
 
         return $entity;
@@ -198,7 +197,7 @@ abstract class ServiceAbstract implements ServiceInterface
          * @var AssertionAbstract
          */
         $assertion = $this->getServiceLocator()->get($assertion);
-        if (! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
+        if (!$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
             $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }

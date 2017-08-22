@@ -505,7 +505,8 @@
                         {% if effortSpent %}
                             <tr>
                                 <td></td>
-                                <td colspan="4"><strong>{{ translate("txt-main-results-during-reporting-period") }}: </strong>{{ effortSpent.summary|nl2br|default(translate("txt-not-provided")) }}
+                                <td colspan="4"><strong>{{ translate("txt-main-results-during-reporting-period") }}
+                                        : </strong>{{ effortSpent.summary|nl2br|default(translate("txt-not-provided")) }}
                                 </td>
                             </tr>
                         {% endif %}
@@ -516,7 +517,9 @@
                                         : </strong>{{ effortSpent.comment }}
                                 </td>
                             </tr>
-                            <tr><td colspan="5"></td></tr>
+                            <tr>
+                                <td colspan="5"></td>
+                            </tr>
                         {% endif %}
                     {% endfor %}
                     </tbody>

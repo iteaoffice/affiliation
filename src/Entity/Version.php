@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -85,8 +87,8 @@ class Version extends EntityAbstract
      */
     public function __construct()
     {
-        $this->costVersion    = new ArrayCollection();
-        $this->effortVersion  = new ArrayCollection();
+        $this->costVersion = new ArrayCollection();
+        $this->effortVersion = new ArrayCollection();
         $this->fundingVersion = new ArrayCollection();
     }
 

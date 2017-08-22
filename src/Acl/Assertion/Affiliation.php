@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Acl\Assertion;
 
 use Admin\Entity\Access;
@@ -28,10 +30,10 @@ class Affiliation extends AssertionAbstract
      * $role, $affiliation, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl                                 $acl
-     * @param RoleInterface                       $role
+     * @param Acl $acl
+     * @param RoleInterface $role
      * @param ResourceInterface|AffiliationEntity $affiliation
-     * @param string                              $privilege
+     * @param string $privilege
      *
      * @return bool
      */
@@ -44,7 +46,7 @@ class Affiliation extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (! $affiliation instanceof AffiliationEntity && ! is_null($id)) {
+        if (!$affiliation instanceof AffiliationEntity && !is_null($id)) {
             $affiliation = $this->getAffiliationService()->findAffiliationById($id);
         }
 
@@ -73,7 +75,7 @@ class Affiliation extends AssertionAbstract
             case 'update-effort-spent':
                 //Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
-                if (! is_null($reportId)) {
+                if (!is_null($reportId)) {
                     //Find the corresponding report
                     $report = $this->getReportService()->findReportById($reportId);
                     if (is_null($report) || $this->getReportService()->isFinal($report)) {

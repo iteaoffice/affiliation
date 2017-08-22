@@ -11,6 +11,8 @@
  * @link       https://itea3.org
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
@@ -62,15 +64,15 @@ class PaymentSheet extends LinkAbstract
                 'organisationService'            => $this->getOrganisationService(),
                 'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod(
                     $affiliation->getProject()
-                                ->getCall()->getProgram()
+                        ->getCall()->getProgram()
                 ),
                 'invoiceService'                 => $this->getInvoiceService(),
                 'versionService'                 => $this->getVersionService(),
                 'versionContributionInformation' => $this->getVersionService()
-                                                         ->getProjectVersionContributionInformation(
-                                                             $affiliation,
-                                                             $latestVersion
-                                                         ),
+                    ->getProjectVersionContributionInformation(
+                        $affiliation,
+                        $latestVersion
+                    ),
             ]
         );
     }

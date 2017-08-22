@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -112,25 +114,6 @@ class ContractVersion extends EntityAbstract
     }
 
     /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     * @return ContractVersion
-     */
-    public function setId(int $id): ContractVersion
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * @return Affiliation
      */
     public function getAffiliation(): Affiliation
@@ -164,6 +147,25 @@ class ContractVersion extends EntityAbstract
     public function setVersion(\Project\Entity\Contract\Version $version): ContractVersion
     {
         $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     * @return ContractVersion
+     */
+    public function setId(int $id): ContractVersion
+    {
+        $this->id = $id;
 
         return $this;
     }

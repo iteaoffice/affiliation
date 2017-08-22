@@ -9,11 +9,12 @@
  */
 declare(strict_types=1);
 
+declare(strict_types=1);
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
 use Doctrine\ORM\EntityManager;
-use General\Service\GeneralService;
 use Organisation\Entity\Financial as FinancialOrganisation;
 use Zend\Form\Form;
 

@@ -13,6 +13,8 @@
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace AffiliationTest\Service;
 
 use Affiliation\Entity;
@@ -49,7 +51,7 @@ class AffiliationServiceTest extends AbstractServiceTest
      */
     public function testCanFindAffiliationBId()
     {
-        $service       = new AffiliationService();
+        $service = new AffiliationService();
         $affiliationId = 1;
 
         // Create a dummy project entity
@@ -58,13 +60,13 @@ class AffiliationServiceTest extends AbstractServiceTest
 
         // Mock the repository, disabling the constructor
         $affiliationRepositoryMock = $this->getMockBuilder(Repository\Affiliation::class)
-                                          ->disableOriginalConstructor()
-                                          ->setMethods(['find'])
-                                          ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['find'])
+            ->getMock();
         $affiliationRepositoryMock->expects($this->once())
-                                  ->method('find')
-                                  ->with($this->identicalTo($affiliationId))
-                                  ->will($this->returnValue($affiliation));
+            ->method('find')
+            ->with($this->identicalTo($affiliationId))
+            ->will($this->returnValue($affiliation));
 
         // Mock the entity manager + affiliation repository
         /** @var EntityManager $entityManagerMock */
@@ -76,7 +78,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testIsActive()
     {
-        $service           = new AffiliationService();
+        $service = new AffiliationService();
         $activeAffiliation = new Entity\Affiliation();
 
         $this->assertTrue($service->isActive($activeAffiliation));
@@ -89,7 +91,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testIsSelfFunded()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->isSelfFunded($affiliation));
@@ -108,7 +110,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testIsActiveInVersion()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->isActiveInVersion($affiliation));
@@ -121,7 +123,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testHasDoa()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->hasDoa($affiliation));
@@ -137,7 +139,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testHasLoi()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->hasLoi($affiliation));
@@ -153,15 +155,15 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testfindOrganisationFinancial()
     {
-        $service      = new AffiliationService();
-        $affiliation  = new Entity\Affiliation();
+        $service = new AffiliationService();
+        $affiliation = new Entity\Affiliation();
         $organisation = new Organisation();
         $affiliation->setOrganisation($organisation);
 
         $this->assertNull($service->parseVatNumber($affiliation));
 
-        $affiliation  = new Entity\Affiliation();
-        $parent       = new OParent();
+        $affiliation = new Entity\Affiliation();
+        $parent = new OParent();
         $organisation = new Organisation();
         $parent->setOrganisation($organisation);
         $parentOrganisation = new \Organisation\Entity\Parent\Organisation();
@@ -173,11 +175,11 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertNull($service->parseVatNumber($affiliation));
 
         //Situation with a parent and no parent financial
-        $vatNumber    = 'VATNUMBER';
-        $affiliation  = new Entity\Affiliation();
-        $parent       = new OParent();
+        $vatNumber = 'VATNUMBER';
+        $affiliation = new Entity\Affiliation();
+        $parent = new OParent();
         $organisation = new Organisation();
-        $financial    = new Financial();
+        $financial = new Financial();
         $financial->setVat($vatNumber);
         $organisation->setFinancial($financial);
         $parent->setOrganisation($organisation);
@@ -189,11 +191,11 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertEquals($financial, $service->findOrganisationFinancial($affiliation));
         $this->assertEquals($vatNumber, $service->parseVatNumber($affiliation));
 
-        $vatNumber    = 'VATNUMBER';
-        $affiliation  = new Entity\Affiliation();
-        $parent       = new OParent();
+        $vatNumber = 'VATNUMBER';
+        $affiliation = new Entity\Affiliation();
+        $parent = new OParent();
         $organisation = new Organisation();
-        $financial    = new Financial();
+        $financial = new Financial();
         $financial->setVat($vatNumber);
         $organisation->setFinancial($financial);
         $parentFinancial = new \Organisation\Entity\Parent\Financial();
@@ -212,15 +214,15 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testCanFindFinancialContact()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertNull($service->getFinancialContact($affiliation));
 
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
-        $financial   = new Entity\Financial();
-        $contact     = new Contact();
+        $financial = new Entity\Financial();
+        $contact = new Contact();
         $financial->setContact($contact);
         $affiliation->setFinancial($financial);
 
@@ -229,11 +231,11 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testCanCreateInvoices()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $organisation = new Organisation();
-        $type         = new Type();
+        $type = new Type();
         $type->setInvoice(Type::INVOICE);
         $organisation->setType($type);
 

@@ -9,6 +9,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\AssertionAbstract;
@@ -134,7 +136,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                 $this->routerParams,
                 is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
             ),
-            htmlentities($this->text),
+            htmlentities((string) $this->text),
             implode(' ', $this->classes),
             in_array($this->getShow(), ['icon', 'button', 'alternativeShow'], true) ? implode('', $this->linkContent)
                 : htmlentities(implode('', $this->linkContent))

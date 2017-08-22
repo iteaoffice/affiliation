@@ -8,6 +8,8 @@
  * @copyright Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Affiliation;
@@ -51,16 +53,6 @@ class AffiliationService extends ServiceAbstract
     public function findAffiliationById($id):?Affiliation
     {
         return $this->getEntityManager()->getRepository(Affiliation::class)->find($id);
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
-     */
-    public function isActive(Affiliation $affiliation): bool
-    {
-        return is_null($affiliation->getDateEnd());
     }
 
     /**
@@ -129,6 +121,25 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * The VATnumber is first checked in the financial organisation. If that cannot be found we do a fallback
+     * tot he organisation > financial
+     *
+     * @param Affiliation $affiliation
+     *
+     * @return string|null
+     */
+    public function parseVatNumber(Affiliation $affiliation):?string
+    {
+        $financial = $this->findOrganisationFinancial($affiliation);
+
+        if (is_null($financial)) {
+            return null;
+        }
+
+        return $financial->getVat();
+    }
+
+    /**
      * @param Affiliation $affiliation
      *
      * @return null|\Organisation\Entity\Financial
@@ -145,7 +156,7 @@ class AffiliationService extends ServiceAbstract
 
             $organisation = $parent->getOrganisation();
             if (!is_null($parent->getFinancial())) {
-                $organisation = $parent->getFinancial()->first()->getOrganisation();
+                $organisation = $parent->getFinancial()->getOrganisation();
             }
         }
 
@@ -163,26 +174,6 @@ class AffiliationService extends ServiceAbstract
         }
 
         return $organisation->getFinancial();
-    }
-
-
-    /**
-     * The VATnumber is first checked in the financial organisation. If that cannot be found we do a fallback
-     * tot he organisation > financial
-     *
-     * @param Affiliation $affiliation
-     *
-     * @return string|null
-     */
-    public function parseVatNumber(Affiliation $affiliation):?string
-    {
-        $financial = $this->findOrganisationFinancial($affiliation);
-
-        if (is_null($financial)) {
-            return null;
-        }
-
-        return $financial->getVat();
     }
 
     /**
@@ -231,6 +222,16 @@ class AffiliationService extends ServiceAbstract
         }
 
         return $errors;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     *
+     * @return bool
+     */
+    public function isActive(Affiliation $affiliation): bool
+    {
+        return is_null($affiliation->getDateEnd());
     }
 
     /**
@@ -321,6 +322,15 @@ class AffiliationService extends ServiceAbstract
         return 0;
     }
 
+    /**
+     * @param Version $version
+     * @return int
+     */
+    public function parseInvoiceMethod(Version $version): int
+    {
+        return (int)$this->getInvoiceService()->findInvoiceMethod($version->getProject()->getCall()->getProgram())
+            ->getId();
+    }
 
     /**
      * This function counts the effort or costs per affiliaton and returns the total per year. We pick the total amount out per given ear
@@ -368,6 +378,43 @@ class AffiliationService extends ServiceAbstract
         }
 
         return $base;
+    }
+
+    /**
+     * @param Version $version
+     * @param $year
+     * @param OParent|null $parent
+     * @return float|int|string
+     * @throws \Exception
+     */
+    public function parseContributionFee(Version $version, $year, OParent $parent = null)
+    {
+        //Cast to ints as some values can originate form templates (== twig > might be string)
+        $year = (int)$year;
+
+        /**
+         * Based on the invoiceMethod we return or a percentage or the contribution
+         */
+        $fee = $this->getProjectService()->findProjectFeeByYear($year);
+
+        switch ($this->parseInvoiceMethod($version)) {
+            case Method::METHOD_PERCENTAGE:
+                return $fee->getPercentage() / 100;
+            case Method::METHOD_CONTRIBUTION:
+                return $fee->getContribution();
+            case Method::METHOD_FUNDING:
+                if (is_null($parent)) {
+                    throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
+                }
+
+                //The payment factor for funding is the factor divided by 3 in three years
+                return ($this->getParentService()->parseInvoiceFactor(
+                    $parent,
+                    $year
+                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
+            default:
+                throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
+        }
     }
 
     /**
@@ -431,43 +478,6 @@ class AffiliationService extends ServiceAbstract
         };
 
         return null;
-    }
-
-    /**
-     * @param Version $version
-     * @param $year
-     * @param OParent|null $parent
-     * @return float|int|string
-     * @throws \Exception
-     */
-    public function parseContributionFee(Version $version, $year, OParent $parent = null)
-    {
-        //Cast to ints as some values can originate form templates (== twig > might be string)
-        $year = (int)$year;
-
-        /**
-         * Based on the invoiceMethod we return or a percentage or the contribution
-         */
-        $fee = $this->getProjectService()->findProjectFeeByYear($year);
-
-        switch ($this->parseInvoiceMethod($version)) {
-            case Method::METHOD_PERCENTAGE:
-                return $fee->getPercentage() / 100;
-            case Method::METHOD_CONTRIBUTION:
-                return $fee->getContribution();
-            case Method::METHOD_FUNDING:
-                if (is_null($parent)) {
-                    throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
-                }
-
-                //The payment factor for funding is the factor divided by 3 in three years
-                return ($this->getParentService()->parseInvoiceFactor(
-                    $parent,
-                    $year
-                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
-            default:
-                throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
-        }
     }
 
     /**
@@ -546,7 +556,7 @@ class AffiliationService extends ServiceAbstract
                 break;
         }
 
-        return $contributionDue;
+        return (float) $contributionDue;
     }
 
     /**
@@ -561,29 +571,19 @@ class AffiliationService extends ServiceAbstract
         $projectYear,
         int $year,
         int $period = null
-    ): int {
+    ): float {
         //Cast to ints as some values can originate form templates (== twig > might be string)
         switch (true) {
             case !$this->isFundedInYear($affiliation, $projectYear):
-                return 0;
+                return (float) 0;
             case is_null($period) || $projectYear < $year:
-                return 1; //in the past is always 100% due
+                return (float) 1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
-                return 1 - $this->parseContributionFactor($affiliation, $year, $period);
+                return (float) 1 - $this->parseContributionFactor($affiliation, $year, $period);
             default:
-                return 0;
+                return (float) 0;
         }
-    }
-
-    /**
-     * @param Version $version
-     * @return int
-     */
-    public function parseInvoiceMethod(Version $version): int
-    {
-        return (int)$this->getInvoiceService()->findInvoiceMethod($version->getProject()->getCall()->getProgram())
-            ->getId();
     }
 
     /**

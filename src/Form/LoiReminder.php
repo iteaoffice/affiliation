@@ -27,9 +27,9 @@ class LoiReminder extends Form implements InputFilterProviderInterface
     /**
      * LoiReminder constructor.
      *
-     * @param Affiliation    $affiliation
+     * @param Affiliation $affiliation
      * @param ContactService $contactService
-     * @param EntityManager  $entityManager
+     * @param EntityManager $entityManager
      */
     public function __construct(
         Affiliation $affiliation,
@@ -136,7 +136,7 @@ class LoiReminder extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [];
     }

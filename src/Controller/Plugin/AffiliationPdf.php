@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller\Plugin;
 
 /**
@@ -32,7 +34,7 @@ class AffiliationPdf extends \FPDI
     public function header()
     {
         if (is_null($this->_tplIdx)) {
-            if (! file_exists($this->template)) {
+            if (!file_exists($this->template)) {
                 throw new \InvalidArgumentException(sprintf("Template %s cannot be found", $this->template));
             }
             $this->setSourceFile($this->template);
@@ -81,7 +83,7 @@ class AffiliationPdf extends \FPDI
         $this->SetTextColor(0);
         $this->SetFont('');
         // Data
-        $fill       = 0;
+        $fill = 0;
         $rowCounter = 1;
         foreach ($data as $row) {
             $counter = 0;
@@ -97,7 +99,7 @@ class AffiliationPdf extends \FPDI
             }
             $rowCounter++;
             $this->Ln();
-            $fill = ! $fill;
+            $fill = !$fill;
         }
         $this->Cell(array_sum($w), 0, '', 'T');
         $this->Ln();

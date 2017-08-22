@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Acl\Assertion;
 
 use Admin\Entity\Access;
@@ -28,10 +30,10 @@ class Loi extends AssertionAbstract
      * $role, $loi, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl               $acl
-     * @param RoleInterface     $role
+     * @param Acl $acl
+     * @param RoleInterface $role
      * @param ResourceInterface $loi
-     * @param string            $privilege
+     * @param string $privilege
      *
      * @return bool
      */
@@ -40,7 +42,7 @@ class Loi extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (! $loi instanceof LoiEntity && ! is_null($id)) {
+        if (!$loi instanceof LoiEntity && !is_null($id)) {
             /** @var LoiEntity $loi */
             $loi = $this->getAffiliationService()->findEntityById(LoiEntity::class, $id);
         }
@@ -87,8 +89,8 @@ class Loi extends AssertionAbstract
                  */
 
                 return is_null($loi->getDateApproved())
-                       && $this->getAffiliationAssertion()
-                               ->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
+                    && $this->getAffiliationAssertion()
+                        ->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
             case 'download':
                 return $this->getAffiliationAssertion()->assert($acl, $role, $loi->getAffiliation(), 'view-community');
             case 'view-admin':
