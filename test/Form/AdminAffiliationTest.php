@@ -14,6 +14,7 @@ namespace AffiliationTest\Form;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Form\AdminAffiliation;
+use Doctrine\Common\Collections\ArrayCollection;
 use General\Entity\Country;
 use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
@@ -63,30 +64,38 @@ class AdminAffiliationTest extends AbstractFormTest
      */
     private function setUpParentServiceMock(): MockObject
     {
-        $parentOrganisation = new \Organisation\Entity\Parent\Organisation();
-
-
-        $organisation = new Organisation();
-        $organisation->setId(1);
-        $organisation->setOrganisation('organisation');
-
         $country = new Country();
         $country->setId(1);
 
-        $organisation->setCountry($country);
+        $organisation1 = new Organisation();
+        $organisation1->setId(1);
+        $organisation1->setOrganisation('Organisation 1');
+        $organisation1->setCountry($country);
 
+        $organisation2 = new Organisation();
+        $organisation2->setId(2);
+        $organisation2->setOrganisation('Organisation 2');
+        $organisation2->setCountry($country);
 
-        $parentOrganisation->setOrganisation($organisation);
+        $parentOrganisation = new \Organisation\Entity\Parent\Organisation();
+        $parentOrganisation->setOrganisation($organisation1);
+
+        $oParent = new OParent();
+        $oParent->setOrganisation($organisation2);
+        $oParent->setParentOrganisation(new ArrayCollection([$parentOrganisation]));
 
         $parentServiceMock = $this->getMockBuilder(ParentService::class)
-            ->setMethods(['findParentOrganisationByNameLike'])
+            ->setMethods(['findParentOrganisationByNameLike', 'findAll'])
             ->getMock();
 
-        $parentServiceMock->expects($this->any())
+        $parentServiceMock->expects($this->once())
             ->method('findParentOrganisationByNameLike')
             ->with($this->affiliation->getOrganisation())
-            ->will($this->returnValue([$parentOrganisation]
-            ));
+            ->will($this->returnValue([$parentOrganisation]));
+
+        $parentServiceMock->expects($this->once())
+            ->method('findAll')
+            ->will($this->returnValue([$oParent]));
 
         $parentServiceMock->setEntityManager($this->getEntityManagerMock(OParent::class));
 
