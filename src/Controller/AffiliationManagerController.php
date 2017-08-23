@@ -58,8 +58,16 @@ class AffiliationManagerController extends AffiliationAbstractController
             $request->getQuery()->toArray()
         );
 
+        $searchFields = [
+            'description',
+            'main_contribution',
+            'market_access',
+            'value_chain',
+            'strategic_importance'
+        ];
+
         if ($request->isGet()) {
-            $searchService->setSearch($data['query'], $data['order'], $data['direction']);
+            $searchService->setSearch($data['query'], $searchFields, $data['order'], $data['direction']);
             if (isset($data['facet'])) {
                 foreach ($data['facet'] as $facetField => $values) {
                     $quotedValues = [];
@@ -469,7 +477,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     {
         /** @var Request $request */
         $request = $this->getRequest();
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliation'));
 
         if (is_null($affiliation)) {
             return $this->notFoundAction();

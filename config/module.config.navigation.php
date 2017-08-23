@@ -180,6 +180,19 @@ return [
                                                     ],
                                                 ],
                                             ],
+                                            'edit-associate'  => [
+                                                'label'   => _('txt-nav-edit-associate'),
+                                                'route'   => 'zfcadmin/affiliation/edit-associate',
+                                                'visible' => false,
+                                                'params'  => [
+                                                    'entities' => [
+                                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                                    ],
+                                                    'routeParam' => [
+                                                        'id' => 'affiliation'
+                                                    ]
+                                                ],
+                                            ],
                                             'merge' => [
                                                 'label'   => _('txt-merge-with-other'),
                                                 'route'   => 'zfcadmin/affiliation/merge',

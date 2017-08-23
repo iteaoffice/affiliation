@@ -2,460 +2,184 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category  Search
+ * PHP Version 7
  *
- * @author    Bart van Eijck <bart.van.eijck@itea3.org>
- * @copyright Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @category    Project
+ *
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
+ *
+ * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
 declare(strict_types=1);
 
-namespace Search\Service;
+namespace Affiliation\Search\Service;
 
-use Interop\Container\ContainerInterface;
-use Solarium\Client;
-use Solarium\Core\Query\AbstractQuery;
-use Solarium\Exception\HttpException;
+use Affiliation\Entity\Affiliation;
+use Affiliation\Service\AffiliationService;
+use Project\Service\ProjectService;
+use Search\Service\AbstractSearchService;
+use Search\Service\SearchServiceInterface;
 use Solarium\QueryType\Select\Query\Query;
-use Solarium\QueryType\Select\Result\Result as SelectResult;
-use Solarium\QueryType\Update\Result as UpdateResult;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-abstract class AbstractSearchService implements SearchServiceInterface
+/**
+ * Class AffiliationSearchService
+ *
+ * @package Affiliation\Search\Service
+ */
+final class AffiliationSearchService extends AbstractSearchService
 {
-    /**
-     * SOLR date format
-     *
-     * @type string
-     */
-    const DATE_SOLR = 'Y-m-d\TH:i:s\Z';
+    const SOLR_CONNECTION = 'affiliation';
 
     /**
-     * The default query term/clause boost amount
-     *
-     * @type int
+     * @var AffiliationService
      */
-    const QUERY_TERM_BOOST = 30;
+    private $affiliationService;
 
     /**
-     * Default SOLR connection
-     *
-     * @type string
+     * @var ProjectService
      */
-    const SOLR_CONNECTION = 'default';
+    private $projectService;
 
     /**
-     * The Send service locator
+     * Update or insert an affiliation
      *
-     * @var ServiceLocatorInterface
+     * @param Affiliation $affiliation
+     *
+     * @return \Solarium\Core\Query\Result\ResultInterface
+     * @throws \Solarium\Exception\HttpException
      */
-    protected $serviceLocator;
-
-    /**
-     * A Solarium client instance
-     *
-     * @var Client
-     */
-    protected $solrClient;
-
-    /**
-     * A Solarium query instance
-     *
-     * @var Query
-     */
-    protected $query;
-
-    /**
-     * Parse a SOLR search query from a search term
-     *
-     * @param string $searchTerm
-     * @param array $matchFields
-     * @param string $operator
-     *
-     * @return string
-     */
-    public static function parseQuery(
-        string $searchTerm,
-        array $matchFields,
-        string $operator = Query::QUERY_OPERATOR_OR
-    ): string
+    public function updateDocument($affiliation)
     {
-        preg_match_all('/-?"[^"]+"|\+|-?\w+/', $searchTerm, $searchParts);
+        $update = $this->getSolrClient()->createUpdate();
+        $project = $affiliation->getProject();
+        $contact = $affiliation->getContact();
+        $now = new \DateTime();
 
-        if (isset($searchParts[0])) {
-            $searchParts = $searchParts[0];
+        // Affiliation
+        $affiliationDocument = $update->createDocument();
+        $affiliationDocument->id = $affiliation->getResourceId();
+        $affiliationDocument->affiliation_id = $affiliation->getId();
+        $affiliationDocument->date_created = $affiliation->getDateCreated()->format(static::DATE_SOLR);
+        $affiliationDocument->is_active = (is_null($affiliation->getDateEnd()) || ($affiliation->getDateEnd() > $now));
+
+        $descriptionMerged = '';
+        foreach ($affiliation->getDescription() as $description) {
+            $descriptionMerged .= $description->getDescription() . "\n\n";
         }
+        $affiliationDocument->description = $descriptionMerged;
+        $affiliationDocument->branch = $affiliation->getBranch();
+        $affiliationDocument->value_chain = $affiliation->getValueChain();
+        $affiliationDocument->market_access = $affiliation->getMarketAccess();
+        $affiliationDocument->main_contribution = $affiliation->getMainContribution();
+        $affiliationDocument->strategic_importance = $affiliation->getStrategicImportance();
 
-        $query           = '';
-        $fieldIteration  = 0;
-        $fieldCount      = count($matchFields);
-        $searchPartCount = count($searchParts);
+        // Organisation
+        $affiliationDocument->organisation = (string)$affiliation->getOrganisation();
+        $affiliationDocument->organisation_id = $affiliation->getOrganisation()->getId();
+        $affiliationDocument->organisation_type = (string)$affiliation->getOrganisation()->getType();
+        $affiliationDocument->organisation_country = (string)$affiliation->getOrganisation()->getCountry();
 
-        $parseTerm = function (string $field, string $searchTerm): string {
-            // Exclude term
-            if (substr($searchTerm, 0, 1) === '-') {
-                return '-' . $field . ':' . substr($searchTerm, 1);
-            } elseif (empty($searchTerm)) { // Empty search
-                return $field . ':*';
-            } else { // Regular term
-                return $field . ':' . $searchTerm;
-            }
-        };
+        // Project
+        $affiliationDocument->project = $project->getProject();
+        $affiliationDocument->project_id = $project->getId();
+        $affiliationDocument->project_number = $project->getNumber();
+        $affiliationDocument->project_title = $project->getTitle();
+        $affiliationDocument->project_status = $this->projectService->parseStatus($project);
+        $affiliationDocument->project_call = (string)$project->getCall()->shortName();
+        $affiliationDocument->project_call_id = $project->getCall()->getId();
+        $affiliationDocument->project_program = (string)$project->getCall()->getProgram();
 
-        foreach ($matchFields as $field) {
-            $fieldIteration++;
-            $query .= '(';
-            // Search term is a phrase, boost exact matches ("exact match"^30)
-            if ($searchPartCount > 1) {
-                $partIteration = 1;
-                foreach ($searchParts as $key => $part) {
-                    // Previous part is a +
-                    if (isset($searchParts[($key-1)]) && $searchParts[($key-1)] === '+') {
-                        $query .= ' ' . Query::QUERY_OPERATOR_AND . ' ';
-                    }
-                    // Add an OR between fields by default
-                    elseif (($partIteration > 1) && ($part !== '+')) {
-                        $query .= ' ' . Query::QUERY_OPERATOR_OR . ' ';
-                    }
-                    // Part is a quoted literal string -> "literal string" or -"literal string"
-                    if (preg_match('/^-?".+"$/', $part)) {
-                        $query .= $parseTerm($field, $searchTerm) . '^' . self::QUERY_TERM_BOOST;
-                    }
-                    // Other unquoted term
-                    elseif ($part !== '+') {
-                        $query .= $parseTerm($field, $searchTerm);
-                    }
-                }
-                // Search term is a single word, use wildcards
-            } else {
-                $query .= $parseTerm($field, $searchTerm);
-            }
-            $query .= ')';
-            // Add operator but not after the last field
-            if ($fieldIteration < $fieldCount) {
-                $query .= ' ' . $operator . ' ';
-            }
-        }
+        // Contact
+        $affiliationDocument->contact = $contact->parseFullName();
+        $affiliationDocument->contact_id = $contact->getId();
 
-        return $query;
+        $update->addDocument($affiliationDocument);
+
+        return $this->executeUpdateDocument($update);
     }
 
     /**
-     * Parse a temp file name for extraction of binary content for an entity
+     * Update the current index and optionally clear all existing data.
      *
-     * @param mixed $entity
-     *
-     * @return string
+     * @param boolean $clear
      */
-    protected static function parseTempFile($entity): string
+    public function updateIndex($clear = false): void
     {
-        return sys_get_temp_dir() . '/solr_' . str_replace('\\', '_', strtolower(get_class($entity))) . '_'
-            . $entity->getId();
+        $this->updateIndexWithCollection($this->affiliationService->findAll(Affiliation::class), $clear);
     }
 
     /**
-     * Insert/update a full index, optionally clearing the index first
-     * Basic implementation is to call updateIndexWithCollection with the proper entity collection
-     *
-     * @param bool $clear
-     */
-    abstract public function updateIndex($clear = false);
-
-    /**
-     * Set the search params and prepare Solarium
-     *
      * @param string $searchTerm
      * @param array $searchFields
      * @param string $order
      * @param string $direction
-     *
      * @return SearchServiceInterface
      */
-    abstract public function setSearch(
-        string $searchTerm,
-        array $searchFields = [],
-        string $order = '',
-        string $direction = Query::SORT_ASC
-    ): SearchServiceInterface;
-
-    /**
-     * Delete a single document by entity resource ID
-     *
-     * @param object $entity
-     * @param bool $optimize
-     *
-     * @return UpdateResult
-     * @throws \Exception
-     */
-    public function deleteDocument($entity, bool $optimize = false): UpdateResult
+    public function setSearch(string $searchTerm, array $searchFields = [], string $order = '', string $direction = Query::SORT_ASC): SearchServiceInterface
     {
-        if (method_exists($entity, 'getResourceId')) {
-            $update = $this->getSolrClient()->createUpdate();
-            $update->addDeleteById($entity->getResourceId());
-            $update->addCommit();
-            $result = $this->getSolrClient()->update($update);
-            if ($optimize) {
-                $this->optimizeIndex();
-            }
+        $this->setQuery($this->getSolrClient()->createSelect());
 
-            return $result;
+        // Enable highligting
+        if ($searchTerm && ($searchTerm !== '*')) {
+            $highlighting = $this->getQuery()->getHighlighting();
+            $highlighting->setFields($searchFields);
+            $highlighting->setSimplePrefix('<mark>');
+            $highlighting->setSimplePostfix('</mark>');
         }
 
-        $message = get_class($entity) . ' has no method getResourceId. ' . get_called_class()
-            . ' should implement a custom deleteDocument method.';
-        throw new \Exception($message);
-    }
+        $this->getQuery()->setQuery(static::parseQuery($searchTerm, $searchFields));
 
-    /**
-     * Get search client
-     *
-     * @return Client
-     */
-    public function getSolrClient(): Client
-    {
-        if (!isset($this->solrClient) && defined('static::SOLR_CONNECTION')) {
-            $config = $this->getServiceLocator()->get('Config');
-            $params = null;
-
-            if (isset($config['solr']['connection'][static::SOLR_CONNECTION])) {
-                $params = $config['solr']['connection'][static::SOLR_CONNECTION];
-            }
-
-            $this->solrClient = new Client($params);
+        switch ($order) {
+            case 'organisation_sort':
+            case 'project_sort':
+            case 'project_call':
+            case 'contact_sort':
+                $this->getQuery()->addSort($order, $direction);
+                break;
+            default:
+                $this->getQuery()->addSort('id', Query::SORT_DESC);
+                break;
         }
 
-        return $this->solrClient;
-    }
-
-    /**
-     * @param Client $solrClient
-     *
-     * @return $this
-     */
-    public function setSolrClient(Client $solrClient)
-    {
-        $this->solrClient = $solrClient;
+        $facetSet = $this->getQuery()->getFacetSet();
+        $facetSet->createFacetField('is_active')->setField('is_active')->setMinCount(1)
+            ->setExcludes(['is_active']);
+        $facetSet->createFacetField('project_program')->setField('project_program')->setMinCount(1)
+            ->setExcludes(['project_program']);
+        $facetSet->createFacetField('project_call')->setField('project_call')->setMinCount(1)
+            ->setExcludes(['project_call']);
+        $facetSet->createFacetField('organisation_type')->setField('organisation_type')->setMinCount(1)
+            ->setExcludes(['organisation_type']);
+        $facetSet->createFacetField('organisation_country_group')->setField('organisation_country_group')
+            ->setMinCount(1)->setExcludes(['organisation_country_group']);
 
         return $this;
     }
 
     /**
-     * @return ContainerInterface
-     */
-    public function getServiceLocator(): ContainerInterface
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * @param ServiceLocatorInterface|ContainerInterface $serviceLocator
+     * @param ProjectService $projectService
      *
-     * @return AbstractSearchService
+     * @return AffiliationSearchService
      */
-    public function setServiceLocator($serviceLocator): AbstractSearchService
+    public function setProjectService(ProjectService $projectService)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->projectService = $projectService;
 
         return $this;
     }
 
     /**
-     * Optimize the current index
+     * @param AffiliationService $affiliationService
      *
-     * @see http://wiki.apache.org/solr/SolrPerformanceFactors#Optimization_Considerations
-     * @return UpdateResult|null
+     * @return AffiliationSearchService
      */
-    public function optimizeIndex(): ?UpdateResult
+    public function setAffiliationService(AffiliationService $affiliationService)
     {
-        $update = $this->getSolrClient()->createUpdate();
-        $update->addOptimize(); // No params, just use Solr's default optimization settings
-
-        return $this->getSolrClient()->update($update);
-    }
-
-    /**
-     * Add an extra filter to the query to further refine the results
-     *
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return Query
-     */
-    public function addFilterQuery(string $key, $value): Query
-    {
-        return $this->getQuery()->addFilterQuery([
-            'key'   => $key,
-            'query' => $key . ':(' . $value . ')',
-            'tag'   => $key,
-        ]);
-    }
-
-    /**
-     * Get the Solarium Query instance
-     *
-     * @return Query
-     */
-    public function getQuery(): ?Query
-    {
-        return $this->query;
-    }
-
-    /**
-     * Set a Solarium Query instance
-     *
-     * @param Query $query
-     *
-     * @return AbstractSearchService
-     */
-    protected function setQuery(Query $query): AbstractSearchService
-    {
-        $this->query = $query;
+        $this->affiliationService = $affiliationService;
 
         return $this;
     }
-
-    /**
-     * @return SelectResult
-     */
-    public function getResultSet(): SelectResult
-    {
-        return $this->getSolrClient()->select($this->getQuery());
-    }
-
-    /**
-     * @return string
-     */
-    public function getServerUrl(): string
-    {
-        return ($this->getServiceLocator()->get('viewhelpermanager')->get('serverUrl'))();
-    }
-
-    /**
-     * @param string $route
-     * @param array $params
-     *
-     * @return string
-     */
-    public function getUrl(string $route, array $params): string
-    {
-        return ($this->getServiceLocator()->get('viewhelpermanager')->get('url'))($route, $params);
-    }
-
-    /**
-     * Execute a document update
-     *
-     * @param AbstractQuery $update
-     * @param string $fileName
-     *
-     * @return UpdateResult
-     * @throws HttpException
-     *
-     * \Solarium\QueryType\Extract\Query
-     */
-    protected function executeUpdateDocument(AbstractQuery $update, ?string $fileName = null): UpdateResult
-    {
-        try {
-            if (method_exists($update, 'addCommit')) {
-                $update->addCommit();
-            }
-            $result = $this->getSolrClient()->update($update);
-        } catch (HttpException $e) {
-            $result = null;
-            throw $e;
-        } finally {
-            // Garbage collection
-            if (!empty($fileName) && is_file($fileName)) {
-                unlink($fileName);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Update the current index with the given entitycollection and optionally clear all existing data
-     *
-     * @param array $entityCollection
-     * @param boolean $clear
-     */
-    protected function updateIndexWithCollection(array $entityCollection, bool $clear = false): void
-    {
-        $start = time();
-        $errors = 0;
-        echo "\n";
-        if ($clear) {
-            echo "Clearing index...";
-            $this->clearIndex();
-            echo " \033[1;33mDone!\033[0m\n";
-        }
-        echo "Updating index:\n";
-        // Iterate all publications in the database and add them to the search index
-        foreach (array_reverse($entityCollection) as $entity) {
-            try {
-                $this->updateDocument($entity);
-                echo ".";
-            } catch (HttpException $e) {
-                $errors++;
-                $responseBody = $e->getBody();
-                $template = "\n\n\033[0;31mError: Document creation for entity %s with ID %s failed\033[0m\n";
-                $template .= "Solarium HTTP request status: \033[1;33m%s\033[0m\n";
-
-                if (!empty($responseBody)) {
-                    $response = json_decode($responseBody);
-                    if (isset($response->responseHeader)) {
-                        $template .= "Solr HTTP response code: \033[1;33m" . $response->responseHeader->status
-                            . "\033[0m\n";
-                    }
-                    if (isset($response->error)) {
-                        $template .= "Solr error message: \033[1;33m" . $response->error->msg . "\033[0m\n";
-                    }
-                }
-                echo sprintf($template, get_class($entity), $entity->getId(), $e->getMessage());
-                echo "\n";
-            } catch (\Throwable $e) {
-                $errors++;
-
-                $template = "\n\n\033[0;31mError: Document creation for entity %s with ID %s failed\033[0m\n";
-                $template .= "Error message: \033[1;33m" . $e->getMessage() . "\033[0m\n";
-
-
-                echo sprintf($template, get_class($entity), $entity->getId());
-                echo "\n";
-            }
-        }
-
-        echo "\n\n===================================";
-        echo "\nDocuments processed: \033[1;33m" . count($entityCollection) . "\033[0m";
-        echo "\nErrors: \033[1;33m" . $errors . "\033[0m";
-        echo "\nDuration: \033[1;33m" . gmdate("H:i:s", (time() - $start)) . "\033[0m\n\n";
-    }
-
-    /**
-     * Clear the current index
-     *
-     * @param bool $optimize
-     *
-     * @return UpdateResult
-     */
-    public function clearIndex($optimize = true): UpdateResult
-    {
-        $update = $this->getSolrClient()->createUpdate();
-        $update->addDeleteQuery('*:*');
-        $update->addCommit();
-        $result = $this->getSolrClient()->update($update);
-        if ($optimize) {
-            $this->optimizeIndex();
-        }
-
-        return $result;
-    }
-
-    /**
-     * Update or insert a single document
-     *
-     * @param object $entity
-     *
-     * @return UpdateResult
-     */
-    abstract public function updateDocument($entity);
 }
