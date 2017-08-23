@@ -11,25 +11,27 @@
         <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
 
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-8">
+
                 <div class="form-group">{{ formelement(form.get('query')) }}</div>
+                {% if form.has('fields') %}
+                    {{ ztbformelement(form.get('fields')) }}
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <p>
+                    {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
+                </p>
                 <p>
                     <a href="{{ url('zfcadmin/affiliation/list-csv') }}{% if fullArguments %}?{{ fullArguments }}{% endif %}"
                        class="btn btn-primary">{{ translate("txt-download-as-csv") }}</a>
                 </p>
                 {% if paginator %}
                     <p class="text-muted">
-                        {{ translate("txt-%s-items-on-%s-pages")|format(paginator.adapter.count, paginator.pageRange) }}
-                        <br>
-                        <span class="label" style="background-color: #f2dede;">&nbsp;</span>
-                        = {{ translate('txt-inactive-affiliation') }}
+                        {{ translate("txt-%s-items-on-%s-pages")|format(paginator.adapter.count, paginator.pageRange) }}<br>
+                        <span class="label" style="background-color: #f2dede;">&nbsp;</span> = {{ translate('txt-inactive-affiliation') }}
                     </p>
                 {% endif %}
-            </div>
-            <div class="col-md-3">
-                <p>
-                    {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
-                </p>
             </div>
         </div>
         {% if paginator and (paginator.pageRange > 0) %}
@@ -68,16 +70,16 @@
                     </tr>
                     {% set highlightDoc = highlighting.getResult(result.fields.id) %}
                     {% if highlightDoc and highlightDoc is not empty %}
-                        <tr>
-                            <td colspan="4">
-                                <dl class="dl-horizontal">
-                                    {% for field, highlight in highlightDoc %}
-                                        <dt>{{ highlightingFields[field] }}</dt>
-                                        <dd>...{{ highlight|join(' (...) ')|striptags('<mark>')|raw }}...</dd>
-                                    {% endfor %}
-                                </dl>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="4">
+                            <dl class="dl-horizontal">
+                            {% for field, highlight in highlightDoc %}
+                                <dt>{{ highlightingFields[field] }}</dt>
+                                <dd>...{{ highlight|join(' (...) ')|striptags('<mark>')|raw }}...</dd>
+                            {% endfor %}
+                            </dl>
+                        </td>
+                    </tr>
                     {% endif %}
                 {% endfor %}
                 </tbody>
