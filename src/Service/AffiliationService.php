@@ -148,10 +148,10 @@ class AffiliationService extends ServiceAbstract
     {
         $organisation = null;
 
-        //We need to find the financial organisation and will do that in order of importance
-        //We will first try to find the organisation is if we can find this return the financial in the end
+        // We need to find the financial organisation and will do that in order of importance
+        // We will first try to find the organisation is if we can find this return the financial in the end
         if (!is_null($affiliation->getParentOrganisation())) {
-            //We have to deal with the parent system
+            // We have to deal with the parent system
             $parent = $affiliation->getParentOrganisation()->getParent();
 
             $organisation = $parent->getOrganisation();
@@ -160,7 +160,7 @@ class AffiliationService extends ServiceAbstract
             }
         }
 
-        //Organisation still not found, try to find it via the old way
+        // Organisation still not found, try to find it via the old way
         if (is_null($organisation)) {
             $organisation = $affiliation->getOrganisation();
 

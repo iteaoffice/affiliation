@@ -49,7 +49,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
             ]
         );
 
-        //Try to find parentOrganisations based on the 'name' of the original organisation
+        // Try to find parentOrganisations based on the 'name' of the original organisation
         $parentOrganisationLike = $parentService->findParentOrganisationByNameLike($affiliation->getOrganisation()->getOrganisation());
         $parentOrganisations = ['' => '-- None of the options'];
         foreach ($parentOrganisationLike as $parentOrganisation) {
@@ -77,7 +77,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
             ]
         );
 
-        //Create a list of all parentOrganisations
+        // Create a list of all parentOrganisations
         /** @var OParent[] $parents */
         $parents = $parentService->findAll(OParent::class);
 
@@ -95,9 +95,11 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
             }
             asort($parentOrganisations);
 
-            //Only add the parent to the array if there are 1 or more organisations in the parent
+            // Only add the parent to the array if there are 1 or more organisations in the parent
             if (count($parentOrganisations) > 0) {
-                $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()] = ['label' => $parent->getOrganisation()->getOrganisation()];
+                $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()] = [
+                    'label' => $parent->getOrganisation()->getOrganisation()
+                ];
                 $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()]['options'] = $parentOrganisations;
             }
 
@@ -189,7 +191,6 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
             ]
         );
 
-
         $this->add(
             [
                 'type'    => 'Contact\Form\Element\Contact',
@@ -200,7 +201,6 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
-
 
         $this->add(
             [
@@ -215,6 +215,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Textarea',
@@ -228,6 +229,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Textarea',
@@ -242,6 +244,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Textarea',
@@ -255,7 +258,6 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
-
 
         $this->add(
             [
@@ -313,6 +315,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Submit',
@@ -323,6 +326,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
+
         $this->add(
             [
                 'type'       => 'Zend\Form\Element\Submit',
