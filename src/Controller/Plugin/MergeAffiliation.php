@@ -75,7 +75,8 @@ class MergeAffiliation extends AbstractPlugin
         Affiliation $mainAffiliation,
         Affiliation $otherAffiliation,
         int $costAndEffortStrategy = self::STRATEGY_SUM
-    ): array {
+    ): array
+    {
         $this->setMainAffiliation($mainAffiliation);
         $this->setOtherAffiliation($otherAffiliation);
         $this->setCostAndEffortStrategy($costAndEffortStrategy);

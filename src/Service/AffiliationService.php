@@ -77,6 +77,16 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
+     * @param Affiliation $affiliation
+     *
+     * @return bool
+     */
+    public function isActive(Affiliation $affiliation): bool
+    {
+        return is_null($affiliation->getDateEnd());
+    }
+
+    /**
      * Checks if the affiliation has a DOA.
      *
      * @param Affiliation $affiliation
@@ -222,16 +232,6 @@ class AffiliationService extends ServiceAbstract
         }
 
         return $errors;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
-     */
-    public function isActive(Affiliation $affiliation): bool
-    {
-        return is_null($affiliation->getDateEnd());
     }
 
     /**
