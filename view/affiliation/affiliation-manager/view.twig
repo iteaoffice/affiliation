@@ -407,8 +407,6 @@
                 <td>{{ translate("txt-effort") }}</td>
 
                 {% for year in projectService.parseYearRange(affiliation.project) %}
-
-
                     {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
 
                     <td>{{ yearTotal|parse_effort }}</td>
@@ -422,10 +420,15 @@
                 <td>{{ translate("txt-costs") }}</td>
 
                 {% for year in projectService.parseYearRange(affiliation.project) %}
-
                     {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliation)[year] %}
 
-                    <td>{{ yearTotal|parse_cost }}</td>
+                    <td>
+                        <a id="cost_{{ year }}"
+                           href="#" class="cost" data-type="text"
+                           data-pk="{{ affiliation.id }},{{ year }}"
+                           data-url="{{ url('json/update-cost') }}"
+                           data-title="{{ translate("txt-update-costs") }}">{{ yearTotal|parse_cost_edit }}</a>
+                    </td>
                 {% endfor %}
                 <td>{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</td>
             </tr>
@@ -433,16 +436,37 @@
                 <td></td>
                 <td>{{ translate("txt-funding-national") }}</td>
                 <td colspan="{{ projectService.parseYearRange(affiliation.project)|length }}"></td>
-                <td>{{ projectService.findTotalFundingNationalByAffiliation(affiliation)|parse_funding }}</td>
+                <td>
+                    &euro; <a id="funding_national"
+                              href="#" class="funding"
+                              data-type="text"
+                              data-params="{'type': 'funding_national'}"
+                              data-pk="{{ affiliation.id }}"
+                              data-url="{{ url('json/update-funded') }}"
+                              data-title="{{ translate("txt-update-funding-eu") }}">{{ projectService.findTotalFundingNationalByAffiliation(affiliation) }}
+                    </a>
+                </td>
             </tr>
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-eu") }}</td>
                 <td colspan="{{ projectService.parseYearRange(affiliation.project)|length }}"></td>
-                <td>{{ projectService.findTotalFundingEuByAffiliation(affiliation)|parse_funding }}</td>
+                <td>
+
+                    &euro; <a id="funding_eu"
+                              href="#" class="funding"
+                              data-type="text"
+                              data-params="{'type': 'funding_eu'}"
+                              data-pk="{{ affiliation.id }}"
+                              data-url="{{ url('json/update-funded') }}"
+                              data-title="{{ translate("txt-update-funding-eu") }}">{{ projectService.findTotalFundingEuByAffiliation(affiliation) }}
+                    </a>
+                </td>
             </tr>
             </tbody>
         </table>
+
+
 
 
     </div>
@@ -603,7 +627,6 @@
         {% else %}
             {{ ztbalert().info(translate("txt-no-invoices-were-created-for-%s-in-%s")|format(affiliation,project.parseFullname()))|raw }}
         {% endif %}
-        </tab>
     </div>
 </div>
 
@@ -615,5 +638,6 @@
         //turn to inline mode
         $.fn.editable.defaults.mode = 'popup';
         $('.cost').editable();
+        $('.funding').editable();
     });
 </script>
