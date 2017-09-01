@@ -307,7 +307,7 @@ class Affiliation extends EntityRepository
      * @param $which
      * @return Entity\Affiliation[]
      */
-    public function findAffiliationByParentAndWhich(OParent $parent, int $which)
+    public function findAffiliationByParentAndWhich(OParent $parent, int $which): array
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
@@ -329,7 +329,7 @@ class Affiliation extends EntityRepository
         }
 
         $qb->join('affiliation_entity_affiliation.parentOrganisation', 'organisation_entity_parent_organisation');
-        $qb->where('organisation_entity_parent_organisation.parent = :parent');
+        $qb->andWhere('organisation_entity_parent_organisation.parent = :parent');
         $qb->setParameter('parent', $parent);
 
         $qb->addOrderBy('program_entity_call.id', 'ASC');
@@ -350,7 +350,7 @@ class Affiliation extends EntityRepository
      *
      * @return Entity\Affiliation[]
      */
-    public function findAffiliationByProjectVersionAndCountryAndWhich(Version $version, Country $country, $which)
+    public function findAffiliationByProjectVersionAndCountryAndWhich(Version $version, Country $country, $which): array
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
@@ -403,7 +403,7 @@ class Affiliation extends EntityRepository
         Version $version,
         Country $country,
         $which
-    ) {
+    ): int {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');

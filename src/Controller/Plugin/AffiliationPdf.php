@@ -12,10 +12,12 @@ declare(strict_types=1);
 
 namespace Affiliation\Controller\Plugin;
 
+use setasign\Fpdi\TcpdfFpdi;
+
 /**
  * Class PDF.
  */
-class AffiliationPdf extends \FPDI
+class AffiliationPdf extends TcpdfFpdi
 {
     /**
      * "Remembers" the template id of the imported page.

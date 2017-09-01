@@ -470,7 +470,7 @@ class EditController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|ViewModel
+     * @return \Zend\Http\Response|ViewModel
      */
     public function addAssociateAction()
     {
@@ -517,7 +517,7 @@ class EditController extends AffiliationAbstractController
     }
 
     /**
-     * @return ViewModel
+     * @return \Zend\Http\Response|ViewModel
      */
     public function descriptionAction()
     {
@@ -585,7 +585,8 @@ class EditController extends AffiliationAbstractController
     }
 
     /**
-     * @return ViewModel
+     * @return \Zend\Http\Response|ViewModel
+     *
      */
     public function updateEffortSpentAction()
     {
@@ -651,7 +652,8 @@ class EditController extends AffiliationAbstractController
                 $effortSpent->setEffort($data['effort']);
                 $effortSpent->setComment($data['comment']);
                 $effortSpent->setSummary($data['summary']);
-                $effortSpent->setContact($this->zfcUserAuthentication()->getIdentity());
+                //Force the technical contact
+                $effortSpent->setContact($affiliation->getContact());
                 $this->getProjectService()->updateEntity($effortSpent);
 
                 //Update the marketAccess
