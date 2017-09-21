@@ -167,7 +167,7 @@ return [
                                     'download' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/download/[:id].[:ext]',
+                                            'route'    => '/download/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download',
@@ -196,13 +196,13 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'upload'   => [
+                                    'submit'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/upload/affiliation-[:affiliationId].html',
+                                            'route'    => '/submit/affiliation-[:affiliationId].html',
                                             'defaults' => [
-                                                'action'    => 'upload',
-                                                'privilege' => 'upload',
+                                                'action'    => 'submit',
+                                                'privilege' => 'submit',
                                             ],
                                         ],
                                     ],
@@ -219,7 +219,7 @@ return [
                                     'download' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/download/[:id].[:ext]',
+                                            'route'    => '/download/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download',

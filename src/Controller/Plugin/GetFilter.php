@@ -47,7 +47,7 @@ class GetFilter extends AbstractPlugin
         $direction = $this->getRequest()->getQuery('direction');
 
         //Take the filter from the URL
-        $filter = json_decode(base64_decode($encodedFilter));
+        $filter = (array)json_decode(base64_decode($encodedFilter));
 
 
         //If the form is submitted, refresh the URL

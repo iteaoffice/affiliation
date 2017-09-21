@@ -36,6 +36,6 @@ return array(
     'affiliation/doa-manager/remind'                             => __DIR__ . '//view/affiliation/doa-manager/remind.twig',
     'affiliation/doa-manager/missing'                            => __DIR__ . '//view/affiliation/doa-manager/missing.twig',
     'affiliation/doa-manager/list'                               => __DIR__ . '//view/affiliation/doa-manager/list.twig',
-    'affiliation/loi/upload'                                     => __DIR__ . '//view/affiliation/loi/upload.twig',
     'affiliation/loi/replace'                                    => __DIR__ . '//view/affiliation/loi/replace.twig',
+    'affiliation/loi/submit'                                     => __DIR__ . '//view/affiliation/loi/submit.twig',
 );

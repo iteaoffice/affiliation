@@ -150,7 +150,7 @@ class LoiManagerController extends AffiliationAbstractController
             $this->flashMessenger()->setNamespace('success')
                 ->addMessage(
                     sprintf(
-                        _("txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                        $this->translate("txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
                         $affiliation->getOrganisation(),
                         $affiliation->getProject(),
                         $this->getContactService()->findContactById($form->getData()['receiver'])->getEmail()
@@ -229,7 +229,7 @@ class LoiManagerController extends AffiliationAbstractController
                 $this->flashMessenger()->setNamespace('success')
                     ->addMessage(
                         sprintf(
-                            _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-removed"),
+                            $this->translate("txt-project-loi-for-organisation-%s-in-project-%s-has-been-removed"),
                             $loi->getAffiliation()->getOrganisation(),
                             $loi->getAffiliation()->getProject()
                         )
@@ -281,7 +281,7 @@ class LoiManagerController extends AffiliationAbstractController
                 $this->flashMessenger()->setNamespace('success')
                     ->addMessage(
                         sprintf(
-                            _("txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated"),
+                            $this->translate("txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated"),
                             $loi->getAffiliation()->getOrganisation(),
                             $loi->getAffiliation()->getProject()
                         )
@@ -305,7 +305,7 @@ class LoiManagerController extends AffiliationAbstractController
      *
      * @return JsonModel
      */
-    public function approveAction()
+    public function approveAction(): ViewModel
     {
         $loi = $this->getEvent()->getRequest()->getPost()->get('loi');
         $contact = $this->getEvent()->getRequest()->getPost()->get('contact');
@@ -334,6 +334,7 @@ class LoiManagerController extends AffiliationAbstractController
          */
         $loi = $this->getAffiliationService()->findEntityById(Loi::class, $loi);
         $loi->setContact($this->getContactService()->findContactById($contact));
+        $loi->setApprover($this->zfcUserAuthentication()->getIdentity());
         $loi->setDateSigned(\DateTime::createFromFormat('Y-h-d', $dateSigned));
         $loi->setDateApproved(new \DateTime());
         $this->getLoiService()->updateEntity($loi);

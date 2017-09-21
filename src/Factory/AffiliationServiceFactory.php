@@ -21,6 +21,7 @@ use Admin\Service\AdminService;
 use Affiliation\Service\AffiliationService;
 use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
+use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
@@ -55,6 +56,10 @@ final class AffiliationServiceFactory implements FactoryInterface
         /** @var AdminService $adminService */
         $adminService = $container->get(AdminService::class);
         $affiliationService->setAdminService($adminService);
+
+        /** @var GeneralService $generalService */
+        $generalService = $container->get(GeneralService::class);
+        $affiliationService->setGeneralService($generalService);
 
         /** @var InvoiceService $invoiceService */
         $invoiceService = $container->get(InvoiceService::class);

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Form;
 
+use Zend\Form\Element\Checkbox;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Validator\File\Extension;
@@ -19,7 +20,7 @@ use Zend\Validator\File\Size;
 /**
  *
  */
-class UploadLoi extends Form implements InputFilterProviderInterface
+class SubmitLoi extends Form implements InputFilterProviderInterface
 {
     /**
      * Class constructor.
@@ -48,6 +49,29 @@ class UploadLoi extends Form implements InputFilterProviderInterface
                 'attributes' => [
                     'class' => "btn btn-primary",
                     'value' => _("txt-upload-loi"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => Checkbox::class,
+                'name'       => 'selfApprove',
+                'options'    => [
+                    'inline'     => true,
+                    "help-block" => _("txt-self-approve-loi-checkbox-help-text"),
+                ],
+                'attributes' => [
+
+                ]
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'approve',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-approve-loi"),
                 ],
             ]
         );

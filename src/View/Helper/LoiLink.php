@@ -55,10 +55,7 @@ class LoiLink extends LinkAbstract
             return '';
         }
 
-        if (!is_null($loi)) {
-            $this->addRouterParam('id', $this->getLoi()->getId());
-            $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
-        }
+        $this->addRouterParam('id', $this->getLoi()->getId());
         $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
 
         return $this->createLink();
@@ -86,11 +83,11 @@ class LoiLink extends LinkAbstract
     public function parseAction(): void
     {
         switch ($this->getAction()) {
-            case 'upload':
-                $this->setRouter('community/affiliation/loi/upload');
+            case 'submit':
+                $this->setRouter('community/affiliation/loi/submit');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translate("txt-submit-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getAffiliation()->parseBranchedName(),
                         $this->getAffiliation()->getProject()
                     )

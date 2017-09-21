@@ -95,9 +95,9 @@ return [
                                                     ],
                                                 ],
                                             ],
-                                            'upload-loi'       => [
-                                                'label'   => _('txt-upload-loi'),
-                                                'route'   => 'community/affiliation/loi/upload',
+                                            'submit-loi'       => [
+                                                'label'   => _('txt-submit-loi'),
+                                                'route'   => 'community/affiliation/loi/submit',
                                                 'visible' => false,
                                                 'params'  => [
                                                     'entities'   => [

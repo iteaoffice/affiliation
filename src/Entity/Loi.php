@@ -53,6 +53,15 @@ class Loi extends EntityAbstract implements ResourceInterface
      */
     private $dateApproved;
     /**
+     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="loiApprover")
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="approve_contact_id", referencedColumnName="contact_id")
+     * })
+     *
+     * @var \Contact\Entity\Contact
+     */
+    private $approver;
+    /**
      * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="loi")
      * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=false)
      * @Annotation\Exclude()
@@ -352,6 +361,25 @@ class Loi extends EntityAbstract implements ResourceInterface
     public function setContact($contact)
     {
         $this->contact = $contact;
+
+        return $this;
+    }
+
+    /**
+     * @return \Contact\Entity\Contact
+     */
+    public function getApprover(): ?\Contact\Entity\Contact
+    {
+        return $this->approver;
+    }
+
+    /**
+     * @param \Contact\Entity\Contact $approver
+     * @return Loi
+     */
+    public function setApprover(\Contact\Entity\Contact $approver): Loi
+    {
+        $this->approver = $approver;
 
         return $this;
     }

@@ -196,7 +196,7 @@ return [
                     'assertion' => DoaAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/loi/upload',
+                    'route'     => 'community/affiliation/loi/submit',
                     'roles'     => Access::ACCESS_USER,
                     'assertion' => LoiAssertion::class,
                 ],

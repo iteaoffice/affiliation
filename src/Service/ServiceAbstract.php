@@ -16,6 +16,7 @@ use Admin\Service\AdminService;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\EntityAbstract;
 use BjyAuthorize\Service\Authorize;
+use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
@@ -57,6 +58,10 @@ abstract class ServiceAbstract implements ServiceInterface
      * @var InvoiceService
      */
     protected $invoiceService;
+    /**
+     * @var GeneralService
+     */
+    protected $generalService;
     /**
      * @var ServiceLocatorInterface
      */
@@ -342,6 +347,25 @@ abstract class ServiceAbstract implements ServiceInterface
     public function setParentService(ParentService $parentService): ServiceAbstract
     {
         $this->parentService = $parentService;
+
+        return $this;
+    }
+
+    /**
+     * @return GeneralService
+     */
+    public function getGeneralService(): GeneralService
+    {
+        return $this->generalService;
+    }
+
+    /**
+     * @param GeneralService $generalService
+     * @return ServiceAbstract
+     */
+    public function setGeneralService(GeneralService $generalService): ServiceAbstract
+    {
+        $this->generalService = $generalService;
 
         return $this;
     }

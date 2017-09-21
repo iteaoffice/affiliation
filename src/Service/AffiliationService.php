@@ -14,6 +14,8 @@ namespace Affiliation\Service;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice;
+use Affiliation\Entity\Loi;
+use Affiliation\Entity\LoiObject;
 use Affiliation\Repository;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,6 +32,7 @@ use Project\Entity\Funding\Source;
 use Project\Entity\Funding\Status;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
+use Zend\Validator\File\MimeType;
 
 /**
  * Class AffiliationService
@@ -107,6 +110,54 @@ class AffiliationService extends ServiceAbstract
     {
         return !is_null($affiliation->getLoi());
     }
+
+    /**
+     * Upload a LOI to the system and store it for the user.
+     *
+     * @param array $file
+     * @param Contact $contact
+     * @param Affiliation $affiliation
+     *
+     * @return Loi
+     */
+    public function uploadLoi(array $file, Contact $contact, Affiliation $affiliation): Loi
+    {
+        $loiObject = new LoiObject();
+        $loiObject->setObject(file_get_contents($file['tmp_name']));
+        $loi = new Loi();
+        $loi->setContact($contact);
+        $loi->setAffiliation($affiliation);
+        $loi->setSize($file['size']);
+
+        $fileTypeValidator = new MimeType();
+        $fileTypeValidator->isValid($file);
+        $loi->setContentType($this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type));
+
+        $loiObject->setLoi($loi);
+        $this->newEntity($loiObject);
+
+        return $loiObject->getLoi();
+    }
+
+    /**
+     * @param Contact $contact
+     * @param Affiliation $affiliation
+     * @return Loi
+     */
+    public function submitLoi(Contact $contact, Affiliation $affiliation): Loi
+    {
+        $loi = new Loi();
+        $loi->setContact($contact);
+        $loi->setApprover($contact);
+        $loi->setDateSigned(new \DateTime());
+        $loi->setDateApproved(new \DateTime());
+        $loi->setAffiliation($affiliation);
+
+        $this->newEntity($loi);
+
+        return $loi;
+    }
+
 
     /**
      * @return Affiliation[]
@@ -556,7 +607,7 @@ class AffiliationService extends ServiceAbstract
                 break;
         }
 
-        return (float) $contributionDue;
+        return (float)$contributionDue;
     }
 
     /**
@@ -575,14 +626,14 @@ class AffiliationService extends ServiceAbstract
         //Cast to ints as some values can originate form templates (== twig > might be string)
         switch (true) {
             case !$this->isFundedInYear($affiliation, $projectYear):
-                return (float) 0;
+                return (float)0;
             case is_null($period) || $projectYear < $year:
-                return (float) 1; //in the past is always 100% due
+                return (float)1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
-                return (float) 1 - $this->parseContributionFactor($affiliation, $year, $period);
+                return (float)1 - $this->parseContributionFactor($affiliation, $year, $period);
             default:
-                return (float) 0;
+                return (float)0;
         }
     }
 

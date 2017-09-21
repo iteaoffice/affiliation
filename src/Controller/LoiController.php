@@ -14,6 +14,7 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity;
 use Affiliation\Entity\Loi;
+use Affiliation\Form\SubmitLoi;
 use Affiliation\Form\UploadLoi;
 use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
@@ -26,10 +27,70 @@ use Zend\View\Model\ViewModel;
  */
 class LoiController extends AffiliationAbstractController
 {
+    /**
+     * @return \Zend\Http\Response|ViewModel
+     */
+    public function submitAction()
+    {
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+
+        if (is_null($affiliation)) {
+            return $this->notFoundAction();
+        }
+
+        $contact = $this->zfcUserAuthentication()->getIdentity();
+
+        $data = array_merge_recursive(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        );
+
+        $form = new SubmitLoi();
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost() && !isset($data['approve']) && $form->isValid()) {
+            if (isset($data['submit'])) {
+                $fileData = $form->getData('file');
+                $this->getAffiliationService()->uploadLoi($fileData['file'], $contact, $affiliation);
+
+                $this->flashMessenger()->setNamespace('success')
+                    ->addMessage(sprintf($this->translate("txt-loi-has-been-uploaded-successfully")));
+            }
+
+
+            return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
+        }
+
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['approve'])) {
+                if ($data['selfApprove'] === '0') {
+                    $form->getInputFilter()->get('selfApprove')->setErrorMessage('Error');
+                    $form->get('selfApprove')->setMessages(['Error']);
+                }
+
+                if ($data['selfApprove'] === '1') {
+                    $this->getAffiliationService()->submitLoi($contact, $affiliation);
+
+                    $this->flashMessenger()->setNamespace('success')
+                        ->addMessage(sprintf($this->translate("txt-loi-has-been-submitted-and-approved-successfully")));
+
+                    return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
+                }
+            }
+        }
+
+        return new ViewModel(
+            [
+                'affiliation'       => $affiliation,
+                'form'       => $form,
+            ]
+        );
+    }
+
     /***
      * @return array|\Zend\Http\Response|ViewModel
      */
-    public function uploadAction()
+    public function submit2Action()
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
@@ -41,7 +102,7 @@ class LoiController extends AffiliationAbstractController
             $this->getRequest()->getPost()->toArray(),
             $this->getRequest()->getFiles()->toArray()
         );
-        $form = new UploadLoi();
+        $form = new SubmitLoi();
         $form->setData($data);
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
@@ -76,7 +137,7 @@ class LoiController extends AffiliationAbstractController
                 $this->flashMessenger()->setNamespace('success')
                     ->addMessage(
                         sprintf(
-                            _("txt-loi-for-organisation-%s-project-%s-has-been-uploaded"),
+                            _("txt-loi-for-organisation-%s-project-%s-has-been-submitted"),
                             $affiliation->getOrganisation(),
                             $affiliation->getProject()
                         )

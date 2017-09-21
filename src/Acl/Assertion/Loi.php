@@ -48,7 +48,7 @@ class Loi extends AssertionAbstract
         }
 
         switch ($this->getPrivilege()) {
-            case 'upload':
+            case 'submit':
                 if (is_null($id)) {
                     $id = $this->getRouteMatch()->getParam('affiliationId');
                 }
