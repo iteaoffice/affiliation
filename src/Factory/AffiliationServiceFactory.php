@@ -26,6 +26,7 @@ use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
+use Project\Service\ContractService;
 use Project\Service\VersionService;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
@@ -38,8 +39,8 @@ final class AffiliationServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
-     * @param string $requestedName
-     * @param array|null $options
+     * @param string             $requestedName
+     * @param array|null         $options
      *
      * @return AffiliationService
      */
@@ -68,6 +69,10 @@ final class AffiliationServiceFactory implements FactoryInterface
         /** @var VersionService $versionService */
         $versionService = $container->get(VersionService::class);
         $affiliationService->setVersionService($versionService);
+
+        /** @var ContractService $contractService */
+        $contractService = $container->get(ContractService::class);
+        $affiliationService->setContractService($contractService);
 
         /** @var ParentService $parentService */
         $parentService = $container->get(ParentService::class);

@@ -80,16 +80,6 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
-     */
-    public function isActive(Affiliation $affiliation): bool
-    {
-        return is_null($affiliation->getDateEnd());
-    }
-
-    /**
      * Checks if the affiliation has a DOA.
      *
      * @param Affiliation $affiliation
@@ -114,8 +104,8 @@ class AffiliationService extends ServiceAbstract
     /**
      * Upload a LOI to the system and store it for the user.
      *
-     * @param array $file
-     * @param Contact $contact
+     * @param array       $file
+     * @param Contact     $contact
      * @param Affiliation $affiliation
      *
      * @return Loi
@@ -140,8 +130,9 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Contact $contact
+     * @param Contact     $contact
      * @param Affiliation $affiliation
+     *
      * @return Loi
      */
     public function submitLoi(Contact $contact, Affiliation $affiliation): Loi
@@ -157,7 +148,6 @@ class AffiliationService extends ServiceAbstract
 
         return $loi;
     }
-
 
     /**
      * @return Affiliation[]
@@ -287,6 +277,16 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
+     * @return bool
+     */
+    public function isActive(Affiliation $affiliation): bool
+    {
+        return is_null($affiliation->getDateEnd());
+    }
+
+    /**
+     * @param Affiliation $affiliation
      * @param             $period
      * @param             $year
      *
@@ -319,7 +319,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param  Version $version
+     * @param  Version    $version
      * @param             $year
      * @param             $period
      *
@@ -338,9 +338,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param Version $version
-     * @param int $year
-     * @param int|null $period
+     * @param Version     $version
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float
      */
     public function parseContribution(Affiliation $affiliation, Version $version, int $year, int $period = null): float
@@ -375,6 +376,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Version $version
+     *
      * @return int
      */
     public function parseInvoiceMethod(Version $version): int
@@ -387,8 +389,8 @@ class AffiliationService extends ServiceAbstract
      * This function counts the effort or costs per affiliaton and returns the total per year. We pick the total amount out per given ear
      *
      * @param Affiliation $affiliation
-     * @param  Version $version
-     * @param  int $year
+     * @param  Version    $version
+     * @param  int        $year
      *
      * @return float
      */
@@ -432,9 +434,10 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Version $version
-     * @param $year
+     * @param Version      $version
+     * @param              $year
      * @param OParent|null $parent
+     *
      * @return float|int|string
      * @throws \Exception
      */
@@ -473,8 +476,8 @@ class AffiliationService extends ServiceAbstract
      * We removed the switch on office to facilitate the contribution based invoicing
      *
      * @param Affiliation $affiliation
-     * @param  int $year
-     * @param  int $period
+     * @param  int        $year
+     * @param  int        $period
      *
      * @return float|int
      */
@@ -513,7 +516,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Affiliation $affiliation
      * @param             $year
-     * @param int $source
+     * @param int         $source
      *
      * @return null|Funding
      */
@@ -533,9 +536,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param Version $version
-     * @param int $year
-     * @param int|null $period
+     * @param Version     $version
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float
      */
     public function parseBalance(Affiliation $affiliation, Version $version, int $year, int $period = null): float
@@ -550,9 +554,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param Version $version
-     * @param int $year
-     * @param int|null $period
+     * @param Version     $version
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float
      */
     public function parseContributionDue(
@@ -565,9 +570,23 @@ class AffiliationService extends ServiceAbstract
 
         switch ($this->parseInvoiceMethod($version)) {
             case Method::METHOD_PERCENTAGE:
-                //Fix the versionService
-                $costsPerYear = $this->getVersionService()
-                    ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
+                //The percentage menthod depends on the fact if we have a contract or not.
+                $contractVersion = $this->getContractService()->findLatestContractVersionByCountryAndProject(
+                    $affiliation->getOrganisation()->getCountry(),
+                    $affiliation->getProject()
+                );
+
+                if (is_null($contractVersion)) {
+                    //Fix the versionService
+                    $costsPerYear = $this->getVersionService()
+                        ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
+                } else {
+                    $costsPerYear = $this->getContractService()->findTotalCostVersionByAffiliationAndVersionPerYear(
+                        $affiliation,
+                        $contractVersion
+                    );
+                }
+
 
                 foreach ($costsPerYear as $costsYear => $cost) {
                     //fee
@@ -580,6 +599,7 @@ class AffiliationService extends ServiceAbstract
                         $contributionDue += $factor * $cost * ($fee->getPercentage() / 100);
                     }
                 }
+
 
                 break;
 
@@ -612,9 +632,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param $projectYear
-     * @param int $year
-     * @param int|null $period
+     * @param             $projectYear
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return int
      */
     public function parseContributionFactorDue(
@@ -642,8 +663,8 @@ class AffiliationService extends ServiceAbstract
      * Exclude of course the credit notes
      *
      * @param Affiliation $affiliation
-     * @param int $year
-     * @param int|null $period
+     * @param int         $year
+     * @param int|null    $period
      *
      * @return float
      */
@@ -657,7 +678,10 @@ class AffiliationService extends ServiceAbstract
             if (!is_null($invoice->getInvoice()->getDayBookNumber())) {
                 if (!is_null($period)) {
                     //When we have a period, we also take the period fo the current year into account
-                    if ($invoice->getYear() < $year || ($invoice->getPeriod() < $period && $invoice->getYear() === $year)) {
+                    if ($invoice->getYear() < $year
+                        || ($invoice->getPeriod() < $period
+                            && $invoice->getYear() === $year)
+                    ) {
                         $contributionPaid += $invoice->getAmountInvoiced();
                     }
                 } else {
@@ -674,7 +698,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return Affiliation[]|ArrayCollection
      */
@@ -696,7 +720,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return Affiliation[]|ArrayCollection
      */
@@ -718,7 +742,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Version $version
-     * @param int $which
+     * @param int     $which
      *
      * @return ArrayCollection|Affiliation[]
      */
@@ -737,7 +761,8 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param OParent $parent
-     * @param int $which
+     * @param int     $which
+     *
      * @return ArrayCollection|Affiliation[]
      */
     public function findAffiliationByParentAndWhich(OParent $parent, $which = self::WHICH_ONLY_ACTIVE): ArrayCollection
@@ -755,8 +780,9 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $criterion
-     * @param int $which
+     * @param int     $criterion
+     * @param int     $which
+     *
      * @return ArrayCollection|Affiliation[]
      */
     public function findAffiliationByProjectAndWhichAndCriterion(
@@ -767,18 +793,20 @@ class AffiliationService extends ServiceAbstract
         /** @var Repository\Affiliation $repository */
         $repository = $this->getEntityManager()->getRepository(Affiliation::class);
 
-        return new ArrayCollection($repository->findAffiliationByProjectAndWhichAndCriterion(
-            $project,
-            $criterion,
-            $which
-        ));
+        return new ArrayCollection(
+            $repository->findAffiliationByProjectAndWhichAndCriterion(
+                $project,
+                $criterion,
+                $which
+            )
+        );
     }
 
 
     /**
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return int
      */
@@ -795,7 +823,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Country $country
-     * @param Call $call
+     * @param Call    $call
      *
      * @return int
      */
@@ -812,7 +840,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return int
      */
@@ -831,7 +859,7 @@ class AffiliationService extends ServiceAbstract
      * Produce a list of affiliations grouped per country.
      *
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return ArrayCollection
      */
@@ -854,7 +882,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return \General\Entity\Country[]
      */
@@ -884,7 +912,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return Affiliation[]|ArrayCollection
      */
@@ -936,7 +964,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Contact $contact
-     * @param int $which
+     * @param int     $which
      *
      * @return null|Affiliation
      */

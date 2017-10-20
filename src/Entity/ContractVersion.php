@@ -55,9 +55,9 @@ class ContractVersion extends EntityAbstract
      */
     private $version;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Version", cascade={"persist","remove"},  mappedBy="affiliationVersion")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Contract\CostVersion", cascade={"persist","remove"},  mappedBy="affiliationVersion")
      *
-     * @var \Project\Entity\Cost\Version[]|ArrayCollection
+     * @var \Project\Entity\Contract\CostVersion[]|ArrayCollection
      */
     private $costVersion;
 

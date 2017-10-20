@@ -9,7 +9,7 @@
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
 
-<h1>{{ affiliation.parseBranchedName() }}</h1>
+<h1 class="display-4">{{ affiliation.parseBranchedName() }}</h1>
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
     affiliation.project.parseFullName()
@@ -35,18 +35,18 @@
 {% endif %}
 
 <ul class="nav nav-tabs">
-    <li class="active"><a href="#details" data-toggle="tab">{{ translate("txt-partner-details") }}</a></li>
-    <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
-    <li><a href="#cost-and-effort" data-toggle="tab">{{ translate("txt-cost-and-effort") }}</a></li>
-    <li><a href="#contact" data-toggle="tab">{{ translate("txt-contacts") }}</a></li>
+    <li class="nav-item active"><a class="nav-link active" href="#details" data-toggle="tab">{{ translate("txt-partner-details") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#cost-and-effort" data-toggle="tab">{{ translate("txt-cost-and-effort") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#contact" data-toggle="tab">{{ translate("txt-contacts") }}</a></li>
     {% if projectService.isLabelled(affiliation.project) %}
-        <li><a href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
     {% endif %}
     {% if not invoiceViaParent and (isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial')) %}
-        <li><a href="#invoicing" data-toggle="tab">{{ translate("txt-invoicing") }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="#invoicing" data-toggle="tab">{{ translate("txt-invoicing") }}</a></li>
     {% endif %}
     {% if invoiceViaParent %}
-        <li><a href="#parent" data-toggle="tab">{{ translate("txt-membership") }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="#parent" data-toggle="tab">{{ translate("txt-membership") }}</a></li>
     {% endif %}
 </ul>
 
@@ -150,9 +150,9 @@
                 <table class="table table-striped table-bordered table-condensed">
                     <thead>
                     <tr>
-                        <th class="col-md-1">{{ translate("txt-year") }}</th>
-                        <th class="col-md-2">{{ translate("txt-partner-status") }}</th>
-                        <th class="col-md-2">{{ translate("txt-office-status") }}</th>
+                        <th>{{ translate("txt-year") }}</th>
+                        <th>{{ translate("txt-partner-status") }}</th>
+                        <th>{{ translate("txt-office-status") }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -201,7 +201,7 @@
 
         {{ affiliationLink|raw }}
     </div>
-    <div class="tab-pane" id="description">
+    <div class="tab-pane" role="tabpanel" id="description">
         <h3>{{ translate("txt-partner-description") }}</h3>
 
         {% for description in affiliation.description %}
@@ -217,7 +217,7 @@
 
         {{ affiliationLink(affiliation, 'edit-description','button') }}
     </div>
-    <div class="tab-pane" id="cost-and-effort">
+    <div class="tab-pane" role="tabpanel" id="cost-and-effort">
 
         {% if latestVersion %}
 
@@ -229,7 +229,7 @@
 
             <p>{{ translate("txt-latest-submitted-version-of-type-%s-explanation")|format(latestVersion.versionType) }}</p>
 
-            <table class="table table-hover table-striped table-condensed">
+            <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
                 <tr>
                     <th colspan="2">{{ translate("txt-cost-and-effort") }}</th>
@@ -304,7 +304,7 @@
 
             {{ ztbalert().info(translate("txt-explanation-cost-and-effort-edit-in-place"))|raw }}
 
-            <table class="table table-hover table-striped table-condensed">
+            <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
                 <tr>
                     <th colspan="2">{{ translate("txt-cost-and-effort") }}</th>
@@ -431,12 +431,12 @@
         {% endif %}
 
     </div>
-    <div class="tab-pane" id="contact">
+    <div class="tab-pane" role="tabpanel" id="contact">
 
         <h3>{{ translate("txt-associate-details") }}</h3>
 
         {% if contactsInAffiliation.contacts|length > 0 %}
-            <table class="table table-striped table-hover table-condensed">
+            <table class="table table-striped table-hover table-condensed table-sm">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-associate-name") }}</th>
@@ -463,7 +463,7 @@
     </div>
 
     {% if projectService.isLabelled(affiliation.project) %}
-        <div class="tab-pane" id="report">
+        <div class="tab-pane" role="tabpanel" id="report">
 
             <h4>{{ translate("txt-progress-report-information") }}</h4>
 
@@ -471,8 +471,8 @@
                 <table class="table table table-hover table-striped">
                     <thead>
                     <tr>
-                        <th class="col-md-3">{{ translate("txt-report") }}</th>
-                        <th class="col-md-2">{{ translate("txt-contact") }}</th>
+                        <th>{{ translate("txt-report") }}</th>
+                        <th>{{ translate("txt-contact") }}</th>
                         <th>{{ translate("txt-effort-planned") }}</th>
                         <th>{{ translate("txt-effort-spent") }}</th>
                         <th></th>
@@ -535,7 +535,7 @@
             <h4>{{ translate("txt-exploitation-related-achievement") }}</h4>
 
             {% if affiliation.achievement.count > 0 %}
-                <table class="table table-hover table-striped table-condensed">
+                <table class="table table-hover table-striped table-condensed table-sm">
                     <thead>
                     <tr>
                         <th>{{ translate("txt-achievement") }}</th>
@@ -577,7 +577,7 @@
 
     {% if not invoiceViaParent and (isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial')) %}
         <br>
-        <div class="tab-pane" id="invoicing">
+        <div class="tab-pane" role="tabpanel" id="invoicing">
 
             <tabset type="pills">
                 <tab heading="{{ translate("txt-invoicing-details") }}">
@@ -639,7 +639,7 @@
 
                         <h3>{{ translate("txt-partner-invoices") }}</h3>
 
-                        <table class="table table-hover table-striped table-condensed">
+                        <table class="table table-hover table-striped table-condensed table-sm">
                             <thead>
                             <tr>
                                 <th>{{ translate("txt-invoice-number") }}</th>
@@ -673,7 +673,7 @@
 
 
     {% if invoiceViaParent %}
-        <div class="tab-pane" id="parent">
+        <div class="tab-pane" role="tabpanel" id="parent">
 
             <h4>{{ translate("txt-project-partner-parent-information") }}</h4>
 

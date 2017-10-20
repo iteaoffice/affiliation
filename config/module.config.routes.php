@@ -44,7 +44,7 @@ return [
                             'payment-sheet'     => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].html',
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period][/:contract].html',
                                     'defaults' => [
                                         'action'    => 'payment-sheet',
                                         'privilege' => 'payment-sheet',

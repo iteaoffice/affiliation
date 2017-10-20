@@ -10,7 +10,7 @@
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-admin','button') %}
 
-<h1>{{ affiliation.parseBranchedName() }}</h1>
+<h1 class="display-4">{{ affiliation.parseBranchedName() }}</h1>
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
     project.parseFullName()
@@ -35,20 +35,20 @@
     )|raw }}
 {% endif %}
 
-<ul class="nav nav-tabs">
-    <li class="active"><a href="#details" data-toggle="tab">{{ translate("txt-partner-details") }}</a></li>
-    <li><a href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
-    <li><a href="#associates" data-toggle="tab">{{ translate("txt-associates") }}</a></li>
-    <li><a href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a></li>
-    <li><a href="#invoice" data-toggle="tab">{{ translate("txt-invoices") }}</a></li>
-    <li><a href="#version" data-toggle="tab">{{ translate("txt-version") }}</a></li>
-    <li><a href="#funding" data-toggle="tab">{{ translate("txt-funding") }}</a></li>
-    <li><a href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item active"><a class="nav-link active" href="#details" data-toggle="tab">{{ translate("txt-partner-details") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#description" data-toggle="tab">{{ translate("txt-description") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#associates" data-toggle="tab">{{ translate("txt-associates") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#invoice" data-toggle="tab">{{ translate("txt-invoices") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#version" data-toggle="tab">{{ translate("txt-version") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#funding" data-toggle="tab">{{ translate("txt-funding") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
 </ul>
 
 <!-- Tab panes -->
 <div class="tab-content">
-    <div class="tab-pane active" id="details">
+    <div class="tab-pane active" role="tabpanel" id="details">
         <h3>{{ translate("txt-affiliation-information") }}</h3>
 
         <dl class="dl-horizontal">
@@ -176,7 +176,7 @@
         {{ affiliationLink|raw }}
         {{ affiliationLink(affiliation, 'merge-admin','button') }}
     </div>
-    <div class="tab-pane" id="description">
+    <div class="tab-pane" role="tabpanel" id="description">
         <h3>{{ translate("txt-partner-description") }}</h3>
 
         {% for description in affiliation.description %}
@@ -192,11 +192,11 @@
 
         {{ affiliationLink(affiliation, 'edit-description','button') }}
     </div>
-    <div class="tab-pane" id="associates">
+    <div class="tab-pane" role="tabpanel" id="associates">
         <h3>{{ translate("txt-associates") }}</h3>
 
         {% if affiliation.associate.count() > 0 %}
-            <table class="table table-striped table-hover table-condensed">
+            <table class="table table-striped table-hover table-condensed table-sm">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-associate-name") }}</th>
@@ -219,7 +219,7 @@
         {{ affiliationLink(affiliation,'add-associate','button') }}
 
     </div>
-    <div class="tab-pane" id="financial">
+    <div class="tab-pane" role="tabpanel" id="financial">
 
         <tabset type="pills">
             <tab heading="{{ translate("txt-invoicing-details") }}">
@@ -290,11 +290,11 @@
 
         </tabset>
     </div>
-    <div class="tab-pane" id="version">
+    <div class="tab-pane" role="tabpanel" id="version">
         <h3>{{ translate("txt-version-information") }}</h3>
 
         {% if affiliation.version.count() > 0 %}
-            <table class="table table-hover table-striped table-condensed">
+            <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-version") }}</th>
@@ -329,7 +329,7 @@
 
 
         <h4>{{ translate("txt-costs-and-effort-overview") }}</h4>
-        <table class="table table-hover table-striped table-condensed">
+        <table class="table table-hover table-striped table-condensed table-sm">
             <thead>
             <tr>
 
@@ -472,11 +472,11 @@
 
 
     </div>
-    <div class="tab-pane" id="funding">
+    <div class="tab-pane" role="tabpanel" id="funding">
         <h3>{{ translate("txt-funding") }}</h3>
 
         {% if affiliation.funding.count() > 0 %}
-            <table class="table table-hover table-striped table-condensed">
+            <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-date-from") }}</th>
@@ -500,7 +500,7 @@
             {{ ztbalert().info(translate("txt-there-is-no-information-for-funding-available-for-%s")|format(affiliation))|raw }}
         {% endif %}
     </div>
-    <div class="tab-pane" id="report">
+    <div class="tab-pane" role="tabpanel" id="report">
 
         <h4>{{ translate("txt-progress-report-information") }}</h4>
 
@@ -508,8 +508,8 @@
             <table class="table table table-hover table-striped">
                 <thead>
                 <tr>
-                    <th class="col-md-3">{{ translate("txt-report") }}</th>
-                    <th class="col-md-2">{{ translate("txt-contact") }}</th>
+                    <th>{{ translate("txt-report") }}</th>
+                    <th>{{ translate("txt-contact") }}</th>
                     <th>{{ translate("txt-effort-planned") }}</th>
                     <th>{{ translate("txt-effort-spent") }}</th>
                     <th></th>
@@ -562,7 +562,7 @@
         <h4>{{ translate("txt-exploitation-related-achievement") }}</h4>
 
         {% if affiliation.achievement.count > 0 %}
-            <table class="table table-hover table-striped table-condensed">
+            <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-achievement") }}</th>
@@ -597,12 +597,12 @@
 
         {{ achievementLink(null, 'create', 'button', affiliation) }}
     </div>
-    <div class="tab-pane" id="invoice">
+    <div class="tab-pane" role="tabpanel" id="invoice">
 
         <h3>{{ translate("txt-partner-invoices") }}</h3>
 
         {% if affiliation.invoice.count() > 0 %}
-            <table class="table table-hover table-striped table-condensed">
+            <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-invoice-number") }}</th>

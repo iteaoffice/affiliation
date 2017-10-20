@@ -26,6 +26,7 @@ use Contact\Service\ContactService;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Project\Entity\Report\Report;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\View\Helper\ServerUrl;
@@ -435,15 +436,23 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return ProjectService
      */
-    public function getProjectService()
+    public function getProjectService(): ProjectService
     {
         return $this->getServiceManager()->get(ProjectService::class);
     }
 
     /**
+     * @return ContractService
+     */
+    public function getContractService(): ContractService
+    {
+        return $this->getServiceManager()->get(ContractService::class);
+    }
+
+    /**
      * @return AffiliationService
      */
-    public function getAffiliationService()
+    public function getAffiliationService(): AffiliationService
     {
         return $this->getServiceManager()->get(AffiliationService::class);
     }
@@ -451,7 +460,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return VersionService
      */
-    public function getVersionService()
+    public function getVersionService(): VersionService
     {
         return $this->getServiceManager()->get(VersionService::class);
     }
@@ -459,7 +468,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return ContactService
      */
-    public function getContactService()
+    public function getContactService(): ContactService
     {
         return $this->getServiceManager()->get(ContactService::class);
     }
@@ -467,7 +476,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return InvoiceService
      */
-    public function getInvoiceService()
+    public function getInvoiceService(): InvoiceService
     {
         return $this->getServiceManager()->get(InvoiceService::class);
     }
@@ -475,7 +484,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return OrganisationService
      */
-    public function getOrganisationService()
+    public function getOrganisationService(): OrganisationService
     {
         return $this->getServiceManager()->get(OrganisationService::class);
     }

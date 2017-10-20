@@ -21,6 +21,7 @@ use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -50,6 +51,10 @@ abstract class ServiceAbstract implements ServiceInterface
      * @var ProjectService;
      */
     protected $projectService;
+    /**
+     * @var ContractService;
+     */
+    protected $contractService;
     /**
      * @var VersionService;
      */
@@ -367,6 +372,25 @@ abstract class ServiceAbstract implements ServiceInterface
     {
         $this->generalService = $generalService;
 
+        return $this;
+    }
+
+    /**
+     * @return ContractService
+     */
+    public function getContractService(): ?ContractService
+    {
+        return $this->contractService;
+    }
+
+    /**
+     * @param ContractService $contractService
+     *
+     * @return ServiceAbstract
+     */
+    public function setContractService(ContractService $contractService): ServiceAbstract
+    {
+        $this->contractService = $contractService;
         return $this;
     }
 }

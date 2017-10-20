@@ -2,7 +2,7 @@
 {% do headTitle().append(translate(affiliation.project.parseFullname())) %}
 {% do headTitle().append(translate("txt-upload-loi-title")) %}
 
-<h1>{{ translate("txt-submit-letter-of-intent-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
+<h1 class="display-4">{{ translate("txt-submit-letter-of-intent-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
 
 {% if not loi %}
 

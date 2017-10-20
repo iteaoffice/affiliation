@@ -61,13 +61,14 @@ class CommunityController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|ViewModel
+     * @return ViewModel
      */
-    public function paymentSheetAction()
+    public function paymentSheetAction(): ViewModel
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $contract = $this->params('contract');
 
-        if (is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -78,6 +79,7 @@ class CommunityController extends AffiliationAbstractController
             [
                 'year'               => $year,
                 'period'             => $period,
+                'useContractData'    => !is_null($contract),
                 'affiliationService' => $this->getAffiliationService(),
                 'affiliation'        => $affiliation,
 
