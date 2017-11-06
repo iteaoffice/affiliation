@@ -65,7 +65,8 @@ class PaymentSheet extends LinkAbstract
                 'contractContributionInformation' => null === $contractVersion ? null
                     : $this->getContractService()->getContractVersionContributionInformation(
                         $affiliation,
-                        $contractVersion
+                        $contractVersion,
+                        $latestVersion
                     ),
                 'contactService'                  => $this->getContactService(),
                 'financialContact'                => $this->getAffiliationService()->getFinancialContact($affiliation),

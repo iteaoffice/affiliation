@@ -59,6 +59,7 @@ class AffiliationServiceTest extends AbstractServiceTest
             ->disableOriginalConstructor()
             ->setMethods(['find'])
             ->getMock();
+
         $affiliationRepositoryMock->expects($this->once())
             ->method('find')
             ->with($this->identicalTo($affiliationId))

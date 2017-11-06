@@ -251,7 +251,7 @@ class RenderPaymentSheet extends AbstractPlugin
                         $financialAddress->getAddress(),
                         $financialAddress->getZipCode(),
                         $financialAddress->getCity(),
-                        strtoupper($financialAddress->getCountry())
+                        strtoupper($financialAddress->getCountry()->getCountry())
                     ) : "No billing address could be found",
                 ],
                 [
@@ -668,6 +668,6 @@ class RenderPaymentSheet extends AbstractPlugin
      */
     public function parsePercent($percent)
     {
-        return sprintf("%s %s", number_format($percent, 2, '.', ','), "%");
+        return sprintf("%s %s", number_format((float) $percent, 2, '.', ','), "%");
     }
 }

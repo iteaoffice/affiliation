@@ -175,6 +175,12 @@ abstract class LinkAbstract extends AbstractViewHelper
                     case 'payment-sheet-pdf':
                         $this->addLinkContent('<i class="fa fa-file-pdf-o"></i>');
                         break;
+                    case 'payment-sheet':
+                        $this->addLinkContent('<i class="fa fa-eur success"></i>');
+                        break;
+                    case 'payment-sheet-contract':
+                        $this->addLinkContent('<i class="fa fa-eur"></i>');
+                        break;
                     default:
                         $this->addLinkContent('<i class="fa fa-link"></i>');
                         break;

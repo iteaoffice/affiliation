@@ -133,6 +133,18 @@ class AffiliationLink extends LinkAbstract
                     )
                 );
                 break;
+            case 'payment-sheet-contract':
+                $this->setRouter('community/affiliation/payment-sheet');
+                $this->addRouterParam('contract', 'contract');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-show-contract-based-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->getAffiliation(),
+                        $this->getYear(),
+                        $this->getPeriod()
+                    )
+                );
+                break;
             case 'payment-sheet-pdf':
                 $this->setRouter('community/affiliation/payment-sheet-pdf');
                 $this->setText(

@@ -65,7 +65,7 @@ class AddAssociateTest extends AbstractFormTest
      *
      * @return ContactService|MockObject
      */
-    private function setUpContactServiceMock(): MockObject
+    private function setUpContactServiceMock()
     {
         $contact = new Contact();
         $contact->setId(1);

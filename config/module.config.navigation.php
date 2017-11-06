@@ -131,6 +131,16 @@ return [
                                                     ],
                                                 ],
                                             ],
+                                            'update-effort-spent'    => [
+                                                'label'   => _('txt-update-effort-spent'),
+                                                'route'   => 'community/affiliation/edit/update-effort-spent',
+                                                'visible' => false,
+                                                'params'  => [
+                                                    'entities' => [
+                                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                                    ],
+                                                ],
+                                            ],
                                         ],
                                     ],
                                 ],
@@ -157,6 +167,8 @@ return [
                         'pages' => [
                             'project-view' => [
                                 'pages' => [
+                                    'affiliations' => [
+                                        'pages' => [
                                     'affiliation' => [
                                         'label'   => _("txt-nav-project-partner"),
                                         'route'   => 'zfcadmin/affiliation/view',
@@ -205,6 +217,8 @@ return [
                                             ],
                                         ],
                                     ],
+                                            ]
+                                        ]
                                 ],
                             ],
                         ],
@@ -246,7 +260,17 @@ return [
                             'edit'      => [
                                 'label'   => _('txt-nav-doa-remind'),
                                 'route'   => 'zfcadmin/affiliation/doa/remind',
-                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                    ],
+                                    'routeParam' => [
+                                        'id' => 'affiliationId'
+                                    ],
+                                    'invokables' => [
+                                        Affiliation\Navigation\Invokable\AffiliationLabel::class,
+                                    ],
+                                ],
                             ],
                             'reminders' => [
                                 'label'   => _('txt-nav-doa-reminders'),
@@ -264,6 +288,23 @@ return [
                         'label' => _("txt-nav-missing-loi"),
                         'order' => 110,
                         'route' => 'zfcadmin/affiliation/loi/missing',
+                        'pages' => [
+                            'loi-remind' => [
+                                'label'   => _('txt-nav-loi-reminder'),
+                                'route'   => 'zfcadmin/affiliation/loi/remind',
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                    ],
+                                    'routeParam' => [
+                                        'id' => 'affiliationId'
+                                    ],
+                                    'invokables' => [
+                                        Affiliation\Navigation\Invokable\AffiliationLabel::class,
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                 ]
             ]

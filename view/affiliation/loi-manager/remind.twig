@@ -17,16 +17,16 @@ project
 {{ form().openTag(form)|raw }}
 
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static">{{ projectLink(project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static">{{ affiliationLink(affiliation,'view-community') }}</p>
@@ -38,11 +38,8 @@ project
 {{ ztbformelement(form.get('deeplinkTarget')) }}
 {{ ztbformelement(form.get('message')) }}
 
-<hr>
-
-
-<div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
+<div class="form-group row">
+    <div class="offset-md-3 col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
     </div>

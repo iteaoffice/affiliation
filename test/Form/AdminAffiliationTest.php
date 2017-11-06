@@ -62,7 +62,7 @@ class AdminAffiliationTest extends AbstractFormTest
      *
      * @return ParentService|MockObject
      */
-    private function setUpParentServiceMock(): MockObject
+    private function setUpParentServiceMock()
     {
         $country = new Country();
         $country->setId(1);

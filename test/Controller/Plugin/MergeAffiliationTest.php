@@ -393,7 +393,7 @@ class MergeAffiliationTest extends AbstractServiceTest
      *
      * @return EntityManager|MockObject
      */
-    private function setUpEntityManagerMock(int $strategy, $throwException = false): MockObject
+    private function setUpEntityManagerMock(int $strategy, $throwException = false)
     {
         $entityManagerMock = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
@@ -482,7 +482,7 @@ class MergeAffiliationTest extends AbstractServiceTest
      *
      * @return AdminService|MockObject
      */
-    private function setUpAdminServiceMock(): MockObject
+    private function setUpAdminServiceMock()
     {
         $adminServiceMock = $this->getMockBuilder(AdminService::class)
             ->setMethods(['flushPermitsByEntityAndId'])

@@ -10,15 +10,20 @@
             <th>{{ translate("txt-organisation") }}</th>
             <th>{{ translate("txt-country") }}</th>
             <th>{{ translate("txt-project") }}</th>
-            <th>{{ translate("txt-remind") }}</th>
+            <th colspan="2">{{ translate("txt-remind") }}</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+            <td colspan="6"></td>
+        </tr>
+        </tfoot>
         <tbody>
         {% for affiliation in paginator.getCurrentItems() %}
             <tr id="affiliation-{{ affiliation.id }}">
-                <td>{{ affiliation }}</td>
+                <td>{{ affiliationLink(affiliation,'view-admin','name') }}</td>
                 <td>{{ affiliation.organisation.country }}</td>
-                <td>{{ affiliation.project }}</td>
+                <td>{{ projectLink(affiliation.project,'view-admin','name') }}</td>
                 <td>{{ loiLink(null, 'reminders-admin', 'text', affiliation) }}<br>
                     {% if affiliation.doaReminder.last.dateCreated %}
                         <small>{{ affiliation.doaReminder.last.dateCreated|string_date }}</small>
