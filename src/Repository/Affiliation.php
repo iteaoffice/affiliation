@@ -211,7 +211,7 @@ class Affiliation extends EntityRepository
      *
      * @return Query
      */
-    public function findAffiliationWithMissingLoi()
+    public function findAffiliationWithMissingLoi(): Query
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');

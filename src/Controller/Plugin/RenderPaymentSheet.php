@@ -117,7 +117,7 @@ class RenderPaymentSheet extends AbstractPlugin
             ],
             [
                 $this->translate("txt-version-date"),
-                !is_null($latestVersion->getDateReviewed()) ? $latestVersion->getDateReviewed()->format("d-m-Y")
+                !\is_null($latestVersion->getDateReviewed()) ? $latestVersion->getDateReviewed()->format("d-m-Y")
                     : '',
             ],
         ];
@@ -201,7 +201,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
 
-        if (!is_null($financialContact)) {
+        if (!\is_null($financialContact)) {
             //Financial contact
             $pdf->writeHTMLCell(
                 0,
@@ -237,7 +237,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-billing-address"),
-                    !is_null($financialAddress) ? sprintf(
+                    !\is_null($financialAddress) ? sprintf(
                         "%s \n %s\n%s\n%s %s\n%s",
                         $this->getOrganisationService()->parseOrganisationWithBranch(
                             $affiliation->getFinancial()
@@ -256,8 +256,8 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-preferred-delivery"),
-                    is_null($affiliation->getFinancial())
-                    || is_null($affiliation->getFinancial()->getOrganisation()->getFinancial())
+                    \is_null($affiliation->getFinancial())
+                    || \is_null($affiliation->getFinancial()->getOrganisation()->getFinancial())
                         ? 'No billing organisation known'
                         : (($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
                         === Financial::EMAIL_DELIVERY) ? sprintf(
@@ -314,7 +314,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
             if ($this->getAffiliationService()->isSelfFunded($affiliation)) {
                 $yearData[] = $this->translate("txt-self-funded");
-            } elseif (!is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
+            } elseif (!\is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
                 $yearData[] = $this->getAffiliationService()->getFundingInYear($affiliation, $projectYear)->getStatus()
                     ->getStatusFunding();
             } else {
@@ -431,7 +431,7 @@ class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $previousInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if (!is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
+            if (!\is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
                 && ($affiliationInvoice->getYear() < $year
                     || ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() < $period))
             ) {
@@ -441,7 +441,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $currentInvoiceDetails = [];
 
-        if (count($previousInvoices) === 0) {
+        if (\count($previousInvoices) === 0) {
             $currentInvoiceDetails[] = [
                 $this->translate("txt-no-invoices-found"),
             ];
@@ -455,7 +455,7 @@ class RenderPaymentSheet extends AbstractPlugin
                     sprintf("%s-%s", $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
                     $this->parseCost($this->getInvoiceService()->parseSumAmount($affiliationInvoice->getInvoice())),
-                    (!is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
+                    (!\is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
                         ->getBookingDate()
                         ->format('d-m-Y')
                         : ''),
@@ -579,7 +579,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 || ($affiliationInvoice->getYear() === $year
                     && $affiliationInvoice->getPeriod() > $period)
             ) {
-                if (!is_null($affiliationInvoice->getInvoice()->getDateSent())) {
+                if (!\is_null($affiliationInvoice->getInvoice()->getDateSent())) {
                     $upcomingInvoices[] = $affiliationInvoice;
                 }
             }
@@ -587,7 +587,7 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $upcomingInvoiceDetails = [];
 
-        if (count($upcomingInvoices) > 0) {
+        if (\count($upcomingInvoices) > 0) {
             $pdf->writeHTMLCell(
                 0,
                 0,
@@ -615,7 +615,7 @@ class RenderPaymentSheet extends AbstractPlugin
                     $affiliationInvoice->getInvoice()->getInvoiceNr(),
                     sprintf("%s-%s", $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
-                    (!is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
+                    (!\is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
                         ->getBookingDate()
                         ->format('d-m-Y')
                         : ''),

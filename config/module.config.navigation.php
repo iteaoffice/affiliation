@@ -200,9 +200,15 @@ return [
                                                     'entities' => [
                                                         'id' => \Affiliation\Entity\Affiliation::class,
                                                     ],
-                                                    'routeParam' => [
-                                                        'id' => 'affiliation'
-                                                    ]
+                                                ],
+                                            ],
+                                            'add-associate'  => [
+                                                'label'   => _('txt-nav-add-associate'),
+                                                'route'   => 'zfcadmin/affiliation/add-associate',
+                                                'params'  => [
+                                                    'entities' => [
+                                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                                    ],
                                                 ],
                                             ],
                                             'merge' => [

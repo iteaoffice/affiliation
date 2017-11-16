@@ -53,7 +53,7 @@ class AssociateLink extends LinkAbstract
             ]
         );
 
-        $this->addRouterParam('affiliation', $this->getAffiliation()->getId());
+        $this->addRouterParam('id', $this->getAffiliation()->getId());
         $this->addRouterParam('contact', $this->getContact()->getId());
 
         return $this->createLink();

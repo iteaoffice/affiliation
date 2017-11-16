@@ -455,7 +455,7 @@ class MergeAffiliationTest extends AbstractServiceTest
                 break;
         }
 
-        $entityManagerMock->expects($this->exactly(count($params)))
+        $entityManagerMock->expects($this->exactly(\count($params)))
             ->method('persist')
             ->withConsecutive(...$params);
 
@@ -468,7 +468,7 @@ class MergeAffiliationTest extends AbstractServiceTest
             [$this->identicalTo($this->otherAffiliation->getVersion()->first())],
             [$this->identicalTo($this->otherAffiliation)],
         ];
-        $entityManagerMock->expects($this->exactly(count($params)))
+        $entityManagerMock->expects($this->exactly(\count($params)))
             ->method('remove')
             ->withConsecutive(...$params);
 

@@ -122,7 +122,7 @@ class Financial extends Form
          * Add all the financial contacts form other projects
          */
         foreach ($organisation->getAffiliation() as $affiliation) {
-            if (!is_null($affiliation->getFinancial())) {
+            if (!\is_null($affiliation->getFinancial())) {
                 $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
                     = $affiliation->getFinancial()->getContact()->getFormName();
             }

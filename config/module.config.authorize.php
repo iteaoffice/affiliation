@@ -56,6 +56,11 @@ return [
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/add-associate',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/doa/list',
                     'roles'     => [Access::ACCESS_OFFICE],
                     'assertion' => DoaAssertion::class,

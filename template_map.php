@@ -22,6 +22,7 @@ return array(
     'affiliation/affiliation-manager/view'                       => __DIR__ . '//view/affiliation/affiliation-manager/view.twig',
     'affiliation/affiliation-manager/list'                       => __DIR__ . '//view/affiliation/affiliation-manager/list.twig',
     'affiliation/affiliation-manager/edit-associate'             => __DIR__ . '//view/affiliation/affiliation-manager/edit-associate.twig',
+    'affiliation/affiliation-manager/add-associate'              => __DIR__ . '//view/affiliation/affiliation-manager/add-associate.twig',
     'affiliation/loi-manager/edit'                               => __DIR__ . '//view/affiliation/loi-manager/edit.twig',
     'affiliation/loi-manager/reminders'                          => __DIR__ . '//view/affiliation/loi-manager/reminders.twig',
     'affiliation/loi-manager/approval'                           => __DIR__ . '//view/affiliation/loi-manager/approval.twig',

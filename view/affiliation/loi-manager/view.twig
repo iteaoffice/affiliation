@@ -16,6 +16,12 @@
     <dd>{{ loi.affiliation.dateCreated|string_date }}</dd>
     <dt>{{ translate("txt-signer") }}</dt>
     <dd>{{ contactLink(loi.contact, 'view-admin', 'name') }}</dd>
+    <dt>{{ translate("txt-date-created") }}</dt>
+    <dd>{{ loi.dateCreated|date('d-m-Y H:i:s') }}</dd>
+    {% if loi.dateUpdated %}
+        <dt>{{ translate("txt-date-updated") }}</dt>
+        <dd>{{ loi.dateUpdated|date('d-m-Y H:i:s') }}</dd>
+    {% endif %}
     <dt>{{ translate("txt-date-signed") }}</dt>
     {% if loi.dateSigned %}
         <dd>{{ loi.dateSigned|string_date }}</dd>

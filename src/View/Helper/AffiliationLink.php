@@ -44,6 +44,9 @@ class AffiliationLink extends LinkAbstract
         $period = null,
         $fragment = null
     ): string {
+        $this->classes = [];
+        $this->routerParams = [];
+
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
@@ -58,7 +61,7 @@ class AffiliationLink extends LinkAbstract
                 'name'                => $this->getAffiliation(),
                 'organisation'        => $this->getAffiliation()->getOrganisation()->getOrganisation(),
                 'parent-organisation' =>
-                    is_null($this->getAffiliation()->getParentOrganisation())
+                    \is_null($this->getAffiliation()->getParentOrganisation())
                         ? 'Parent not known'
                         : $this->getAffiliation()->getParentOrganisation()->getOrganisation(),
                 'organisation-branch' => $this->getAffiliation()->parseBranchedName(),
@@ -99,6 +102,10 @@ class AffiliationLink extends LinkAbstract
                 break;
             case 'add-associate':
                 $this->setRouter('community/affiliation/edit/add-associate');
+                $this->setText(sprintf($this->translate("txt-add-associate-affiliation-%s"), $this->getAffiliation()));
+                break;
+            case 'add-associate-admin':
+                $this->setRouter('zfcadmin/affiliation/add-associate');
                 $this->setText(sprintf($this->translate("txt-add-associate-affiliation-%s"), $this->getAffiliation()));
                 break;
             case 'edit-description':

@@ -135,11 +135,11 @@ abstract class LinkAbstract extends AbstractViewHelper
             $serverUrl() . $url(
                 $this->router,
                 $this->routerParams,
-                is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
+                \is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
             ),
-            htmlentities((string) $this->text),
+            htmlentities((string)$this->text),
             implode(' ', $this->classes),
-            in_array($this->getShow(), ['icon', 'button', 'alternativeShow'], true) ? implode('', $this->linkContent)
+            \in_array($this->getShow(), ['icon', 'button', 'alternativeShow'], true) ? implode('', $this->linkContent)
                 : htmlentities(implode('', $this->linkContent))
         );
     }
@@ -181,6 +181,10 @@ abstract class LinkAbstract extends AbstractViewHelper
                     case 'payment-sheet-contract':
                         $this->addLinkContent('<i class="fa fa-eur"></i>');
                         break;
+                    case 'add-associate':
+                    case 'add-associate-admin':
+                        $this->addLinkContent('<i class="fa fa-plus"></i>');
+                        break;
                     default:
                         $this->addLinkContent('<i class="fa fa-link"></i>');
                         break;
@@ -195,7 +199,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                 $this->addLinkContent($this->getText());
                 break;
             case 'paginator':
-                if (is_null($this->getAlternativeShow())) {
+                if (\is_null($this->getAlternativeShow())) {
                     throw new \InvalidArgumentException(
                         sprintf("this->alternativeShow cannot be null for a paginator link")
                     );
@@ -353,7 +357,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     public function hasAccess(EntityAbstract $entity, $assertion, $action)
     {
         $assertion = $this->getAssertion($assertion);
-        if (!is_null($entity) && !$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
+        if (!\is_null($entity) && !$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
             $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }
@@ -407,10 +411,10 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function addRouterParam($key, $value, $allowNull = true)
     {
-        if (!$allowNull && is_null($value)) {
+        if (!$allowNull && \is_null($value)) {
             throw new \InvalidArgumentException(sprintf("null is not allowed for %s", $key));
         }
-        if (!is_null($value)) {
+        if (!\is_null($value)) {
             $this->routerParams[$key] = $value;
         }
     }
@@ -560,7 +564,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function getAffiliation(): Affiliation
     {
-        if (is_null($this->affiliation)) {
+        if (\is_null($this->affiliation)) {
             $this->affiliation = new Affiliation();
         }
 
@@ -584,7 +588,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function getDoa(): Doa
     {
-        if (is_null($this->doa)) {
+        if (\is_null($this->doa)) {
             $this->doa = new Doa();
         }
 
@@ -604,7 +608,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function getLoi()
     {
-        if (is_null($this->loi)) {
+        if (\is_null($this->loi)) {
             $this->loi = new Loi();
         }
 
@@ -624,7 +628,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function getReport()
     {
-        if (is_null($this->report)) {
+        if (\is_null($this->report)) {
             $this->report = new Report();
         }
 

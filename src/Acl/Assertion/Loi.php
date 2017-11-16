@@ -42,14 +42,14 @@ class Loi extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$loi instanceof LoiEntity && !is_null($id)) {
+        if (!$loi instanceof LoiEntity && !\is_null($id)) {
             /** @var LoiEntity $loi */
             $loi = $this->getAffiliationService()->findEntityById(LoiEntity::class, $id);
         }
 
         switch ($this->getPrivilege()) {
             case 'submit':
-                if (is_null($id)) {
+                if (\is_null($id)) {
                     $id = $this->getRouteMatch()->getParam('affiliationId');
                 }
                 /*
@@ -67,8 +67,8 @@ class Loi extends AssertionAbstract
                 if ($loi instanceof LoiEntity) {
                     $affiliation = $loi->getAffiliation();
                 }
-                if (is_null($affiliation)) {
-                    if (is_null($id)) {
+                if (\is_null($affiliation)) {
+                    if (\is_null($id)) {
                         $id = $this->getRouteMatch()->getParam('affiliationId');
                     }
                     /*
@@ -88,7 +88,7 @@ class Loi extends AssertionAbstract
                  * and the acl should not be approved
                  */
 
-                return is_null($loi->getDateApproved())
+                return \is_null($loi->getDateApproved())
                     && $this->getAffiliationAssertion()
                         ->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
             case 'download':

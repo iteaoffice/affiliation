@@ -16,6 +16,9 @@ use Admin\Service\AdminService;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\EntityAbstract;
 use BjyAuthorize\Service\Authorize;
+use Contact\Service\ContactService;
+use Deeplink\Service\DeeplinkService;
+use General\Service\EmailService;
 use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
@@ -48,9 +51,21 @@ abstract class ServiceAbstract implements ServiceInterface
      */
     protected $organisationService;
     /**
+     * @var DeeplinkService
+     */
+    protected $deeplinkService;
+    /**
      * @var ProjectService;
      */
     protected $projectService;
+    /**
+     * @var ContactService
+     */
+    protected $contactService;
+    /**
+     * @var EmailService
+     */
+    protected $emailService;
     /**
      * @var ContractService;
      */
@@ -95,7 +110,7 @@ abstract class ServiceAbstract implements ServiceInterface
     /**
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getEntityManager()
+    public function getEntityManager(): \Doctrine\ORM\EntityManager
     {
         return $this->entityManager;
     }
@@ -143,7 +158,7 @@ abstract class ServiceAbstract implements ServiceInterface
     /**
      * @return AdminService
      */
-    public function getAdminService()
+    public function getAdminService(): AdminService
     {
         return $this->adminService;
     }
@@ -153,7 +168,7 @@ abstract class ServiceAbstract implements ServiceInterface
      *
      * @return ServiceAbstract
      */
-    public function setAdminService($adminService)
+    public function setAdminService($adminService): ServiceAbstract
     {
         $this->adminService = $adminService;
 
@@ -161,9 +176,10 @@ abstract class ServiceAbstract implements ServiceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\EntityAbstract $entity
-     *
-     * @return \Affiliation\Entity\EntityAbstract
+     * @param EntityAbstract $entity
+     * @return EntityAbstract
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function updateEntity(EntityAbstract $entity)
     {
@@ -185,11 +201,12 @@ abstract class ServiceAbstract implements ServiceInterface
     }
 
     /**
-     * @param \Affiliation\Entity\EntityAbstract $entity
-     *
+     * @param EntityAbstract $entity
      * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function removeEntity(EntityAbstract $entity)
+    public function removeEntity(EntityAbstract $entity): bool
     {
         $this->getEntityManager()->remove($entity);
         $this->getEntityManager()->flush();
@@ -199,9 +216,11 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param EntityAbstract $entity
-     * @param                $assertion
+     * @param string $assertion
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function addResource(EntityAbstract $entity, $assertion)
+    public function addResource(EntityAbstract $entity, string $assertion): void
     {
         /*
          * @var AssertionAbstract
@@ -216,7 +235,7 @@ abstract class ServiceAbstract implements ServiceInterface
     /**
      * @return ServiceLocatorInterface
      */
-    public function getServiceLocator()
+    public function getServiceLocator(): ContainerInterface
     {
         return $this->serviceLocator;
     }
@@ -226,7 +245,7 @@ abstract class ServiceAbstract implements ServiceInterface
      *
      * @return ServiceAbstract
      */
-    public function setServiceLocator($serviceLocator)
+    public function setServiceLocator($serviceLocator): ServiceAbstract
     {
         $this->serviceLocator = $serviceLocator;
 
@@ -236,7 +255,7 @@ abstract class ServiceAbstract implements ServiceInterface
     /**
      * @return Authorize
      */
-    public function getAuthorizeService()
+    public function getAuthorizeService(): Authorize
     {
         return $this->authorizeService;
     }
@@ -246,7 +265,7 @@ abstract class ServiceAbstract implements ServiceInterface
      *
      * @return ServiceAbstract
      */
-    public function setAuthorizeService($authorizeService)
+    public function setAuthorizeService($authorizeService): ServiceAbstract
     {
         $this->authorizeService = $authorizeService;
 
@@ -256,7 +275,7 @@ abstract class ServiceAbstract implements ServiceInterface
     /**
      * @return OrganisationService
      */
-    public function getOrganisationService()
+    public function getOrganisationService(): OrganisationService
     {
         return $this->organisationService;
     }
@@ -266,7 +285,7 @@ abstract class ServiceAbstract implements ServiceInterface
      *
      * @return ServiceAbstract
      */
-    public function setOrganisationService($organisationService)
+    public function setOrganisationService($organisationService): ServiceAbstract
     {
         $this->organisationService = $organisationService;
 
@@ -275,10 +294,12 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @return ProjectService
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function getProjectService()
+    public function getProjectService(): ProjectService
     {
-        if (is_null($this->projectService)) {
+        if (\is_null($this->projectService)) {
             $this->projectService = $this->getServiceLocator()->get(ProjectService::class);
         }
 
@@ -290,7 +311,7 @@ abstract class ServiceAbstract implements ServiceInterface
      *
      * @return ServiceAbstract
      */
-    public function setProjectService($projectService)
+    public function setProjectService($projectService): ServiceAbstract
     {
         $this->projectService = $projectService;
 
@@ -298,9 +319,87 @@ abstract class ServiceAbstract implements ServiceInterface
     }
 
     /**
+     * @return ContactService
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getContactService(): ContactService
+    {
+        if (\is_null($this->contactService)) {
+            $this->contactService = $this->getServiceLocator()->get(ContactService::class);
+        }
+
+        return $this->contactService;
+    }
+
+    /**
+     * @param ContactService $contactService
+     *
+     * @return ServiceAbstract
+     */
+    public function setContactService($contactService): ServiceAbstract
+    {
+        $this->contactService = $contactService;
+
+        return $this;
+    }
+
+    /**
+     * @return EmailService
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getEmailService(): EmailService
+    {
+        if (\is_null($this->emailService)) {
+            $this->emailService = $this->getServiceLocator()->get(EmailService::class);
+        }
+
+        return $this->emailService;
+    }
+
+    /**
+     * @param EmailService $emailService
+     *
+     * @return ServiceAbstract
+     */
+    public function setEmailService($emailService): ServiceAbstract
+    {
+        $this->emailService = $emailService;
+
+        return $this;
+    }
+
+    /**
+     * @return DeeplinkService
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getDeeplinkService(): DeeplinkService
+    {
+        if (\is_null($this->deeplinkService)) {
+            $this->deeplinkService = $this->getServiceLocator()->get(DeeplinkService::class);
+        }
+
+        return $this->deeplinkService;
+    }
+
+    /**
+     * @param DeeplinkService $deeplinkService
+     *
+     * @return ServiceAbstract
+     */
+    public function setDeeplinkService($deeplinkService): ServiceAbstract
+    {
+        $this->deeplinkService = $deeplinkService;
+
+        return $this;
+    }
+
+    /**
      * @return VersionService
      */
-    public function getVersionService()
+    public function getVersionService(): VersionService
     {
         return $this->versionService;
     }
@@ -310,7 +409,7 @@ abstract class ServiceAbstract implements ServiceInterface
      *
      * @return ServiceAbstract
      */
-    public function setVersionService($versionService)
+    public function setVersionService($versionService): ServiceAbstract
     {
         $this->versionService = $versionService;
 
@@ -320,7 +419,7 @@ abstract class ServiceAbstract implements ServiceInterface
     /**
      * @return InvoiceService
      */
-    public function getInvoiceService()
+    public function getInvoiceService(): InvoiceService
     {
         return $this->invoiceService;
     }
@@ -330,7 +429,7 @@ abstract class ServiceAbstract implements ServiceInterface
      *
      * @return ServiceAbstract
      */
-    public function setInvoiceService($invoiceService)
+    public function setInvoiceService($invoiceService): ServiceAbstract
     {
         $this->invoiceService = $invoiceService;
 
@@ -391,6 +490,7 @@ abstract class ServiceAbstract implements ServiceInterface
     public function setContractService(ContractService $contractService): ServiceAbstract
     {
         $this->contractService = $contractService;
+
         return $this;
     }
 }

@@ -91,9 +91,19 @@ return [
                             'edit-associate'             => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/edit-associate/affiliation-[:affiliation]/contact-[:contact].html',
+                                    'route'    => '/edit-associate/affiliation-[:id]/contact-[:contact].html',
                                     'defaults' => [
                                         'action'    => 'edit-associate',
+                                        'privilege' => 'edit-admin',
+                                    ],
+                                ],
+                            ],
+                            'add-associate'             => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/add-associate/affiliation-[:id].html',
+                                    'defaults' => [
+                                        'action'    => 'add-associate',
                                         'privilege' => 'edit-admin',
                                     ],
                                 ],
@@ -216,7 +226,6 @@ return [
                                 'options'       => [
                                     'route'    => '/doa',
                                     'defaults' => [
-                                        'namespace'  => __NAMESPACE__,
                                         'controller' => Controller\DoaManagerController::class,
                                         'action'     => 'index',
                                     ],

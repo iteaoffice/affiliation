@@ -35,11 +35,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     /**
      * Constant for mode = 0 (not self funded).
      */
-    const NOT_SELF_FUNDED = 0;
+    public const NOT_SELF_FUNDED = 0;
     /**
      * Constant for mode = 1 (self funded).
      */
-    const SELF_FUNDED = 1;
+    public const SELF_FUNDED = 1;
     /**
      * Templates for the self funded parameter.
      *
@@ -264,7 +264,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\ContractVersion", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Version[]|Collections\ArrayCollection()
+     * @var \Affiliation\Entity\ContractVersion[]|Collections\ArrayCollection()
      */
     private $contractVersion;
     /**
@@ -403,8 +403,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->invoice = new Collections\ArrayCollection();
         $this->log = new Collections\ArrayCollection();
         $this->version = new Collections\ArrayCollection();
-        $this->contract = new Collections\ArrayCollection();
         $this->contractVersion = new Collections\ArrayCollection();
+        $this->contract = new Collections\ArrayCollection();
         $this->associate = new Collections\ArrayCollection();
         $this->funding = new Collections\ArrayCollection();
         $this->cost = new Collections\ArrayCollection();
@@ -478,7 +478,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function parseBranchedName(): string
     {
-        if (!is_null($this->getParentOrganisation())) {
+        //Todo, fix this
+        if (false && !\is_null($this->getParentOrganisation())) {
             return OrganisationService::parseBranch(
                 $this->getBranch(),
                 $this->getParentOrganisation()->getOrganisation()
@@ -1116,7 +1117,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @return mixed
+     * @return ContractVersion[]|Collections\ArrayCollection
      */
     public function getContractVersion()
     {
@@ -1124,15 +1125,17 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
-     * @param mixed $contractVersion
+     * @param ContractVersion[]|Collections\ArrayCollection $contractVersion
      * @return Affiliation
      */
-    public function setContractVersion($contractVersion)
+    public function setContractVersion($contractVersion): Affiliation
     {
         $this->contractVersion = $contractVersion;
 
         return $this;
     }
+
+
 
     /**
      * @return Collections\ArrayCollection|\Project\Entity\Contract\Cost[]

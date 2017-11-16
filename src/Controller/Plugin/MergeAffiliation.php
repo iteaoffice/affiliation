@@ -34,9 +34,9 @@ use Project\Entity\Version\Version as ProjectVersion;
 class MergeAffiliation extends AbstractPlugin
 {
     // Cost and effort merge strategies
-    const STRATEGY_SUM = 0;       // Add other cost and effort to main
-    const STRATEGY_USE_MAIN = 1;  // Use cost and effort of main affiliation
-    const STRATEGY_USE_OTHER = 2; // Use cost and effort of other affiliation
+    public const STRATEGY_SUM = 0;       // Add other cost and effort to main
+    public const STRATEGY_USE_MAIN = 1;  // Use cost and effort of main affiliation
+    public const STRATEGY_USE_OTHER = 2; // Use cost and effort of other affiliation
     /**
      * @var array
      */

@@ -40,15 +40,7 @@ affiliation.project.parseFullName()
     </div>
 </div>
 
-<div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-contact") }}</label>
-
-    <div class="col-sm-9">
-        <p class="form-control-static">{{ contactLink(contact,'view-admin', 'name') }}</p>
-    </div>
-</div>
-
-
+{{ contactformelement(form.get('contact')) }}
 {{ ztbformelement(form.get('affiliation')) }}
 
 <div class="form-group row">

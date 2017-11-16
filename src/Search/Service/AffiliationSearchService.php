@@ -31,7 +31,7 @@ use Solarium\QueryType\Select\Query\Query;
  */
 class AffiliationSearchService extends AbstractSearchService
 {
-    const SOLR_CONNECTION = 'affiliation';
+    public const SOLR_CONNECTION = 'affiliation';
 
     /**
      * @var AffiliationService
@@ -63,7 +63,7 @@ class AffiliationSearchService extends AbstractSearchService
         $affiliationDocument->id             = $affiliation->getResourceId();
         $affiliationDocument->affiliation_id = $affiliation->getId();
         $affiliationDocument->date_created   = $affiliation->getDateCreated()->format(static::DATE_SOLR);
-        $affiliationDocument->is_active      = (is_null($affiliation->getDateEnd()) || ($affiliation->getDateEnd() > $now));
+        $affiliationDocument->is_active      = (\is_null($affiliation->getDateEnd()) || ($affiliation->getDateEnd() > $now));
 
         $descriptionMerged = '';
         foreach ($affiliation->getDescription() as $description) {

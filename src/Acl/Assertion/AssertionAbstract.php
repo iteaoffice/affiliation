@@ -108,7 +108,7 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     public function getContact()
     {
-        if (is_null($this->contact)) {
+        if (\is_null($this->contact)) {
             $this->contact = new Contact();
         }
 
@@ -165,7 +165,7 @@ abstract class AssertionAbstract implements AssertionInterface
         /**
          * When the privilege is_null (not given by the isAllowed helper), get it from the routeMatch
          */
-        if (is_null($privilege) && $this->hasRouteMatch()) {
+        if (\is_null($privilege) && $this->hasRouteMatch()) {
             $this->privilege = $this->getRouteMatch()
                 ->getParam('privilege', $this->getRouteMatch()->getParam('action'));
         } else {
@@ -180,7 +180,7 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     public function hasRouteMatch()
     {
-        return !is_null($this->getRouteMatch());
+        return !\is_null($this->getRouteMatch());
     }
 
     /**
@@ -188,7 +188,7 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     public function getRouteMatch()
     {
-        if (is_null($this->routeMatch)) {
+        if (\is_null($this->routeMatch)) {
             $this->routeMatch = $this->getServiceLocator()->get("Application")->getMvcEvent()->getRouteMatch();
         }
 
@@ -232,13 +232,13 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     public function getId()
     {
-        if (!is_null($id = $this->getRequest()->getPost('id'))) {
+        if (!\is_null($id = $this->getRequest()->getPost('id'))) {
             return (int)$id;
         }
-        if (is_null($this->getRouteMatch())) {
+        if (\is_null($this->getRouteMatch())) {
             return null;
         }
-        if (!is_null($id = $this->getRouteMatch()->getParam('id'))) {
+        if (!\is_null($id = $this->getRouteMatch()->getParam('id'))) {
             return (int)$id;
         }
 
@@ -250,7 +250,7 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     public function getRequest()
     {
-        if (is_null($this->request)) {
+        if (\is_null($this->request)) {
             $this->request = $this->getServiceLocator()->get('application')->getMvcEvent()->getRequest();
         }
 
@@ -354,7 +354,7 @@ abstract class AssertionAbstract implements AssertionInterface
      */
     public function getAffiliationAssertion()
     {
-        if (is_null($this->affiliationAssertion)) {
+        if (\is_null($this->affiliationAssertion)) {
             $this->affiliationAssertion = $this->getServiceLocator()->get(Affiliation::class);
         }
 
@@ -389,7 +389,7 @@ abstract class AssertionAbstract implements AssertionInterface
         $roles = array_map('strtolower', $roles);
 
         foreach ($this->getAccessRoles() as $access) {
-            if (in_array(strtolower($access), $roles)) {
+            if (\in_array(strtolower($access), $roles)) {
                 return true;
             }
         }

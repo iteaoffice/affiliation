@@ -42,7 +42,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
@@ -62,7 +62,7 @@ class EditController extends AffiliationAbstractController
         /*
          * Check if the organisation has a financial contact
          */
-        if (!is_null($affiliation->getFinancial())) {
+        if (!\is_null($affiliation->getFinancial())) {
             $formData['financial'] = $affiliation->getFinancial()->getContact()->getId();
         }
         $form = new AffiliationForm($affiliation, $this->getAffiliationService());
@@ -158,7 +158,7 @@ class EditController extends AffiliationAbstractController
                 /*
                  * Handle the financial organisation
                  */
-                if (is_null($financial = $affiliation->getFinancial())) {
+                if (\is_null($financial = $affiliation->getFinancial())) {
                     $financial = new Financial();
                 }
                 $financial->setOrganisation($organisation);
@@ -210,7 +210,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
@@ -222,7 +222,7 @@ class EditController extends AffiliationAbstractController
         $financialAddress = null;
         $organisationFinancial = null;
 
-        if (!is_null($affiliation->getFinancial())) {
+        if (!\is_null($affiliation->getFinancial())) {
             $organisationFinancial = $affiliation->getFinancial()->getOrganisation()->getFinancial();
             $branch = $affiliation->getFinancial()->getBranch();
 
@@ -231,7 +231,7 @@ class EditController extends AffiliationAbstractController
             /** @var ContactService $contactService */
             $formData['contact'] = $affiliation->getFinancial()->getContact()->getId();
 
-            if (!is_null(
+            if (!\is_null(
                 $financialAddress = $this->getContactService()->getFinancialAddress(
                     $affiliation->getFinancial()
                         ->getContact()
@@ -250,13 +250,13 @@ class EditController extends AffiliationAbstractController
         }
 
 
-        if (is_null($affiliation->getFinancial())) {
+        if (\is_null($affiliation->getFinancial())) {
             $formData['organisation'] = $this->getOrganisationService()
                 ->parseOrganisationWithBranch($branch, $affiliation->getOrganisation());
             $formData['registeredCountry'] = $affiliation->getOrganisation()->getCountry()->getId();
         }
 
-        if (!is_null($organisationFinancial)) {
+        if (!\is_null($organisationFinancial)) {
             $formData['preferredDelivery'] = $organisationFinancial->getEmail();
             $formData['vat'] = $organisationFinancial->getVat();
             $formData['omitContact'] = $organisationFinancial->getOmitContact();
@@ -294,12 +294,12 @@ class EditController extends AffiliationAbstractController
 
 
                 //If the organisation is found, it has by default an organisation
-                if (!is_null($organisationFinancial)) {
+                if (!\is_null($organisationFinancial)) {
                     $organisation = $organisationFinancial->getOrganisation();
                 }
 
                 //try to find the organisation based on te country and name
-                if (is_null($organisation)) {
+                if (\is_null($organisation)) {
                     $organisation = $this->getOrganisationService()
                         ->findOrganisationByNameCountry(
                             trim($formData['organisation']),
@@ -311,7 +311,7 @@ class EditController extends AffiliationAbstractController
                 /**
                  * If the organisation is still not found, create it
                  */
-                if (is_null($organisation)) {
+                if (\is_null($organisation)) {
                     $organisation = new Organisation();
                     $organisation->setOrganisation($formData['organisation']);
                     $organisation->setCountry(
@@ -331,7 +331,7 @@ class EditController extends AffiliationAbstractController
                  * Update the affiliationFinancial
                  */
                 $affiliationFinancial = $affiliation->getFinancial();
-                if (is_null($affiliationFinancial)) {
+                if (\is_null($affiliationFinancial)) {
                     $affiliationFinancial = new Financial();
                     $affiliationFinancial->setAffiliation($affiliation);
                 }
@@ -348,13 +348,13 @@ class EditController extends AffiliationAbstractController
                 $this->getAffiliationService()->updateEntity($affiliationFinancial);
 
 
-                if (!is_null($affiliation->getFinancial())) {
+                if (!\is_null($affiliation->getFinancial())) {
                     $organisationFinancial = $affiliation->getFinancial()->getOrganisation()->getFinancial();
                 } else {
                     $organisationFinancial = $affiliation->getOrganisation()->getFinancial();
                 }
 
-                if (is_null($organisationFinancial)) {
+                if (\is_null($organisationFinancial)) {
                     $organisationFinancial = new \Organisation\Entity\Financial();
                 }
 
@@ -417,7 +417,7 @@ class EditController extends AffiliationAbstractController
                  * save the financial address
                  */
 
-                if (is_null(
+                if (\is_null(
                     $financialAddress = $this->getContactService()
                         ->getFinancialAddress($affiliationFinancial->getContact())
                 )) {
@@ -476,7 +476,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
@@ -486,18 +486,60 @@ class EditController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            if (empty($form->getData()['cancel'])) {
-                $affiliation->addAssociate($this->getContactService()->findContactById($form->getData()['contact']));
-                $this->getAffiliationService()->updateEntity($affiliation);
+
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'contact']
+                );
             }
 
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(
-                    sprintf(
-                        $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                        $affiliation
-                    )
+            if (empty($data['contact']) && empty($data['email'])) {
+                $this->flashMessenger()->setNamespace('info')
+                    ->addMessage(
+                        sprintf(
+                            $this->translate("txt-no-contact-has-been-added-affiliation-%s"),
+                            $affiliation
+                        )
+                    );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/edit/add-associate',
+                    ['id' => $affiliation->getId()]
                 );
+            }
+
+
+            if (isset($data['addKnownContact']) && !empty($data['contact'])) {
+                $contact = $this->getContactService()->findContactById($data['contact']);
+
+                $this->getAffiliationService()->addAssociate($affiliation, $contact);
+
+                $this->flashMessenger()->setNamespace('success')
+                    ->addMessage(
+                        sprintf(
+                            $this->translate("txt-contact-%s-has-been-added-as-associate-to-affiliation-%s"),
+                            $contact->parseFullName(),
+                            $affiliation
+                        )
+                    );
+            }
+
+            if (isset($data['addEmail']) && !empty($data['email'])) {
+
+                $this->getAffiliationService()->addAssociate($affiliation, null, $data['email']);
+
+                $this->flashMessenger()->setNamespace('success')
+                    ->addMessage(
+                        sprintf(
+                            $this->translate("txt-contact-%s-has-been-added-as-associate-to-affiliation-%s"),
+                            $data['email'],
+                            $affiliation
+                        )
+                    );
+            }
+
 
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
@@ -523,7 +565,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
@@ -592,12 +634,12 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
         $report = $this->getReportService()->findReportById($this->params('report'));
-        if (is_null($report)) {
+        if (\is_null($report)) {
             return $this->notFoundAction();
         }
 
@@ -638,7 +680,7 @@ class EditController extends AffiliationAbstractController
             /**
              * Handle the cancel request
              */
-            if (!is_null($this->getRequest()->getPost()->get('cancel'))) {
+            if (!\is_null($this->getRequest()->getPost()->get('cancel'))) {
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
                     [

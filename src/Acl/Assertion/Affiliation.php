@@ -46,7 +46,7 @@ class Affiliation extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$affiliation instanceof AffiliationEntity && !is_null($id)) {
+        if (!$affiliation instanceof AffiliationEntity && !\is_null($id)) {
             $affiliation = $this->getAffiliationService()->findAffiliationById($id);
         }
 
@@ -76,10 +76,10 @@ class Affiliation extends AssertionAbstract
                 return true;
                 //Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
-            if (!is_null($reportId)) {
+            if (!\is_null($reportId)) {
                 //Find the corresponding report
                 $report = $this->getReportService()->findReportById($reportId);
-                if (is_null($report) || $this->getReportService()->isFinal($report)) {
+                if (\is_null($report) || $this->getReportService()->isFinal($report)) {
                     return false;
                 }
             }
@@ -104,6 +104,7 @@ class Affiliation extends AssertionAbstract
 
             case 'view-admin':
             case 'edit-admin':
+            case 'add-associate-admin':
             case 'merge-admin':
             case 'payment-sheet-admin':
             case 'missing-affiliation-parent':

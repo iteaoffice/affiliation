@@ -39,15 +39,11 @@ class PaymentSheet extends LinkAbstract
         /**
          * We don't need a payment sheet, when we have no versions
          */
-        if (is_null($latestVersion)) {
+        if (\is_null($latestVersion)) {
             return '';
         }
 
-        $contractVersion = $this->getContractService()
-            ->findLatestContractVersionByCountryAndProject(
-                $affiliation->getOrganisation()->getCountry(),
-                $affiliation->getProject()
-            );
+        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
 
         return $this->getRenderer()->render(
             'affiliation/partial/payment-sheet',

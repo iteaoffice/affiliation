@@ -100,7 +100,7 @@ class LoiManagerController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
@@ -188,7 +188,7 @@ class LoiManagerController extends AffiliationAbstractController
     public function viewAction()
     {
         $loi = $this->getLoiService()->findLoiById($this->params('id'));
-        if (is_null($loi)) {
+        if (\is_null($loi)) {
             return $this->notFoundAction();
         }
 
@@ -202,7 +202,7 @@ class LoiManagerController extends AffiliationAbstractController
     {
         $loi = $this->getLoiService()->findLoiById($this->params('id'));
 
-        if (is_null($loi)) {
+        if (\is_null($loi)) {
             return $this->notFoundAction();
         }
 

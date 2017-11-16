@@ -437,6 +437,8 @@
                 <thead>
                 <tr>
                     <th>{{ translate("txt-associate-name") }}</th>
+                    <th>{{ translate("txt-organisation") }}</th>
+                    <th>{{ translate("txt-country") }}</th>
                     <th>{{ translate("txt-roles") }}</th>
                 </tr>
                 </thead>
@@ -445,6 +447,8 @@
                     <tr>
                         <td>{{ contact.displayName }} <a
                                     href="mailto:{{ contact.email }}"><i class="fa fa-envelope-o"></i></a></td>
+                        <td>{{ contact.contactOrganisation.organisation }}</td>
+                        <td>{{ contact.contactOrganisation.organisation.country }}</td>
                         <td>
                             {{ contactsInAffiliation['contactRole'][contact.id]|join(', ') }}
                         </td>
@@ -651,7 +655,7 @@
                                 <td>{{ affiliationInvoice.invoice.invoiceNr }}</td>
                                 <td>{{ affiliationInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
                                 <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}</td>
-                                <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|localizedcurrency("EUR") }}</td>
+                                <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal("EUR") }}</td>
                                 <td>{{ invoiceService.parseStatus(affiliationInvoice.invoice)['name'] }}</td>
                                 <td>{{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
                             </tr>

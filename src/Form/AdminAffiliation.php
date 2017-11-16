@@ -96,7 +96,7 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
             asort($parentOrganisations);
 
             // Only add the parent to the array if there are 1 or more organisations in the parent
-            if (count($parentOrganisations) > 0) {
+            if (\count($parentOrganisations) > 0) {
                 $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()] = [
                     'label' => $parent->getOrganisation()->getOrganisation()
                 ];

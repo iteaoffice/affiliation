@@ -42,8 +42,10 @@
                             data-toggle="tab">{{ translate("txt-description") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#associates" data-toggle="tab">{{ translate("txt-associates") }}</a>
     </li>
-    <li class="nav-item"><a class="nav-link" href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a></li>
-    <li class="nav-item"><a class="nav-link" href="#paymentsheet" data-toggle="tab">{{ translate("txt-payment-sheet") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a>
+    </li>
+    <li class="nav-item"><a class="nav-link" href="#paymentsheet"
+                            data-toggle="tab">{{ translate("txt-payment-sheet") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#invoice" data-toggle="tab">{{ translate("txt-invoices") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#version" data-toggle="tab">{{ translate("txt-version") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#funding" data-toggle="tab">{{ translate("txt-funding") }}</a></li>
@@ -204,6 +206,8 @@
                 <thead>
                 <tr>
                     <th>{{ translate("txt-associate-name") }}</th>
+                    <th>{{ translate("txt-organisation") }}</th>
+                    <th>{{ translate("txt-country") }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -212,6 +216,16 @@
                         <td>
                             {{ associateLink(affiliation,'edit','contact', contact) }}
                             {{ contactLink(contact, 'view-admin','icon') }}</td>
+                        {% if contactService.hasOrganisation(contact) %}
+                            <td>{{ organisationLink(contact.contactOrganisation.organisation,'view-admin') }}
+                            {% if contact.contactOrganisation.organisation != affiliation.organisation %}
+                                <i class="fa fa-exclamation-triangle text-danger" title="{{ translate("txt-associate-is-from-another-organisation") }}"></i>
+                            {% endif %}
+                            </td>
+                            <td>{{ countryLink(contact.contactOrganisation.organisation.country,'view-admin') }}</td>
+                        {% else %}
+                            <td colspan="2"></td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -220,7 +234,7 @@
             {{ ztbalert().info(translate("txt-no-associates-in-this-affiliation"))|raw }}
         {% endif %}
 
-        {{ affiliationLink(affiliation,'add-associate','button') }}
+        {{ affiliationLink(affiliation,'add-associate-admin','button') }}
 
     </div>
     <div class="tab-pane" role="tabpanel" id="financial">
@@ -612,7 +626,7 @@
                         <td>{{ invoiceLink(affilaitionInvoice.invoice,'view','invoice') }}</td>
                         <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
                         <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
-                        <td>{{ invoiceService.parseTotal(affilaitionInvoice.invoice)|localizedcurrency("EUR") }}</td>
+                        <td>{{ invoiceService.parseTotal(affilaitionInvoice.invoice)|currency_decimal("EUR") }}</td>
                         <td>{{ invoiceService.parseStatus(affilaitionInvoice.invoice, true) }}</td>
                         <td>{{ invoiceLink(invoice,'download','icon') }}</td>
                     </tr>

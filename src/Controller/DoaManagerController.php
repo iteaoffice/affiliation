@@ -30,15 +30,8 @@ use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
- * Affiliation controller.
- *
- * @category   Affiliation
- *
- * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright  Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
- * @license    https://itea3.org/license.txt proprietary
- *
- * @link       https://itea3.org
+ * Class DoaManagerController
+ * @package Affiliation\Controller
  */
 class DoaManagerController extends AffiliationAbstractController
 {
@@ -98,7 +91,7 @@ class DoaManagerController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
@@ -206,7 +199,7 @@ class DoaManagerController extends AffiliationAbstractController
     public function viewAction()
     {
         $doa = $this->getDoaService()->findDoaById($this->params('id'));
-        if (is_null($doa)) {
+        if (\is_null($doa)) {
             return $this->notFoundAction();
         }
 
@@ -219,7 +212,7 @@ class DoaManagerController extends AffiliationAbstractController
     public function editAction()
     {
         $doa = $this->getDoaService()->findDoaById($this->params('id'));
-        if (is_null($doa)) {
+        if (\is_null($doa)) {
             return $this->notFoundAction();
         }
 

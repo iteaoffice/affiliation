@@ -51,7 +51,7 @@ abstract class AbstractViewHelper extends AbstractHelper
      */
     public function getRouteMatch(): ?RouteMatch
     {
-        if (is_null($this->routeMatch)) {
+        if (\is_null($this->routeMatch)) {
             $this->routeMatch = $this->getServiceManager()->get('application')->getMvcEvent()->getRouteMatch();
         }
 

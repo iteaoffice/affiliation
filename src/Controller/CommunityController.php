@@ -23,13 +23,16 @@ use Zend\View\Model\ViewModel;
 class CommunityController extends AffiliationAbstractController
 {
     /**
-     * @return array|ViewModel
+     * @return ViewModel
+     * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function affiliationAction()
+    public function affiliationAction(): ViewModel
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 
@@ -79,7 +82,7 @@ class CommunityController extends AffiliationAbstractController
             [
                 'year'               => $year,
                 'period'             => $period,
-                'useContractData'    => !is_null($contract),
+                'useContractData'    => !\is_null($contract),
                 'affiliationService' => $this->getAffiliationService(),
                 'affiliation'        => $affiliation,
 
@@ -89,12 +92,13 @@ class CommunityController extends AffiliationAbstractController
 
     /**
      * @return \Zend\Stdlib\ResponseInterface|ViewModel
+     * @throws \Exception
      */
     public function paymentSheetPdfAction()
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (is_null($affiliation)) {
+        if (\is_null($affiliation)) {
             return $this->notFoundAction();
         }
 

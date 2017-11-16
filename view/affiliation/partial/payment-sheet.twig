@@ -1,5 +1,5 @@
 {% if useContractData %}
-    {{ ztbalert().info(translate('txt-payment-sheet-is-based-on-national-contract-data'))|raw }}
+    {{ ztbalert().info(translate("txt-payment-sheet-is-based-on-national-contract-data-if-available"))|raw }}
 {% endif %}
 
 <table class="table table-striped table-hover table-condensed table-sm">
@@ -37,16 +37,9 @@
         <td>{{ translate("txt-version-date") }}</td>
         <td>{{ version.dateSubmitted|date("d-m-Y") }}</td>
     </tr>
-    </tbody>
-</table>
-
-<table class="table table-striped table-hover table-condensed table-sm">
-    <thead>
     <tr>
         <th colspan="2">{{ translate("txt-project-partner") }}</th>
     </tr>
-    </thead>
-    <tbody>
     <tr>
         <td>{{ translate("txt-organisation") }}</td>
         <td>{{ affiliation.organisation }}</td>
@@ -65,12 +58,12 @@
     </tr>
     <tr>
         <td>{{ translate("txt-total-costs") }}</td>
-        <td>{{ versionContributionInformation.totalCost|localizedcurrency("EUR") }} k&euro;</td>
+        <td>{{ versionContributionInformation.totalCost|currency_decimal("EUR") }} k&euro;</td>
     </tr>
     {% if contractVersion %}
         <tr>
             <td>{{ translate("txt-contract-costs") }}</td>
-            <td>{{ contractService.findTotalCostByAffiliationInVersion(contractVersion, affiliation)|localizedcurrency(contractVersion.contract.currency.iso4217) }}</td>
+            <td>{{ contractService.findTotalCostByAffiliationInVersion(contractVersion, affiliation)|currency_decimal(contractVersion.contract.currency.iso4217) }}</td>
         </tr>
     {% endif %}
     {% if versionContributionInformation.totalEffort > 0 %}
@@ -81,16 +74,9 @@
                 <sup>-1</sup></td>
         </tr>
     {% endif %}
-    </tbody>
-</table>
-
-<table class="table table-striped table-hover table-condensed table-sm">
-    <thead>
     <tr>
         <th colspan="2">{{ translate("txt-technical-contact") }}</th>
     </tr>
-    </thead>
-    <tbody>
     <tr>
         <td>{{ translate("txt-name") }}</td>
         <td>{{ contactService.parseAttention(affiliation.contact) }} {{ affiliation.contact.parseFullName() }}</td>
@@ -99,17 +85,10 @@
         <td>{{ translate("txt-email") }}</td>
         <td>{{ affiliation.contact.email }}</td>
     </tr>
-    </tbody>
-</table>
-
-{% if financialContact %}
-    <table class="table table-striped table-hover table-condensed table-sm">
-        <thead>
+    {% if financialContact %}
         <tr>
             <th colspan="2">{{ translate("txt-financial-contact") }}</th>
         </tr>
-        </thead>
-        <tbody>
         <tr>
             <td>{{ translate("txt-name") }}</td>
             <td>{{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName()|default(translate("txt-unknown")) }}</td>
@@ -146,11 +125,11 @@
                 <td>{{ translate("txt-by-postal-mail") }}</td>
             {% endif %}
         </tr>
-        </tbody>
-    </table>
-{% endif %}
+    {% endif %}
+    </tbody>
+</table>
 
-<h4>{{ translate("txt-contribution-overview") }}</h4>
+<h2>{{ translate("txt-contribution-overview") }}</h2>
 
 <table class="table table-striped table-hover table-condensed table-sm">
     <thead>
@@ -161,7 +140,7 @@
         <th>{{ translate("txt-fee-percentage") }}</th>
         <th>{{ translate("txt-contribution-euro") }}</th>
         <th>{{ translate("txt-due") }}</th>
-        <th>{{ translate("txt-amount-due") }}</th>
+        <th><span class="pull-right">{{ translate("txt-amount-due") }}</span></th>
     </tr>
     </thead>
     <tbody>
@@ -182,26 +161,37 @@
 
                 {% if contractVersion and useContractData %}
 
-
                     {% set currency = 'EUR' %}
                     {% set exchangeRate = 1 %}
                     {% if contractContributionInformation.currency[projectYear] %}
-                        {% set currency = contractContributionInformation.currency[projectYear]['currency'].iso4217 %}
+                        {% set currency = contractContributionInformation.currency[projectYear]['currency'].symbol %}
                         {% set exchangeRate = contractContributionInformation.currency[projectYear]['exchangeRate'].rate %}
                     {% endif %}
 
-                    {% set dueInYear = contractContributionInformation.cost[projectYear] / (100 * exchangeRate) * projectService.findProjectFeeByYear(projectYear).percentage %}
+                    {# when we have no exchange rate, add a message that the exchange rate has been fixed to one#}
+                    {% if not exchangeRate %}
+                        {% set dueInYear = 0 %}
 
-                    <td>{{ contractContributionInformation.cost[projectYear]|localizedcurrency(currency) }}</td>
-                    <td>{{ (contractContributionInformation.cost[projectYear] / exchangeRate)|localizedcurrency('EUR')  }}</td>
-                    <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}
-                            {{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
-                        %
-                    </td>
-                    <td>
-                        {% if affiliationService.isFundedInYear(affiliation, projectYear) %}
-                            {{ dueInYear|localizedcurrency('EUR') }}{% else %}
-                            {{ 0|localizedcurrency('EUR') }}{% endif %}</td>
+                        <td colspan="4">{{ translate("txt-no-exchange-rate-found-for-%s-in-year-%s")|format(currency, projectYear) }}</td>
+                    {% else %}
+
+                        {% set dueInYear = contractContributionInformation.cost[projectYear] / (100 * exchangeRate) * projectService.findProjectFeeByYear(projectYear).percentage %}
+
+                        <td>
+                            <span class="pull-right">{{ contractContributionInformation.cost[projectYear]|currency_decimal(currency) }}</span>
+                        </td>
+                        <td>
+                            <span class="pull-right">{{ (contractContributionInformation.cost[projectYear] / exchangeRate)|currency_decimal('EUR') }}</span>
+                        </td>
+                        <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}
+                                {{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
+                            %
+                        </td>
+                        <td>
+                            {% if affiliationService.isFundedInYear(affiliation, projectYear) %}
+                                {{ dueInYear|currency_decimal('EUR') }}{% else %}
+                                {{ 0|currency_decimal('EUR') }}{% endif %}</td>
+                    {% endif %}
 
                 {% else %}
 
@@ -210,7 +200,9 @@
                     <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
                         %
                     </td>
-                    <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|localizedcurrency('EUR') }}{% else %}{{ 0|localizedcurrency('EUR') }}{% endif %}</td>
+                    <td>
+                        <span class="pull-right">{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal('EUR') }}{% else %}{{ 0|currency_decimal('EUR') }}{% endif %}</span>
+                    </td>
 
                 {% endif %}
 
@@ -220,10 +212,10 @@
                 <td>{{ versionContributionInformation.effort[projectYear]|parse_effort }} {{ translate("txt-py") }}</td>
                 <td>
                     &euro; {% if affiliationService.isFundedInYear(affiliation, year) %}{{ projectService.findProjectFeeByYear(year).contribution|number_format(2) }}{% else %}0{% endif %}</td>
-                <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|localizedcurrency('EUR') }}{% else %}{{ 0|localizedcurrency('EUR') }}{% endif %}</td>
+                <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal('EUR') }}{% else %}{{ 0|currency_decimal('EUR') }}{% endif %}</td>
             {% endif %}
             <td>{{ dueFactor|localizednumber('percent') }}</td>
-            <td>{{ (dueInYear * dueFactor)|localizedcurrency("EUR") }}</td>
+            <td><span class="pull-right">{{ (dueInYear * dueFactor)|currency_decimal("EUR") }}</span></td>
             {% set totalDueBasedOnProjectData = totalDueBasedOnProjectData + dueInYear * dueFactor %}
         </tr>
     {% endfor %}
@@ -233,7 +225,8 @@
         <td colspan="5"></td>
         <th colspan="2" class="text-right"
         >{{ translate("txt-total-contribution-amount-due-upto-year-%s-period-%s")|format(year,period) }}</th>
-        <th style="border-top: 2px solid black;">{{ totalDueBasedOnProjectData|localizedcurrency("EUR") }}</th>
+        <th style="border-top: 2px solid black;"><span
+                    class="pull-right">{{ totalDueBasedOnProjectData|currency_decimal("EUR") }}</span></th>
     </tr>
     </tfoot>
 </table>
@@ -244,7 +237,7 @@
     {% set balance = affiliationService.parseBalance(affiliation, version, year, period, useContractData) %}
     {% set total = affiliationService.parseTotal(affiliation, version, year, period, useContractData) %}
 
-<h4>{{ translate("txt-already-paid-invoices") }}</h4>
+<h2>{{ translate("txt-already-paid-invoices") }}</h2>
 {# paid invoices in the selected period#}
 <table class="table table-striped table-hover table-condensed table-sm">
     <thead>
@@ -254,7 +247,7 @@
         <th>{{ translate("txt-date") }}</th>
         <th>{{ translate("txt-contribution-euro") }}</th>
         <th>{{ translate("txt-paid") }}</th>
-        <th>{{ translate("txt-invoiced-euro") }}</th>
+        <th><span class="pull-right">{{ translate("txt-invoiced-euro") }}</span></th>
     </tr>
     </thead>
     <tbody>
@@ -263,9 +256,11 @@
             <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
             <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
             <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
-            <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|localizedcurrency("EUR") }}</td>
+            <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal("EUR") }}</td>
             <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
-            <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|localizedcurrency("EUR") }}</td>
+            <td>
+                <span class="pull-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal("EUR") }}</span>
+            </td>
         </tr>
     {% else %}
         <tr>
@@ -277,7 +272,7 @@
     <tr>
         <th colspan="3" class="text-right">
             {{ translate("txt-total-contribution-invoiced-upto-year-%s-period-%s")|format(year,period) }}</th>
-        <th style="border-top: 2px solid black;">{{ contributionPaid|localizedcurrency("EUR") }}</th>
+        <th style="border-top: 2px solid black;">{{ contributionPaid|currency_decimal("EUR") }}</th>
         <td colspan="2"></td>
     </tr>
     </tfoot>
@@ -294,84 +289,97 @@
     <tbody>
     <tr>
         <td class="text-right">{{ translate("txt-total-contribution-amount-due-upto-year-%s-period-%s")|format(year,period) }}</td>
-        <td>{{ contributionDue|localizedcurrency("EUR") }}</td>
+        <td><span class="pull-right">{{ contributionDue|currency_decimal("EUR") }}</span></td>
     </tr>
     <tr>
         <td class="text-right">
             {{ translate("txt-total-contribution-invoiced-upto-year-%s-period-%s")|format(year,period) }}</td>
-        <td>{{ contributionPaid|localizedcurrency("EUR") }}</td>
+        <td><span class="pull-right">{{ contributionPaid|currency_decimal("EUR") }}</span></td>
     </tr>
     </tbody>
     <tfoot>
     <tr>
         <th class="text-right">{{ translate("txt-correction") }}</th>
-        <th style="border-top: 2px solid black;">{{ balance|localizedcurrency("EUR") }}</th>
+        <th style="border-top: 2px solid black;"><span class="pull-right">{{ balance|currency_decimal("EUR") }}</span>
+        </th>
     </tr>
     </tfoot>
 </table>
 
 {% set contribution = affiliationService.parseContribution(affiliation, version, year, period, useContractData) %}
 
-<h4>{{ translate("txt-upcoming-invoice-for-year-%s-period-%s")|format(year,period) }}</h4>
+<h2>{{ translate("txt-upcoming-invoice-for-year-%s-period-%s")|format(year,period) }}</h2>
 <table class="table table-hover table-striped table-condensed table-sm">
     <thead>
     <tr>
         <th>{{ translate("txt-period") }}</th>
         <th>{{ translate("txt-information") }}</th>
-        <th>{{ translate("txt-amount") }}</th>
+        <th><span class="pull-right">{{ translate("txt-amount") }}</span></th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td>{{ year }}-{{ period }}</td>
         <td>{{ translate("txt-%s-contribution-for-%s")|format(affiliationService.parseContributionFactor(affiliation, year, period)|localizednumber('percent'),year) }}</td>
-        <td>{{ contribution|localizedcurrency("EUR") }}</td>
+        <td><span class="pull-right">{{ contribution|currency_decimal("EUR") }}</span></td>
+        <td></td>
     </tr>
 
     <tr>
         <td></td>
         <td>{{ translate("txt-correction") }}</td>
-        <td>{{ balance|localizedcurrency("EUR") }} {% if balance < 0 %}{{ translate("txt-credit") }}{% endif %}</td>
+        <td><span class="pull-right">{{ balance|currency_decimal("EUR") }}</span></td>
+        <td>{% if balance < -0.1 %}{{ translate("txt-credit") }}{% endif %}</td>
     </tr>
     </tbody>
     <tfoot>
     <tr>
         <td></td>
         <th class="text-right">{{ translate("txt-total") }}</th>
-        <th style="border-top: 2px solid black;">{{ (total)|localizedcurrency("EUR") }} {% if  total < 0 %}{{ translate("txt-credit") }}{% endif %}</th>
+        <th style="border-top: 2px solid black;"><span class="pull-right">{{ (total)|currency_decimal("EUR") }}</span>
+        </th>
+        <th>{% if  total < -0.1 %}{{ translate("txt-credit") }}{% endif %}</th>
     </tr>
     </tfoot>
 </table>
 
-<h4>{{ translate("txt-already-sent-invoices-after-invoice-for-year-%s-period-%s")|format(year,period) }}</h4>
+{% set hasAlreadySentInvoices = false %}
+{% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period) %}
+    {% set hasAlreadySentInvoices = true %}
+{% endfor %}
 
-<table class="table table-hover table-striped table-condensed table-sm">
-    <thead>
-    <tr>
-        <th>{{ translate("txt-invoice-number") }}</th>
-        <th>{{ translate("txt-period") }}</th>
-        <th>{{ translate("txt-date") }}</th>
-        <th>{{ translate("txt-amount-excluding-vat") }}</th>
-        <th>{{ translate("txt-amount") }}</th>
-        <th>{{ translate("txt-paid") }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period) %}
-        {% if invoiceService.isSent(affiliationInvoice.invoice) %}
-            <tr>
-                <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
-                <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
-                <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
-                <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|localizedcurrency("EUR") }}</td>
-                <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|localizedcurrency("EUR") }}</td>
-                <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
-            </tr>
-        {% endif %}
-    {% else %}
+{% if hasAlreadySentInvoices %}
+    <h2>{{ translate("txt-already-sent-invoices-after-invoice-for-year-%s-period-%s")|format(year,period) }}</h2>
+
+    <table class="table table-hover table-striped table-condensed table-sm">
+        <thead>
         <tr>
-            <td colspan="6">{{ translate("txt-no-invoices-found") }}</td>
+            <th>{{ translate("txt-invoice-number") }}</th>
+            <th>{{ translate("txt-period") }}</th>
+            <th>{{ translate("txt-date") }}</th>
+            <th>{{ translate("txt-amount-excluding-vat") }}</th>
+            <th>{{ translate("txt-amount") }}</th>
+            <th>{{ translate("txt-paid") }}</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period) %}
+            {% if invoiceService.isSent(affiliationInvoice.invoice) %}
+                <tr>
+                    <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
+                    <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
+                    <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
+                    <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal("EUR") }}</td>
+                    <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal("EUR") }}</td>
+                    <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
+                </tr>
+            {% endif %}
+        {% else %}
+            <tr>
+                <td colspan="6">{{ translate("txt-no-invoices-found") }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
