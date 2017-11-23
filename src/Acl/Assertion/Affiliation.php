@@ -96,6 +96,7 @@ class Affiliation extends AssertionAbstract
             case 'payment-sheet':
             case 'payment-sheet-contract':
             case 'payment-sheet-pdf':
+            case 'payment-sheet-pdf-contract':
                 if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $affiliation)) {
                     return true;
                 }

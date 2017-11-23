@@ -52,8 +52,11 @@ class AddAssociate extends Form implements InputFilterProviderInterface
         foreach ($affiliation->getOrganisation()->getContactOrganisation() as $contactOrganisation) {
             $email = $contactOrganisation->getContact()->getEmail();
             $validator = new EmailAddress();
-            if ($validator->isValid($email) && !\in_array($validator->hostname,
-                    ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'], true)) {
+            if ($validator->isValid($email) && !\in_array(
+                $validator->hostname,
+                ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],
+                true
+            )) {
                 $this->extensions[$validator->hostname] = $validator->hostname;
             }
         }
@@ -67,7 +70,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'options'    => [
                     'value_options' => $contacts,
                     'allow_empty'   => true,
-                    'empty_option'  => '--' . _("txt-add-email-via-known-contacts-in-organisation"),
+                    'empty_option'  => '-- ' . _("Select here the known contact"),
                     'label'         => _("txt-add-associate-by-known-contact-label"),
                     'help-block'    => _("txt-add-associate-by-known-contact-help-block"),
                 ],
@@ -82,9 +85,11 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'type'       => Email::class,
                 'name'       => 'email',
                 'options'    => [
-                    'label'      => _("txt-email-address"),
-                    'help-block' => sprintf(_("txt-add-associate-by-email-address-contact-help-block-extensions-%s"),
-                        implode(', ', $this->extensions)),
+                    'label'      => _("txt-company-email-address"),
+                    'help-block' => sprintf(
+                        _("Here you can add an associate via the company email address. The email address should have the following extensions: %s"),
+                        implode(', ', $this->extensions)
+                    ),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -157,8 +162,10 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                     new Callback(
                         [
                             'messages' => [
-                                Callback::INVALID_VALUE => 'The given email address (%value%) should have one of the domains ' . implode(', ',
-                                        $this->extensions),
+                                Callback::INVALID_VALUE => 'The given email address (%value%) should have one of the domains: ' . implode(
+                                    ', ',
+                                    $this->extensions
+                                ),
                             ],
                             'callback' => function ($value) {
                                 $validator = new EmailAddress();

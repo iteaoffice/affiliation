@@ -36,7 +36,7 @@ class FormService extends ServiceAbstract
      *
      * @return Form
      */
-    public function prepare($className, EntityAbstract $entity = null, $data = [])
+    public function prepare($className, EntityAbstract $entity = null, $data = []): Form
     {
         $form = $this->getForm($className, $entity, true);
         $form->setData($data);
@@ -46,10 +46,11 @@ class FormService extends ServiceAbstract
 
     /**
      * @param null $className
-     * @param EntityAbstract $entity
+     * @param EntityAbstract|null $entity
      * @param bool $bind
-     *
      * @return Form
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getForm($className = null, EntityAbstract $entity = null, bool $bind = true): Form
     {

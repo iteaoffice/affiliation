@@ -337,12 +337,12 @@ class AffiliationService extends ServiceAbstract
         bool $useContractData = true
     ): float {
         return $this->parseContribution($affiliation, $version, $year, $period, $useContractData) + $this->parseBalance(
-                $affiliation,
-                $version,
-                $year,
-                $period,
-                $useContractData
-            );
+            $affiliation,
+            $version,
+            $year,
+            $period,
+            $useContractData
+        );
     }
 
     /**
@@ -363,20 +363,13 @@ class AffiliationService extends ServiceAbstract
         bool $useContractData = true
     ): float {
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
-        $invoiceMethod = $this->parseInvoiceMethod($version);
-
-        //The percentage method depends on the fact if we have a contract or not.
-        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
-
-        if ($useContractData && !\is_null($contractVersion)) {
-            $invoiceMethod = Method::METHOD_PERCENTAGE_CONTRACT;
-        }
+        $invoiceMethod = $this->parseInvoiceMethod($affiliation, $useContractData);
 
         switch ($invoiceMethod) {
             case Method::METHOD_FUNDING:
                 return $this->parseContributionBase($affiliation, $version, $year, false)
                     * $this->parseContributionFee(
-                        $version,
+                        $affiliation,
                         $year,
                         $affiliation->getParentOrganisation()->getParent()
                     );
@@ -384,23 +377,23 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_CONTRIBUTION:
             case Method::METHOD_PERCENTAGE:
                 if (\is_null($period)) {
-                    return $this->parseContributionFee($version, $year);
+                    return $this->parseContributionFee($affiliation, $year);
                 }
 
                 return $this->parseContributionBase($affiliation, $version, $year, false)
                     * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
-                        $version,
+                        $affiliation,
                         $year
                     );
 
             case Method::METHOD_PERCENTAGE_CONTRACT:
                 if (\is_null($period)) {
-                    return $this->parseContributionFee($version, $year);
+                    return $this->parseContributionFee($affiliation, $year);
                 }
 
                 return $this->parseContributionBase($affiliation, $version, $year, true)
                     * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
-                        $version,
+                        $affiliation,
                         $year
                     );
         }
@@ -410,24 +403,37 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Version $version
+     * This function find the invoice method, but does a downgrade to percentage when there is no contract
      *
+     * @param Affiliation $affiliation
+     * @param bool $useContractData
      * @return int
      */
-    public function parseInvoiceMethod(Version $version): int
+    public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
     {
-        return (int)$this->getInvoiceService()->findInvoiceMethod($version->getProject()->getCall()->getProgram())
-            ->getId();
+        $invoiceMethod = (int) $this->getInvoiceService()->findInvoiceMethod(
+            $affiliation->getProject()->getCall()->getProgram()
+        )->getId();
+
+        //The percentage method depends on the fact if we have a contract or not.
+        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+
+        //Force the invoiceMethod back to _percentage_ when we don't want to use contract data
+        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (\is_null($contractVersion) || !$useContractData)) {
+            $invoiceMethod = Method::METHOD_PERCENTAGE;
+        }
+
+        return $invoiceMethod;
     }
 
     /**
-     * This function counts the effort or costs per affiliaton and returns the total per year. We pick the total amount out per given ear
-     *
      * @param Affiliation $affiliation
      * @param Version $version
      * @param int $year
      * @param bool $useContractData
-     * @return float|int
+     * @return float
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function parseContributionBase(
         Affiliation $affiliation,
@@ -438,14 +444,7 @@ class AffiliationService extends ServiceAbstract
         $base = 0;
 
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
-        $invoiceMethod = $this->parseInvoiceMethod($version);
-
-        //The percentage method depends on the fact if we have a contract or not.
-        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
-
-        if ($useContractData && !\is_null($contractVersion)) {
-            $invoiceMethod = Method::METHOD_PERCENTAGE_CONTRACT;
-        }
+        $invoiceMethod = $this->parseInvoiceMethod($affiliation, $useContractData);
 
         /**
          * The base (the sum of the costs or effort in the version depends on the invoiceMethod (percentage === 'costs', contribution === 'effort')
@@ -461,6 +460,9 @@ class AffiliationService extends ServiceAbstract
 
                 break;
             case Method::METHOD_PERCENTAGE_CONTRACT:
+                //The percentage method depends on the fact if we have a contract or not.
+                $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+
                 $costsPerYear
                     = $this->getContractService()
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $contractVersion, $version);
@@ -498,14 +500,14 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Version $version
-     * @param              $year
+     * @param Affiliation $affiliation
+     * @param $year
      * @param OParent|null $parent
-     *
      * @return float|int|string
-     * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function parseContributionFee(Version $version, $year, OParent $parent = null)
+    public function parseContributionFee(Affiliation $affiliation, $year, OParent $parent = null)
     {
         //Cast to int as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
@@ -515,8 +517,9 @@ class AffiliationService extends ServiceAbstract
          */
         $fee = $this->getProjectService()->findProjectFeeByYear($year);
 
-        switch ($this->parseInvoiceMethod($version)) {
+        switch ($this->parseInvoiceMethod($affiliation)) {
             case Method::METHOD_PERCENTAGE:
+            case Method::METHOD_PERCENTAGE_CONTRACT:
                 return $fee->getPercentage() / 100;
             case Method::METHOD_CONTRIBUTION:
                 return $fee->getContribution();
@@ -527,9 +530,9 @@ class AffiliationService extends ServiceAbstract
 
                 //The payment factor for funding is the factor divided by 3 in three years
                 return ($this->getParentService()->parseInvoiceFactor(
-                            $parent,
-                            $year
-                        ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
+                    $parent,
+                    $year
+                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
             default:
                 throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
         }
@@ -615,12 +618,12 @@ class AffiliationService extends ServiceAbstract
         bool $useContractData = true
     ): float {
         return $this->parseContributionDue(
-                $affiliation,
-                $version,
-                $year,
-                $period,
-                $useContractData
-            ) - $this->parseContributionPaid($affiliation, $year, $period);
+            $affiliation,
+            $version,
+            $year,
+            $period,
+            $useContractData
+        ) - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
     /**
@@ -630,7 +633,8 @@ class AffiliationService extends ServiceAbstract
      * @param int|null $period
      * @param bool $useContractData
      * @return float
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function parseContributionDue(
         Affiliation $affiliation,
@@ -642,14 +646,8 @@ class AffiliationService extends ServiceAbstract
         $contributionDue = 0;
 
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
-        $invoiceMethod = $this->parseInvoiceMethod($version);
+        $invoiceMethod = $this->parseInvoiceMethod($affiliation, $useContractData);
 
-        //The percentage method depends on the fact if we have a contract or not.
-        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
-
-        if ($useContractData && !\is_null($contractVersion)) {
-            $invoiceMethod = Method::METHOD_PERCENTAGE_CONTRACT;
-        }
 
         switch ($invoiceMethod) {
             case Method::METHOD_PERCENTAGE:
@@ -672,6 +670,9 @@ class AffiliationService extends ServiceAbstract
 
                 break;
             case Method::METHOD_PERCENTAGE_CONTRACT:
+                //The percentage method depends on the fact if we have a contract or not.
+                $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+
                 //We will use the data from the version.
                 $costsPerYear = $this->getContractService()->findTotalCostVersionByAffiliationAndVersionPerYear(
                     $affiliation,
@@ -691,7 +692,7 @@ class AffiliationService extends ServiceAbstract
                         );
 
                         if (array_key_exists($costsYear, $currency)) {
-                            $exchangeRate = !isset($currency[$costsYear]['exchangeRate']) ? 10000000 : $currency[$costsYear]['exchangeRate']->getRate();
+                            $exchangeRate = !isset($currency[$costsYear]['exchangeRate']) ? PHP_INT_MAX : $currency[$costsYear]['exchangeRate']->getRate();
                         }
                     }
 
@@ -736,11 +737,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param             $projectYear
+     * @param $projectYear
      * @param int $year
      * @param int|null $period
-     *
-     * @return int
+     * @return float
      */
     public function parseContributionFactorDue(
         Affiliation $affiliation,
@@ -748,7 +748,7 @@ class AffiliationService extends ServiceAbstract
         int $year,
         int $period = null
     ): float {
-        //Cast to ints as some values can originate form templates (== twig > might be string)
+        //Cast to int as some values can originate form templates (== twig > might be string)
         switch (true) {
             case !$this->isFundedInYear($affiliation, $projectYear):
                 return (float)0;
@@ -912,10 +912,15 @@ class AffiliationService extends ServiceAbstract
             //If we don't find the contact by email, we will create it.
             if (\is_null($contact)) {
                 $hasContact = false;
-                $contact = $this->getContactService()->createContact($email,
-                    sprintf("Created via invitation for %s in %s", $affiliation->getOrganisation(),
-                        $affiliation->getProject()),
-                    $email);
+                $contact = $this->getContactService()->createContact(
+                    $email,
+                    sprintf(
+                        "Created via invitation for %s in %s",
+                        $affiliation->getOrganisation(),
+                        $affiliation->getProject()
+                    ),
+                    $email
+                );
             }
 
             //Check if the contact has already an organisation
@@ -925,8 +930,11 @@ class AffiliationService extends ServiceAbstract
                 $contactOrganiation->setOrganisation($affiliation->getOrganisation());
                 $this->getContactService()->updateEntity($contactOrganiation);
 
-                $this->getContactService()->addNoteToContact('Set organisation to ' . $affiliation->getOrganisation(),
-                    'Account upgrade via associate', $contact);
+                $this->getContactService()->addNoteToContact(
+                    'Set organisation to ' . $affiliation->getOrganisation(),
+                    'Account upgrade via associate',
+                    $contact
+                );
             }
         }
 
@@ -952,14 +960,21 @@ class AffiliationService extends ServiceAbstract
         $targetProfile = $this->getDeeplinkService()->createTargetFromRoute('community/contact/profile/edit');
         $deeplinkProfile = $this->getDeeplinkService()->createDeeplink($targetProfile, $contact);
         $targetPartner = $this->getDeeplinkService()->createTargetFromRoute('community/affiliation/affiliation');
-        $deeplinkPartner = $this->getDeeplinkService()->createDeeplink($targetPartner, $contact, null,
-            $affiliation->getId());
+        $deeplinkPartner = $this->getDeeplinkService()->createDeeplink(
+            $targetPartner,
+            $contact,
+            null,
+            $affiliation->getId()
+        );
 
         $email->setEditProfileUrl($deeplinkLink($deeplinkProfile, 'view', 'link'));
         $email->setPartnerPageUrl($deeplinkLink($deeplinkPartner, 'view', 'link'));
 
         $email->setProject($affiliation->getProject()->parseFullName());
-        $email->setOrganisation($this->getOrganisationService()->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation()));
+        $email->setOrganisation($this->getOrganisationService()->parseOrganisationWithBranch(
+            $affiliation->getBranch(),
+            $affiliation->getOrganisation()
+        ));
         $email->setHasContact($hasContact);
         $email->setTechnicalContact($affiliation->getContact()->parseFullName());
         $email->setTechnicalContactOrganisation($this->getContactService()->parseOrganisation($affiliation->getContact()));
@@ -968,7 +983,6 @@ class AffiliationService extends ServiceAbstract
         $this->getEmailService()->send();
 
         return $contact;
-
     }
 
     /**
@@ -1341,10 +1355,10 @@ class AffiliationService extends ServiceAbstract
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch(
-                $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                     ->getBranch(),
-                $contact->getContactOrganisation()->getOrganisation()
-            );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -1358,10 +1372,10 @@ class AffiliationService extends ServiceAbstract
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                        $contact->getContactOrganisation()
                         ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                        $contact->getContactOrganisation()->getOrganisation()
+                    );
             }
             /**
              * Go over the clusters

@@ -496,8 +496,10 @@ class AffiliationManagerController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $data = array_merge(['affiliation' => $affiliation->getId(), 'contact' => $contact->getId()],
-            $request->getPost()->toArray());
+        $data = array_merge(
+            ['affiliation' => $affiliation->getId(), 'contact' => $contact->getId()],
+            $request->getPost()->toArray()
+        );
 
         $form = new EditAssociate($affiliation, $this->getContactService());
         $form->get('contact')->injectContact($contact);

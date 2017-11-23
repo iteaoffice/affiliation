@@ -38,7 +38,7 @@ class DoaManagerController extends AffiliationAbstractController
     /**
      * @return ViewModel
      */
-    public function listAction()
+    public function listAction(): ViewModel
     {
         $doa = $this->getDoaService()->findNotApprovedDoa();
 
@@ -56,7 +56,7 @@ class DoaManagerController extends AffiliationAbstractController
     /**
      * @return ViewModel
      */
-    public function approvalAction()
+    public function approvalAction(): ViewModel
     {
         $doa = $this->getDoaService()->findNotApprovedDoa();
         $form = new DoaApproval($doa, $this->getContactService());
@@ -73,7 +73,7 @@ class DoaManagerController extends AffiliationAbstractController
     /**
      * @return ViewModel
      */
-    public function missingAction()
+    public function missingAction(): ViewModel
     {
         $affiliation = $this->getAffiliationService()->findAffiliationWithMissingDoa();
 
@@ -179,12 +179,9 @@ class DoaManagerController extends AffiliationAbstractController
     /**
      * @return ViewModel
      */
-    public function remindersAction()
+    public function remindersAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById(
-            $this->getEvent()->getRouteMatch()
-                ->getParam('affiliationId')
-        );
+        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
         return new ViewModel(
             [
@@ -194,9 +191,9 @@ class DoaManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|ViewModel
+     * @return ViewModel
      */
-    public function viewAction()
+    public function viewAction(): ViewModel
     {
         $doa = $this->getDoaService()->findDoaById($this->params('id'));
         if (\is_null($doa)) {
@@ -207,7 +204,9 @@ class DoaManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|\Zend\Http\Response|ViewModel
+     * @return \Zend\Http\Response|ViewModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function editAction()
     {
@@ -309,11 +308,11 @@ class DoaManagerController extends AffiliationAbstractController
     }
 
     /**
-     * Dedicated action to approve DOAs via an AJAX call.
-     *
      * @return JsonModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function approveAction()
+    public function approveAction(): JsonModel
     {
         $doa = $this->params()->fromPost('doa');
         $contact = $this->params()->fromPost('contact');
@@ -328,7 +327,7 @@ class DoaManagerController extends AffiliationAbstractController
             );
         }
 
-        if (!\DateTime::createFromFormat('Y-h-d', $dateSigned)) {
+        if (!\DateTime::createFromFormat('Y-m-d', $dateSigned)) {
             return new JsonModel(
                 [
                     'result' => 'error',
@@ -342,7 +341,7 @@ class DoaManagerController extends AffiliationAbstractController
          */
         $doa = $this->getAffiliationService()->findEntityById(Doa::class, $doa);
         $doa->setContact($this->getContactService()->findContactById($contact));
-        $doa->setDateSigned(\DateTime::createFromFormat('Y-h-d', $dateSigned));
+        $doa->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
         $doa->setDateApproved(new \DateTime());
         $this->getDoaService()->updateEntity($doa);
 

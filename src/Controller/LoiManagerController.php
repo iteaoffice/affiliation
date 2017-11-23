@@ -301,9 +301,9 @@ class LoiManagerController extends AffiliationAbstractController
 
 
     /**
-     * Dedicated action to approve LOIs via an AJAX call.
-     *
-     * @return JsonModel
+     * @return ViewModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function approveAction(): ViewModel
     {
@@ -320,7 +320,7 @@ class LoiManagerController extends AffiliationAbstractController
             );
         }
 
-        if (!\DateTime::createFromFormat('Y-h-d', $dateSigned)) {
+        if (!\DateTime::createFromFormat('Y-m-d', $dateSigned)) {
             return new JsonModel(
                 [
                     'result' => 'error',
@@ -335,7 +335,7 @@ class LoiManagerController extends AffiliationAbstractController
         $loi = $this->getAffiliationService()->findEntityById(Loi::class, $loi);
         $loi->setContact($this->getContactService()->findContactById($contact));
         $loi->setApprover($this->zfcUserAuthentication()->getIdentity());
-        $loi->setDateSigned(\DateTime::createFromFormat('Y-h-d', $dateSigned));
+        $loi->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
         $loi->setDateApproved(new \DateTime());
         $this->getLoiService()->updateEntity($loi);
 

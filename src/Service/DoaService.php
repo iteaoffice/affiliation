@@ -17,13 +17,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Organisation\Entity\Organisation;
 
 /**
- * DoaService.
- *
- * this is a generic wrapper service for all the other services
- *
- * First parameter of all methods (lowercase, underscore_separated)
- * will be used to fetch the correct model service, one exception is the 'linkModel'
- * method.
+ * Class DoaService
+ * @package Affiliation\Service
  */
 class DoaService extends ServiceAbstract
 {
@@ -32,27 +27,24 @@ class DoaService extends ServiceAbstract
      *
      * @return null|Doa
      */
-    public function findDoaById($id)
+    public function findDoaById($id): ?Doa
     {
         return $this->getEntityManager()->getRepository(Doa::class)->find($id);
     }
 
     /**
-     * Get a list of not approved doas.
-     *
-     * @return Doa[]|ArrayCollection
+     * @return ArrayCollection
      */
-    public function findNotApprovedDoa()
+    public function findNotApprovedDoa(): ArrayCollection
     {
         return new ArrayCollection($this->getEntityManager()->getRepository(Doa::class)->findNotApprovedDoa());
     }
 
     /**
-     * Get a list DOA's by organisation
-     *
-     * @return Doa[]
+     * @param Organisation $organisation
+     * @return array
      */
-    public function findDoaByOrganisation(Organisation $organisation)
+    public function findDoaByOrganisation(Organisation $organisation): array
     {
         return $this->getEntityManager()->getRepository(Doa::class)->findDoaByOrganisation($organisation);
     }

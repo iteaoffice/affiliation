@@ -47,7 +47,7 @@ class EditAssociate extends Form implements InputFilterProviderInterface
             );
         }
 
-        natcasesort ($affiliations);
+        natcasesort($affiliations);
 
         $contacts = [];
         foreach ($contactService->findContactsInOrganisation($affiliation->getOrganisation()) as $contact) {

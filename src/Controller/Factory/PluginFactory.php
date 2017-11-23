@@ -9,8 +9,6 @@
  */
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Affiliation\Controller\Factory;
 
 use Admin\Service\AdminService;
@@ -24,6 +22,7 @@ use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\Http\Request;
@@ -87,6 +86,10 @@ final class PluginFactory implements FactoryInterface
         /** @var VersionService $versionService */
         $versionService = $container->get(VersionService::class);
         $plugin->setVersionService($versionService);
+        
+        /** @var ContractService $contractService */
+        $contractService = $container->get(ContractService::class);
+        $plugin->setContractService($contractService);
 
         /** @var InvoiceService $invoiceService */
         $invoiceService = $container->get(InvoiceService::class);

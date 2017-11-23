@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Repository;
 
-use Affiliation\Entity\Doa as DoaEntity;
+use Affiliation\Entity;
 use Doctrine\ORM\EntityRepository;
 use Organisation\Entity\Organisation;
 
@@ -22,18 +22,18 @@ use Organisation\Entity\Organisation;
 class Doa extends EntityRepository
 {
     /**
-     * @return DoaEntity[]
+     * @return Entity\Doa[]
      */
-    public function findNotApprovedDoa()
+    public function findNotApprovedDoa(): array
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('d');
-        $qb->from('Affiliation\Entity\Doa', 'd');
-        $qb->join('d.affiliation', 'a');
-        $qb->andWhere($qb->expr()->isNull('d.dateApproved'));
-        $qb->andWhere($qb->expr()->isNull('a.dateEnd'));
+        $qb->select('affiliation_entity_doa');
+        $qb->from(Entity\Doa::class, 'affiliation_entity_doa');
+        $qb->join('affiliation_entity_doa.affiliation', 'affiliation_entity_affiliation');
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_doa.dateApproved'));
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
 
-        $qb->addOrderBy('d.dateCreated', 'ASC');
+        $qb->addOrderBy('affiliation_entity_doa.dateCreated', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -41,19 +41,20 @@ class Doa extends EntityRepository
     /**
      * @param  Organisation $organisation
      *
-     * @return DoaEntity[]
+     * @return Entity\Doa[]
+     *
      */
-    public function findDoaByOrganisation(Organisation $organisation)
+    public function findDoaByOrganisation(Organisation $organisation): array
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('d');
-        $qb->from('Affiliation\Entity\Doa', 'd');
-        $qb->join('d.affiliation', 'a');
+        $qb->select('affiliation_entity_doa');
+        $qb->from(Entity\Doa::class, 'affiliation_entity_doa');
+        $qb->join('affiliation_entity_doa.affiliation', 'affiliation_entity_affiliation');
 
-        $qb->andWhere('a.organisation = :organisation');
+        $qb->andWhere('affiliation_entity_affiliation.organisation = :organisation');
         $qb->setParameter('organisation', $organisation);
 
-        $qb->addOrderBy('d.dateCreated', 'ASC');
+        $qb->addOrderBy('affiliation_entity_doa.dateCreated', 'ASC');
 
         return $qb->getQuery()->getResult();
     }

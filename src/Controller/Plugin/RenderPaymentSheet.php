@@ -14,6 +14,7 @@ namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice as AffiliationInvoice;
+use General\Entity\Currency;
 use Invoice\Entity\Method;
 use Organisation\Entity\Financial;
 
@@ -24,14 +25,21 @@ class RenderPaymentSheet extends AbstractPlugin
 {
     /**
      * @param Affiliation $affiliation
-     * @param             $year
-     * @param             $period
-     *
+     * @param int $year
+     * @param int $period
+     * @param bool $useContractData
      * @return AffiliationPdf
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function render(Affiliation $affiliation, $year, $period)
-    {
+    public function render(
+        Affiliation $affiliation,
+        int $year,
+        int $period,
+        bool $useContractData = true
+    ): AffiliationPdf {
         $project = $affiliation->getProject();
         $contact = $affiliation->getContact();
         $latestVersion = $this->getProjectService()->getLatestProjectVersion($project);
@@ -42,9 +50,20 @@ class RenderPaymentSheet extends AbstractPlugin
         $versionContributionInformation = $this->getVersionService()
             ->getProjectVersionContributionInformation($affiliation, $latestVersion);
 
-        $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod(
-            $affiliation->getProject()->getCall()
-                ->getProgram()
+        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+
+        $contractContributionInformation = null;
+        if (null !== $contractVersion) {
+            $contractContributionInformation = $this->getContractService()->getContractVersionContributionInformation(
+                $affiliation,
+                $contractVersion,
+                $latestVersion
+            );
+        }
+
+        $invoiceMethod = $this->getAffiliationService()->parseInvoiceMethod(
+            $affiliation,
+            $useContractData
         );
 
         /** @var \TCPDF $pdf */
@@ -292,9 +311,10 @@ class RenderPaymentSheet extends AbstractPlugin
         //Funding information
         $header = [
             $this->translate("txt-period"),
-            $this->translate("txt-funding-status"),
+            $this->translate("txt-funding"),
             $this->translate("txt-costs"),
-            $this->translate("txt-fee-percentage"),
+            $this->translate("txt-costs-(euro)"),
+            $this->translate("txt-fee"),
             $this->translate("txt-contribution"),
             $this->translate("txt-due"),
             $this->translate("txt-amount-due"),
@@ -318,47 +338,82 @@ class RenderPaymentSheet extends AbstractPlugin
                 $yearData[] = $this->getAffiliationService()->getFundingInYear($affiliation, $projectYear)->getStatus()
                     ->getStatusFunding();
             } else {
-                $yearData[] = "-";
+                $yearData[] = '-';
             }
 
-            if ($invoiceMethod->getId() === Method::METHOD_PERCENTAGE) {
-                if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
-                    $dueInYear = $versionContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()
-                            ->findProjectFeeByYear($projectYear)
-                            ->getPercentage();
-                    $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
-                } else {
-                    $dueInYear = 0;
-                    $yearData[] = $this->parseCost(0);
-                }
+            $dueInYear = 0;
 
-                if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
-                    $yearData[] = $this->parsePercent(
-                        $this->getProjectService()->findProjectFeeByYear($projectYear)
-                            ->getPercentage()
-                    );
-                } else {
-                    $yearData[] = $this->parsePercent(0);
-                }
-            } else {
-                if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
-                    $dueInYear = $versionContributionInformation->effort[$projectYear] * $this->getProjectService()
-                            ->findProjectFeeByYear($projectYear)
-                            ->getContribution();
-                    $yearData[] = $this->parseEffort($versionContributionInformation->effort[$projectYear]);
-                } else {
-                    $dueInYear = 0;
-                    $yearData[] = 0;
-                }
+            switch ($invoiceMethod) {
+                case Method::METHOD_PERCENTAGE:
+                    if (\array_key_exists($projectYear, $versionContributionInformation->cost)) {
+                        $dueInYear = $versionContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()
+                                ->findProjectFeeByYear($projectYear)
+                                ->getPercentage();
+                        $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
+                        $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
+                    } else {
+                        $yearData[] = $this->parseCost(0);
+                        $yearData[] = $this->parseCost(0);
+                    }
 
-                if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
-                    $yearData[] = $this->parseCost(
-                        $this->getProjectService()->findProjectFeeByYear($projectYear)
-                            ->getContribution()
-                    );
-                } else {
-                    $yearData[] = $this->parseCost(0);
-                }
+                    if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
+                        $yearData[] = $this->parsePercent(
+                            $this->getProjectService()->findProjectFeeByYear($projectYear)
+                                ->getPercentage()
+                        );
+                    } else {
+                        $yearData[] = $this->parsePercent(0);
+                    }
+
+                    break;
+
+                case Method::METHOD_PERCENTAGE_CONTRACT:
+                    $currency = null;
+                    $exchangeRate = 1;
+
+                    if (\array_key_exists($projectYear, $contractContributionInformation->currency)) {
+                        $currency = $contractContributionInformation->currency[$projectYear]['currency'];
+                        $exchangeRate = $contractContributionInformation->currency[$projectYear]['exchangeRate']->getRate();
+                    }
+
+                    // when we have no exchange rate, add a message that the exchange rate has been fixed to one
+                    if (!\is_null($exchangeRate)) {
+                        $dueInYear = $contractContributionInformation->cost[$projectYear] / (100 * $exchangeRate) * $this->getProjectService()->findProjectFeeByYear($projectYear)->getPercentage();
+
+                        $yearData[] = $this->parseCost($contractContributionInformation->cost[$projectYear], $currency);
+                        $yearData[] = $this->parseCost($contractContributionInformation->cost[$projectYear] / $exchangeRate);
+
+                        if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
+                            $yearData[] = $this->parsePercent(
+                                $this->getProjectService()->findProjectFeeByYear($projectYear)
+                                    ->getPercentage()
+                            );
+                        } else {
+                            $yearData[] = $this->parsePercent(0);
+                        }
+                    }
+
+                    break;
+
+                case Method::METHOD_CONTRIBUTION:
+                    if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
+                        $dueInYear = $versionContributionInformation->effort[$projectYear] * $this->getProjectService()
+                                ->findProjectFeeByYear($projectYear)
+                                ->getContribution();
+                        $yearData[] = $this->parseEffort($versionContributionInformation->effort[$projectYear]);
+                    } else {
+                        $yearData[] = 0;
+                    }
+
+                    if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
+                        $yearData[] = $this->parseCost(
+                            $this->getProjectService()->findProjectFeeByYear($projectYear)
+                                ->getContribution()
+                        );
+                    } else {
+                        $yearData[] = $this->parseCost(0);
+                    }
+                    break;
             }
 
             if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
@@ -367,7 +422,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 $yearData[] = $this->parseCost(0);
             }
 
-            $yearData[] = $this->parsePercent($dueFactor * 100);
+            $yearData[] = $this->parsePercent($dueFactor * 100, 0);
             $yearData[] = $this->parseCost($dueInYear * $dueFactor);
 
             $totalDueBasedOnProjectData += $dueInYear * $dueFactor;
@@ -382,14 +437,14 @@ class RenderPaymentSheet extends AbstractPlugin
             '',
             '',
             '',
+            '',
             $this->translate("txt-total"),
             $this->parseCost($totalDueBasedOnProjectData),
         ];
 
         $fundingDetails[] = $totalColumn;
 
-
-        $pdf->coloredTable($header, $fundingDetails, [15, 25, 35, 25, 25, 25, 35], true);
+        $pdf->coloredTable($header, $fundingDetails, [12, 30, 32, 32, 12, 25, 17, 32], true);
 
         $contributionDue = $this->getAffiliationService()
             ->parseContributionDue($affiliation, $latestVersion, $year, $period);
@@ -636,38 +691,48 @@ class RenderPaymentSheet extends AbstractPlugin
      *
      * @return string
      */
-    public function parseEffort($effort)
+    public function parseEffort($effort): string
     {
         return sprintf("%s %s", number_format($effort, 2, '.', ','), 'PY');
     }
 
     /**
      * @param $cost
-     *
+     * @param Currency|null $currency
      * @return string
      */
-    public function parseKiloCost($cost)
+    public function parseKiloCost($cost, Currency $currency = null): string
     {
-        return sprintf("%s kEUR", number_format($cost / 1000, 0, '.', ','));
+        $abbreviation = 'EUR';
+        if (!\is_null($currency)) {
+            $abbreviation = $currency->getIso4217();
+        }
+
+        return sprintf("%s k%s", number_format($cost / 1000, 0, '.', ','), $abbreviation);
     }
 
     /**
      * @param $cost
-     *
+     * @param Currency|null $currency
      * @return string
      */
-    public function parseCost($cost)
+    public function parseCost($cost, Currency $currency = null): string
     {
-        return sprintf("%s EUR", number_format($cost, 2, '.', ','));
+        $abbreviation = 'EUR';
+        if (!\is_null($currency)) {
+            $abbreviation = $currency->getIso4217();
+        }
+
+        return sprintf("%s %s", number_format($cost, 2, '.', ','), $abbreviation);
     }
 
     /**
      * @param $percent
-     *
+     * @param int $decimals
      * @return string
      */
-    public function parsePercent($percent)
+    public function parsePercent($percent, int $decimals = 2): string
     {
-        return sprintf("%s %s", number_format((float) $percent, 2, '.', ','), "%");
+        return sprintf("%s %s", number_format((float)$percent, $decimals, '.', ','), "%");
     }
 }

@@ -29,7 +29,7 @@ class LoiService extends ServiceAbstract
      *
      * @return null|Entity\Loi
      */
-    public function findLoiById($id)
+    public function findLoiById($id): ?Entity\Loi
     {
         return $this->getEntityManager()->getRepository(Entity\Loi::class)->find($id);
     }
@@ -39,7 +39,7 @@ class LoiService extends ServiceAbstract
      *
      * @return Entity\Loi[]|ArrayCollection
      */
-    public function findNotApprovedLoi()
+    public function findNotApprovedLoi(): ArrayCollection
     {
         /** @var Repository\Loi $repository */
         $repository = $this->getEntityManager()->getRepository(Entity\Loi::class);
@@ -54,7 +54,7 @@ class LoiService extends ServiceAbstract
      *
      * @return Entity\Loi[]
      */
-    public function findLoiByOrganisation(Organisation $organisation)
+    public function findLoiByOrganisation(Organisation $organisation): array
     {
         /** @var Repository\Loi $repository */
         $repository = $this->getEntityManager()->getRepository(Entity\Loi::class);

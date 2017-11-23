@@ -161,7 +161,9 @@ class LoiController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|\Zend\Http\Response|ViewModel
+     * @return \Zend\Http\Response|ViewModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function replaceAction()
     {

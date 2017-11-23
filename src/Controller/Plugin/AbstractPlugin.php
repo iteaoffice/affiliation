@@ -18,6 +18,7 @@ use Contact\Service\ContactService;
 use General\Service\GeneralService;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\Http\Request;
@@ -68,6 +69,10 @@ class AbstractPlugin extends ZendAbstractPlugin
      * @var VersionService
      */
     protected $versionService;
+    /**
+     * @var ContractService
+     */
+    protected $contractService;
 
     /**
      * @var InvoiceService
@@ -247,6 +252,26 @@ class AbstractPlugin extends ZendAbstractPlugin
     public function setVersionService(VersionService $versionService): AbstractPlugin
     {
         $this->versionService = $versionService;
+
+        return $this;
+    }
+
+    /**
+     * @return ContractService
+     */
+    public function getContractService(): ContractService
+    {
+        return $this->contractService;
+    }
+
+    /**
+     * @param ContractService $contractService
+     *
+     * @return AbstractPlugin
+     */
+    public function setContractService(ContractService $contractService): AbstractPlugin
+    {
+        $this->contractService = $contractService;
 
         return $this;
     }

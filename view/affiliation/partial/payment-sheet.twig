@@ -136,9 +136,10 @@
     <tr>
         <th>{{ translate("txt-period") }}</th>
         <th>{{ translate("txt-funding-status") }}</th>
-        <th colspan="2">{{ translate("txt-costs-euro") }}</th>
+        <th><span class="pull-right">{{ translate("txt-costs") }}</span></th>
+        <th><span class="pull-right">{{ translate("txt-costs-in-euro") }}</span></th>
         <th>{{ translate("txt-fee-percentage") }}</th>
-        <th>{{ translate("txt-contribution-euro") }}</th>
+        <th><span class="pull-right">{{ translate("txt-contribution-euro") }}</span></th>
         <th>{{ translate("txt-due") }}</th>
         <th><span class="pull-right">{{ translate("txt-amount-due") }}</span></th>
     </tr>
@@ -157,56 +158,60 @@
                 {% endif %}
             </td>
 
-            {% if invoiceMethod.id is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE") %}
+            {% set fallbackToPercentage = false %}
 
-                {% if contractVersion and useContractData %}
+            {% if
+                invoiceMethod.id is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") and
+                contractVersion and
+                useContractData %}
 
-                    {% set currency = 'EUR' %}
-                    {% set exchangeRate = 1 %}
-                    {% if contractContributionInformation.currency[projectYear] %}
-                        {% set currency = contractContributionInformation.currency[projectYear]['currency'].symbol %}
-                        {% set exchangeRate = contractContributionInformation.currency[projectYear]['exchangeRate'].rate %}
-                    {% endif %}
 
-                    {# when we have no exchange rate, add a message that the exchange rate has been fixed to one#}
-                    {% if not exchangeRate %}
-                        {% set dueInYear = 0 %}
+                {% set currency = 'EUR' %}
+                {% set exchangeRate = 1 %}
+                {% if contractContributionInformation.currency[projectYear] %}
+                    {% set currency = contractContributionInformation.currency[projectYear]['currency'].symbol %}
+                    {% set exchangeRate = contractContributionInformation.currency[projectYear]['exchangeRate'].rate %}
+                {% endif %}
 
-                        <td colspan="4">{{ translate("txt-no-exchange-rate-found-for-%s-in-year-%s")|format(currency, projectYear) }}</td>
-                    {% else %}
-
-                        {% set dueInYear = contractContributionInformation.cost[projectYear] / (100 * exchangeRate) * projectService.findProjectFeeByYear(projectYear).percentage %}
-
-                        <td>
-                            <span class="pull-right">{{ contractContributionInformation.cost[projectYear]|currency_decimal(currency) }}</span>
-                        </td>
-                        <td>
-                            <span class="pull-right">{{ (contractContributionInformation.cost[projectYear] / exchangeRate)|currency_decimal('EUR') }}</span>
-                        </td>
-                        <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}
-                                {{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
-                            %
-                        </td>
-                        <td>
-                            {% if affiliationService.isFundedInYear(affiliation, projectYear) %}
-                                {{ dueInYear|currency_decimal('EUR') }}{% else %}
-                                {{ 0|currency_decimal('EUR') }}{% endif %}</td>
-                    {% endif %}
-
+                {# when we have no exchange rate, add a message that the exchange rate has been fixed to one#}
+                {% if not exchangeRate %}
+                    {% set dueInYear = 0 %}
+                    <td colspan="4">{{ translate("txt-no-exchange-rate-found-for-%s-in-year-%s")|format(currency, projectYear) }}</td>
                 {% else %}
 
-                    {% set dueInYear = versionContributionInformation.cost[projectYear] / 100 * projectService.findProjectFeeByYear(projectYear).percentage %}
-                    <td colspan="2">&euro; {{ versionContributionInformation.cost[projectYear]|number_format(0) }}</td>
-                    <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
+                    {% set dueInYear = contractContributionInformation.cost[projectYear] / (100 * exchangeRate) * projectService.findProjectFeeByYear(projectYear).percentage %}
+
+                    <td>
+                        <span class="pull-right">{{ contractContributionInformation.cost[projectYear]|currency_decimal(currency) }}</span>
+                    </td>
+                    <td>
+                        <span class="pull-right">{{ (contractContributionInformation.cost[projectYear] / exchangeRate)|currency_decimal('EUR') }}</span>
+                    </td>
+                    <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}
+                            {{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
                         %
                     </td>
                     <td>
-                        <span class="pull-right">{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal('EUR') }}{% else %}{{ 0|currency_decimal('EUR') }}{% endif %}</span>
-                    </td>
-
+                        {% if affiliationService.isFundedInYear(affiliation, projectYear) %}
+                            {{ dueInYear|currency_decimal('EUR') }}{% else %}
+                            {{ 0|currency_decimal('EUR') }}{% endif %}</td>
                 {% endif %}
-
+            {% else %}
+                {% set fallbackToPercentage = true %}
             {% endif %}
+
+            {% if invoiceMethod.id is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE") or fallbackToPercentage %}
+                {% set dueInYear = versionContributionInformation.cost[projectYear] / 100 * projectService.findProjectFeeByYear(projectYear).percentage %}
+                <td><span class="pull-right">&euro; {{ versionContributionInformation.cost[projectYear]|number_format(0) }}</span></td>
+                <td><span class="pull-right">&euro; {{ versionContributionInformation.cost[projectYear]|number_format(0) }}</span></td>
+                <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
+                    %
+                </td>
+                <td>
+                    <span class="pull-right">{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal('EUR') }}{% else %}{{ 0|currency_decimal('EUR') }}{% endif %}</span>
+                </td>
+            {% endif %}
+
             {% if invoiceMethod.id is constant("\\Invoice\\Entity\\Method::METHOD_CONTRIBUTION") %}
                 {% set dueInYear = versionContributionInformation.effort[projectYear] * projectService.findProjectFeeByYear(projectYear).contribution %}
                 <td>{{ versionContributionInformation.effort[projectYear]|parse_effort }} {{ translate("txt-py") }}</td>
@@ -214,6 +219,8 @@
                     &euro; {% if affiliationService.isFundedInYear(affiliation, year) %}{{ projectService.findProjectFeeByYear(year).contribution|number_format(2) }}{% else %}0{% endif %}</td>
                 <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal('EUR') }}{% else %}{{ 0|currency_decimal('EUR') }}{% endif %}</td>
             {% endif %}
+
+
             <td>{{ dueFactor|localizednumber('percent') }}</td>
             <td><span class="pull-right">{{ (dueInYear * dueFactor)|currency_decimal("EUR") }}</span></td>
             {% set totalDueBasedOnProjectData = totalDueBasedOnProjectData + dueInYear * dueFactor %}

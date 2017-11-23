@@ -486,7 +486,6 @@ class EditController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -527,7 +526,6 @@ class EditController extends AffiliationAbstractController
             }
 
             if (isset($data['addEmail']) && !empty($data['email'])) {
-
                 $this->getAffiliationService()->addAssociate($affiliation, null, $data['email']);
 
                 $this->flashMessenger()->setNamespace('success')

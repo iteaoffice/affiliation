@@ -54,7 +54,7 @@ return [
                             'payment-sheet-pdf' => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].pdf',
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period][/:contract].pdf',
                                     'defaults' => [
                                         'action'    => 'payment-sheet-pdf',
                                         'privilege' => 'payment-sheet',
