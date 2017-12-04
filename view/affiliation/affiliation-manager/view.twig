@@ -626,7 +626,7 @@
                         <td>{{ invoiceLink(affilaitionInvoice.invoice,'view','invoice') }}</td>
                         <td>{{ affilaitionInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
                         <td>{{ affilaitionInvoice.year }}-{{ affilaitionInvoice.period }}</td>
-                        <td>{{ invoiceService.parseTotal(affilaitionInvoice.invoice)|currency_decimal("EUR") }}</td>
+                        <td>{{ invoiceService.parseTotal(affilaitionInvoice.invoice)|currency_decimal() }}</td>
                         <td>{{ invoiceService.parseStatus(affilaitionInvoice.invoice, true) }}</td>
                         <td>{{ invoiceLink(invoice,'download','icon') }}</td>
                     </tr>

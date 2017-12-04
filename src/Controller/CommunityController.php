@@ -92,7 +92,10 @@ class CommunityController extends AffiliationAbstractController
 
     /**
      * @return \Zend\Stdlib\ResponseInterface|ViewModel
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function paymentSheetPdfAction()
     {
@@ -105,8 +108,7 @@ class CommunityController extends AffiliationAbstractController
         $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
-
-        $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period);
+        $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period, null !== $this->params('contract'));
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")

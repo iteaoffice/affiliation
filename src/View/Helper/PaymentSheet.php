@@ -16,6 +16,8 @@ declare(strict_types=1);
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
+use General\Entity\Currency;
+use General\Entity\ExchangeRate;
 
 /**
  * Class PaymentSheet
@@ -47,6 +49,19 @@ class PaymentSheet extends LinkAbstract
 
         $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
 
+        //Create a default currency
+        $currency = new Currency();
+        $currency->setName('EUR');
+        $currency->setSymbol('&euro;');
+
+        $exchangeRate = new ExchangeRate();
+        $exchangeRate->setRate(1);
+
+        if (!\is_null($contractVersion) && $useContractData) {
+            $currency = $contractVersion->getContract()->getCurrency();
+            $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod($currency, $year, $period);
+        }
+
         return $this->getRenderer()->render(
             'affiliation/partial/payment-sheet',
             [
@@ -63,9 +78,10 @@ class PaymentSheet extends LinkAbstract
                 'contractContributionInformation' => null === $contractVersion ? null
                     : $this->getContractService()->getContractVersionContributionInformation(
                         $affiliation,
-                        $contractVersion,
-                        $latestVersion
+                        $contractVersion
                     ),
+                'exchangeRate'                    => $exchangeRate,
+                'currency'                        => $currency,
                 'contactService'                  => $this->getContactService(),
                 'financialContact'                => $this->getAffiliationService()->getFinancialContact($affiliation),
                 'organisationService'             => $this->getOrganisationService(),

@@ -70,7 +70,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'options'    => [
                     'value_options' => $contacts,
                     'allow_empty'   => true,
-                    'empty_option'  => '-- ' . _("Select here the known contact"),
+                    'empty_option'  => '-- ' . ("Select here the known contact"),
                     'label'         => _("txt-add-associate-by-known-contact-label"),
                     'help-block'    => _("txt-add-associate-by-known-contact-help-block"),
                 ],
@@ -87,7 +87,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'options'    => [
                     'label'      => _("txt-company-email-address"),
                     'help-block' => sprintf(
-                        _("Here you can add an associate via the company email address. The email address should have the following extensions: %s"),
+                        "Here you can add an associate via the company email address. The email address should have (one of) the following extension(s): %s",
                         implode(', ', $this->extensions)
                     ),
                 ],
@@ -162,7 +162,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                     new Callback(
                         [
                             'messages' => [
-                                Callback::INVALID_VALUE => 'The given email address (%value%) should have one of the domains: ' . implode(
+                                Callback::INVALID_VALUE => 'The given email address (%value%) should have (one of) the extension(s): ' . implode(
                                     ', ',
                                     $this->extensions
                                 ),

@@ -51,9 +51,17 @@ class AffiliationPdf extends TcpdfFpdi
     /**
      * @param $header
      * @param $data
+     * @param array|null $width
+     * @param bool $lastRow
+     * @param int $height
      */
-    public function coloredTable($header, $data, array $width = null, $lastRow = false)
-    {
+    public function coloredTable(
+        array $header,
+        array $data,
+        array $width = null,
+        bool $lastRow = false,
+        int $height = 6
+    ): void {
         // Colors, line width and bold font
         $this->SetDrawColor(205, 205, 205);
         $this->SetFillColor(255, 255, 255);
@@ -85,18 +93,38 @@ class AffiliationPdf extends TcpdfFpdi
         $this->SetTextColor(0);
         $this->SetFont('');
         // Data
-        $fill = 0;
+        $fill = true;
         $rowCounter = 1;
         foreach ($data as $row) {
             $counter = 0;
 
+            //Calculate the row height
             foreach ($row as $column) {
-                if ($lastRow && $rowCounter === (\count($data))) {
+                $rowHeight = max($height, substr_count((string)$column, PHP_EOL) * 6);
+            }
+
+            foreach ($row as $column) {
+                if ($lastRow && $rowCounter === \count($data)) {
                     $this->SetFont('', 'B');
                 }
 
-
-                $this->Cell($w[$counter], 6, $column, 'LR', 0, 'L', $fill);
+                $this->MultiCell(
+                    $w[$counter],
+                    $rowHeight,
+                    $column,
+                    'LR',
+                    'L',
+                    $fill,
+                    0,
+                    '',
+                    '',
+                    true,
+                    0,
+                    false,
+                    true,
+                    $rowHeight,
+                    "M"
+                );
                 $counter++;
             }
             $rowCounter++;

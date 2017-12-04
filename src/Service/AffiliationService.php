@@ -23,12 +23,15 @@ use Deeplink\View\Helper\DeeplinkLink;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
+use General\Entity\Currency;
+use General\Entity\ExchangeRate;
 use Invoice\Entity\Method;
 use Organisation\Entity\Financial;
 use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
 use Program\Entity\Call\Call;
+use Project\Entity\Contract\Version as ContractVersion;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Funding\Source;
 use Project\Entity\Funding\Status;
@@ -324,50 +327,71 @@ class AffiliationService extends ServiceAbstract
      * @param Version $version
      * @param int $year
      * @param int|null $period
-     * @param bool $useContractData
      * @return float
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function parseTotal(
         Affiliation $affiliation,
         Version $version,
         int $year,
-        int $period = null,
-        bool $useContractData = true
+        ?int $period = null
     ): float {
-        return $this->parseContribution($affiliation, $version, $year, $period, $useContractData) + $this->parseBalance(
+        return $this->parseContribution($affiliation, $version, null, $year, $period, false) + $this->parseBalance(
             $affiliation,
             $version,
             $year,
             $period,
-            $useContractData
+            false
         );
     }
 
     /**
      * @param Affiliation $affiliation
+     * @param ContractVersion $version
+     * @param int $year
+     * @param int|null $period
+     * @return float
+     */
+    public function parseContractTotal(
+        Affiliation $affiliation,
+        ContractVersion $version,
+        int $year,
+        ?int $period = null
+    ): float {
+        return $this->parseTotalByInvoiceLines($affiliation, $version, $year, $period);
+    }
+
+    /**
+     * @param Affiliation $affiliation
      * @param Version $version
+     * @param ContractVersion $contractVersion
      * @param int $year
      * @param int|null $period
      * @param bool $useContractData
+     * @param bool $omitExchangeRate
+     * @param int|null $exchangeRateYear
      * @return float
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function parseContribution(
         Affiliation $affiliation,
-        Version $version,
+        ?Version $version,
+        ?ContractVersion $contractVersion,
         int $year,
-        int $period = null,
-        bool $useContractData = true
+        ?int $period = null,
+        bool $useContractData = true,
+        bool $omitExchangeRate = false,
+        ?int $exchangeRateYear = null
     ): float {
+
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
         $invoiceMethod = $this->parseInvoiceMethod($affiliation, $useContractData);
 
         switch ($invoiceMethod) {
             case Method::METHOD_FUNDING:
-                return $this->parseContributionBase($affiliation, $version, $year, false)
+                return $this->parseContributionBase($affiliation, $version, null, $year, false)
                     * $this->parseContributionFee(
                         $affiliation,
                         $year,
@@ -376,30 +400,43 @@ class AffiliationService extends ServiceAbstract
 
             case Method::METHOD_CONTRIBUTION:
             case Method::METHOD_PERCENTAGE:
+                if (null === $version) {
+                    throw new \InvalidArgumentException("The version cannot be null for parsing the contribution");
+                }
+
                 if (\is_null($period)) {
                     return $this->parseContributionFee($affiliation, $year);
                 }
 
-                return $this->parseContributionBase($affiliation, $version, $year, false)
+                return $this->parseContributionBase($affiliation, $version, null, $year, false)
                     * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
                         $affiliation,
                         $year
                     );
 
             case Method::METHOD_PERCENTAGE_CONTRACT:
-                if (\is_null($period)) {
-                    return $this->parseContributionFee($affiliation, $year);
+                if (null === $contractVersion) {
+                    throw new \InvalidArgumentException("The contract version cannot be null for parsing the contribution");
                 }
 
-                return $this->parseContributionBase($affiliation, $version, $year, true)
+                $fee = $this->parseContributionBase($affiliation, null, $contractVersion, $year)
                     * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
                         $affiliation,
                         $year
                     );
+
+                if ($omitExchangeRate) {
+                    return $fee;
+                }
+
+                return $fee / $this->parseExchangeRate(
+                    $affiliation,
+                    \is_null($exchangeRateYear) ? (int)date('Y') : $exchangeRateYear,
+                    $period
+                );
         }
 
-
-        return 0;
+        return (float)0;
     }
 
     /**
@@ -411,7 +448,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
     {
-        $invoiceMethod = (int) $this->getInvoiceService()->findInvoiceMethod(
+        $invoiceMethod = (int)$this->getInvoiceService()->findInvoiceMethod(
             $affiliation->getProject()->getCall()->getProgram()
         )->getId();
 
@@ -429,15 +466,15 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Affiliation $affiliation
      * @param Version $version
+     * @param ContractVersion $contractVersion
      * @param int $year
      * @param bool $useContractData
      * @return float
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function parseContributionBase(
         Affiliation $affiliation,
-        Version $version,
+        ?Version $version,
+        ?ContractVersion $contractVersion,
         int $year,
         bool $useContractData = true
     ): float {
@@ -451,6 +488,10 @@ class AffiliationService extends ServiceAbstract
          */
         switch ($invoiceMethod) {
             case Method::METHOD_PERCENTAGE:
+                if (null === $version) {
+                    throw new \InvalidArgumentException("The contract version cannot be null for parsing the contribution base");
+                }
+
                 $costsPerYear
                     = $this->getVersionService()
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
@@ -460,26 +501,15 @@ class AffiliationService extends ServiceAbstract
 
                 break;
             case Method::METHOD_PERCENTAGE_CONTRACT:
-                //The percentage method depends on the fact if we have a contract or not.
-                $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+                if (null === $contractVersion) {
+                    throw new \InvalidArgumentException("The contract version cannot be null for parsing the contribution base");
+                }
 
                 $costsPerYear
                     = $this->getContractService()
-                    ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $contractVersion, $version);
+                    ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $contractVersion);
                 if (array_key_exists($year, $costsPerYear)) {
-                    //Now we need to apply the exchange rate
-                    $currency = $this->getContractService()->findCurrencyOfCostVersionByAffiliationAndVersionPerYear(
-                        $affiliation,
-                        $contractVersion,
-                        $version
-                    );
-
-                    $exchangeRate = 1;
-                    if (array_key_exists($year, $currency)) {
-                        $exchangeRate = !isset($currency[$year]['exchangeRate']) ? 10000000 : $currency[$year]['exchangeRate']->getRate();
-                    }
-
-                    return (float)$costsPerYear[$year] / $exchangeRate;
+                    return (float)$costsPerYear[$year];
                 }
 
                 break;
@@ -498,6 +528,46 @@ class AffiliationService extends ServiceAbstract
 
         return (float)$base;
     }
+
+    /**
+     * @param Affiliation $affiliation
+     * @param int $year
+     * @param int|null $period
+     * @return float
+     */
+    public function parseExchangeRate(
+        Affiliation $affiliation,
+        int $year,
+        ?int $period = null
+    ): float {
+
+        //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
+        $invoiceMethod = $this->parseInvoiceMethod($affiliation);
+
+        /**
+         * The base (the sum of the costs or effort in the version depends on the invoiceMethod (percentage === 'costs', contribution === 'effort')
+         */
+        switch ($invoiceMethod) {
+            case Method::METHOD_PERCENTAGE:
+            case Method::METHOD_CONTRIBUTION:
+            case Method::METHOD_FUNDING:
+                return (float)1;
+            case Method::METHOD_PERCENTAGE_CONTRACT:
+                //The percentage method depends on the fact if we have a contract or not.
+                $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+
+                $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod(
+                    $contractVersion->getContract()->getCurrency(),
+                    $year,
+                    $period
+                );
+
+                return (float)$exchangeRate->getRate();
+        }
+
+        return (float)0;
+    }
+
 
     /**
      * @param Affiliation $affiliation
@@ -543,23 +613,22 @@ class AffiliationService extends ServiceAbstract
      * We removed the switch on office to facilitate the contribution based invoicing
      *
      * @param Affiliation $affiliation
-     * @param  int $year
-     * @param  int $period
-     *
+     * @param int $year
+     * @param int|null $period
      * @return float|int
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function parseContributionFactor(Affiliation $affiliation, $year, $period)
+    public function parseContributionFactor(Affiliation $affiliation, int $year, ?int $period = null): float
     {
-        //Cast to int as some values can originate form templates (== twig > might be string)
-        $year = (int)$year;
-        $period = (int)$period;
-
         switch (true) {
             case !$this->isFundedInYear($affiliation, $year):
-                return 0;
+                return (float)0;
+            case \is_null($period):
+                return 1;
             case $this->getProjectService()->parseEndYear($affiliation->getProject()) === $year
                 && $this->getProjectService()->parseEndMonth($affiliation->getProject()) <= 6:
-                return $period === 1 ? 1 : 0;
+                return (float)($period === 1 ? 1 : 0);
             default:
                 return 0.5;
         }
@@ -608,13 +677,14 @@ class AffiliationService extends ServiceAbstract
      * @param int|null $period
      * @param bool $useContractData
      * @return float
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function parseBalance(
         Affiliation $affiliation,
         Version $version,
         int $year,
-        int $period = null,
+        ?int $period = null,
         bool $useContractData = true
     ): float {
         return $this->parseContributionDue(
@@ -631,7 +701,6 @@ class AffiliationService extends ServiceAbstract
      * @param Version $version
      * @param int $year
      * @param int|null $period
-     * @param bool $useContractData
      * @return float
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -640,24 +709,21 @@ class AffiliationService extends ServiceAbstract
         Affiliation $affiliation,
         Version $version,
         int $year,
-        int $period = null,
-        bool $useContractData = true
+        int $period = null
     ): float {
         $contributionDue = 0;
 
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
-        $invoiceMethod = $this->parseInvoiceMethod($affiliation, $useContractData);
-
+        $invoiceMethod = $this->parseInvoiceMethod($affiliation);
 
         switch ($invoiceMethod) {
             case Method::METHOD_PERCENTAGE:
+            case Method::METHOD_PERCENTAGE_CONTRACT:
                 $costsPerYear = $this->getVersionService()
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
 
 
                 foreach ($costsPerYear as $costsYear => $cost) {
-                    $exchangeRate = 1;
-
                     //fee
                     $fee = $this->getProjectService()->findProjectFeeByYear($costsYear);
                     $factor = $this->parseContributionFactorDue($affiliation, $costsYear, $year, $period);
@@ -669,45 +735,6 @@ class AffiliationService extends ServiceAbstract
                 }
 
                 break;
-            case Method::METHOD_PERCENTAGE_CONTRACT:
-                //The percentage method depends on the fact if we have a contract or not.
-                $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
-
-                //We will use the data from the version.
-                $costsPerYear = $this->getContractService()->findTotalCostVersionByAffiliationAndVersionPerYear(
-                    $affiliation,
-                    $contractVersion,
-                    $version
-                );
-
-
-                foreach ($costsPerYear as $costsYear => $cost) {
-                    $exchangeRate = 1;
-
-                    if ($useContractData && !\is_null($contractVersion)) {
-                        $currency = $this->getContractService()->findCurrencyOfCostVersionByAffiliationAndVersionPerYear(
-                            $affiliation,
-                            $contractVersion,
-                            $version
-                        );
-
-                        if (array_key_exists($costsYear, $currency)) {
-                            $exchangeRate = !isset($currency[$costsYear]['exchangeRate']) ? PHP_INT_MAX : $currency[$costsYear]['exchangeRate']->getRate();
-                        }
-                    }
-
-                    //fee
-                    $fee = $this->getProjectService()->findProjectFeeByYear($costsYear);
-                    $factor = $this->parseContributionFactorDue($affiliation, $costsYear, $year, $period);
-
-                    //Only add the value to the contribution if the partner is funded in that year
-                    if ($this->isFundedInYear($affiliation, $costsYear)) {
-                        $contributionDue += $factor * ($cost / $exchangeRate) * ($fee->getPercentage() / 100);
-                    }
-                }
-
-                break;
-
             case Method::METHOD_CONTRIBUTION:
                 //Fix the versionService
                 $effortPerYear = $this->getVersionService()
@@ -741,6 +768,8 @@ class AffiliationService extends ServiceAbstract
      * @param int $year
      * @param int|null $period
      * @return float
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function parseContributionFactorDue(
         Affiliation $affiliation,
@@ -798,6 +827,214 @@ class AffiliationService extends ServiceAbstract
         }
 
         return (float)$contributionPaid;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @param ContractVersion $contractVersion
+     * @param int $year
+     * @param int|null $period
+     * @return array
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function findInvoiceLines(
+        Affiliation $affiliation,
+        ContractVersion $contractVersion,
+        int $year,
+        ?int $period = null
+    ): array {
+        $lines = [];
+
+        $currency = $contractVersion->getContract()->getCurrency();
+        $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod($currency, $year, $period);
+
+        for ($otherYear = $year; $otherYear > ($year - 6); $otherYear--) {
+            //Force the period to null for the lower years, or when the partner has not been invoiced yet
+            if ($otherYear < $year) {
+                $period = null;
+            }
+
+            //For the same year, force the period to null (100% invoice) when the previous period has not been invoiced yet
+            if ($otherYear === $year && $period === 2 && !$this->affiliationHasInvoiceInYearAndPeriod(
+                $affiliation,
+                $otherYear,
+                1
+            )) {
+                $period = null;
+            }
+
+            if ($this->parseAmountInvoicedInYearByAffiliation($affiliation, $otherYear) !== 0.0) {
+                break;
+            }
+
+            //Derive the contribution
+            $contribution = $this->parseContribution(
+                $affiliation,
+                null,
+                $contractVersion,
+                $otherYear,
+                $period,
+                true,
+                false,
+                $year
+            );
+            $contributionRaw = $this->parseContribution(
+                $affiliation,
+                null,
+                $contractVersion,
+                $otherYear,
+                $period,
+                true,
+                true
+            );
+
+            if ($contribution !== 0.0) {
+                $line = new \stdClass();
+                $line->year = $otherYear;
+                $line->period = $period;
+                $line->periodOrdinal = $otherYear . (\is_null($period) ? '' : '-' . $period . 'H');
+                $line->description = $this->parseInvoiceLine(
+                    $affiliation,
+                    $otherYear,
+                    $period,
+                    $contributionRaw,
+                    $currency,
+                    $exchangeRate
+                );
+                $line->lineTotal = $contribution;
+
+                $lines[] = $line;
+            }
+        }
+
+        return $lines;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @param ContractVersion $contractVersion
+     * @param int $year
+     * @param int|null $period
+     * @return float
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function parseTotalByInvoiceLines(
+        Affiliation $affiliation,
+        ContractVersion $contractVersion,
+        int $year,
+        ?int $period = null
+    ): float {
+        $total = 0.0;
+
+        foreach ($this->findInvoiceLines($affiliation, $contractVersion, $year, $period) as $line) {
+            $total += $line->lineTotal;
+        }
+
+        return $total;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     * @param int $year
+     * @param int $period
+     * @param float $contribution
+     * @param Currency $currency
+     * @param ExchangeRate $exchangeRate
+     * @return string
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function parseInvoiceLine(
+        Affiliation $affiliation,
+        int $year,
+        ?int $period = null,
+        float $contribution,
+        Currency $currency,
+        ExchangeRate $exchangeRate
+    ): string {
+        $contributionFactor = $this->parseContributionFactor($affiliation, $year, $period);
+
+        //Omit the exchange rate in the invoice when it is already euro
+        if ($currency->getName() === 'EUR') {
+            return sprintf(
+                $this->translate("txt-%s%%-contribution-for-%s"),
+                number_format($contributionFactor * 100, 0),
+                $year . (\is_null($period) ? '' : '-' . $period . 'H'),
+                $currency->getSymbol()
+            );
+        }
+
+        return sprintf(
+            $this->translate("txt-%s%%-contribution-for-%s-exchange-rate-%s-%s-at-%s"),
+            number_format($contributionFactor * 100, 0),
+            $year . (\is_null($period) ? '' : '-' . $period . 'H'),
+            $currency->getName(),
+            $exchangeRate->getRate(),
+            \is_null($exchangeRate->getDate()) ?: $exchangeRate->getDate()->format('n F Y')
+        );
+    }
+
+    /**
+     * This function calculates the amount invoiced in a given year
+     *
+     * @param Affiliation $affiliation
+     * @param int $year
+     * @return float
+     */
+    public function parseAmountInvoicedInYearByAffiliation(Affiliation $affiliation, int $year): float
+    {
+        $amountInvoiced = 0;
+
+        foreach ($affiliation->getInvoice() as $affiliationInvoice) {
+            if ($affiliationInvoice->getYear() === $year) {
+                $amountInvoiced += $affiliationInvoice->getAmountInvoiced();
+            }
+        }
+
+        return $amountInvoiced;
+    }
+
+    /**
+     * This function checks if an affiliation (partner) has an invoice
+     *
+     * @param Affiliation $affiliation
+     * @param int $year
+     * @param int $period
+     * @return bool
+     */
+    public function affiliationHasInvoiceInYearAndPeriod(Affiliation $affiliation, int $year, int $period): bool
+    {
+        $hasInvoice = false;
+
+        foreach ($affiliation->getInvoice() as $affiliationInvoice) {
+            if ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() === $period) {
+                $hasInvoice = true;
+            }
+        }
+
+        return $hasInvoice;
+    }
+
+    /**
+     * This function checks if the affiliation has received an invoice in the past
+     *
+     * @param Affiliation $affiliation
+     * @param int $year
+     * @return bool
+     */
+    public function hasInvoiceInPast(Affiliation $affiliation, int $year): bool
+    {
+        $hasBeenInvoicedInPast = false;
+
+        foreach ($affiliation->getInvoice() as $affiliationInvoice) {
+            if ($affiliationInvoice->getYear() < $year) {
+                $hasBeenInvoicedInPast = true;
+            }
+        }
+
+        return $hasBeenInvoicedInPast;
     }
 
     /**

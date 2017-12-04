@@ -173,6 +173,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                         $this->addLinkContent('<i class="fa fa-download"></i>');
                         break;
                     case 'payment-sheet-pdf':
+                    case 'payment-sheet-pdf-contract':
                         $this->addLinkContent('<i class="fa fa-file-pdf-o"></i>');
                         break;
                     case 'payment-sheet':

@@ -632,7 +632,7 @@
 
             <h2>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliation,'payment-sheet-pdf','icon', year, period) }}</h2>
 
-            {{ paymentSheet(affiliation, year, period, false) }}
+            {{ paymentSheet(affiliation, year, period) }}
 
             {% if affiliation.invoice|length > 0 %}
                 <h2>{{ translate("txt-partner-invoices") }}</h2>
@@ -655,7 +655,7 @@
                                 <td>{{ affiliationInvoice.invoice.invoiceNr }}</td>
                                 <td>{{ affiliationInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
                                 <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}</td>
-                                <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal("EUR") }}</td>
+                                <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
                                 <td>{{ invoiceService.parseStatus(affiliationInvoice.invoice)['name'] }}</td>
                                 <td>{{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
                             </tr>

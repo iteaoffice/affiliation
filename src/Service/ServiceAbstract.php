@@ -27,6 +27,7 @@ use Organisation\Service\ParentService;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
+use Zend\I18n\View\Helper\Translate;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -492,5 +493,21 @@ abstract class ServiceAbstract implements ServiceInterface
         $this->contractService = $contractService;
 
         return $this;
+    }
+
+    /**
+     * @param $string
+     * @return string
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function translate($string): string
+    {
+        /**
+         * @var $translate Translate
+         */
+        $translate = $this->getServiceLocator()->get('ViewHelperManager')->get('translate');
+
+        return $translate($string);
     }
 }

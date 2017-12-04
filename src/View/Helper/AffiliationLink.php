@@ -163,6 +163,18 @@ class AffiliationLink extends LinkAbstract
                     )
                 );
                 break;
+            case 'payment-sheet-pdf-contract':
+                $this->setRouter('community/affiliation/payment-sheet-pdf');
+                $this->addRouterParam('contract', 'contract');
+                $this->setText(
+                    sprintf(
+                        $this->translate("txt-download-contract-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->getAffiliation(),
+                        $this->getYear(),
+                        $this->getPeriod()
+                    )
+                );
+                break;
             default:
                 throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
         }
