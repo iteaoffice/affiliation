@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use General\Entity\ExchangeRate;
 use Zend\Form\Annotation;
 
 /**
@@ -63,6 +64,15 @@ class Invoice extends EntityAbstract
      */
     private $version;
     /**
+     * @ORM\ManyToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="affiliationInvoice", cascade={"persist"})
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="contract_version_id", referencedColumnName="version_id", nullable=true)
+     * })
+     *
+     * @var \Project\Entity\Contract\Version
+     */
+    private $contractVersion;
+    /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="invoice", cascade={"persist"})
      * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
@@ -79,6 +89,14 @@ class Invoice extends EntityAbstract
      * @var \Invoice\Entity\Invoice
      */
     private $invoice;
+    /**
+     * @ORM\ManyToOne(targetEntity="General\Entity\ExchangeRate", inversedBy="affiliationInvoice", cascade={"persist"})
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="exchange_rate_id", referencedColumnName="exchange_rate_id", nullable=true)
+     * })
+     * @var \General\Entity\ExchangeRate|null
+     */
+    private $exchangeRate;
 
     /**
      * @param $property
@@ -101,11 +119,19 @@ class Invoice extends EntityAbstract
         $this->$property = $value;
     }
 
+    /**
+     * @param $property
+     * @return bool
+     */
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
 
     /**
      * @inheritDoc
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->getInvoice();
     }
@@ -113,7 +139,7 @@ class Invoice extends EntityAbstract
     /**
      * @return \Invoice\Entity\Invoice
      */
-    public function getInvoice()
+    public function getInvoice(): ?\Invoice\Entity\Invoice
     {
         return $this->invoice;
     }
@@ -123,7 +149,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setInvoice($invoice)
+    public function setInvoice($invoice): ?Invoice
     {
         $this->invoice = $invoice;
 
@@ -143,7 +169,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setId($id)
+    public function setId($id): ?Invoice
     {
         $this->id = $id;
 
@@ -163,7 +189,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setPeriod($period)
+    public function setPeriod($period): ?Invoice
     {
         $this->period = $period;
 
@@ -183,7 +209,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setYear($year)
+    public function setYear($year): ?Invoice
     {
         $this->year = $year;
 
@@ -203,7 +229,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setAmountInvoiced($amountInvoiced)
+    public function setAmountInvoiced($amountInvoiced): ?Invoice
     {
         $this->amountInvoiced = $amountInvoiced;
 
@@ -213,7 +239,7 @@ class Invoice extends EntityAbstract
     /**
      * @return \Project\Entity\Version\Version
      */
-    public function getVersion()
+    public function getVersion():?\Project\Entity\Version\Version
     {
         return $this->version;
     }
@@ -223,9 +249,28 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setVersion($version)
+    public function setVersion($version): ?Invoice
     {
         $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return \Project\Entity\Contract\Version|null
+     */
+    public function getContractVersion(): ?\Project\Entity\Contract\Version
+    {
+        return $this->contractVersion;
+    }
+
+    /**
+     * @param \Project\Entity\Contract\Version $contractVersion
+     * @return Invoice
+     */
+    public function setContractVersion(\Project\Entity\Contract\Version $contractVersion): Invoice
+    {
+        $this->contractVersion = $contractVersion;
 
         return $this;
     }
@@ -243,9 +288,28 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setAffiliation($affiliation)
+    public function setAffiliation($affiliation): ?Invoice
     {
         $this->affiliation = $affiliation;
+
+        return $this;
+    }
+
+    /**
+     * @return ExchangeRate|null
+     */
+    public function getExchangeRate(): ?ExchangeRate
+    {
+        return $this->exchangeRate;
+    }
+
+    /**
+     * @param ExchangeRate|null $exchangeRate
+     * @return Invoice
+     */
+    public function setExchangeRate(?ExchangeRate $exchangeRate): Invoice
+    {
+        $this->exchangeRate = $exchangeRate;
 
         return $this;
     }

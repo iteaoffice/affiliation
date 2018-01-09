@@ -18,6 +18,7 @@ use Affiliation\Form\EditAssociate;
 use Affiliation\Form\MissingAffiliationParentFilter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as PaginatorAdapter;
+use Invoice\Entity\Method;
 use Organisation\Entity\Name;
 use Organisation\Entity\Parent\Organisation;
 use Project\Acl\Assertion\Project as ProjectAssertion;
@@ -41,7 +42,7 @@ use Zend\View\Model\ViewModel;
 class AffiliationManagerController extends AffiliationAbstractController
 {
     /**
-     * @return ViewModel|Response
+     * @return Response|ViewModel
      */
     public function listAction()
     {
@@ -166,12 +167,15 @@ class AffiliationManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|ViewModel
+     * @return ViewModel
+     * @throws \Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function viewAction()
+    public function viewAction(): ViewModel
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -250,12 +254,14 @@ class AffiliationManagerController extends AffiliationAbstractController
     }
 
     /**
-     * @return array|\Zend\Http\Response|ViewModel
+     * @return Response|ViewModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function editAction()
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -270,6 +276,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         $formData['valueChain'] = $affiliation->getValueChain();
         $formData['marketAccess'] = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();
+        $formData['invoiceMethod'] = null === $affiliation->getInvoiceMethod() ? null : $affiliation->getInvoiceMethod()->getId();
 
         // Try to populate the form based on the organisation known already
         if (\is_null($affiliation->getParentOrganisation())) {
@@ -433,6 +440,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                 $affiliation->setMainContribution($formData['mainContribution']);
                 $affiliation->setMarketAccess($formData['marketAccess']);
 
+                $affiliation->setInvoiceMethod(null);
+                if (!empty($formData['invoiceMethod'])) {
+                    $method = $this->getInvoiceService()->findEntityById(Method::class, $formData['invoiceMethod']);
+                    $affiliation->setInvoiceMethod($method);
+                }
+
                 $this->getAffiliationService()->updateEntity($affiliation);
 
                 // Only update the financial when an financial organisation is chosen
@@ -487,7 +500,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         $request = $this->getRequest();
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -578,7 +591,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 

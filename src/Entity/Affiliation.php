@@ -384,7 +384,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @var \Project\Entity\ChangeRequest\CostChange[]|Collections\ArrayCollection
      */
-    private $changerequestCostChange;
+    private $changeRequestCostChange;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -392,6 +392,16 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var \Project\Entity\Log[]|Collections\ArrayCollection
      */
     private $projectLog;
+    /**
+     * @ORM\ManyToOne(targetEntity="Invoice\Entity\Method", inversedBy="affiliation", cascade={"persist"})
+     * @ORM\JoinColumns({
+     * @ORM\JoinColumn(name="method_id", referencedColumnName="method_id", nullable=true)
+     * })
+     * @Annotation\Exclude()
+     *
+     * @var \Invoice\Entity\Method
+     */
+    private $invoiceMethod;
 
     /**
      * Class constructor.
@@ -416,7 +426,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->loiReminder = new Collections\ArrayCollection();
         $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changerequestCostChange = new Collections\ArrayCollection();
+        $this->changeRequestCostChange = new Collections\ArrayCollection();
         $this->projectLog = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
@@ -756,7 +766,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return int
      */
-    public function getSelfFunded($textual = false)
+    public function getSelfFunded(bool $textual = false)
     {
         if ($textual) {
             return self::$selfFundedTemplates[$this->selfFunded];
@@ -1010,7 +1020,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setProjectReportEffortSpent($projectReportEffortSpent)
+    public function setProjectReportEffortSpent($projectReportEffortSpent): Affiliation
     {
         $this->projectReportEffortSpent = $projectReportEffortSpent;
 
@@ -1022,7 +1032,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function getChangeRequestCostChange()
     {
-        return $this->changerequestCostChange;
+        return $this->changeRequestCostChange;
     }
 
     /**
@@ -1030,9 +1040,9 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setChangeRequestCostChange($changerequestCostChange)
+    public function setChangeRequestCostChange($changerequestCostChange): Affiliation
     {
-        $this->changerequestCostChange = $changerequestCostChange;
+        $this->changeRequestCostChange = $changerequestCostChange;
 
         return $this;
     }
@@ -1090,7 +1100,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setFunded($funded)
+    public function setFunded($funded): Affiliation
     {
         $this->funded = $funded;
 
@@ -1109,7 +1119,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @param Collections\ArrayCollection|\Project\Entity\Contract[] $contract
      * @return Affiliation
      */
-    public function setContract($contract)
+    public function setContract($contract): Affiliation
     {
         $this->contract = $contract;
 
@@ -1135,8 +1145,6 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         return $this;
     }
 
-
-
     /**
      * @return Collections\ArrayCollection|\Project\Entity\Contract\Cost[]
      */
@@ -1149,9 +1157,28 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @param Collections\ArrayCollection|\Project\Entity\Contract\Cost[] $contractCost
      * @return Affiliation
      */
-    public function setContractCost($contractCost)
+    public function setContractCost($contractCost): Affiliation
     {
         $this->contractCost = $contractCost;
+
+        return $this;
+    }
+
+    /**
+     * @return \Invoice\Entity\Method
+     */
+    public function getInvoiceMethod(): ?\Invoice\Entity\Method
+    {
+        return $this->invoiceMethod;
+    }
+
+    /**
+     * @param \Invoice\Entity\Method $invoiceMethod
+     * @return Affiliation
+     */
+    public function setInvoiceMethod(?\Invoice\Entity\Method $invoiceMethod): Affiliation
+    {
+        $this->invoiceMethod = $invoiceMethod;
 
         return $this;
     }

@@ -21,6 +21,7 @@ use InvalidArgumentException;
 use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
 use Program\Entity\Call\Call;
+use Program\Entity\Program;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
 
@@ -301,13 +302,12 @@ class Affiliation extends EntityRepository
 
 
     /**
-     * This function will create a list of affiliations per parent
-     *
      * @param OParent $parent
-     * @param $which
-     * @return Entity\Affiliation[]
+     * @param Program $program
+     * @param int $which
+     * @return array
      */
-    public function findAffiliationByParentAndWhich(OParent $parent, int $which): array
+    public function findAffiliationByParentAndProgramAndWhich(OParent $parent, Program $program, int $which): array
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
@@ -331,6 +331,9 @@ class Affiliation extends EntityRepository
         $qb->join('affiliation_entity_affiliation.parentOrganisation', 'organisation_entity_parent_organisation');
         $qb->andWhere('organisation_entity_parent_organisation.parent = :parent');
         $qb->setParameter('parent', $parent);
+
+        $qb->andWhere('program_entity_call.program = :program');
+        $qb->setParameter('program', $program);
 
         $qb->addOrderBy('program_entity_call.id', 'ASC');
         $qb->addOrderBy('project_entity_project.docRef', 'ASC');

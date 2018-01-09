@@ -43,7 +43,7 @@ class PaymentSheet extends LinkAbstract
         /**
          * We don't need a payment sheet, when we have no versions
          */
-        if (\is_null($latestVersion)) {
+        if (null === $latestVersion) {
             return '';
         }
 
@@ -57,7 +57,7 @@ class PaymentSheet extends LinkAbstract
         $exchangeRate = new ExchangeRate();
         $exchangeRate->setRate(1);
 
-        if (!\is_null($contractVersion) && $useContractData) {
+        if (null !== $contractVersion && $useContractData) {
             $currency = $contractVersion->getContract()->getCurrency();
             $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod($currency, $year, $period);
         }

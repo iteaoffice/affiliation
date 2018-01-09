@@ -9,8 +9,6 @@
  */
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Affiliation\Form;
 
 use Affiliation\Entity;
@@ -65,11 +63,11 @@ class Affiliation extends Form
          */
         $financialContactValueOptions = $technicalContactValueOptions;
         $organisation = $affiliation->getOrganisation();
-        foreach ($organisation->getAffiliation() as $affiliation) {
-            if (!\is_null($affiliation->getFinancial())) {
-                if (\is_null($affiliation->getFinancial()->getContact()->getDateEnd())) {
-                    $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
-                        = $affiliation->getFinancial()->getContact()->getFormName();
+        foreach ($organisation->getAffiliation() as $otherAffiliation) {
+            if (null !== $otherAffiliation->getFinancial()) {
+                if (null === $otherAffiliation->getFinancial()->getContact()->getDateEnd()) {
+                    $financialContactValueOptions[$otherAffiliation->getFinancial()->getContact()->getId()]
+                        = $otherAffiliation->getFinancial()->getContact()->getFormName();
                 }
             }
         }

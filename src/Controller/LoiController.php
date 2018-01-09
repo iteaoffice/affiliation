@@ -34,7 +34,7 @@ class LoiController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -94,7 +94,7 @@ class LoiController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 

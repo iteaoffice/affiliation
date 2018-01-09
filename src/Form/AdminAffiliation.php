@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use DoctrineORMModule\Form\Element\EntitySelect;
+use Invoice\Entity\Method;
 use Organisation\Entity\OParent;
 use Organisation\Service\ParentService;
 use Zend\Form\Element\Radio;
@@ -307,6 +309,27 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
+                'type'    => EntitySelect::class,
+                'name'    => 'invoiceMethod',
+                'options' => [
+                    'target_class'   => Method::class,
+                    'allow_empty'    => true,
+                    'empty_option'   => _("txt-choose-an-invoice-method"),
+                    'object_manager' => $parentService->getEntityManager(),
+                    'label'          => _("txt-invoice-method"),
+                    'find_method'    => [
+                        'name'   => 'findAll',
+                        'params' => [
+                            'criteria' => [],
+                            'orderBy'  => ['method' => 'ASC'],
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $this->add(
+            [
                 'type'       => 'Zend\Form\Element\Submit',
                 'name'       => 'submit',
                 'attributes' => [
@@ -373,6 +396,9 @@ class AdminAffiliation extends Form implements InputFilterProviderInterface
                 'required' => false,
             ],
             'emailCC'                      => [
+                'required' => false,
+            ],
+            'invoiceMethod'                => [
                 'required' => false,
             ],
         ];

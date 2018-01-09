@@ -18,6 +18,7 @@ use General\Entity\Currency;
 use General\Entity\ExchangeRate;
 use Invoice\Entity\Method;
 use Organisation\Entity\Financial;
+use setasign\Fpdi\TcpdfFpdi;
 
 /**
  * Class RenderLoi.
@@ -78,7 +79,6 @@ class RenderPaymentSheet extends AbstractPlugin
             $useContractData
         );
 
-        /** @var \TCPDF $pdf */
         $pdf = new AffiliationPdf();
         $pdf->setTemplate($this->getModuleOptions()->getPaymentSheetTemplate());
         $pdf->AddPage();
@@ -187,19 +187,7 @@ class RenderPaymentSheet extends AbstractPlugin
             [
                 $this->translate("txt-total-person-years"),
                 $this->parseEffort($versionContributionInformation->totalEffort),
-            ],
-            [
-                $this->translate("txt-total-costs"),
-                $this->parseKiloCost($versionContributionInformation->totalCost),
-            ],
-            [
-                $this->translate("txt-average-cost"),
-                ($versionContributionInformation->totalEffort > 0
-                    ? $this->parseKiloCost(
-                        $versionContributionInformation->totalCost
-                        / $versionContributionInformation->totalEffort
-                    ) : '-') . '/PY',
-            ],
+            ]
         ];
 
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
@@ -232,7 +220,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
 
-        if (!\is_null($financialContact)) {
+        if (null !== $financialContact) {
             //Financial contact
             $pdf->writeHTMLCell(
                 0,
@@ -268,7 +256,7 @@ class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translate("txt-billing-address"),
-                    !\is_null($financialAddress) ? sprintf(
+                    null !== $financialAddress ? sprintf(
                         "%s \n %s\n%s\n%s %s\n%s",
                         $this->getOrganisationService()->parseOrganisationWithBranch(
                             $affiliation->getFinancial()
@@ -328,7 +316,7 @@ class RenderPaymentSheet extends AbstractPlugin
                     $this->translate("txt-costs-local-currency"),
                     $this->translate("txt-fee-percentage"),
                     $this->translate("txt-contribution"),
-                    $this->translate("txt-txt-amount-invoiced"),
+                    $this->translate("txt-amount-invoiced"),
                 ];
                 break;
             default:
@@ -618,8 +606,6 @@ class RenderPaymentSheet extends AbstractPlugin
                     $period
                 );
 
-
-
                 if (\count($upcomingDetails) > 0) {
                     $upcomingDetails[] = [
                         '',
@@ -628,8 +614,23 @@ class RenderPaymentSheet extends AbstractPlugin
 
                     ];
 
-                    $pdf->coloredTable($header, $upcomingDetails, [20, 120, 45], true, 12);
+                    $pdf->coloredTable($header, $upcomingDetails, [20, 120, 45], true, 6);
+
+                    $pdf->Ln();
+
+                    $pdf->writeHTMLCell(
+                        0,
+                        0,
+                        '',
+                        '',
+                        $this->getInvoiceService()->parseExchangeRateLine(null, $currency, $year),
+                        0,
+                        0,
+                        0
+                    );
                 }
+
+
 
                 break;
             default:

@@ -67,7 +67,7 @@ class Loi extends AssertionAbstract
                 if ($loi instanceof LoiEntity) {
                     $affiliation = $loi->getAffiliation();
                 }
-                if (\is_null($affiliation)) {
+                if (null === $affiliation) {
                     if (\is_null($id)) {
                         $id = $this->getRouteMatch()->getParam('affiliationId');
                     }

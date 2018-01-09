@@ -42,7 +42,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -210,7 +210,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -299,7 +299,7 @@ class EditController extends AffiliationAbstractController
                 }
 
                 //try to find the organisation based on te country and name
-                if (\is_null($organisation)) {
+                if (null === $organisation) {
                     $organisation = $this->getOrganisationService()
                         ->findOrganisationByNameCountry(
                             trim($formData['organisation']),
@@ -311,7 +311,7 @@ class EditController extends AffiliationAbstractController
                 /**
                  * If the organisation is still not found, create it
                  */
-                if (\is_null($organisation)) {
+                if (null === $organisation) {
                     $organisation = new Organisation();
                     $organisation->setOrganisation($formData['organisation']);
                     $organisation->setCountry(
@@ -476,7 +476,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -563,7 +563,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -632,7 +632,7 @@ class EditController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 

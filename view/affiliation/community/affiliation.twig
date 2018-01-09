@@ -83,19 +83,35 @@
             <dd>{{ affiliation.marketAccess|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
             {% if affiliation.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
                 <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
-                <dd>{% for programDoa in affiliation.organisation.programDoa if programDoa.program.id == project.call.program.id %}
-                        {% if programDoa.dateApproved is null %}
-                            {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
-                            {{ programDoaLink(programDoa,'replace','icon') }}
-                            {{ programDoaLink(programDoa,'download','icon') }}
+                {% if affiliation.parentOrganisation %}
+                    <dd>{% for doa in affiliation.parentOrganisation.parent.doa if doa.program.id == project.call.program.id %}
+                            {% if programDoa.dateApproved is null %}
+                                {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(doa.dateCreated|date("d-m-Y"))|raw }}
+                                {{ parentDoaLink(doa,'replace','icon') }}
+                                {{ parentDoaLink(doa,'download','icon') }}
+                            {% else %}
+                                {{ translate("txt-doa-received-and-approved-on-%s")|format(doa.dateApproved|date("d-m-Y"))|raw }}
+                                {{ parentDoaLink(doa,'download','icon') }}
+                            {% endif %}
                         {% else %}
-                            {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}
-                            {{ programDoaLink(programDoa,'download','icon') }}
-                        {% endif %}
-                    {% else %}
-                        {{ programDoaLink(null,'upload','text', affiliation.organisation, project.call.program) }}
-                    {% endfor %}
-                </dd>
+                            {{ translate("txt-no-doa-could-be-found-for-%s")|format(project.call.program) }}
+                        {% endfor %}
+                    </dd>
+                {% else %}
+                    <dd>{% for programDoa in affiliation.organisation.programDoa if programDoa.program.id == project.call.program.id %}
+                            {% if programDoa.dateApproved is null %}
+                                {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
+                                {{ programDoaLink(programDoa,'replace','icon') }}
+                                {{ programDoaLink(programDoa,'download','icon') }}
+                            {% else %}
+                                {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}
+                                {{ programDoaLink(programDoa,'download','icon') }}
+                            {% endif %}
+                        {% else %}
+                            {{ translate("txt-no-doa-could-be-found-for-%s")|format(project.call.program) }}
+                        {% endfor %}
+                    </dd>
+                {% endif %}
             {% endif %}
 
             {% if affiliation.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}

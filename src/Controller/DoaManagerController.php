@@ -91,7 +91,7 @@ class DoaManagerController extends AffiliationAbstractController
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
 
-        if (\is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
@@ -196,7 +196,7 @@ class DoaManagerController extends AffiliationAbstractController
     public function viewAction(): ViewModel
     {
         $doa = $this->getDoaService()->findDoaById($this->params('id'));
-        if (\is_null($doa)) {
+        if (null === $doa) {
             return $this->notFoundAction();
         }
 
@@ -211,7 +211,7 @@ class DoaManagerController extends AffiliationAbstractController
     public function editAction()
     {
         $doa = $this->getDoaService()->findDoaById($this->params('id'));
-        if (\is_null($doa)) {
+        if (null === $doa) {
             return $this->notFoundAction();
         }
 

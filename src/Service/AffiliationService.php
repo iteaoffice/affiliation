@@ -31,6 +31,7 @@ use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
 use Program\Entity\Call\Call;
+use Program\Entity\Program;
 use Project\Entity\Contract\Version as ContractVersion;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Funding\Source;
@@ -188,7 +189,7 @@ class AffiliationService extends ServiceAbstract
     {
         $financial = $this->findOrganisationFinancial($affiliation);
 
-        if (\is_null($financial)) {
+        if (null === $financial) {
             return null;
         }
 
@@ -217,7 +218,7 @@ class AffiliationService extends ServiceAbstract
         }
 
         // Organisation still not found, try to find it via the old way
-        if (\is_null($organisation)) {
+        if (null === $organisation) {
             $organisation = $affiliation->getOrganisation();
 
             if (!\is_null($affiliation->getFinancial())) {
@@ -391,6 +392,7 @@ class AffiliationService extends ServiceAbstract
 
         switch ($invoiceMethod) {
             case Method::METHOD_FUNDING:
+            case Method::METHOD_FUNDING_MEMBER:
                 return $this->parseContributionBase($affiliation, $version, null, $year, false)
                     * $this->parseContributionFee(
                         $affiliation,
@@ -429,11 +431,7 @@ class AffiliationService extends ServiceAbstract
                     return $fee;
                 }
 
-                return $fee / $this->parseExchangeRate(
-                    $affiliation,
-                    \is_null($exchangeRateYear) ? (int)date('Y') : $exchangeRateYear,
-                    $period
-                );
+                return $fee / $this->parseExchangeRate($affiliation, $exchangeRateYear ?? (int)date('Y'), $period);
         }
 
         return (float)0;
@@ -456,7 +454,7 @@ class AffiliationService extends ServiceAbstract
         $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
 
         //Force the invoiceMethod back to _percentage_ when we don't want to use contract data
-        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (\is_null($contractVersion) || !$useContractData)) {
+        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || !$useContractData)) {
             $invoiceMethod = Method::METHOD_PERCENTAGE;
         }
 
@@ -521,6 +519,7 @@ class AffiliationService extends ServiceAbstract
                     return (float)$effortPerYear[$year];
                 }
                 break;
+            case Method::METHOD_FUNDING_MEMBER:
             case Method::METHOD_FUNDING:
                 return $this->getVersionService()
                     ->findTotalFundingVersionByAffiliationAndVersion($affiliation, $version);
@@ -562,10 +561,15 @@ class AffiliationService extends ServiceAbstract
                     $period
                 );
 
+                //Fallback to 1 when we find no exchange rate
+                if (null === $exchangeRate) {
+                    return 1;
+                }
+
                 return (float)$exchangeRate->getRate();
         }
 
-        return (float)0;
+        return (float)1;
     }
 
 
@@ -593,16 +597,38 @@ class AffiliationService extends ServiceAbstract
                 return $fee->getPercentage() / 100;
             case Method::METHOD_CONTRIBUTION:
                 return $fee->getContribution();
-            case Method::METHOD_FUNDING:
-                if (\is_null($parent)) {
+            case Method::METHOD_FUNDING_MEMBER:
+                if (null === $parent) {
                     throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
                 }
 
+                $invoiceFactor = $this->getParentService()->parseInvoiceFactor($parent) / 100;
+
+                if ($parent->isMember()) {
+                    $membershipFactor = $this->getParentService()->parseMembershipFactor($parent);
+
+                    return $invoiceFactor / (3 * $membershipFactor);
+                }
+
+                $doaFactor = $this->getParentService()->parseDoaFactor($parent);
+
+                if ($doaFactor === 0) {
+                    return 0;
+                }
                 //The payment factor for funding is the factor divided by 3 in three years
-                return ($this->getParentService()->parseInvoiceFactor(
-                    $parent,
-                    $year
-                ) / 100) / (3 * $this->getParentService()->parseMembershipFactor($parent));
+                return $invoiceFactor / (3 * $doaFactor);
+
+
+            case Method::METHOD_FUNDING:
+                if (null === $parent) {
+                    throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
+                }
+
+                //Funding PENTA === 1.5 %
+                $invoiceFactor = 1.5 / 100;
+
+                //The payment factor for funding is the factor divided by 3 in three years
+                return $invoiceFactor / 3;
             default:
                 throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
         }
@@ -956,23 +982,11 @@ class AffiliationService extends ServiceAbstract
     ): string {
         $contributionFactor = $this->parseContributionFactor($affiliation, $year, $period);
 
-        //Omit the exchange rate in the invoice when it is already euro
-        if ($currency->getName() === 'EUR') {
-            return sprintf(
-                $this->translate("txt-%s%%-contribution-for-%s"),
-                number_format($contributionFactor * 100, 0),
-                $year . (\is_null($period) ? '' : '-' . $period . 'H'),
-                $currency->getSymbol()
-            );
-        }
-
         return sprintf(
-            $this->translate("txt-%s%%-contribution-for-%s-exchange-rate-%s-%s-at-%s"),
+            $this->translate("txt-%s%%-contribution-for-%s"),
             number_format($contributionFactor * 100, 0),
-            $year . (\is_null($period) ? '' : '-' . $period . 'H'),
-            $currency->getName(),
-            $exchangeRate->getRate(),
-            \is_null($exchangeRate->getDate()) ?: $exchangeRate->getDate()->format('n F Y')
+            $year,
+            $currency->getSymbol()
         );
     }
 
@@ -1102,17 +1116,20 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param OParent $parent
+     * @param Program $program
      * @param int $which
-     *
-     * @return ArrayCollection|Affiliation[]
+     * @return ArrayCollection
      */
-    public function findAffiliationByParentAndWhich(OParent $parent, $which = self::WHICH_ONLY_ACTIVE): ArrayCollection
-    {
+    public function findAffiliationByParentAndProgramAndWhich(
+        OParent $parent,
+        Program $program,
+        $which = self::WHICH_ONLY_ACTIVE
+    ): ArrayCollection {
         /** @var \Affiliation\Repository\Affiliation $repository */
         $repository = $this->getEntityManager()->getRepository(Affiliation::class);
-        $affiliations = $repository->findAffiliationByParentAndWhich($parent, $which);
+        $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which);
 
-        if (\is_null($affiliations)) {
+        if (null === $affiliations) {
             $affiliations = [];
         }
 

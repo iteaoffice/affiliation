@@ -59,7 +59,7 @@ class Doa extends AssertionAbstract
                 if ($doa instanceof DoaEntity) {
                     $affiliation = $doa->getAffiliation();
                 }
-                if (\is_null($affiliation)) {
+                if (null === $affiliation) {
                     /*
                      * The id can originate from two different params
                      */
