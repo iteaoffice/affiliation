@@ -18,7 +18,6 @@ use General\Entity\Currency;
 use General\Entity\ExchangeRate;
 use Invoice\Entity\Method;
 use Organisation\Entity\Financial;
-use setasign\Fpdi\TcpdfFpdi;
 
 /**
  * Class RenderLoi.
@@ -280,9 +279,9 @@ class RenderPaymentSheet extends AbstractPlugin
                         ? 'No billing organisation known'
                         : (($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
                         === Financial::EMAIL_DELIVERY) ? sprintf(
-                            $this->translate("txt-by-email-to-%s"),
-                            $financialContact->getEmail()
-                        ) : $this->translate("txt-by-postal-mail")),
+                        $this->translate("txt-by-email-to-%s"),
+                        $financialContact->getEmail()
+                    ) : $this->translate("txt-by-postal-mail")),
 
                 ],
             ];
@@ -388,23 +387,29 @@ class RenderPaymentSheet extends AbstractPlugin
                 case Method::METHOD_PERCENTAGE_CONTRACT:
                     // when we have no exchange rate, add a message that the exchange rate has been fixed to one
 
-                    $dueInYear = $contractContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()->findProjectFeeByYear($projectYear)->getPercentage();
+                    //Check first if we have info in this year
+                    if (\array_key_exists($projectYear, $contractContributionInformation->cost)) {
+                        $dueInYear = $contractContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()->findProjectFeeByYear($projectYear)->getPercentage();
 
 
-                    $yearData[] = $this->parseCost($contractContributionInformation->cost[$projectYear], $currency);
+                        $yearData[] = $this->parseCost($contractContributionInformation->cost[$projectYear], $currency);
 
-                    if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
-                        $yearData[] = $this->parsePercent(
-                            $this->getProjectService()->findProjectFeeByYear($projectYear)->getPercentage()
-                        );
-                        $yearData[] = $this->parseCost($dueInYear, $currency);
-                    } else {
-                        $yearData[] = $this->parsePercent(0);
-                        $yearData[] = $this->parseCost(0);
-                    }
+                        if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
+                            $yearData[] = $this->parsePercent(
+                                $this->getProjectService()->findProjectFeeByYear($projectYear)->getPercentage()
+                            );
+                            $yearData[] = $this->parseCost($dueInYear, $currency);
+                        } else {
+                            $yearData[] = $this->parsePercent(0);
+                            $yearData[] = $this->parseCost(0);
+                        }
 
-                    if ($projectYear <= $year) {
-                        $yearData[] = $this->parseCost($this->getAffiliationService()->parseAmountInvoicedInYearByAffiliation($affiliation, $projectYear));
+                        if ($projectYear <= $year) {
+                            $yearData[] = $this->parseCost($this->getAffiliationService()->parseAmountInvoicedInYearByAffiliation($affiliation,
+                                $projectYear));
+                        } else {
+                            $yearData[] = null;
+                        }
                     } else {
                         $yearData[] = null;
                     }
@@ -443,7 +448,6 @@ class RenderPaymentSheet extends AbstractPlugin
             }
 
 
-
             $totalDueBasedOnProjectData += $dueInYear * $dueFactor;
 
             $fundingDetails[] = $yearData;
@@ -480,7 +484,6 @@ class RenderPaymentSheet extends AbstractPlugin
                 $pdf->coloredTable($header, $fundingDetails, [20, 30, 30, 30, 30, 15, 30], true);
                 break;
         }
-
 
 
         $contributionDue = $this->getAffiliationService()
@@ -557,7 +560,8 @@ class RenderPaymentSheet extends AbstractPlugin
                 ];
             }
 
-            $pdf->coloredTable($header, $currentInvoiceDetails, [40, 35, 25, 25, 25, 35], $invoiceMethod !== Method::METHOD_PERCENTAGE_CONTRACT);
+            $pdf->coloredTable($header, $currentInvoiceDetails, [40, 35, 25, 25, 25, 35],
+                $invoiceMethod !== Method::METHOD_PERCENTAGE_CONTRACT);
         }
 
         switch ($invoiceMethod) {
@@ -631,7 +635,6 @@ class RenderPaymentSheet extends AbstractPlugin
                 }
 
 
-
                 break;
             default:
                 $pdf->writeHTMLCell(
@@ -648,7 +651,8 @@ class RenderPaymentSheet extends AbstractPlugin
                     true
                 );
 
-                $balance = $this->getAffiliationService()->parseBalance($affiliation, $latestVersion, $year, $period, $useContractData);
+                $balance = $this->getAffiliationService()->parseBalance($affiliation, $latestVersion, $year, $period,
+                    $useContractData);
                 $total = $this->getAffiliationService()->parseTotal($affiliation, $latestVersion, $year, $period);
                 $contribution = $this->getAffiliationService()->parseContribution(
                     $affiliation,
@@ -739,8 +743,6 @@ class RenderPaymentSheet extends AbstractPlugin
 
                 break;
         }
-
-
 
 
         //$already sent invoices
