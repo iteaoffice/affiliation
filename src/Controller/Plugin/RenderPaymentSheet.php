@@ -279,9 +279,9 @@ class RenderPaymentSheet extends AbstractPlugin
                         ? 'No billing organisation known'
                         : (($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
                         === Financial::EMAIL_DELIVERY) ? sprintf(
-                        $this->translate("txt-by-email-to-%s"),
-                        $financialContact->getEmail()
-                    ) : $this->translate("txt-by-postal-mail")),
+                            $this->translate("txt-by-email-to-%s"),
+                            $financialContact->getEmail()
+                        ) : $this->translate("txt-by-postal-mail")),
 
                 ],
             ];
@@ -405,8 +405,10 @@ class RenderPaymentSheet extends AbstractPlugin
                         }
 
                         if ($projectYear <= $year) {
-                            $yearData[] = $this->parseCost($this->getAffiliationService()->parseAmountInvoicedInYearByAffiliation($affiliation,
-                                $projectYear));
+                            $yearData[] = $this->parseCost($this->getAffiliationService()->parseAmountInvoicedInYearByAffiliation(
+                                $affiliation,
+                                $projectYear
+                            ));
                         } else {
                             $yearData[] = null;
                         }
@@ -560,8 +562,12 @@ class RenderPaymentSheet extends AbstractPlugin
                 ];
             }
 
-            $pdf->coloredTable($header, $currentInvoiceDetails, [40, 35, 25, 25, 25, 35],
-                $invoiceMethod !== Method::METHOD_PERCENTAGE_CONTRACT);
+            $pdf->coloredTable(
+                $header,
+                $currentInvoiceDetails,
+                [40, 35, 25, 25, 25, 35],
+                $invoiceMethod !== Method::METHOD_PERCENTAGE_CONTRACT
+            );
         }
 
         switch ($invoiceMethod) {
@@ -651,8 +657,13 @@ class RenderPaymentSheet extends AbstractPlugin
                     true
                 );
 
-                $balance = $this->getAffiliationService()->parseBalance($affiliation, $latestVersion, $year, $period,
-                    $useContractData);
+                $balance = $this->getAffiliationService()->parseBalance(
+                    $affiliation,
+                    $latestVersion,
+                    $year,
+                    $period,
+                    $useContractData
+                );
                 $total = $this->getAffiliationService()->parseTotal($affiliation, $latestVersion, $year, $period);
                 $contribution = $this->getAffiliationService()->parseContribution(
                     $affiliation,

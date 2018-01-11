@@ -52,7 +52,7 @@ class DoaLink extends LinkAbstract
         );
 
 
-        if (!null === $doa) {
+        if (null !== $doa) {
             $this->addRouterParam('id', $this->getDoa()->getId());
             $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
         }
