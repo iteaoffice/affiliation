@@ -17,7 +17,6 @@ return array(
     'affiliation/doa/replace'                                    => __DIR__ . '//view/affiliation/doa/replace.twig',
     'affiliation/affiliation-manager/edit'                       => __DIR__ . '//view/affiliation/affiliation-manager/edit.twig',
     'affiliation/affiliation-manager/missing-affiliation-parent' => __DIR__ . '//view/affiliation/affiliation-manager/missing-affiliation-parent.twig',
-    'affiliation/affiliation-manager/payment-sheet'              => __DIR__ . '//view/affiliation/affiliation-manager/payment-sheet.twig',
     'affiliation/affiliation-manager/merge'                      => __DIR__ . '//view/affiliation/affiliation-manager/merge.twig',
     'affiliation/affiliation-manager/view'                       => __DIR__ . '//view/affiliation/affiliation-manager/view.twig',
     'affiliation/affiliation-manager/list'                       => __DIR__ . '//view/affiliation/affiliation-manager/list.twig',
