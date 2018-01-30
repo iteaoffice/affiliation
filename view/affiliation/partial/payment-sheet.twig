@@ -4,9 +4,18 @@
     {% set invoiceMethodId = constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE") %}
 {% endif %}
 
+<h2>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }}
+    {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
+        {{ affiliationLink(affiliation,'payment-sheet-pdf-contract','icon', year, period) }}
+    {% else %}
+        {{ affiliationLink(affiliation,'payment-sheet-pdf','icon', year, period) }}
+    {% endif %}
+</h2>
+
 {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
     {{ ztbalert().info(translate("txt-payment-sheet-is-based-on-national-contract-data"))|raw }}
 {% endif %}
+
 
 <table class="table table-striped table-hover table-condensed table-sm">
     <thead>
@@ -274,10 +283,10 @@
     {% set total =  affiliationService.parseTotal(affiliation, version, year, period) %}
     {% set contributionDue =  affiliationService.parseContributionDue(affiliation, version, year, period) %}
     {% set contributionPaid = affiliationService.parseContributionPaid(affiliation, year, period) %}
-    {% set balance = affiliationService.parseBalance(affiliation, version, year, period, useContractData) %}
+    {% set balance = affiliationService.parseBalance(affiliation, version, year, period, false) %}
 
-    {% set contribution = affiliationService.parseContribution(affiliation, version, null, year, period, useContractData) %}
-    {% set contributionRaw = affiliationService.parseContribution(affiliation, version, null, year, period, useContractData, true) %}
+    {% set contribution = affiliationService.parseContribution(affiliation, version, null, year, period, false) %}
+    {% set contributionRaw = affiliationService.parseContribution(affiliation, version, null, year, period, false, true) %}
 
     {% set hasAlreadyPaidInvoices = false %}
     {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.invoice.dayBookNumber and affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period) %}

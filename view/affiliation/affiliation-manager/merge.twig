@@ -17,8 +17,8 @@
     <dt>{{ translate("txt-status") }}</dt>
     <dd>{{ projectService.parseStatus(affiliation.project) }}</dd>
     <dt>{{ translate("txt-project-leader") }}</dt>
-    <dd>{{ contactLink(project.contact,'view-admin','name') }} <a
-                href="mailto:{{ project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+    <dd>{{ contactLink(affiliation.project.contact,'view-admin','name') }} <a
+                href="mailto:{{ affiliation.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
     </dd>
 </dl>
 
@@ -63,9 +63,7 @@
         <tbody>
         <tr class="success">
             <td>
-                {% if merge %}
-                    {{ translate("txt-main") }}:
-                {% endif %}
+                {{ translate("txt-main") }}:
             </td>
             <td>
                 {{ affiliationLink(affiliation,'view-admin', 'name') }}

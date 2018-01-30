@@ -62,6 +62,14 @@ class PaymentSheet extends LinkAbstract
             $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod($currency, $year, $period);
         }
 
+        $invoiceMethod = $affiliation->getInvoiceMethod();
+        if (null === $invoiceMethod) {
+            $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod(
+                $affiliation->getProject()
+                    ->getCall()->getProgram()
+            );
+        }
+
         return $this->getRenderer()->render(
             'affiliation/partial/payment-sheet',
             [
@@ -85,10 +93,7 @@ class PaymentSheet extends LinkAbstract
                 'contactService'                  => $this->getContactService(),
                 'financialContact'                => $this->getAffiliationService()->getFinancialContact($affiliation),
                 'organisationService'             => $this->getOrganisationService(),
-                'invoiceMethod'                   => $this->getInvoiceService()->findInvoiceMethod(
-                    $affiliation->getProject()
-                        ->getCall()->getProgram()
-                ),
+                'invoiceMethod'                   => $invoiceMethod,
                 'invoiceService'                  => $this->getInvoiceService(),
                 'versionService'                  => $this->getVersionService(),
                 'versionContributionInformation'  => $this->getVersionService()

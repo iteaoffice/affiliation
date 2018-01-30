@@ -14,8 +14,6 @@
  */
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Affiliation\Controller\Factory;
 
 use Affiliation\Controller\AffiliationAbstractController;
@@ -35,7 +33,9 @@ use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
 use Program\Options\ModuleOptions as ProgramModuleOptions;
+use Program\Service\CallService;
 use Program\Service\ProgramService;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
@@ -58,8 +58,11 @@ final class ControllerFactory implements FactoryInterface
      *
      * @return AffiliationAbstractController
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ): AffiliationAbstractController {
         /** @var AffiliationAbstractController $controller */
         $controller = new $requestedName($options);
 
@@ -78,6 +81,10 @@ final class ControllerFactory implements FactoryInterface
         /** @var VersionService $versionService */
         $versionService = $container->get(VersionService::class);
         $controller->setVersionService($versionService);
+
+        /** @var ContractService $contractService */
+        $contractService = $container->get(ContractService::class);
+        $controller->setContractService($contractService);
 
         /** @var WorkpackageService $workpackageService */
         $workpackageService = $container->get(WorkpackageService::class);
@@ -122,6 +129,10 @@ final class ControllerFactory implements FactoryInterface
         /** @var DoaService $doaService */
         $doaService = $container->get(DoaService::class);
         $controller->setDoaService($doaService);
+
+        /** @var CallService $callService */
+        $callService = $container->get(CallService::class);
+        $controller->setCallService($callService);
 
         /** @var EmailService $emailService */
         $emailService = $container->get(EmailService::class);

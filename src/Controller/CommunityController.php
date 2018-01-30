@@ -45,9 +45,13 @@ class CommunityController extends AffiliationAbstractController
                 'affiliation'           => $affiliation,
                 'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation($affiliation),
                 'projectService'        => $this->getProjectService(),
+                'contractService'       => $this->getContractService(),
                 'workpackageService'    => $this->getWorkpackageService(),
                 'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(
                     $affiliation->getProject()
+                ),
+                'contractVersion'       => $this->getContractService()->findLatestContractVersionByAffiliation(
+                    $affiliation
                 ),
                 'versionType'           => $this->getProjectService()->getNextMode(
                     $affiliation->getProject()
@@ -58,6 +62,8 @@ class CommunityController extends AffiliationAbstractController
                 'invoiceService'        => $this->getInvoiceService(),
                 'contactService'        => $this->getContactService(),
                 'organisationService'   => $this->getOrganisationService(),
+                'parentService'         => $this->getParentService(),
+                'callService'           => $this->getCallService(),
                 'invoiceViaParent'      => $this->getInvoiceModuleOptions()->getInvoiceViaParent()
             ]
         );
@@ -82,7 +88,7 @@ class CommunityController extends AffiliationAbstractController
             [
                 'year'               => $year,
                 'period'             => $period,
-                'useContractData'    => !\is_null($contract),
+                'useContractData'    => null !== $contract,
                 'affiliationService' => $this->getAffiliationService(),
                 'affiliation'        => $affiliation,
 
@@ -108,7 +114,12 @@ class CommunityController extends AffiliationAbstractController
         $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
-        $renderPaymentSheet = $this->renderPaymentSheet()->render($affiliation, $year, $period, null !== $this->params('contract'));
+        $renderPaymentSheet = $this->renderPaymentSheet()->render(
+            $affiliation,
+            $year,
+            $period,
+            null !== $this->params('contract')
+        );
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")

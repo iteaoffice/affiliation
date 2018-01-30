@@ -9,8 +9,6 @@
  */
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Affiliation\Form;
 
 use Zend\Form\Form;
@@ -80,6 +78,7 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                 ],
                 'attributes' => [
                     'id'    => 'mainContribution',
+                    'rows'  => 8,
                     'class' => 'form-control',
                 ],
             ]

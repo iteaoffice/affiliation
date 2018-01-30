@@ -98,8 +98,7 @@
                 <dd>{{ translate("txt-partner-is-self-funded-since-%s")|format(affiliation.dateSelfFunded|string_date) }}</dd>
             {% endif %}
 
-            <dt>{{ translate("txt-invoice-method") }}</dt>
-            <dd>{{ affiliation.invoiceMethod.method|default(translate("txt-no-invoice-method-forced")) }}</dd>
+
 
 
             <dt>{{ translate("txt-position-on-value-chain") }}</dt>
@@ -119,7 +118,7 @@
                     <dd>{% for doa in affiliation.parentOrganisation.parent.doa if doa.program.id == project.call.program.id %}
                             {% if programDoa.dateApproved is null %}
                                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(doa.dateCreated|date("d-m-Y"))|raw }}
-                                {{ parentDoaLink(doa,'replace','icon') }}
+                                {#{{ parentDoaLink(doa,'replace','icon') }}#}
                                 {{ parentDoaLink(doa,'download','icon') }}
                             {% else %}
                                 {{ translate("txt-doa-received-and-approved-on-%s")|format(doa.dateApproved|date("d-m-Y"))|raw }}
@@ -196,6 +195,8 @@
                     <dd>{{ affiliation.financial.branch }}</dd>
                 {% endif %}
             {% endif %}
+            <dt>{{ translate("txt-invoice-method") }}</dt>
+            <dd>{{ affiliation.invoiceMethod.method|default(translate("txt-no-invoice-method-forced")) }}</dd>
         </dl>
 
         {{ affiliationLink|raw }}
@@ -313,8 +314,6 @@
     <div class="tab-pane" role="tabpanel" id="paymentsheet">
         {% set year =  "now"|date('Y') %}
         {% set period = ("now"|date("n") <= 6) ? 1 : 2 %}
-
-        <h2>{{ translate("txt-payment-sheet-year-%s-period-%s")|format(year, period) }} {{ affiliationLink(affiliation,'payment-sheet-pdf','icon', year, period) }}</h2>
 
         {{ paymentSheet(affiliation, year, period) }}
 

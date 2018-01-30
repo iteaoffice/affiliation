@@ -73,7 +73,7 @@ class DoaLink extends LinkAbstract
         /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
-        if (!\is_null($affiliation)) {
+        if (null !== $affiliation) {
             $this->getDoa()->setAffiliation($affiliation);
         }
     }

@@ -94,7 +94,7 @@ class AffiliationService extends ServiceAbstract
      */
     public function hasDoa(Affiliation $affiliation): bool
     {
-        return !\is_null($affiliation->getDoa());
+        return null !== $affiliation->getDoa();
     }
 
     /**
@@ -104,7 +104,33 @@ class AffiliationService extends ServiceAbstract
      */
     public function hasLoi(Affiliation $affiliation): bool
     {
-        return !\is_null($affiliation->getLoi());
+        return null !== $affiliation->getLoi();
+    }
+
+    /**
+     * Returns true when the affiliation has a contract with a version
+     *
+     * @param Affiliation $affiliation
+     * @return bool
+     */
+    public function useActiveContract(Affiliation $affiliation): bool
+    {
+        /** Only use the contract is the flag (invoice method) is set */
+        if (null === $affiliation->getInvoiceMethod() || $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE_CONTRACT) {
+            return false;
+        }
+
+        if ($affiliation->getContract()->isEmpty()) {
+            return false;
+        }
+
+        foreach ($affiliation->getContract() as $contract) {
+            if (!$contract->getVersion()->isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -403,12 +429,14 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_CONTRIBUTION:
             case Method::METHOD_PERCENTAGE:
                 if (null === $version) {
-                    throw new \InvalidArgumentException("The version cannot be null for parsing the contribution");
+                    return 0;
                 }
 
-                if (\is_null($period)) {
-                    return $this->parseContributionFee($affiliation, $year);
-                }
+                //@todo: have no idea what this statement is doing here, should be releated to the calculation of PENTA
+                //if (null !== $period) {
+                //return $this->parseContributionFee($affiliation, $year);
+                //}
+
 
                 return $this->parseContributionBase($affiliation, $version, null, $year, false)
                     * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
@@ -418,7 +446,7 @@ class AffiliationService extends ServiceAbstract
 
             case Method::METHOD_PERCENTAGE_CONTRACT:
                 if (null === $contractVersion) {
-                    throw new \InvalidArgumentException("The contract version cannot be null for parsing the contribution");
+                    return 0;
                 }
 
                 $fee = $this->parseContributionBase($affiliation, null, $contractVersion, $year)
@@ -446,6 +474,20 @@ class AffiliationService extends ServiceAbstract
      */
     public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
     {
+        //When the partnre has an invoice method defined, we only return it when the $useContractData is set to
+        //True and otherwise we will return the normal
+        if (null !== $affiliation->getInvoiceMethod()) {
+            if ($affiliation->getInvoiceMethod()->getId() === Method::METHOD_PERCENTAGE_CONTRACT) {
+                if ($useContractData) {
+                    return Method::METHOD_PERCENTAGE_CONTRACT;
+                }
+
+                return Method::METHOD_PERCENTAGE;
+            }
+
+            return $affiliation->getInvoiceMethod()->getId();
+        }
+
         $invoiceMethod = (int)$this->getInvoiceService()->findInvoiceMethod(
             $affiliation->getProject()->getCall()->getProgram()
         )->getId();
@@ -615,6 +657,7 @@ class AffiliationService extends ServiceAbstract
                 if ($doaFactor === 0) {
                     return 0;
                 }
+
                 //The payment factor for funding is the factor divided by 3 in three years
                 return $invoiceFactor / (3 * $doaFactor);
 

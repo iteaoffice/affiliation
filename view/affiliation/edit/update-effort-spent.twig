@@ -85,20 +85,6 @@ report.parseName()
 <script type="text/javascript">
     $(function () {
 
-        //        $('#marketAccess').simplyCountable({
-        //            counter:            '#counter',
-        //            countType:          'characters',
-        //            maxCount:           140,
-        //            strictMax:          false,
-        //            countDirection:     'down',
-        //            safeClass:          'safe',
-        //            overClass:          'over',
-        //            thousandSeparator:  ',',
-        //            onOverCount:        function(count, countable, counter){},
-        //            onSafeCount:        function(count, countable, counter){},
-        //            onMaxCount:         function(count, countable, counter){}
-        //        });
-
         var options_description = {
             'maxCharacterSize': 500,
             'originalStyle': 'originalDisplayInfo',
@@ -107,13 +93,6 @@ report.parseName()
             'displayFormat': '#left characters left'
         };
 
-        var options_main_contribution = {
-            'maxCharacterSize': 250,
-            'originalStyle': 'originalDisplayInfo',
-            'warningStyle': 'originalDisplayInfo',
-            'warningNumber': 40,
-            'displayFormat': '#left characters left'
-        };
 
         $('#effort').textareaCount(options_description);
         var options_marketaccess = {
@@ -123,8 +102,6 @@ report.parseName()
             'warningNumber': 40,
             'displayFormat': '#left characters left'
         };
-        $('#marketAccess').textareaCount(options_marketaccess);
-        $('#mainContribution').textareaCount(options_main_contribution);
         $('#summary').textareaCount(options_description);
         $('#comment').textareaCount(options_description);
     });

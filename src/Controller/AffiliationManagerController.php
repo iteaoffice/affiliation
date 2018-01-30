@@ -212,7 +212,7 @@ class AffiliationManagerController extends AffiliationAbstractController
         $request = $this->getRequest();
         $mainAffiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
 
-        if (\is_null($mainAffiliation)) {
+        if (null === $mainAffiliation) {
             return $this->notFoundAction();
         }
 

@@ -637,11 +637,16 @@ class EditController extends AffiliationAbstractController
         }
 
         $report = $this->getReportService()->findReportById($this->params('report'));
-        if (\is_null($report)) {
+        if (null === $report) {
             return $this->notFoundAction();
         }
 
         $latestVersion = $this->getProjectService()->getLatestProjectVersion($affiliation->getProject());
+
+        if (null === $latestVersion) {
+            return $this->notFoundAction();
+        }
+
         $totalPlannedEffort = $this->getVersionService()
             ->findTotalEffortByAffiliationAndVersionUpToReportingPeriod(
                 $affiliation,
