@@ -933,9 +933,12 @@ class AffiliationService extends ServiceAbstract
                 $period = null;
             }
 
-            if ($this->parseAmountInvoicedInYearByAffiliation($affiliation, $otherYear) !== 0.0) {
+            //@todo: This goes wrong for 2018H2. The problem is here that the 2017 is invoiced in 2018 so
+            //cannot be easily skipped now. I need to find another way
+            if ($this->affiliationHasInvoiceUpToYearAndPeriod($affiliation, $otherYear, $period)) {
                 break;
             }
+
 
             //Derive the contribution
             $contribution = $this->parseContribution(
@@ -958,6 +961,7 @@ class AffiliationService extends ServiceAbstract
                 true
             );
 
+
             if ($contribution !== 0.0) {
                 $line = new \stdClass();
                 $line->year = $otherYear;
@@ -976,6 +980,7 @@ class AffiliationService extends ServiceAbstract
                 $lines[] = $line;
             }
         }
+
 
         return $lines;
     }
@@ -1051,6 +1056,31 @@ class AffiliationService extends ServiceAbstract
         }
 
         return $amountInvoiced;
+    }
+
+    /**
+     * This function checks if an affiliation (partner) has an invoice
+     *
+     * @param Affiliation $affiliation
+     * @param int $year
+     * @param int $period
+     * @return bool
+     */
+    public function affiliationHasInvoiceUpToYearAndPeriod(Affiliation $affiliation, int $year, ?int $period): bool
+    {
+        $hasInvoice = false;
+
+        foreach ($affiliation->getInvoice() as $affiliationInvoice) {
+            if (null === $period && $affiliationInvoice->getYear() < $year) {
+                $hasInvoice = true;
+            }
+
+            if (null !== $period && $affiliationInvoice->getYear() <= $year && $affiliationInvoice->getPeriod() < $period) {
+                $hasInvoice = true;
+            }
+        }
+
+        return $hasInvoice;
     }
 
     /**
