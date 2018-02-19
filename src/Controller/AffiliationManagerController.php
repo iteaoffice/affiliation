@@ -114,10 +114,12 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                 // Set facet data in the form
                 if ($request->isGet()) {
-                    $form->setFacetLabels([
-                        'is_active'                  => $this->translate('txt-active'),
-                        'organisation_country_group' => $this->translate('txt-country'),
-                    ]);
+                    $form->setFacetLabels(
+                        [
+                            'is_active'                  => $this->translate('txt-active'),
+                            'organisation_country_group' => $this->translate('txt-country'),
+                        ]
+                    );
                     $form->addSearchResults(
                         $searchService->getQuery()->getFacetSet(),
                         $searchService->getResultSet()->getFacetSet()
@@ -199,6 +201,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 'versionService'        => $this->getVersionService(),
                 'invoiceService'        => $this->getInvoiceService(),
                 'organisationService'   => $this->getOrganisationService(),
+                'callService'           => $this->getCallService()
             ]
         );
     }
@@ -227,12 +230,14 @@ class AffiliationManagerController extends AffiliationAbstractController
 
             if ($result['success'] === true) {
                 $this->flashMessenger()->setNamespace(FlashMessenger::NAMESPACE_SUCCESS)
-                    ->addMessage(sprintf(
-                        $this->translate("txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful"),
-                        $mainAffiliation->getOrganisation(),
-                        $otherOrganisation,
-                        $mainAffiliation->getProject()
-                    ));
+                    ->addMessage(
+                        sprintf(
+                            $this->translate("txt-merge-of-affiliation-%s-and-%s-in-project-%s-was-successful"),
+                            $mainAffiliation->getOrganisation(),
+                            $otherOrganisation,
+                            $mainAffiliation->getProject()
+                        )
+                    );
             } else {
                 $this->flashMessenger()->setNamespace(FlashMessenger::NAMESPACE_ERROR)
                     ->addMessage(sprintf($this->translate('txt-merge-failed:-%s'), $result['errorMessage']));
@@ -244,13 +249,15 @@ class AffiliationManagerController extends AffiliationAbstractController
             );
         }
 
-        return new ViewModel([
-            'affiliationService'  => $this->getAffiliationService(),
-            'affiliation'         => $mainAffiliation,
-            'merge'               => isset($data['merge']) ? $data['merge'] : null,
-            'projectService'      => $this->getProjectService(),
-            'organisationService' => $this->getOrganisationService(),
-        ]);
+        return new ViewModel(
+            [
+                'affiliationService'  => $this->getAffiliationService(),
+                'affiliation'         => $mainAffiliation,
+                'merge'               => isset($data['merge']) ? $data['merge'] : null,
+                'projectService'      => $this->getProjectService(),
+                'organisationService' => $this->getOrganisationService(),
+            ]
+        );
     }
 
     /**
@@ -276,7 +283,8 @@ class AffiliationManagerController extends AffiliationAbstractController
         $formData['valueChain'] = $affiliation->getValueChain();
         $formData['marketAccess'] = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();
-        $formData['invoiceMethod'] = null === $affiliation->getInvoiceMethod() ? null : $affiliation->getInvoiceMethod()->getId();
+        $formData['invoiceMethod'] = null === $affiliation->getInvoiceMethod() ? null
+            : $affiliation->getInvoiceMethod()->getId();
 
         // Try to populate the form based on the organisation known already
         if (\is_null($affiliation->getParentOrganisation())) {
@@ -378,8 +386,10 @@ class AffiliationManagerController extends AffiliationAbstractController
                             $parentOrganisation = new Organisation();
                             $parentOrganisation->setOrganisation($organisation);
                             $parentOrganisation->setParent($parent);
-                            $parentOrganisation->setContact($this->getContactService()
-                                ->findContactById($formData['contact']));
+                            $parentOrganisation->setContact(
+                                $this->getContactService()
+                                    ->findContactById($formData['contact'])
+                            );
                             $this->getParentService()->newEntity($parentOrganisation);
                         }
                         $affiliation->setParentOrganisation($parentOrganisation);
@@ -406,12 +416,14 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                 // The partner has been updated now, so we need to store the name of the organiation and the project
                 if (!\is_null($parentOrganisation)
-                    && \is_null($this->getOrganisationService()
-                        ->findOrganisationNameByNameAndProject(
-                            $parentOrganisation->getOrganisation(),
-                            $organisation->getOrganisation(),
-                            $affiliation->getProject()
-                        ))
+                    && \is_null(
+                        $this->getOrganisationService()
+                            ->findOrganisationNameByNameAndProject(
+                                $parentOrganisation->getOrganisation(),
+                                $organisation->getOrganisation(),
+                                $affiliation->getProject()
+                            )
+                    )
                 ) {
                     $name = new Name();
                     $name->setOrganisation($parentOrganisation->getOrganisation());
@@ -469,10 +481,12 @@ class AffiliationManagerController extends AffiliationAbstractController
                     $this->getAffiliationService()->updateEntity($financial);
                 }
 
-                $this->flashMessenger()->setNamespace('success')->addMessage(sprintf(
-                    $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                    $affiliation
-                ));
+                $this->flashMessenger()->setNamespace('success')->addMessage(
+                    sprintf(
+                        $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                        $affiliation
+                    )
+                );
 
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
@@ -576,12 +590,14 @@ class AffiliationManagerController extends AffiliationAbstractController
             }
         }
 
-        return new ViewModel([
-            'affiliation'    => $affiliation,
-            'projectService' => $this->getProjectService(),
-            'contact'        => $contact,
-            'form'           => $form,
-        ]);
+        return new ViewModel(
+            [
+                'affiliation'    => $affiliation,
+                'projectService' => $this->getProjectService(),
+                'contact'        => $contact,
+                'form'           => $form,
+            ]
+        );
     }
 
     /**
@@ -649,12 +665,14 @@ class AffiliationManagerController extends AffiliationAbstractController
         $form = new MissingAffiliationParentFilter();
         $form->setData(['filter' => $filterPlugin->getFilter()]);
 
-        return new ViewModel([
-            'paginator'     => $paginator,
-            'form'          => $form,
-            'encodedFilter' => urlencode($filterPlugin->getHash()),
-            'order'         => $filterPlugin->getOrder(),
-            'direction'     => $filterPlugin->getDirection(),
-        ]);
+        return new ViewModel(
+            [
+                'paginator'     => $paginator,
+                'form'          => $form,
+                'encodedFilter' => urlencode($filterPlugin->getHash()),
+                'order'         => $filterPlugin->getOrder(),
+                'direction'     => $filterPlugin->getDirection(),
+            ]
+        );
     }
 }

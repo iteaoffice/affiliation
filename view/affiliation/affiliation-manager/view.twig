@@ -64,7 +64,9 @@
             <dd>{{ countryLink(organisation.country,'view-admin','name') }}</dd>
             {% if affiliation.parentOrganisation %}
                 <dt>{{ translate("txt-parent-name") }}</dt>
-                <dd>{{ parentLink(affiliation.parentOrganisation.parent,'view', 'parent') }} ({{ translate(affiliation.parentOrganisation.parent.getMemberType(true)) }})</dd>
+                <dd>{{ parentLink(affiliation.parentOrganisation.parent,'view', 'parent') }}
+                    ({{ translate(affiliation.parentOrganisation.parent.getMemberType(true)) }})
+                </dd>
             {% endif %}
             {% if affiliation.parentOrganisation %}
                 <dt>{{ translate("txt-parent-organisation-name") }}</dt>
@@ -99,8 +101,6 @@
             {% endif %}
 
 
-
-
             <dt>{{ translate("txt-position-on-value-chain") }}</dt>
             <dd>{{ affiliation.valueChain|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
             <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
@@ -112,7 +112,7 @@
         </dl>
 
         <dl class="dl-horizontal">
-            {% if project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
+            {% if callService.requireDoaPerProgram(affiliation.project.call) %}
                 <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
                 {% if affiliation.parentOrganisation %}
                     <dd>{% for doa in affiliation.parentOrganisation.parent.doa if doa.program.id == project.call.program.id %}
@@ -145,7 +145,7 @@
                 {% endif %}
             {% endif %}
 
-            {% if project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}
+            {% if callService.requireDoaPerProject(affiliation.project.call) %}
                 <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
                 <dd>
                     {% if not affiliationService.hasDoa(affiliation) %}
@@ -162,25 +162,27 @@
                 </dd>
             {% endif %}
 
-            <dt>{{ translate("txt-letter-of-intent") }}</dt>
-            <dd>
-                {% if not affiliationService.hasLoi(affiliation) %}
-                    {{ loiLink(null,'submit','text', affiliation) }}
-                {% elseif affiliation.loi.dateApproved is null %}
-                    {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
-                    format(affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
-                    {{ loiLink(affiliation.loi,'edit-admin','icon') }}
-                    {% if affiliation.loi.object %}
-                        {{ loiLink(affiliation.loi,'download','icon') }}
+            {% if callService.requireLoi(affiliation.project.call) %}
+                <dt>{{ translate("txt-letter-of-intent") }}</dt>
+                <dd>
+                    {% if not affiliationService.hasLoi(affiliation) %}
+                        {{ loiLink(null,'submit','text', affiliation) }}
+                    {% elseif affiliation.loi.dateApproved is null %}
+                        {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
+                        format(affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
+                        {{ loiLink(affiliation.loi,'edit-admin','icon') }}
+                        {% if affiliation.loi.object %}
+                            {{ loiLink(affiliation.loi,'download','icon') }}
+                        {% endif %}
+                    {% else %}
+                        {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliation.loi.dateApproved|string_date) }}
+                        {% if affiliation.loi.object %}
+                            {{ loiLink(affiliation.loi,'download','icon') }}
+                        {% endif %}
+                        {{ loiLink(affiliation.loi,'edit-admin','icon') }}
                     {% endif %}
-                {% else %}
-                    {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliation.loi.dateApproved|string_date) }}
-                    {% if affiliation.loi.object %}
-                        {{ loiLink(affiliation.loi,'download','icon') }}
-                    {% endif %}
-                    {{ loiLink(affiliation.loi,'edit-admin','icon') }}
-                {% endif %}
-            </dd>
+                </dd>
+            {% endif %}
             <dt>{{ translate("txt-technical-contact") }}</dt>
             <dd>{{ contactLink(affiliation.contact,'view-admin','name') }} <a
                         href="mailto:{{ affiliation.contact.email }}"><i

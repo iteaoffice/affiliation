@@ -644,7 +644,7 @@ class AffiliationService extends ServiceAbstract
                     throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
                 }
 
-                $invoiceFactor = $this->getParentService()->parseInvoiceFactor($parent) / 100;
+                $invoiceFactor = $this->getParentService()->parseInvoiceFactor($parent, $affiliation->getProject()->getCall()->getProgram()) / 100;
 
                 if ($parent->isMember()) {
                     $membershipFactor = $this->getParentService()->parseMembershipFactor($parent);
@@ -756,6 +756,13 @@ class AffiliationService extends ServiceAbstract
         ?int $period = null,
         bool $useContractData = true
     ): float {
+        //Based on the invoice method we will only have a balance when we are working with percentage
+        $invoiceMethod = $this->parseInvoiceMethod($affiliation);
+        if (\in_array($invoiceMethod, [Method::METHOD_FUNDING, Method::METHOD_FUNDING_MEMBER], true)) {
+            return 0;
+        }
+
+
         return $this->parseContributionDue(
             $affiliation,
             $version,

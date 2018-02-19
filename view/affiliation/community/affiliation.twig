@@ -82,7 +82,7 @@
             <dd>{{ affiliation.strategicImportance|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
             <dt>{{ translate("txt-market-access") }}</dt>
             <dd>{{ affiliation.marketAccess|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
-            {% if affiliation.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROGRAM') %}
+            {% if callService.requireDoaPerProgram(affiliation.project.call) %}
                 <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
                 {% if affiliation.parentOrganisation %}
                     <dd>{% for doa in affiliation.parentOrganisation.parent.doa if doa.program.id == project.call.program.id %}
@@ -115,7 +115,7 @@
                 {% endif %}
             {% endif %}
 
-            {% if affiliation.project.call.doaRequirement is constant('\\Program\\Entity\\Call\\Call::DOA_REQUIREMENT_PER_PROJECT') %}
+            {% if callService.requireDoaPerProject(affiliation.project.call) %}
                 <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
                 <dd>
                     {% if not affiliationService.hasDoa(affiliation) %}
