@@ -27,7 +27,7 @@ use Zend\View\Model\ViewModel;
 class DoaController extends AffiliationAbstractController
 {
     /**
-     * @return array|\Zend\Http\Response|ViewModel
+     * @return \Zend\Http\Response|ViewModel
      */
     public function uploadAction()
     {
