@@ -17,8 +17,10 @@ use Contact\Service\ContactService;
 use Zend\Form\Element\Email;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\Uri\Uri;
 use Zend\Validator\Callback;
 use Zend\Validator\EmailAddress;
+
 
 /**
  * Class AddAssociate
@@ -33,7 +35,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
     protected $extensions = [];
 
     /**
-     * @param Affiliation $affiliation
+     * @param Affiliation    $affiliation
      * @param ContactService $contactService
      */
     public function __construct(Affiliation $affiliation, ContactService $contactService)
@@ -52,13 +54,27 @@ class AddAssociate extends Form implements InputFilterProviderInterface
         foreach ($affiliation->getOrganisation()->getContactOrganisation() as $contactOrganisation) {
             $email = $contactOrganisation->getContact()->getEmail();
             $validator = new EmailAddress();
-            if ($validator->isValid($email) && !\in_array(
-                $validator->hostname,
-                ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],
-                true
-            )) {
+            if ($validator->isValid($email)
+                && !\in_array(
+                    $validator->hostname,
+                    ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],
+                    true
+                )
+            ) {
                 $this->extensions[$validator->hostname] = $validator->hostname;
             }
+        }
+
+        foreach ($affiliation->getOrganisation()->getWeb() as $web) {
+            $validator = new Uri();
+
+            //Strip any www.
+            $web = str_replace('www.', '', $web->getWeb());
+
+            $parse = $validator->parse($web);
+
+            $this->extensions[$parse->getHost()] = $parse->getHost();
+
         }
 
         natcasesort($contacts);
@@ -150,7 +166,7 @@ class AddAssociate extends Form implements InputFilterProviderInterface
     {
         return [
             'contact' => [
-                'required' => false,
+                'required'   => false,
                 'validators' => [
                     new \Zend\Validator\NotEmpty(\Zend\Validator\NotEmpty::INTEGER),
                 ],
@@ -162,10 +178,11 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                     new Callback(
                         [
                             'messages' => [
-                                Callback::INVALID_VALUE => 'The given email address (%value%) should have (one of) the extension(s): ' . implode(
-                                    ', ',
-                                    $this->extensions
-                                ),
+                                Callback::INVALID_VALUE => 'The given email address (%value%) should have (one of) the extension(s): '
+                                    . implode(
+                                        ', ',
+                                        $this->extensions
+                                    ),
                             ],
                             'callback' => function ($value) {
                                 $validator = new EmailAddress();
