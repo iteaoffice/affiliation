@@ -111,12 +111,15 @@ class AffiliationService extends ServiceAbstract
      * Returns true when the affiliation has a contract with a version
      *
      * @param Affiliation $affiliation
+     *
      * @return bool
      */
     public function useActiveContract(Affiliation $affiliation): bool
     {
         /** Only use the contract is the flag (invoice method) is set */
-        if (null === $affiliation->getInvoiceMethod() || $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE_CONTRACT) {
+        if (null === $affiliation->getInvoiceMethod()
+            || $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE_CONTRACT
+        ) {
             return false;
         }
 
@@ -136,8 +139,8 @@ class AffiliationService extends ServiceAbstract
     /**
      * Upload a LOI to the system and store it for the user.
      *
-     * @param array $file
-     * @param Contact $contact
+     * @param array       $file
+     * @param Contact     $contact
      * @param Affiliation $affiliation
      *
      * @return Loi
@@ -162,7 +165,7 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Contact $contact
+     * @param Contact     $contact
      * @param Affiliation $affiliation
      *
      * @return Loi
@@ -351,9 +354,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param Version $version
-     * @param int $year
-     * @param int|null $period
+     * @param Version     $version
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -374,10 +378,11 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
+     * @param Affiliation     $affiliation
      * @param ContractVersion $version
-     * @param int $year
-     * @param int|null $period
+     * @param int             $year
+     * @param int|null        $period
+     *
      * @return float
      */
     public function parseContractTotal(
@@ -390,14 +395,15 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
-     * @param Version $version
+     * @param Affiliation     $affiliation
+     * @param Version         $version
      * @param ContractVersion $contractVersion
-     * @param int $year
-     * @param int|null $period
-     * @param bool $useContractData
-     * @param bool $omitExchangeRate
-     * @param int|null $exchangeRateYear
+     * @param int             $year
+     * @param int|null        $period
+     * @param bool            $useContractData
+     * @param bool            $omitExchangeRate
+     * @param int|null        $exchangeRateYear
+     *
      * @return float
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -469,7 +475,8 @@ class AffiliationService extends ServiceAbstract
      * This function find the invoice method, but does a downgrade to percentage when there is no contract
      *
      * @param Affiliation $affiliation
-     * @param bool $useContractData
+     * @param bool        $useContractData
+     *
      * @return int
      */
     public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
@@ -504,11 +511,12 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
-     * @param Version $version
+     * @param Affiliation     $affiliation
+     * @param Version         $version
      * @param ContractVersion $contractVersion
-     * @param int $year
-     * @param bool $useContractData
+     * @param int             $year
+     * @param bool            $useContractData
+     *
      * @return float
      */
     public function parseContributionBase(
@@ -529,7 +537,9 @@ class AffiliationService extends ServiceAbstract
         switch ($invoiceMethod) {
             case Method::METHOD_PERCENTAGE:
                 if (null === $version) {
-                    throw new \InvalidArgumentException("The contract version cannot be null for parsing the contribution base");
+                    throw new \InvalidArgumentException(
+                        "The contract version cannot be null for parsing the contribution base"
+                    );
                 }
 
                 $costsPerYear
@@ -542,7 +552,9 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_PERCENTAGE_CONTRACT:
                 if (null === $contractVersion) {
-                    throw new \InvalidArgumentException("The contract version cannot be null for parsing the contribution base");
+                    throw new \InvalidArgumentException(
+                        "The contract version cannot be null for parsing the contribution base"
+                    );
                 }
 
                 $costsPerYear
@@ -572,8 +584,9 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param int $year
-     * @param int|null $period
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float
      */
     public function parseExchangeRate(
@@ -616,9 +629,10 @@ class AffiliationService extends ServiceAbstract
 
 
     /**
-     * @param Affiliation $affiliation
-     * @param $year
+     * @param Affiliation  $affiliation
+     * @param              $year
      * @param OParent|null $parent
+     *
      * @return float|int|string
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -633,6 +647,10 @@ class AffiliationService extends ServiceAbstract
          */
         $fee = $this->getProjectService()->findProjectFeeByYear($year);
 
+        if (null === $fee) {
+            return 0;
+        }
+
         switch ($this->parseInvoiceMethod($affiliation)) {
             case Method::METHOD_PERCENTAGE:
             case Method::METHOD_PERCENTAGE_CONTRACT:
@@ -644,7 +662,10 @@ class AffiliationService extends ServiceAbstract
                     throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
                 }
 
-                $invoiceFactor = $this->getParentService()->parseInvoiceFactor($parent, $affiliation->getProject()->getCall()->getProgram()) / 100;
+                $invoiceFactor = $this->getParentService()->parseInvoiceFactor(
+                    $parent,
+                    $affiliation->getProject()->getCall()->getProgram()
+                ) / 100;
 
                 if ($parent->isMember()) {
                     $membershipFactor = $this->getParentService()->parseMembershipFactor($parent);
@@ -652,7 +673,10 @@ class AffiliationService extends ServiceAbstract
                     return $invoiceFactor / (3 * $membershipFactor);
                 }
 
-                $doaFactor = $this->getParentService()->parseDoaFactor($parent);
+                $doaFactor = $this->getParentService()->parseDoaFactor(
+                    $parent,
+                    $affiliation->getProject()->getCall()->getProgram()
+                );
 
                 if ($doaFactor === 0) {
                     return 0;
@@ -682,8 +706,9 @@ class AffiliationService extends ServiceAbstract
      * We removed the switch on office to facilitate the contribution based invoicing
      *
      * @param Affiliation $affiliation
-     * @param int $year
-     * @param int|null $period
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float|int
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -721,7 +746,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Affiliation $affiliation
      * @param             $year
-     * @param int $source
+     * @param int         $source
      *
      * @return null|Funding
      */
@@ -741,10 +766,11 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param Version $version
-     * @param int $year
-     * @param int|null $period
-     * @param bool $useContractData
+     * @param Version     $version
+     * @param int         $year
+     * @param int|null    $period
+     * @param bool        $useContractData
+     *
      * @return float
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -774,9 +800,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param Version $version
-     * @param int $year
-     * @param int|null $period
+     * @param Version     $version
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -840,9 +867,10 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
-     * @param $projectYear
-     * @param int $year
-     * @param int|null $period
+     * @param             $projectYear
+     * @param int         $year
+     * @param int|null    $period
+     *
      * @return float
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -872,8 +900,8 @@ class AffiliationService extends ServiceAbstract
      * Exclude of course the credit notes
      *
      * @param Affiliation $affiliation
-     * @param int $year
-     * @param int|null $period
+     * @param int         $year
+     * @param int|null    $period
      *
      * @return float
      */
@@ -906,10 +934,11 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
+     * @param Affiliation     $affiliation
      * @param ContractVersion $contractVersion
-     * @param int $year
-     * @param int|null $period
+     * @param int             $year
+     * @param int|null        $period
+     *
      * @return array
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -932,11 +961,13 @@ class AffiliationService extends ServiceAbstract
             }
 
             //For the same year, force the period to null (100% invoice) when the previous period has not been invoiced yet
-            if ($otherYear === $year && $period === 2 && !$this->affiliationHasInvoiceInYearAndPeriod(
-                $affiliation,
-                $otherYear,
-                1
-            )) {
+            if ($otherYear === $year && $period === 2
+                && !$this->affiliationHasInvoiceInYearAndPeriod(
+                    $affiliation,
+                    $otherYear,
+                    1
+                )
+            ) {
                 $period = null;
             }
 
@@ -993,10 +1024,11 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
+     * @param Affiliation     $affiliation
      * @param ContractVersion $contractVersion
-     * @param int $year
-     * @param int|null $period
+     * @param int             $year
+     * @param int|null        $period
+     *
      * @return float
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -1017,12 +1049,13 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
-     * @param int $year
-     * @param int $period
-     * @param float $contribution
-     * @param Currency $currency
+     * @param Affiliation  $affiliation
+     * @param int          $year
+     * @param int          $period
+     * @param float        $contribution
+     * @param Currency     $currency
      * @param ExchangeRate $exchangeRate
+     *
      * @return string
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -1049,7 +1082,8 @@ class AffiliationService extends ServiceAbstract
      * This function calculates the amount invoiced in a given year
      *
      * @param Affiliation $affiliation
-     * @param int $year
+     * @param int         $year
+     *
      * @return float
      */
     public function parseAmountInvoicedInYearByAffiliation(Affiliation $affiliation, int $year): float
@@ -1069,8 +1103,9 @@ class AffiliationService extends ServiceAbstract
      * This function checks if an affiliation (partner) has an invoice
      *
      * @param Affiliation $affiliation
-     * @param int $year
-     * @param int $period
+     * @param int         $year
+     * @param int         $period
+     *
      * @return bool
      */
     public function affiliationHasInvoiceUpToYearAndPeriod(Affiliation $affiliation, int $year, ?int $period): bool
@@ -1082,7 +1117,9 @@ class AffiliationService extends ServiceAbstract
                 $hasInvoice = true;
             }
 
-            if (null !== $period && $affiliationInvoice->getYear() <= $year && $affiliationInvoice->getPeriod() < $period) {
+            if (null !== $period && $affiliationInvoice->getYear() <= $year
+                && $affiliationInvoice->getPeriod() < $period
+            ) {
                 $hasInvoice = true;
             }
         }
@@ -1094,8 +1131,9 @@ class AffiliationService extends ServiceAbstract
      * This function checks if an affiliation (partner) has an invoice
      *
      * @param Affiliation $affiliation
-     * @param int $year
-     * @param int $period
+     * @param int         $year
+     * @param int         $period
+     *
      * @return bool
      */
     public function affiliationHasInvoiceInYearAndPeriod(Affiliation $affiliation, int $year, int $period): bool
@@ -1115,7 +1153,8 @@ class AffiliationService extends ServiceAbstract
      * This function checks if the affiliation has received an invoice in the past
      *
      * @param Affiliation $affiliation
-     * @param int $year
+     * @param int         $year
+     *
      * @return bool
      */
     public function hasInvoiceInPast(Affiliation $affiliation, int $year): bool
@@ -1133,7 +1172,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return Affiliation[]|ArrayCollection
      */
@@ -1155,7 +1194,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return Affiliation[]|ArrayCollection
      */
@@ -1177,7 +1216,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Version $version
-     * @param int $which
+     * @param int     $which
      *
      * @return ArrayCollection|Affiliation[]
      */
@@ -1197,7 +1236,8 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param OParent $parent
      * @param Program $program
-     * @param int $which
+     * @param int     $which
+     *
      * @return ArrayCollection
      */
     public function findAffiliationByParentAndProgramAndWhich(
@@ -1217,9 +1257,10 @@ class AffiliationService extends ServiceAbstract
     }
 
     /**
-     * @param Affiliation $affiliation
+     * @param Affiliation  $affiliation
      * @param Contact|null $contact
-     * @param string|null $email
+     * @param string|null  $email
+     *
      * @return Contact
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
@@ -1244,7 +1285,7 @@ class AffiliationService extends ServiceAbstract
 
 
             //If we don't find the contact by email, we will create it.
-            if (\is_null($contact)) {
+            if (null === $contact) {
                 $hasContact = false;
                 $contact = $this->getContactService()->createContact(
                     $email,
@@ -1305,13 +1346,17 @@ class AffiliationService extends ServiceAbstract
         $email->setPartnerPageUrl($deeplinkLink($deeplinkPartner, 'view', 'link'));
 
         $email->setProject($affiliation->getProject()->parseFullName());
-        $email->setOrganisation($this->getOrganisationService()->parseOrganisationWithBranch(
-            $affiliation->getBranch(),
-            $affiliation->getOrganisation()
-        ));
+        $email->setOrganisation(
+            $this->getOrganisationService()->parseOrganisationWithBranch(
+                $affiliation->getBranch(),
+                $affiliation->getOrganisation()
+            )
+        );
         $email->setHasContact($hasContact);
         $email->setTechnicalContact($affiliation->getContact()->parseFullName());
-        $email->setTechnicalContactOrganisation($this->getContactService()->parseOrganisation($affiliation->getContact()));
+        $email->setTechnicalContactOrganisation(
+            $this->getContactService()->parseOrganisation($affiliation->getContact())
+        );
         $email->setTechnicalContactEmail($affiliation->getContact()->getEmail());
 
         $this->getEmailService()->send();
@@ -1321,8 +1366,8 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $criterion
-     * @param int $which
+     * @param int     $criterion
+     * @param int     $which
      *
      * @return ArrayCollection|Affiliation[]
      */
@@ -1346,7 +1391,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return int
      */
@@ -1363,7 +1408,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Country $country
-     * @param Call $call
+     * @param Call    $call
      *
      * @return int
      */
@@ -1380,7 +1425,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Version $version
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return int
      */
@@ -1399,7 +1444,7 @@ class AffiliationService extends ServiceAbstract
      * Produce a list of affiliations grouped per country.
      *
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return ArrayCollection
      */
@@ -1422,7 +1467,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Project $project
-     * @param int $which
+     * @param int     $which
      *
      * @return \General\Entity\Country[]
      */
@@ -1452,7 +1497,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Country $country
-     * @param int $which
+     * @param int     $which
      *
      * @return Affiliation[]|ArrayCollection
      */
@@ -1504,7 +1549,7 @@ class AffiliationService extends ServiceAbstract
     /**
      * @param Project $project
      * @param Contact $contact
-     * @param int $which
+     * @param int     $which
      *
      * @return null|Affiliation
      */
@@ -1567,6 +1612,7 @@ class AffiliationService extends ServiceAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Exception

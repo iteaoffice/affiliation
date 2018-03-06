@@ -21,7 +21,6 @@ use Zend\Uri\Uri;
 use Zend\Validator\Callback;
 use Zend\Validator\EmailAddress;
 
-
 /**
  * Class AddAssociate
  *
@@ -74,7 +73,6 @@ class AddAssociate extends Form implements InputFilterProviderInterface
             $parse = $validator->parse($web);
 
             $this->extensions[$parse->getHost()] = $parse->getHost();
-
         }
 
         natcasesort($contacts);
