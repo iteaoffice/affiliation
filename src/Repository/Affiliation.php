@@ -109,7 +109,7 @@ class Affiliation extends EntityRepository
             case OParent::CRITERION_FREE_RIDER:
                 /** @var \Organisation\Repository\OParent $parentRepository */
                 $parentRepository = $this->_em->getRepository(OParent::class);
-                $queryBuilder = $parentRepository->limitFreeRiders($queryBuilder);
+                $queryBuilder = $parentRepository->limitFreeRiders($queryBuilder, $project->getCall()->getProgram());
                 break;
             default:
                 throw new \InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));

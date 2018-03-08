@@ -432,6 +432,8 @@ class AffiliationService extends ServiceAbstract
                         $affiliation->getParentOrganisation()->getParent()
                     );
 
+
+
             case Method::METHOD_CONTRIBUTION:
             case Method::METHOD_PERCENTAGE:
                 if (null === $version) {
@@ -694,8 +696,17 @@ class AffiliationService extends ServiceAbstract
                 //Funding PENTA === 1.5 %
                 $invoiceFactor = 1.5 / 100;
 
-                //The payment factor for funding is the factor divided by 3 in three years
-                return $invoiceFactor / 3;
+                $doaFactor = $this->getParentService()->parseDoaFactor(
+                    $parent,
+                    $affiliation->getProject()->getCall()->getProgram()
+                );
+
+                if ($parent->isMember() || $doaFactor > 0) {
+                    return $invoiceFactor / 3;
+                }
+
+                return 0;
+
             default:
                 throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
         }
