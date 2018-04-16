@@ -15,18 +15,18 @@ affiliation.project
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-project-name") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-affiliation") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(affiliation,'view-community') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -36,10 +36,10 @@ affiliation.project
 {{ ztbformelement(form.get('message')) }}
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-sender") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-sender") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ webInfo.sender }} {{ webInfoLink(webInfo,'edit','icon') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ webInfo.sender }} {{ webInfoLink(webInfo,'edit','icon') }}</p>
     </div>
 </div>
 

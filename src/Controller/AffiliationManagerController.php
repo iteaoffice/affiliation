@@ -302,7 +302,7 @@ class AffiliationManagerController extends AffiliationAbstractController
             $formData['parentOrganisationLike'] = $affiliation->getParentOrganisation()->getId();
         }
 
-        if (!\is_null($affiliation->getDateEnd())) {
+        if (null !== $affiliation->getDateEnd()) {
             $formData['dateEnd'] = $affiliation->getDateEnd()->format('Y-m-d');
         }
         if (!\is_null($affiliation->getDateSelfFunded())

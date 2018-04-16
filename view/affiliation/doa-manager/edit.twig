@@ -19,18 +19,18 @@ doa.affiliation.project.parseFullname()
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-project-name") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(doa.affiliation.project,'view-admin', 'name') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ projectLink(doa.affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-affiliation") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(doa.affiliation,'view-community') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ affiliationLink(doa.affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -43,10 +43,10 @@ doa.affiliation.project.parseFullname()
 {{ contactformelement(doaForm.get('contact')) }}
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-download-current-doa") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-download-current-doa") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ doaLink(doa,'download','text') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ doaLink(doa,'download','text') }}</p>
     </div>
 </div>
 

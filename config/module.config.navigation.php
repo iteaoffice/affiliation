@@ -69,6 +69,26 @@ return [
                                                     ],
                                                 ],
                                             ],
+                                            'manage-associate'    => [
+                                                'label'   => _('txt-manage-associate'),
+                                                'route'   => 'community/affiliation/edit/manage-associate',
+                                                'visible' => false,
+                                                'params'  => [
+                                                    'entities' => [
+                                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                                    ],
+                                                ],
+                                            ],
+                                            'cost-and-effort'    => [
+                                                'label'   => _('txt-edit-cost-and-effort'),
+                                                'route'   => 'community/affiliation/edit/cost-and-effort',
+                                                'visible' => false,
+                                                'params'  => [
+                                                    'entities' => [
+                                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                                    ],
+                                                ],
+                                            ],
                                             'upload-doa'       => [
                                                 'label'   => _('txt-upload-doa'),
                                                 'route'   => 'community/affiliation/doa/upload',

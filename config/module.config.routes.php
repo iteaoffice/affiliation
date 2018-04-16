@@ -92,6 +92,26 @@ return [
                                             ],
                                         ],
                                     ],
+                                    'manage-associate'    => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/manage-associate/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'manage-associate',
+                                                'privilege' => 'manage-associate',
+                                            ],
+                                        ],
+                                    ],
+                                    'cost-and-effort'     => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/cost-and-effort/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'cost-and-effort',
+                                                'privilege' => 'edit-cost-and-effort',
+                                            ],
+                                        ],
+                                    ],
                                     'financial'           => [
                                         'type'    => 'Segment',
                                         'options' => [

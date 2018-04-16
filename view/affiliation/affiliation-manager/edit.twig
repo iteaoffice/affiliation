@@ -17,35 +17,35 @@
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-project-name") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-affiliation") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(affiliation,'view-admin','name') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-admin','name') }}</p>
     </div>
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-organisation") }} ({{ translate("txt-legacy") }})</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-organisation") }} ({{ translate("txt-legacy") }})</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ organisationLink(affiliation.organisation,'view-admin','name') }}
+        <p class="form-control-static form-control-plaintext">{{ organisationLink(affiliation.organisation,'view-admin','name') }}
             ({{ affiliation.organisation.country }})</p>
     </div>
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-parent-organisation") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-parent-organisation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">
+        <p class="form-control-static form-control-plaintext">
             {% if affiliation.parentOrganisation %}
                 {{ parentOrganisationLink(affiliation.parentOrganisation,'view','organisation') }}
                 {{ parentLink(affiliation.parentOrganisation.parent,'view','parent') }}
@@ -58,10 +58,10 @@
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label">{{ translate("txt-country") }}</label>
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-country") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliation.organisation.country }}</p>
+        <p class="form-control-static form-control-plaintext">{{ affiliation.organisation.country }}</p>
     </div>
 </div>
 

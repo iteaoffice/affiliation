@@ -369,12 +369,12 @@ class AffiliationService extends ServiceAbstract
         ?int $period = null
     ): float {
         return $this->parseContribution($affiliation, $version, null, $year, $period, false) + $this->parseBalance(
-            $affiliation,
-            $version,
-            $year,
-            $period,
-            false
-        );
+                $affiliation,
+                $version,
+                $year,
+                $period,
+                false
+            );
     }
 
     /**
@@ -431,7 +431,6 @@ class AffiliationService extends ServiceAbstract
                         $year,
                         $affiliation->getParentOrganisation()->getParent()
                     );
-
 
 
             case Method::METHOD_CONTRIBUTION:
@@ -665,9 +664,9 @@ class AffiliationService extends ServiceAbstract
                 }
 
                 $invoiceFactor = $this->getParentService()->parseInvoiceFactor(
-                    $parent,
-                    $affiliation->getProject()->getCall()->getProgram()
-                ) / 100;
+                        $parent,
+                        $affiliation->getProject()->getCall()->getProgram()
+                    ) / 100;
 
                 if ($parent->isMember()) {
                     $membershipFactor = $this->getParentService()->parseMembershipFactor($parent);
@@ -801,12 +800,12 @@ class AffiliationService extends ServiceAbstract
 
 
         return $this->parseContributionDue(
-            $affiliation,
-            $version,
-            $year,
-            $period,
-            $useContractData
-        ) - $this->parseContributionPaid($affiliation, $year, $period);
+                $affiliation,
+                $version,
+                $year,
+                $period,
+                $useContractData
+            ) - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
     /**
@@ -1310,11 +1309,11 @@ class AffiliationService extends ServiceAbstract
             }
 
             //Check if the contact has already an organisation
-            if (\is_null($contact->getContactOrganisation())) {
-                $contactOrganiation = new ContactOrganisation();
-                $contactOrganiation->setContact($contact);
-                $contactOrganiation->setOrganisation($affiliation->getOrganisation());
-                $this->getContactService()->updateEntity($contactOrganiation);
+            if (null === $contact->getContactOrganisation()) {
+                $contactOrganisation = new ContactOrganisation();
+                $contactOrganisation->setContact($contact);
+                $contactOrganisation->setOrganisation($affiliation->getOrganisation());
+                $this->getContactService()->updateEntity($contactOrganisation);
 
                 $this->getContactService()->addNoteToContact(
                     'Set organisation to ' . $affiliation->getOrganisation(),
@@ -1572,9 +1571,10 @@ class AffiliationService extends ServiceAbstract
         /*
          * If the contact has no contact organisation, return null because we will not have a affiliation
          */
-        if (\is_null($contact->getContactOrganisation())) {
+        if (null === $contact->getContactOrganisation()) {
             return null;
         }
+
         foreach ($project->getAffiliation() as $affiliation) {
             if ($which === self::WHICH_ONLY_ACTIVE && !$this->isActive($affiliation)) {
                 continue;
@@ -1741,32 +1741,32 @@ class AffiliationService extends ServiceAbstract
         /**
          * Add the contact organisation (from the contact)
          */
-        if (!\is_null($contact->getContactOrganisation())) {
+        if (null !== $contact->getContactOrganisation()) {
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                $contact->getContactOrganisation()
                     ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                $contact->getContactOrganisation()->getOrganisation()
+            );
         }
         /**
          * Add the contact organisation (from the organisation)
          */
-        if (!\is_null($organisation->getContactOrganisation())) {
+        if (null !== $organisation->getContactOrganisation()) {
             /**
              * Add the contact organisation
              */
-            if (!\is_null($contact->getContactOrganisation())) {
+            if (null !== $contact->getContactOrganisation()) {
                 $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->getOrganisationService()->parseOrganisationWithBranch(
-                        $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                         ->getBranch(),
-                        $contact->getContactOrganisation()->getOrganisation()
-                    );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
             }
             /**
              * Go over the clusters

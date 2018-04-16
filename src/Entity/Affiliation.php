@@ -300,7 +300,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $funding;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()

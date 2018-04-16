@@ -31,6 +31,7 @@ use Zend\View\Model\ViewModel;
 
 /**
  * Class DoaManagerController
+ *
  * @package Affiliation\Controller
  */
 class DoaManagerController extends AffiliationAbstractController
@@ -134,9 +135,9 @@ class DoaManagerController extends AffiliationAbstractController
              *
              * @var Target $target
              */
-            $target = $this->getDeeplinkService()->findEntityById(Target::class, $data['deeplinkTarget']);
+            $target = $this->deeplinkService->find(Target::class, (int)$data['deeplinkTarget']);
             //Create a deeplink for the user which redirects to the profile-page
-            $deeplink = $this->getDeeplinkService()->createDeeplink($target, $receiver, null, $affiliation->getId());
+            $deeplink = $this->deeplinkService->createDeeplink($target, $receiver, null, $affiliation->getId());
 
             /**
              * @var $deeplinkLink DeeplinkLink
@@ -281,7 +282,9 @@ class DoaManagerController extends AffiliationAbstractController
 
                     $fileTypeValidator = new MimeType();
                     $fileTypeValidator->isValid($fileData['affiliation_entity_doa']['file']);
-                    $doa->setContentType($this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type));
+                    $doa->setContentType(
+                        $this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type)
+                    );
                 }
 
                 $this->getDoaService()->updateEntity($doa);

@@ -30,10 +30,10 @@ class Affiliation extends AssertionAbstract
      * $role, $affiliation, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
      * privileges, respectively.
      *
-     * @param Acl $acl
-     * @param RoleInterface $role
-     * @param ResourceInterface|AffiliationEntity $affiliation
-     * @param string $privilege
+     * @param Acl                                         $acl
+     * @param RoleInterface                               $role
+     * @param ResourceInterface|AffiliationEntity|\object $affiliation
+     * @param string                                      $privilege
      *
      * @return bool
      */
@@ -46,7 +46,7 @@ class Affiliation extends AssertionAbstract
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$affiliation instanceof AffiliationEntity && !\is_null($id)) {
+        if (!$affiliation instanceof AffiliationEntity && null !== $id) {
             $affiliation = $this->getAffiliationService()->findAffiliationById($id);
         }
 
@@ -59,6 +59,8 @@ class Affiliation extends AssertionAbstract
                 //whe the person has view rights on the project, the affiliation can also be viewed
                 return $this->getProjectAssertion()->assert($acl, $role, $affiliation->getProject(), 'view-community');
             case 'add-associate':
+            case 'manage-associate':
+            case 'edit-cost-and-effort':
             case 'edit-affiliation':
             case 'edit-description':
             case 'edit-community':
@@ -76,20 +78,20 @@ class Affiliation extends AssertionAbstract
                 return true;
                 //Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
-            if (!\is_null($reportId)) {
-                //Find the corresponding report
-                $report = $this->getReportService()->findReportById($reportId);
-                if (\is_null($report) || $this->getReportService()->isFinal($report)) {
+                if (!\is_null($reportId)) {
+                    //Find the corresponding report
+                    $report = $this->getReportService()->findReportById($reportId);
+                    if (\is_null($report) || $this->getReportService()->isFinal($report)) {
+                        return false;
+                    }
+                }
+
+                if ($this->getProjectService()->isStopped($affiliation->getProject())) {
                     return false;
                 }
-            }
-
-            if ($this->getProjectService()->isStopped($affiliation->getProject())) {
-                return false;
-            }
-            if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $affiliation)) {
-                return true;
-            }
+                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $affiliation)) {
+                    return true;
+                }
 
                 break;
             case 'edit-financial':

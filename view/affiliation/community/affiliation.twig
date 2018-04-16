@@ -247,16 +247,15 @@
 
             <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
-                <tr>
-                    <th colspan="2">{{ translate("txt-cost-and-effort") }}</th>
+                <tr class="success">
+                    <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
                     {% for year in years %}
                         <th>{% if year in projectYears %}{{ year }}{% else %}<span
                                 class="warning text-danger"
                                 title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
-                            {% if not useContract %}[k&euro;]{% endif %}
                         </th>
                     {% endfor %}
-                    <th>{{ translate("txt-total-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
+                    <th>{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -270,7 +269,7 @@
 
                 {% if not useContract %}
                     <tr>
-                        <td colspan="2">{{ translate("txt-costs") }}</td>
+                        <td colspan="2"></td>
                         {% for year in years %}
                             <td class="cost_version_value"
                                 rel="cost_version_{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</td>
@@ -296,20 +295,20 @@
 
                 </tbody>
                 <thead>
-                <tr>
-                    <th>{{ translate("txt-workpackage-number") }}</th>
-                    <th>{{ translate("txt-workpackage-name") }}</th>
+                <tr class="success">
+                    <th colspan="2">{{ translate("txt-effort") }} [{{ translate("txt-py") }}]</th>
                     {% for year in years %}
                         <th>{% if year in projectYears %}{{ year }}{% else %}<span
                                 class="warning"
                                 title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
-                            [{{ translate("txt-py") }}]
+
                         </th>
                     {% endfor %}
-                    <th>{{ translate("txt-total-effort") }}</th>
+                    <th>{{ translate("txt-total") }}</th>
                 </tr>
                 </thead>
                 <tbody>
+                {% set grandTotal = 0 %}
                 {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
                     {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
                         workpackage,
@@ -325,10 +324,17 @@
                             <td class="effort_version_value"
                                 rel="effort_version_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}">{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
                             {% set totalPerWP = totalPerWP + effortPerYear[year].effort %}
+                            {% set grandTotal = grandTotal + totalPerWP %}
                         {% endfor %}
                         <th id="effort_version_total_{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
                     </tr>
                 {% endfor %}
+
+                <tr>
+                    <td colspan="{{ 2 + years|length }}"></td>
+                    <th>{{ grandTotal|parse_effort }}</th>
+                </tr>
+
                 </tbody>
             </table>
 
@@ -342,16 +348,15 @@
 
             <table class="table table-hover table-striped table-condensed table-sm">
                 <thead>
-                <tr>
-                    <th colspan="2">{{ translate("txt-cost-and-effort") }}</th>
+                <tr class="success">
+                    <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
                     {% for year in years %}
                         <th>{% if year in projectYears %}{{ year }}{% else %}<span
                                 class="warning"
                                 title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
-                            {% if not useContract %}[k&euro;]{% endif %}
                         </th>
                     {% endfor %}
-                    <th>{{ translate("txt-total-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
+                    <th>{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -370,7 +375,7 @@
 
                 {% if not useContract %}
                     <tr class="cost_row">
-                        <td colspan="2">{{ translate("txt-costs") }}</td>
+                        <td colspan="2"></td>
                         {% for year in years %}
                             <td>
                                 {% if
@@ -415,17 +420,16 @@
 
                 </tbody>
                 <thead>
-                <tr>
-                    <th>{{ translate("txt-workpackage-number") }}</th>
-                    <th>{{ translate("txt-workpackage-name") }}</th>
+                <tr class="success">
+                    <th colspan="2">{{ translate("txt-effort") }} [{{ translate("txt-py") }}]</th>
                     {% for year in years %}
                         <th>{% if year in projectYears %}{{ year }}{% else %}<span
                                 class="warning"
                                 title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
-                            [{{ translate("txt-py") }}]
+
                         </th>
                     {% endfor %}
-                    <th>{{ translate("txt-total-effort") }}</th>
+                    <th>{{ translate("txt-total") }} [{{ translate("txt-py") }}]</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -480,9 +484,20 @@
                     </tr>
                 {% endfor %}
                 </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="{{ 2 + years|length }}"></td>
+                    <th>{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
+                </tr>
+
+                </tfoot>
             </table>
 
-            {{ projectLink(affiliation.project, 'edit-cost-and-effort-community', 'button') }}
+            {{ affiliationLink(affiliation, 'edit-cost-and-effort', 'button') }}
+
+            <span class="pull-right">
+                 {{ projectLink(affiliation.project, 'edit-cost-and-effort-community', 'button') }}
+            </span>
         {% endif %}
 
     </div>
@@ -519,6 +534,9 @@
         {% endif %}
 
         {{ affiliationLink(affiliation,'add-associate','button') }}
+        {% if contactsInAffiliation.contacts|length > 0 %}
+            {{ affiliationLink(affiliation,'manage-associate','button') }}
+        {% endif %}
     </div>
 
     {% if projectService.isLabelled(affiliation.project) %}

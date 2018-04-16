@@ -24,6 +24,7 @@ use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
+use Project\Entity\Project;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
@@ -151,7 +152,7 @@ abstract class ServiceAbstract implements ServiceInterface
         /*
          * Update the permissions
          */
-        $this->getAdminService()->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
+        $this->getAdminService()->flushPermitsByEntityAndId($entity, (int) $entity->getId());
 
         return $entity;
     }
@@ -178,6 +179,7 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param EntityAbstract $entity
+     *
      * @return EntityAbstract
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -189,13 +191,12 @@ abstract class ServiceAbstract implements ServiceInterface
         /*
          * Update the permissions
          */
-        $this->getAdminService()->flushPermitsByEntityAndId($entity->get('underscore_entity_name'), $entity->getId());
+        $this->getAdminService()->flushPermitsByEntityAndId($entity, $entity->getId());
 
         //When an an invite is updated, we need to flush the permissions for the project. Later we will use
         //The dependencies for this, but for now we can use this trick
         if ($entity instanceof Affiliation) {
-            $this->getAdminService()
-                ->flushPermitsByEntityAndId('project_entity_project', $entity->getProject()->getId());
+            $this->getAdminService()->flushPermitsByEntityAndId(Project::class, $entity->getProject()->getId());
         }
 
         return $entity;
@@ -203,6 +204,7 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param EntityAbstract $entity
+     *
      * @return bool
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -217,7 +219,8 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param EntityAbstract $entity
-     * @param string $assertion
+     * @param string         $assertion
+     *
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -352,7 +355,7 @@ abstract class ServiceAbstract implements ServiceInterface
      */
     public function getEmailService(): EmailService
     {
-        if (\is_null($this->emailService)) {
+        if (null === $this->emailService) {
             $this->emailService = $this->getServiceLocator()->get(EmailService::class);
         }
 
@@ -447,6 +450,7 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param ParentService $parentService
+     *
      * @return ServiceAbstract
      */
     public function setParentService(ParentService $parentService): ServiceAbstract
@@ -466,6 +470,7 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param GeneralService $generalService
+     *
      * @return ServiceAbstract
      */
     public function setGeneralService(GeneralService $generalService): ServiceAbstract
@@ -497,6 +502,7 @@ abstract class ServiceAbstract implements ServiceInterface
 
     /**
      * @param $string
+     *
      * @return string
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface

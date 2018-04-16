@@ -20,27 +20,27 @@
         <legend>{{ translate("txt-sign-and-upload-paper-version") }}</legend>
 
         <div class="form-group row">
-            <label class="col-md-3 form-control-label control-label">{{ translate("txt-project") }}</label>
+            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project") }}</label>
 
             <div class="col-sm-9">
-                <p class="form-control-static">{{ projectLink(affiliation.project,'view-community','name') }}
+                <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community','name') }}
                     ({{ affiliation.project.call.program }})</p>
             </div>
         </div>
 
         <div class="form-group row">
-            <label class="col-md-3 form-control-label control-label">{{ translate("txt-organisation") }}</label>
+            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-organisation") }}</label>
 
             <div class="col-sm-9">
-                <p class="form-control-static">{{ affiliation.organisation }}</p>
+                <p class="form-control-static form-control-plaintext">{{ affiliation.organisation }}</p>
             </div>
         </div>
 
         <div class="form-group row">
-            <label class="col-md-3 form-control-label control-label">{{ translate("txt-download-loi") }}</label>
+            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-download-loi") }}</label>
 
             <div class="col-sm-9">
-                <p class="form-control-static">{{ translate("txt-download-loi-link-text") }}</p>
+                <p class="form-control-static form-control-plaintext">{{ translate("txt-download-loi-link-text") }}</p>
             </div>
         </div>
 

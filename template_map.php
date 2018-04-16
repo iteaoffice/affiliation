@@ -6,6 +6,8 @@ return array(
     'affiliation/edit/affiliation'                               => __DIR__ . '//view/affiliation/edit/affiliation.twig',
     'affiliation/edit/description'                               => __DIR__ . '//view/affiliation/edit/description.twig',
     'affiliation/edit/update-effort-spent'                       => __DIR__ . '//view/affiliation/edit/update-effort-spent.twig',
+    'affiliation/edit/cost-and-effort'                           => __DIR__ . '//view/affiliation/edit/cost-and-effort.twig',
+    'affiliation/edit/manage-associate'                          => __DIR__ . '//view/affiliation/edit/manage-associate.twig',
     'affiliation/edit/add-associate'                             => __DIR__ . '//view/affiliation/edit/add-associate.twig',
     'affiliation/partial/pagination-control'                     => __DIR__ . '//view/affiliation/partial/pagination-control.twig',
     'affiliation/partial/payment-sheet'                          => __DIR__ . '//view/affiliation/partial/payment-sheet.twig',

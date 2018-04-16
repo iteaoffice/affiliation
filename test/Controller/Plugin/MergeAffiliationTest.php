@@ -484,14 +484,14 @@ class MergeAffiliationTest extends AbstractServiceTest
      */
     private function setUpAdminServiceMock()
     {
-        $adminServiceMock = $this->getMockBuilder(AdminService::class)
+        $adminServiceMock = $this->getMockBuilder(AdminService::class)->disableOriginalConstructor()
             ->setMethods(['flushPermitsByEntityAndId'])
             ->getMock();
 
         $adminServiceMock->expects($this->exactly(1))
             ->method('flushPermitsByEntityAndId')
             ->with(
-                $this->identicalTo($this->mainAffiliation->get('underscore_entity_name')),
+                $this->identicalTo($this->mainAffiliation),
                 $this->identicalTo($this->mainAffiliation->getId())
             )
             ->will($this->returnValue(true));

@@ -166,6 +166,16 @@ return [
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
+                    'route'     => 'community/affiliation/edit/manage-associate',
+                    'roles'     => Access::ACCESS_USER,
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/cost-and-effort',
+                    'roles'     => Access::ACCESS_USER,
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
                     'route'     => 'community/affiliation/edit/financial',
                     'roles'     => Access::ACCESS_USER,
                     'assertion' => AffiliationAssertion::class,

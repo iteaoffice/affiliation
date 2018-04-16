@@ -191,7 +191,7 @@ class DoaController extends AffiliationAbstractController
         $renderProjectDoa = $this->renderDoa()->renderProjectDoa($programDoa);
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine("Pragma: public")
+            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
                 'attachment; filename="' . $programDoa->parseFileName() . '.pdf"'
@@ -223,11 +223,11 @@ class DoaController extends AffiliationAbstractController
         $response = $this->getResponse();
         $response->setContent(stream_get_contents($object));
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine("Cache-Control: max-age=36000, must-revalidate")->addHeaderLine(
+            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')->addHeaderLine(
                 'Content-Disposition',
                 'attachment; filename="' . $doa->parseFileName() . '.' . $doa->getContentType()->getExtension() . '"'
             )
-            ->addHeaderLine("Pragma: public")->addHeaderLine(
+            ->addHeaderLine('Pragma: public')->addHeaderLine(
                 'Content-Type: ' . $doa->getContentType()
                     ->getContentType()
             )->addHeaderLine('Content-Length: ' . $doa->getSize());

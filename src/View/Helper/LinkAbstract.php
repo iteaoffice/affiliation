@@ -165,6 +165,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                     case 'edit-description':
                     case 'edit-community':
                     case 'edit-financial':
+                    case 'edit-cost-and-effort':
                     case 'update-effort-spent':
                     case 'edit-admin':
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
@@ -185,6 +186,9 @@ abstract class LinkAbstract extends AbstractViewHelper
                     case 'add-associate':
                     case 'add-associate-admin':
                         $this->addLinkContent('<i class="fa fa-plus"></i>');
+                        break;
+                    case 'manage-associate':
+                        $this->addLinkContent('<i class="fa fa-users"></i>');
                         break;
                     default:
                         $this->addLinkContent('<i class="fa fa-link"></i>');

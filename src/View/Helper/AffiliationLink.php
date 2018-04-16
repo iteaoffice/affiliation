@@ -27,9 +27,9 @@ class AffiliationLink extends LinkAbstract
      * @param Affiliation $affiliation
      * @param             $action
      * @param             $show
-     * @param int $year
-     * @param int $period
-     * @param null $fragment
+     * @param int         $year
+     * @param int         $period
+     * @param null        $fragment
      *
      * @return string
      *
@@ -102,11 +102,19 @@ class AffiliationLink extends LinkAbstract
                 break;
             case 'add-associate':
                 $this->setRouter('community/affiliation/edit/add-associate');
-                $this->setText(sprintf($this->translate("txt-add-associate-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translate("txt-add-associate")));
+                break;
+            case 'manage-associate':
+                $this->setRouter('community/affiliation/edit/manage-associate');
+                $this->setText(sprintf($this->translate("txt-manage-associates")));
+                break;
+            case 'edit-cost-and-effort':
+                $this->setRouter('community/affiliation/edit/cost-and-effort');
+                $this->setText(sprintf($this->translate("txt-edit-cost-and-effort-of-%s"), $this->getAffiliation()));
                 break;
             case 'add-associate-admin':
                 $this->setRouter('zfcadmin/affiliation/add-associate');
-                $this->setText(sprintf($this->translate("txt-add-associate-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translate("txt-add-associate")));
                 break;
             case 'edit-description':
                 $this->setRouter('community/affiliation/edit/description');

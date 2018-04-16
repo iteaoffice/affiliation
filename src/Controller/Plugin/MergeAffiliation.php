@@ -67,7 +67,7 @@ class MergeAffiliation extends AbstractPlugin
      *
      * @param Affiliation $mainAffiliation
      * @param Affiliation $otherAffiliation
-     * @param int $costAndEffortStrategy
+     * @param int         $costAndEffortStrategy
      *
      * @return array
      */
@@ -158,12 +158,11 @@ class MergeAffiliation extends AbstractPlugin
             $this->getEntityManager()->remove($otherAffiliation);
             $this->getEntityManager()->flush();
             $this->getAdminService()->flushPermitsByEntityAndId(
-                $mainAffiliation->get('underscore_entity_name'),
+                $mainAffiliation,
                 $mainAffiliation->getId()
             );
         } catch (ORMException $e) {
             $response = ['success' => false, 'errorMessage' => $e->getMessage()];
-            error_log($e->getFile() . ':' . $e->getLine() . ' ' . $e->getMessage());
         }
 
         return $response;
@@ -526,8 +525,10 @@ class MergeAffiliation extends AbstractPlugin
                 ) {
                     switch ($this->getCostAndEffortStrategy()) {
                         case self::STRATEGY_SUM:
-                            $mainEffortVersion->setEffort($mainEffortVersion->getEffort()
-                                + $otherEffortVersion->getEffort());
+                            $mainEffortVersion->setEffort(
+                                $mainEffortVersion->getEffort()
+                                + $otherEffortVersion->getEffort()
+                            );
                             $this->getEntityManager()->persist($mainEffortVersion);
                             break;
                         case self::STRATEGY_USE_MAIN: // Do nothing
