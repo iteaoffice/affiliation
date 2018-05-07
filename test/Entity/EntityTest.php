@@ -11,7 +11,6 @@
 namespace AffiliationTest\Entity;
 
 use PHPUnit\Framework\TestCase;
-use Project\Entity\EntityAbstract;
 use Symfony\Component\Finder\Finder;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Form\Element;

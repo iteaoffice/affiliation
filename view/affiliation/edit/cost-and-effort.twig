@@ -8,7 +8,10 @@
         affiliation.project.parseFullName()
     ) }}</h1>
 
-<p>{{ translate("txt-edit-cost-and-effort-of-affiliation-%s-in-%s-explanation") }}</p>
+<p>{{ translate("txt-edit-cost-and-effort-of-affiliation-%s-in-%s-explanation")|format(
+        affiliation.parseBranchedName(),
+        affiliation.project.parseFullName()
+    ) }}</p>
 
 
 {% set yearRange = projectService.parseYearRange(project) %}

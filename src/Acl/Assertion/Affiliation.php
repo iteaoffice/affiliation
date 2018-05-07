@@ -50,6 +50,7 @@ class Affiliation extends AssertionAbstract
             $affiliation = $this->getAffiliationService()->findAffiliationById($id);
         }
 
+
         switch ($this->getPrivilege()) {
             case 'view-community':
                 if ($this->getContactService()->contactHasPermit($this->getContact(), 'view', $affiliation)) {
@@ -70,28 +71,32 @@ class Affiliation extends AssertionAbstract
                 if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $affiliation)) {
                     return true;
                 }
+                if ($this->getProjectAssertion()->assert($acl, $role, $affiliation->getProject(), 'edit-community')) {
+                    return true;
+                }
                 if ($this->getContactService()->contactHasPermit($this->getContact(), 'financial', $affiliation)) {
                     return true;
                 }
+                return false;
                 break;
             case 'update-effort-spent':
                 return true;
                 //Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
-                if (!\is_null($reportId)) {
-                    //Find the corresponding report
-                    $report = $this->getReportService()->findReportById($reportId);
-                    if (\is_null($report) || $this->getReportService()->isFinal($report)) {
-                        return false;
-                    }
-                }
-
-                if ($this->getProjectService()->isStopped($affiliation->getProject())) {
+            if (!\is_null($reportId)) {
+                //Find the corresponding report
+                $report = $this->getReportService()->findReportById($reportId);
+                if (\is_null($report) || $this->getReportService()->isFinal($report)) {
                     return false;
                 }
-                if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $affiliation)) {
-                    return true;
-                }
+            }
+
+            if ($this->getProjectService()->isStopped($affiliation->getProject())) {
+                return false;
+            }
+            if ($this->getContactService()->contactHasPermit($this->getContact(), 'edit', $affiliation)) {
+                return true;
+            }
 
                 break;
             case 'edit-financial':

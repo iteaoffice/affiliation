@@ -369,12 +369,12 @@ class AffiliationService extends ServiceAbstract
         ?int $period = null
     ): float {
         return $this->parseContribution($affiliation, $version, null, $year, $period, false) + $this->parseBalance(
-                $affiliation,
-                $version,
-                $year,
-                $period,
-                false
-            );
+            $affiliation,
+            $version,
+            $year,
+            $period,
+            false
+        );
     }
 
     /**
@@ -664,9 +664,9 @@ class AffiliationService extends ServiceAbstract
                 }
 
                 $invoiceFactor = $this->getParentService()->parseInvoiceFactor(
-                        $parent,
-                        $affiliation->getProject()->getCall()->getProgram()
-                    ) / 100;
+                    $parent,
+                    $affiliation->getProject()->getCall()->getProgram()
+                ) / 100;
 
                 if ($parent->isMember()) {
                     $membershipFactor = $this->getParentService()->parseMembershipFactor($parent);
@@ -800,12 +800,12 @@ class AffiliationService extends ServiceAbstract
 
 
         return $this->parseContributionDue(
-                $affiliation,
-                $version,
-                $year,
-                $period,
-                $useContractData
-            ) - $this->parseContributionPaid($affiliation, $year, $period);
+            $affiliation,
+            $version,
+            $year,
+            $period,
+            $useContractData
+        ) - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
     /**
@@ -1746,10 +1746,10 @@ class AffiliationService extends ServiceAbstract
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->getOrganisationService()->parseOrganisationWithBranch(
-                $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                     ->getBranch(),
-                $contact->getContactOrganisation()->getOrganisation()
-            );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -1763,10 +1763,10 @@ class AffiliationService extends ServiceAbstract
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->getOrganisationService()->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                        $contact->getContactOrganisation()
                         ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                        $contact->getContactOrganisation()->getOrganisation()
+                    );
             }
             /**
              * Go over the clusters

@@ -53,7 +53,9 @@ class CostAndEffort extends Form implements InputFilterProviderInterface
 
         $costFieldset = new Fieldset('costPerAffiliationAndYear');
         $affiliationFieldset = new CostPerAffiliationFieldset(
-            $affiliation, $affiliation->getProject(), $projectService
+            $affiliation,
+            $affiliation->getProject(),
+            $projectService
         );
         $costFieldset->add($affiliationFieldset);
         $costFieldset->setUseAsBaseFieldset(true);
@@ -65,7 +67,9 @@ class CostAndEffort extends Form implements InputFilterProviderInterface
             $workPackageFieldset = new Fieldset($workpackage->getId());
 
             $affiliationFieldSet = new EffortPerAffiliationFieldset(
-                $affiliation, $affiliation->getProject(), $projectService
+                $affiliation,
+                $affiliation->getProject(),
+                $projectService
             );
 
             $workPackageFieldset->add($affiliationFieldSet);

@@ -18,6 +18,7 @@ use Affiliation\Service\AffiliationService;
 use Affiliation\Service\DoaService;
 use Affiliation\Service\FormService;
 use Affiliation\Service\LoiService;
+use Contact\Entity\Contact;
 use Contact\Service\ContactService;
 use Deeplink\Service\DeeplinkService;
 use Doctrine\ORM\EntityManager;
@@ -39,6 +40,7 @@ use Search\Service\AbstractSearchService;
 use Zend\Http\Response;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Zend\Mvc\Plugin\Identity\Identity;
 use Zend\View\HelperPluginManager;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
@@ -46,6 +48,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @category    Affiliation
  *
  * @method      ZfcUserAuthentication zfcUserAuthentication()
+ * @method      Identity|Contact identity()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
  * @method      Plugin\RenderPaymentSheet renderPaymentSheet()
@@ -269,6 +272,7 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param \Invoice\Options\ModuleOptions $invoiceModuleOptions
+     *
      * @return AffiliationAbstractController
      */
     public function setInvoiceModuleOptions(
@@ -409,6 +413,7 @@ abstract class AffiliationAbstractController extends AbstractActionController
 
     /**
      * @param ContractService $contractService
+     *
      * @return AffiliationAbstractController
      */
     public function setContractService(ContractService $contractService): AffiliationAbstractController

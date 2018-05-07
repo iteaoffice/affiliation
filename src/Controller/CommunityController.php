@@ -114,7 +114,7 @@ class CommunityController extends AffiliationAbstractController
         $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
-        $renderPaymentSheet = $this->renderPaymentSheet()->render(
+        $renderPaymentSheet = $this->renderPaymentSheet(
             $affiliation,
             $year,
             $period,
@@ -133,7 +133,7 @@ class CommunityController extends AffiliationAbstractController
                 ) . '"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
-            ->addHeaderLine('Content-Length', strlen($renderPaymentSheet->getPDFData()));
+            ->addHeaderLine('Content-Length', \strlen($renderPaymentSheet->getPDFData()));
         $response->setContent($renderPaymentSheet->getPDFData());
 
         return $response;

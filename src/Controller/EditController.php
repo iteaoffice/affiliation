@@ -28,6 +28,7 @@ use General\Entity\Country;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
 use Organisation\Service\OrganisationService;
+use Project\Entity\Changelog;
 use Project\Entity\Cost\Cost;
 use Project\Entity\Effort\Effort;
 use Project\Entity\Report\EffortSpent as ReportEffortSpent;
@@ -100,10 +101,19 @@ class EditController extends AffiliationAbstractController
                 $this->projectService
                     ->updateCountryRationaleByAffiliation($affiliation, ProjectService::AFFILIATION_DEACTIVATE);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf($this->translate("txt-affiliation-%s-has-successfully-been-deactivated"), $affiliation)
-                    );
+                $changelogMessage = sprintf(
+                    $this->translate("txt-affiliation-%s-has-successfully-been-deactivated"),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
 
                 return $this->redirect()->toRoute(
                     'community/project/project/partners',
@@ -122,10 +132,19 @@ class EditController extends AffiliationAbstractController
                 $this->projectService
                     ->updateCountryRationaleByAffiliation($affiliation, ProjectService::AFFILIATION_REACTIVATE);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf($this->translate("txt-affiliation-%s-has-successfully-been-reactivated"), $affiliation)
-                    );
+                $changelogMessage = sprintf(
+                    $this->translate("txt-affiliation-%s-has-successfully-been-reactivated"),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -179,13 +198,19 @@ class EditController extends AffiliationAbstractController
                 $project->setMode($this->projectService->getNextMode($project)->mode);
                 $this->projectService->updateEntity($project);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                            $affiliation
-                        )
-                    );
+                $changelogMessage = sprintf(
+                    $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -299,7 +324,7 @@ class EditController extends AffiliationAbstractController
 
 
                 //If the organisation is found, it has by default an organisation
-                if (!\is_null($organisationFinancial)) {
+                if (null !== $organisationFinancial) {
                     $organisation = $organisationFinancial->getOrganisation();
                 }
 
@@ -443,13 +468,20 @@ class EditController extends AffiliationAbstractController
                 $country = $this->generalService->find(Country::class, (int)$formData['country']);
                 $financialAddress->setCountry($country);
                 $this->getContactService()->updateEntity($financialAddress);
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                            $affiliation
-                        )
-                    );
+
+                $changelogMessage = sprintf(
+                    $this->translate("txt-affiliation-financial-information-%s-has-successfully-been-updated"),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -524,27 +556,40 @@ class EditController extends AffiliationAbstractController
 
                 $this->affiliationService->addAssociate($affiliation, $contact);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-contact-%s-has-been-added-as-associate-to-affiliation-%s"),
-                            $contact->parseFullName(),
-                            $affiliation
-                        )
-                    );
+                $changelogMessage = sprintf(
+                    $this->translate("txt-contact-%s-has-been-added-as-associate-to-affiliation-%s"),
+                    $contact->parseFullName(),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
             }
 
             if (isset($data['addEmail']) && !empty($data['email'])) {
                 $this->affiliationService->addAssociate($affiliation, null, $data['email']);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-contact-%s-has-been-added-as-associate-to-affiliation-%s"),
-                            $data['email'],
-                            $affiliation
-                        )
-                    );
+                $changelogMessage = sprintf(
+                    $this->translate("txt-contact-%s-has-been-added-as-associate-to-affiliation-%s"),
+                    $data['email'],
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
             }
 
 
@@ -581,7 +626,6 @@ class EditController extends AffiliationAbstractController
 
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
-
                 $this->flashMessenger()->setNamespace('success')
                     ->addMessage(
                         sprintf(
@@ -609,19 +653,24 @@ class EditController extends AffiliationAbstractController
                     $affiliation->getAssociate()->removeElement($contact);
 
                     $removedContacts[] = $contact;
-
                 }
 
                 $this->affiliationService->updateEntity($affiliation);
             }
 
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(
-                    sprintf(
-                        $this->translate("txt-%s-associates-were-removed-from-affiliation"),
-                        \count($removedContacts)
-                    )
-                );
+            $changelogMessage = sprintf(
+                $this->translate("txt-%s-associates-were-removed-from-affiliation"),
+                \count($removedContacts)
+            );
+
+            $this->flashMessenger()->addSuccessMessage($changelogMessage);
+            $this->projectService->addMessageToChangelog(
+                $affiliation->getProject(),
+                $this->identity(),
+                Changelog::TYPE_PARTNER,
+                Changelog::SOURCE_COMMUNITY,
+                $changelogMessage
+            );
 
             return $this->redirect()->toRoute(
                 'community/affiliation/affiliation',
@@ -674,13 +723,19 @@ class EditController extends AffiliationAbstractController
                 $description->setContact($this->zfcUserAuthentication()->getIdentity());
                 $this->affiliationService->updateEntity($description);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                            $affiliation
-                        )
-                    );
+                $changelogMessage = sprintf(
+                    $this->translate("txt-description-of-affiliation-%s-has-successfully-been-updated"),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -782,13 +837,19 @@ class EditController extends AffiliationAbstractController
                 $affiliation->setMainContribution($data['mainContribution']);
                 $this->affiliationService->updateEntity($affiliation);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-affiliation-%s-has-successfully-been-updated"),
-                            $affiliation
-                        )
-                    );
+                $changelogMessage = sprintf(
+                    $this->translate("txt-effort-spent-of-affiliation-%s-has-successfully-been-updated"),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
@@ -829,7 +890,6 @@ class EditController extends AffiliationAbstractController
 
         $formData = [];
         foreach ($this->projectService->parseEditYearRange($project) as $year) {
-
             $costPerYear = $this->projectService->findTotalCostByAffiliationPerYear($affiliation);
             if (!\array_key_exists($year, $costPerYear)) {
                 $costPerYear[$year] = 0;
@@ -845,8 +905,9 @@ class EditController extends AffiliationAbstractController
             foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
                 $effortPerWorkpackageAndYear
                     = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                    $workpackage, $affiliation
-                );
+                        $workpackage,
+                        $affiliation
+                    );
                 if (!\array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }
@@ -869,7 +930,8 @@ class EditController extends AffiliationAbstractController
         if ($this->getRequest()->isPost() && $form->isValid()) {
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
-                    'community/affiliation/affiliation', ['id' => $affiliation->getId()]
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()]
                 );
             }
 
@@ -938,25 +1000,32 @@ class EditController extends AffiliationAbstractController
                         $effort->setEffort($effortValue['effort']);
                         $this->projectService->updateEntity($effort);
                     }
-
                 }
             }
             //Update the mode of the project when the saved is pressed
             $project->setMode($this->getProjectService()->getNextMode($project)->mode);
             $this->getProjectService()->updateEntity($project);
-            $this->flashMessenger()
-                ->addSuccessMessage(
-                    sprintf(
-                        $this->translate(
-                            "txt-cost-and-effort-of-partner-%s-in-project-%s-has-successfully-been-updated"
-                        ),
-                        $affiliation->parseBranchedName(),
-                        $project->parseFullName()
-                    )
-                );
+
+            $changelogMessage = sprintf(
+                $this->translate(
+                    "txt-cost-and-effort-of-partner-%s-in-project-%s-has-successfully-been-updated"
+                ),
+                $affiliation->parseBranchedName(),
+                $project->parseFullName()
+            );
+
+            $this->flashMessenger()->addSuccessMessage($changelogMessage);
+            $this->projectService->addMessageToChangelog(
+                $affiliation->getProject(),
+                $this->identity(),
+                Changelog::TYPE_PARTNER,
+                Changelog::SOURCE_COMMUNITY,
+                $changelogMessage
+            );
 
             return $this->redirect()->toRoute(
-                'community/affiliation/affiliation', ['id' => $affiliation->getId()]
+                'community/affiliation/affiliation',
+                ['id' => $affiliation->getId()]
             );
         }
 

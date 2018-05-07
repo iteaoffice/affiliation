@@ -26,16 +26,17 @@ class RenderPaymentSheet extends AbstractPlugin
 {
     /**
      * @param Affiliation $affiliation
-     * @param int $year
-     * @param int $period
-     * @param bool $useContractData
+     * @param int         $year
+     * @param int         $period
+     * @param bool        $useContractData
+     *
      * @return AffiliationPdf
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Exception
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function render(
+    public function __invoke(
         Affiliation $affiliation,
         int $year,
         int $period,
@@ -356,7 +357,8 @@ class RenderPaymentSheet extends AbstractPlugin
             switch ($invoiceMethod) {
                 case Method::METHOD_PERCENTAGE:
                     if (\array_key_exists($projectYear, $versionContributionInformation->cost)) {
-                        $dueInYear = $versionContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()
+                        $dueInYear = $versionContributionInformation->cost[$projectYear] / 100
+                            * $this->getProjectService()
                                 ->findProjectFeeByYear($projectYear)
                                 ->getPercentage();
                         $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
@@ -389,7 +391,8 @@ class RenderPaymentSheet extends AbstractPlugin
 
                     //Check first if we have info in this year
                     if (\array_key_exists($projectYear, $contractContributionInformation->cost)) {
-                        $dueInYear = $contractContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()->findProjectFeeByYear($projectYear)->getPercentage();
+                        $dueInYear = $contractContributionInformation->cost[$projectYear] / 100
+                            * $this->getProjectService()->findProjectFeeByYear($projectYear)->getPercentage();
 
 
                         $yearData[] = $this->parseCost($contractContributionInformation->cost[$projectYear], $currency);
@@ -405,10 +408,12 @@ class RenderPaymentSheet extends AbstractPlugin
                         }
 
                         if ($projectYear <= $year) {
-                            $yearData[] = $this->parseCost($this->getAffiliationService()->parseAmountInvoicedInYearByAffiliation(
-                                $affiliation,
-                                $projectYear
-                            ));
+                            $yearData[] = $this->parseCost(
+                                $this->getAffiliationService()->parseAmountInvoicedInYearByAffiliation(
+                                    $affiliation,
+                                    $projectYear
+                                )
+                            );
                         } else {
                             $yearData[] = null;
                         }
@@ -604,7 +609,8 @@ class RenderPaymentSheet extends AbstractPlugin
                     $upcomingDetails[] = [
                         $invoiceLine->periodOrdinal,
                         $invoiceLine->description,
-                        $this->parseCost($invoiceLine->lineTotal) . ($invoiceLine->lineTotal < -0.1 ? ' ' . $this->translate("txt-credit") : ''),
+                        $this->parseCost($invoiceLine->lineTotal) . ($invoiceLine->lineTotal < -0.1 ? ' '
+                            . $this->translate("txt-credit") : ''),
 
                     ];
                 }
@@ -837,23 +843,9 @@ class RenderPaymentSheet extends AbstractPlugin
     }
 
     /**
-     * @param $cost
+     * @param               $cost
      * @param Currency|null $currency
-     * @return string
-     */
-    public function parseKiloCost($cost, Currency $currency = null): string
-    {
-        $abbreviation = 'EUR';
-        if (null !== $currency) {
-            $abbreviation = $currency->getIso4217();
-        }
-
-        return sprintf("%s k%s", number_format($cost / 1000, 0, '.', ','), $abbreviation);
-    }
-
-    /**
-     * @param $cost
-     * @param Currency|null $currency
+     *
      * @return string
      */
     public function parseCost($cost, Currency $currency = null): string
@@ -867,12 +859,29 @@ class RenderPaymentSheet extends AbstractPlugin
     }
 
     /**
-     * @param $percent
+     * @param     $percent
      * @param int $decimals
+     *
      * @return string
      */
     public function parsePercent($percent, int $decimals = 2): string
     {
         return sprintf("%s %s", number_format((float)$percent, $decimals, '.', ','), "%");
+    }
+
+    /**
+     * @param               $cost
+     * @param Currency|null $currency
+     *
+     * @return string
+     */
+    public function parseKiloCost($cost, Currency $currency = null): string
+    {
+        $abbreviation = 'EUR';
+        if (null !== $currency) {
+            $abbreviation = $currency->getIso4217();
+        }
+
+        return sprintf("%s k%s", number_format($cost / 1000, 0, '.', ','), $abbreviation);
     }
 }
