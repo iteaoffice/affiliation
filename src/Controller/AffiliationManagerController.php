@@ -176,7 +176,7 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function viewAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
@@ -213,7 +213,7 @@ class AffiliationManagerController extends AffiliationAbstractController
     {
         /** @var Request $request */
         $request = $this->getRequest();
-        $mainAffiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $mainAffiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
 
         if (null === $mainAffiliation) {
             return $this->notFoundAction();
@@ -267,7 +267,7 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function editAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
@@ -454,7 +454,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                 $affiliation->setInvoiceMethod(null);
                 if (!empty($formData['invoiceMethod'])) {
-                    $method = $this->getInvoiceService()->findEntityById(Method::class, $formData['invoiceMethod']);
+                    $method = $this->getInvoiceService()->find(Method::class, (int) $formData['invoiceMethod']);
                     $affiliation->setInvoiceMethod($method);
                 }
 
@@ -512,13 +512,13 @@ class AffiliationManagerController extends AffiliationAbstractController
     {
         /** @var Request $request */
         $request = $this->getRequest();
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $contact = $this->getContactService()->findContactById($this->params('contact'));
+        $contact = $this->getContactService()->findContactById((int) $this->params('contact'));
         if (null === $contact) {
             return $this->notFoundAction();
         }
@@ -605,7 +605,7 @@ class AffiliationManagerController extends AffiliationAbstractController
      */
     public function addAssociateAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();

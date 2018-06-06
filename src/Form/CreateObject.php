@@ -14,8 +14,6 @@
  */
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Affiliation\Form;
 
 use Affiliation\Entity\EntityAbstract;
@@ -23,19 +21,16 @@ use Doctrine\ORM\EntityManager;
 use Zend\Form\Form;
 
 /**
- * ITEA Office all rights reserved
+ * Class CreateObject
  *
- * @category    Affiliation
- *
- * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @package Affiliation\Form
  */
 class CreateObject extends Form
 {
     /**
      * CreateObject constructor.
      *
-     * @param EntityManager $entityManager
+     * @param EntityManager  $entityManager
      * @param EntityAbstract $object
      */
     public function __construct(EntityManager $entityManager, EntityAbstract $object)

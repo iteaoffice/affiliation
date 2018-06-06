@@ -70,15 +70,18 @@ class AddAssociateTest extends AbstractFormTest
         $contact = new Contact();
         $contact->setId(1);
 
-        $contactServiceMock = $this->getMockBuilder(ContactService::class)
+        $contactServiceMock = $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()
             ->setMethods(['findContactsInOrganisation'])
             ->getMock();
 
         $contactServiceMock->expects($this->exactly(1))
             ->method('findContactsInOrganisation')
             ->with($this->affiliation->getOrganisation())
-            ->will($this->returnValue([$contact]
-            ));
+            ->will(
+                $this->returnValue(
+                    [$contact]
+                )
+            );
 
         return $contactServiceMock;
     }

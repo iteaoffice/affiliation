@@ -98,7 +98,7 @@ class LoiManagerController extends AffiliationAbstractController
      */
     public function remindAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -124,8 +124,8 @@ class LoiManagerController extends AffiliationAbstractController
              * Send the email to the reminded user
              */
             $email = $this->getEmailService()->create();
-            $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
-            $email->addTo($this->zfcUserAuthentication()->getIdentity());
+            $email->setFromContact($this->identity());
+            $email->addTo($this->identity());
             $email->setSubject(str_replace(['[project]'], [$affiliation->getProject()], $form->getData()['subject']));
 
             $email->setHtmlLayoutName('signature_twig');
@@ -144,7 +144,7 @@ class LoiManagerController extends AffiliationAbstractController
             $loiReminder->setAffiliation($affiliation);
             $loiReminder->setEmail($form->getData()['message']);
             $loiReminder->setReceiver($this->getContactService()->findContactById($form->getData()['receiver']));
-            $loiReminder->setSender($this->zfcUserAuthentication()->getIdentity());
+            $loiReminder->setSender($this->identity());
             $this->getLoiService()->newEntity($loiReminder);
 
             $this->flashMessenger()->setNamespace('success')
@@ -173,7 +173,7 @@ class LoiManagerController extends AffiliationAbstractController
      */
     public function remindersAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
 
         return new ViewModel(
             [
@@ -187,7 +187,7 @@ class LoiManagerController extends AffiliationAbstractController
      */
     public function viewAction()
     {
-        $loi = $this->getLoiService()->findLoiById($this->params('id'));
+        $loi = $this->getLoiService()->findLoiById((int) $this->params('id'));
         if (\is_null($loi)) {
             return $this->notFoundAction();
         }
@@ -200,7 +200,7 @@ class LoiManagerController extends AffiliationAbstractController
      */
     public function editAction()
     {
-        $loi = $this->getLoiService()->findLoiById($this->params('id'));
+        $loi = $this->getLoiService()->findLoiById((int) $this->params('id'));
 
         if (\is_null($loi)) {
             return $this->notFoundAction();
@@ -334,7 +334,7 @@ class LoiManagerController extends AffiliationAbstractController
          */
         $loi = $this->getAffiliationService()->findEntityById(Loi::class, $loi);
         $loi->setContact($this->getContactService()->findContactById($contact));
-        $loi->setApprover($this->zfcUserAuthentication()->getIdentity());
+        $loi->setApprover($this->identity());
         $loi->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
         $loi->setDateApproved(new \DateTime());
         $this->getLoiService()->updateEntity($loi);

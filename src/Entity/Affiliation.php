@@ -40,11 +40,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * Constant for mode = 1 (self funded).
      */
     public const SELF_FUNDED = 1;
-    /**
-     * Templates for the self funded parameter.
-     *
-     * @var array
-     */
+
     protected static $selfFundedTemplates
         = [
             self::NOT_SELF_FUNDED => 'txt-not-self-funded',
@@ -379,12 +375,19 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $achievement;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\ChangeRequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\ChangeRequest\CostChange[]|Collections\ArrayCollection
      */
     private $changeRequestCostChange;
+    /**
+     * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\Country", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\ChangeRequest\Country[]|Collections\ArrayCollection
+     */
+    private $changeRequestCountry;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -394,9 +397,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     private $projectLog;
     /**
      * @ORM\ManyToOne(targetEntity="Invoice\Entity\Method", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="method_id", referencedColumnName="method_id", nullable=true)
-     * })
      * @Annotation\Exclude()
      *
      * @var \Invoice\Entity\Method
@@ -427,6 +428,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
         $this->changeRequestCostChange = new Collections\ArrayCollection();
+        $this->changeRequestCountry = new Collections\ArrayCollection();
         $this->projectLog = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
@@ -1048,6 +1050,26 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     }
 
     /**
+     * @return Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[]
+     */
+    public function getChangeRequestCountry()
+    {
+        return $this->changeRequestCountry;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[] $changerequestCountry
+     *
+     * @return Affiliation
+     */
+    public function setChangeRequestCountry($changerequestCountry): Affiliation
+    {
+        $this->changeRequestCountry = $changerequestCountry;
+
+        return $this;
+    }
+
+    /**
      * @return Collections\ArrayCollection|\Project\Entity\Log[]
      */
     public function getProjectLog()
@@ -1117,6 +1139,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
 
     /**
      * @param Collections\ArrayCollection|\Project\Entity\Contract[] $contract
+     *
      * @return Affiliation
      */
     public function setContract($contract): Affiliation
@@ -1136,6 +1159,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
 
     /**
      * @param ContractVersion[]|Collections\ArrayCollection $contractVersion
+     *
      * @return Affiliation
      */
     public function setContractVersion($contractVersion): Affiliation
@@ -1155,6 +1179,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
 
     /**
      * @param Collections\ArrayCollection|\Project\Entity\Contract\Cost[] $contractCost
+     *
      * @return Affiliation
      */
     public function setContractCost($contractCost): Affiliation
@@ -1174,6 +1199,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
 
     /**
      * @param \Invoice\Entity\Method $invoiceMethod
+     *
      * @return Affiliation
      */
     public function setInvoiceMethod(?\Invoice\Entity\Method $invoiceMethod): Affiliation

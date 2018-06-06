@@ -48,7 +48,7 @@ class EditController extends AffiliationAbstractController
      */
     public function affiliationAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -240,7 +240,7 @@ class EditController extends AffiliationAbstractController
      */
     public function financialAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -513,7 +513,7 @@ class EditController extends AffiliationAbstractController
      */
     public function addAssociateAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -615,7 +615,7 @@ class EditController extends AffiliationAbstractController
      */
     public function manageAssociateAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -692,7 +692,7 @@ class EditController extends AffiliationAbstractController
      */
     public function descriptionAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -720,7 +720,7 @@ class EditController extends AffiliationAbstractController
                 /** @var Description $description */
                 $description = $form->getData();
                 $description->setAffiliation([$affiliation]);
-                $description->setContact($this->zfcUserAuthentication()->getIdentity());
+                $description->setContact($this->identity());
                 $this->affiliationService->updateEntity($description);
 
                 $changelogMessage = sprintf(
@@ -761,13 +761,13 @@ class EditController extends AffiliationAbstractController
      */
     public function updateEffortSpentAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $report = $this->reportService->findReportById($this->params('report'));
+        $report = $this->reportService->findReportById((int) $this->params('report'));
         if (null === $report) {
             return $this->notFoundAction();
         }
@@ -879,7 +879,7 @@ class EditController extends AffiliationAbstractController
      */
     public function costAndEffortAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();

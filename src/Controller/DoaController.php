@@ -33,7 +33,7 @@ class DoaController extends AffiliationAbstractController
      */
     public function uploadAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -70,7 +70,7 @@ class DoaController extends AffiliationAbstractController
                     $this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type)
                 );
 
-                $affiliationDoa->setContact($this->zfcUserAuthentication()->getIdentity());
+                $affiliationDoa->setContact($this->identity());
                 $affiliationDoa->setAffiliation($affiliation);
                 $affiliationDoaObject->setDoa($affiliationDoa);
                 $this->getAffiliationService()->newEntity($affiliationDoaObject);
@@ -150,7 +150,7 @@ class DoaController extends AffiliationAbstractController
                 $fileSizeValidator = new FilesSize(PHP_INT_MAX);
                 $fileSizeValidator->isValid($fileData['file']);
                 $doa->setSize($fileSizeValidator->size);
-                $doa->setContact($this->zfcUserAuthentication()->getIdentity());
+                $doa->setContact($this->identity());
 
                 $fileTypeValidator = new MimeType();
                 $fileTypeValidator->isValid($fileData['file']);
@@ -210,7 +210,7 @@ class DoaController extends AffiliationAbstractController
 
         //Create an empty Doa object
         $programDoa = new Doa();
-        $programDoa->setContact($this->zfcUserAuthentication()->getIdentity());
+        $programDoa->setContact($this->identity());
         $programDoa->setAffiliation($affiliation);
         $renderProjectDoa = $this->renderDoa()->renderProjectDoa($programDoa);
 

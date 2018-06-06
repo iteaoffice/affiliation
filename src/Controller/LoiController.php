@@ -34,13 +34,13 @@ class LoiController extends AffiliationAbstractController
      */
     public function submitAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $contact = $this->zfcUserAuthentication()->getIdentity();
+        $contact = $this->identity();
 
         $data = array_merge_recursive(
             $this->getRequest()->getPost()->toArray(),
@@ -111,7 +111,7 @@ class LoiController extends AffiliationAbstractController
      */
     public function replaceAction()
     {
-        $loi = $this->loiService->findLoiById($this->params('id'));
+        $loi = $this->loiService->findLoiById((int) $this->params('id'));
 
         if (null === $loi || \count($loi->getObject()) === 0) {
             return $this->notFoundAction();
@@ -149,7 +149,7 @@ class LoiController extends AffiliationAbstractController
                 $fileSizeValidator->isValid($fileData['file']);
                 $loi->setSize($fileSizeValidator->size);
 
-                $loi->setContact($this->zfcUserAuthentication()->getIdentity());
+                $loi->setContact($this->identity());
                 $loi->setDateSigned(new \DateTime());
 
                 $fileTypeValidator = new MimeType();
@@ -199,7 +199,7 @@ class LoiController extends AffiliationAbstractController
      */
     public function renderAction(): Response
     {
-        $affiliation = $this->affiliationService->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('affiliationId'));
 
         /** @var Response $response */
         $response = $this->getResponse();

@@ -30,7 +30,7 @@ class CommunityController extends AffiliationAbstractController
      */
     public function affiliationAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -74,7 +74,7 @@ class CommunityController extends AffiliationAbstractController
      */
     public function paymentSheetAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
         $contract = $this->params('contract');
 
         if (null === $affiliation) {
@@ -105,7 +105,7 @@ class CommunityController extends AffiliationAbstractController
      */
     public function paymentSheetPdfAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('id'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();

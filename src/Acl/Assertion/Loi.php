@@ -55,7 +55,7 @@ class Loi extends AssertionAbstract
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
-                $affiliation = $this->getAffiliationService()->findAffiliationById($id);
+                $affiliation = $this->getAffiliationService()->findAffiliationById((int) $id);
 
                 return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'edit-community');
             case 'render':
@@ -74,7 +74,7 @@ class Loi extends AssertionAbstract
                     /*
                      * For the upload we need to see if the user has access on the editing of the affiliation
                      */
-                    $affiliation = $this->getAffiliationService()->findAffiliationById($id);
+                    $affiliation = $this->getAffiliationService()->findAffiliationById((int) $id);
                 }
 
                 return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'view-community');

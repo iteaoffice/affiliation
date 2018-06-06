@@ -90,7 +90,7 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function remindAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -120,7 +120,7 @@ class DoaManagerController extends AffiliationAbstractController
             $receiver = $this->getContactService()->findContactById($form->getData()['receiver']);
 
             $email = $this->getEmailService()->create();
-            $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
+            $email->setFromContact($this->identity());
             $email->addTo($receiver);
             $email->setSubject(str_replace(['[project]'], [$affiliation->getProject()], $form->getData()['subject']));
 
@@ -152,7 +152,7 @@ class DoaManagerController extends AffiliationAbstractController
             $doaReminder->setAffiliation($affiliation);
             $doaReminder->setEmail($form->getData()['message']);
             $doaReminder->setReceiver($this->getContactService()->findContactById($form->getData()['receiver']));
-            $doaReminder->setSender($this->zfcUserAuthentication()->getIdentity());
+            $doaReminder->setSender($this->identity());
             $this->getDoaService()->newEntity($doaReminder);
 
             $this->flashMessenger()->setNamespace('success')
@@ -182,7 +182,7 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function remindersAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
 
         return new ViewModel(
             [
@@ -196,7 +196,7 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function viewAction(): ViewModel
     {
-        $doa = $this->getDoaService()->findDoaById($this->params('id'));
+        $doa = $this->getDoaService()->findDoaById((int) $this->params('id'));
         if (null === $doa) {
             return $this->notFoundAction();
         }
@@ -211,7 +211,7 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function editAction()
     {
-        $doa = $this->getDoaService()->findDoaById($this->params('id'));
+        $doa = $this->getDoaService()->findDoaById((int) $this->params('id'));
         if (null === $doa) {
             return $this->notFoundAction();
         }

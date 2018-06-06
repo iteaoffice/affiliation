@@ -324,8 +324,8 @@
                             <td class="effort_version_value"
                                 rel="effort_version_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}">{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
                             {% set totalPerWP = totalPerWP + effortPerYear[year].effort %}
-                            {% set grandTotal = grandTotal + totalPerWP %}
                         {% endfor %}
+                        {% set grandTotal = grandTotal + totalPerWP %}
                         <th id="effort_version_total_{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
                     </tr>
                 {% endfor %}

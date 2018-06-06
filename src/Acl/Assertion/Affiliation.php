@@ -47,7 +47,7 @@ class Affiliation extends AssertionAbstract
         $id = $this->getId();
 
         if (!$affiliation instanceof AffiliationEntity && null !== $id) {
-            $affiliation = $this->getAffiliationService()->findAffiliationById($id);
+            $affiliation = $this->getAffiliationService()->findAffiliationById((int) $id);
         }
 
 
