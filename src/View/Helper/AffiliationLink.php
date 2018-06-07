@@ -23,19 +23,6 @@ use Affiliation\Entity\Affiliation;
  */
 class AffiliationLink extends LinkAbstract
 {
-    /**
-     * @param Affiliation $affiliation
-     * @param             $action
-     * @param             $show
-     * @param int         $year
-     * @param int         $period
-     * @param null        $fragment
-     *
-     * @return string
-     *
-     * @throws \RuntimeException
-     * @throws \Exception
-     */
     public function __invoke(
         Affiliation $affiliation,
         $action = 'view',
