@@ -130,7 +130,7 @@ class LoiManagerController extends AffiliationAbstractController
 
             $email->setHtmlLayoutName('signature_twig');
             $email->setReceiver(
-                $this->getContactService()->findContactById($form->getData()['receiver'])
+                $this->getContactService()->findContactById((int) $form->getData()['receiver'])
                     ->getDisplayName()
             );
             $email->setOrganisation($affiliation->getOrganisation());
@@ -143,7 +143,7 @@ class LoiManagerController extends AffiliationAbstractController
             $loiReminder = new LoiReminderEntity();
             $loiReminder->setAffiliation($affiliation);
             $loiReminder->setEmail($form->getData()['message']);
-            $loiReminder->setReceiver($this->getContactService()->findContactById($form->getData()['receiver']));
+            $loiReminder->setReceiver($this->getContactService()->findContactById((int) $form->getData()['receiver']));
             $loiReminder->setSender($this->identity());
             $this->getLoiService()->newEntity($loiReminder);
 
@@ -153,7 +153,7 @@ class LoiManagerController extends AffiliationAbstractController
                         $this->translate("txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
                         $affiliation->getOrganisation(),
                         $affiliation->getProject(),
-                        $this->getContactService()->findContactById($form->getData()['receiver'])->getEmail()
+                        $this->getContactService()->findContactById((int) $form->getData()['receiver'])->getEmail()
                     )
                 );
 
@@ -333,7 +333,7 @@ class LoiManagerController extends AffiliationAbstractController
          * @var $loi Loi
          */
         $loi = $this->getAffiliationService()->findEntityById(Loi::class, $loi);
-        $loi->setContact($this->getContactService()->findContactById($contact));
+        $loi->setContact($this->getContactService()->findContactById((int) $contact));
         $loi->setApprover($this->identity());
         $loi->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
         $loi->setDateApproved(new \DateTime());

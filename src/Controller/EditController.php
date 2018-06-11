@@ -41,11 +41,6 @@ use Zend\View\Model\ViewModel;
  */
 class EditController extends AffiliationAbstractController
 {
-    /**
-     * @return \Zend\Http\Response|ViewModel
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function affiliationAction()
     {
         $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
@@ -173,7 +168,7 @@ class EditController extends AffiliationAbstractController
                 list($organisationId, $branch) = explode('|', $formData['affiliation']);
                 $organisation = $this->getOrganisationService()->findOrganisationById($organisationId);
                 $affiliation->setOrganisation($organisation);
-                $affiliation->setContact($this->getContactService()->findContactById($formData['technical']));
+                $affiliation->setContact($this->getContactService()->findContactById((int) $formData['technical']));
                 $affiliation->setBranch($branch);
                 $this->affiliationService->updateEntity($affiliation);
                 $affiliation->setValueChain($formData['valueChain']);
@@ -190,7 +185,7 @@ class EditController extends AffiliationAbstractController
                 $financial->setOrganisation($organisation);
                 $financial->setAffiliation($affiliation);
                 $financial->setBranch($branch);
-                $financial->setContact($this->getContactService()->findContactById($formData['financial']));
+                $financial->setContact($this->getContactService()->findContactById((int) $formData['financial']));
                 $this->affiliationService->updateEntity($financial);
 
                 //Update the mode of the project
@@ -233,11 +228,6 @@ class EditController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return \Zend\Http\Response|ViewModel
-     *
-     * @throws \Doctrine\ORM\ORMException
-     */
     public function financialAction()
     {
         $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
@@ -364,7 +354,7 @@ class EditController extends AffiliationAbstractController
                     $affiliationFinancial = new Financial();
                     $affiliationFinancial->setAffiliation($affiliation);
                 }
-                $affiliationFinancial->setContact($this->getContactService()->findContactById($formData['contact']));
+                $affiliationFinancial->setContact($this->getContactService()->findContactById((int) $formData['contact']));
                 $affiliationFinancial->setOrganisation($organisation);
 
                 //Update the branch is complicated so we create a dedicated function for it in the
@@ -552,7 +542,7 @@ class EditController extends AffiliationAbstractController
             if (isset($data['addKnownContact']) && !empty($data['contact'])) {
 
                 /** @var Contact $contact */
-                $contact = $this->getContactService()->findContactById($data['contact']);
+                $contact = $this->getContactService()->findContactById((int) $data['contact']);
 
                 $this->affiliationService->addAssociate($affiliation, $contact);
 

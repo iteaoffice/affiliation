@@ -117,7 +117,7 @@ class DoaManagerController extends AffiliationAbstractController
             /*
              * Send the email to the receiving user
              */
-            $receiver = $this->getContactService()->findContactById($form->getData()['receiver']);
+            $receiver = $this->getContactService()->findContactById((int) $form->getData()['receiver']);
 
             $email = $this->getEmailService()->create();
             $email->setFromContact($this->identity());
@@ -151,7 +151,7 @@ class DoaManagerController extends AffiliationAbstractController
             $doaReminder = new DoaReminderEntity();
             $doaReminder->setAffiliation($affiliation);
             $doaReminder->setEmail($form->getData()['message']);
-            $doaReminder->setReceiver($this->getContactService()->findContactById($form->getData()['receiver']));
+            $doaReminder->setReceiver($this->getContactService()->findContactById((int) $form->getData()['receiver']));
             $doaReminder->setSender($this->identity());
             $this->getDoaService()->newEntity($doaReminder);
 
@@ -161,7 +161,7 @@ class DoaManagerController extends AffiliationAbstractController
                         $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
                         $affiliation->getOrganisation(),
                         $affiliation->getProject(),
-                        $this->getContactService()->findContactById($form->getData()['receiver'])->getEmail()
+                        $this->getContactService()->findContactById((int) $form->getData()['receiver'])->getEmail()
                     )
                 );
 
@@ -343,7 +343,7 @@ class DoaManagerController extends AffiliationAbstractController
          * @var $doa Doa
          */
         $doa = $this->getAffiliationService()->findEntityById(Doa::class, $doa);
-        $doa->setContact($this->getContactService()->findContactById($contact));
+        $doa->setContact($this->getContactService()->findContactById((int) $contact));
         $doa->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
         $doa->setDateApproved(new \DateTime());
         $this->getDoaService()->updateEntity($doa);

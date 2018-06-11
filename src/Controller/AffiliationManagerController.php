@@ -353,7 +353,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                 //Find the selected organisation
                 $organisation = $this->getOrganisationService()
                     ->findOrganisationById($formData['organisation']);
-                $contact = $this->getContactService()->findContactById($formData['contact']);
+                $contact = $this->getContactService()->findContactById((int) $formData['contact']);
 
                 switch (true) {
                     case !empty($formData['parentOrganisationLike']):
@@ -388,7 +388,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                             $parentOrganisation->setParent($parent);
                             $parentOrganisation->setContact(
                                 $this->getContactService()
-                                    ->findContactById($formData['contact'])
+                                    ->findContactById((int) $formData['contact'])
                             );
                             $this->getParentService()->newEntity($parentOrganisation);
                         }
@@ -471,7 +471,7 @@ class AffiliationManagerController extends AffiliationAbstractController
                         $this->getOrganisationService()
                             ->findOrganisationById($formData['financialOrganisation'])
                     );
-                    $financial->setContact($this->getContactService()->findContactById($formData['financialContact']));
+                    $financial->setContact($this->getContactService()->findContactById((int) $formData['financialContact']));
                     $financial->setBranch($formData['financialBranch']);
                     if (!empty($formData['emailCC'])) {
                         $financial->setEmailCC($formData['emailCC']);
@@ -569,7 +569,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
                 //Define the new affiliation
                 $affiliation = $this->getAffiliationService()->findAffiliationById($formData['affiliation']);
-                $contact = $this->getContactService()->findContactById($formData['contact']);
+                $contact = $this->getContactService()->findContactById((int) $formData['contact']);
                 $affiliation->addAssociate($contact);
 
                 $this->getAffiliationService()->updateEntity($affiliation);
@@ -618,7 +618,7 @@ class AffiliationManagerController extends AffiliationAbstractController
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             if (empty($form->getData()['cancel'])) {
-                $affiliation->addAssociate($this->getContactService()->findContactById($form->getData()['contact']));
+                $affiliation->addAssociate($this->getContactService()->findContactById((int) $form->getData()['contact']));
                 $this->getAffiliationService()->updateEntity($affiliation);
             }
 
