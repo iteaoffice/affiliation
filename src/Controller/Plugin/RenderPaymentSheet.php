@@ -24,18 +24,6 @@ use Organisation\Entity\Financial;
  */
 class RenderPaymentSheet extends AbstractPlugin
 {
-    /**
-     * @param Affiliation $affiliation
-     * @param int         $year
-     * @param int         $period
-     * @param bool        $useContractData
-     *
-     * @return AffiliationPdf
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function __invoke(
         Affiliation $affiliation,
         int $year,
@@ -60,7 +48,7 @@ class RenderPaymentSheet extends AbstractPlugin
         $exchangeRate = new ExchangeRate();
         $exchangeRate->setRate(1);
 
-        if (!\is_null($contractVersion) && $useContractData) {
+        if (null !== $contractVersion && $useContractData) {
             $currency = $contractVersion->getContract()->getCurrency();
             $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod($currency, $year, $period);
         }
@@ -493,8 +481,12 @@ class RenderPaymentSheet extends AbstractPlugin
         }
 
 
-        $contributionDue = $this->getAffiliationService()
-            ->parseContributionDue($affiliation, $latestVersion, $year, $period, $useContractData);
+        $contributionDue = $this->getAffiliationService()->parseContributionDue(
+            $affiliation,
+            $latestVersion,
+            $year,
+            $period
+        );
         $contributionPaid = $this->getAffiliationService()->parseContributionPaid($affiliation, $year, $period);
 
         //Old Invoices
@@ -667,8 +659,7 @@ class RenderPaymentSheet extends AbstractPlugin
                     $affiliation,
                     $latestVersion,
                     $year,
-                    $period,
-                    $useContractData
+                    $period
                 );
                 $total = $this->getAffiliationService()->parseTotal($affiliation, $latestVersion, $year, $period);
                 $contribution = $this->getAffiliationService()->parseContribution(

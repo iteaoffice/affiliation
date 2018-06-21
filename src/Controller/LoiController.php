@@ -29,9 +29,6 @@ use Zend\View\Model\ViewModel;
  */
 class LoiController extends AffiliationAbstractController
 {
-    /**
-     * @return \Zend\Http\Response|ViewModel
-     */
     public function submitAction()
     {
         $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('affiliationId'));
@@ -103,12 +100,6 @@ class LoiController extends AffiliationAbstractController
         );
     }
 
-
-    /**
-     * @return \Zend\Http\Response|ViewModel
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function replaceAction()
     {
         $loi = $this->loiService->findLoiById((int) $this->params('id'));

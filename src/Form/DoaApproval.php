@@ -24,12 +24,6 @@ use Zend\InputFilter\InputFilterProviderInterface;
  */
 class DoaApproval extends Form implements InputFilterProviderInterface
 {
-    /**
-     * DoaApproval constructor.
-     *
-     * @param ArrayCollection $doaList
-     * @param ContactService $contactService
-     */
     public function __construct(ArrayCollection $doaList, ContactService $contactService)
     {
         parent::__construct();
@@ -97,12 +91,6 @@ class DoaApproval extends Form implements InputFilterProviderInterface
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [];

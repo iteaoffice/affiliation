@@ -23,7 +23,6 @@ use Affiliation\Entity\DoaReminder as DoaReminderEntity;
 use Affiliation\Form\DoaApproval;
 use Affiliation\Form\DoaReminder;
 use Deeplink\Entity\Target;
-use Deeplink\View\Helper\DeeplinkLink;
 use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
 use Zend\View\Model\JsonModel;
@@ -36,9 +35,6 @@ use Zend\View\Model\ViewModel;
  */
 class DoaManagerController extends AffiliationAbstractController
 {
-    /**
-     * @return ViewModel
-     */
     public function listAction(): ViewModel
     {
         $doa = $this->getDoaService()->findNotApprovedDoa();
@@ -54,9 +50,6 @@ class DoaManagerController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return ViewModel
-     */
     public function approvalAction(): ViewModel
     {
         $doa = $this->getDoaService()->findNotApprovedDoa();
@@ -71,9 +64,6 @@ class DoaManagerController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return ViewModel
-     */
     public function missingAction(): ViewModel
     {
         $affiliation = $this->getAffiliationService()->findAffiliationWithMissingDoa();
@@ -85,18 +75,15 @@ class DoaManagerController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return array|\Zend\Http\Response|ViewModel
-     */
     public function remindAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int)$this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $form = new DoaReminder($affiliation, $this->getContactService());
+        $form = new DoaReminder($affiliation, $this->contactService, $this->entityManager);
 
         $data = array_merge(
             [
@@ -108,6 +95,10 @@ class DoaManagerController extends AffiliationAbstractController
         //Get the corresponding template
         $webInfo = $this->getGeneralService()->findWebInfoByInfo('/affiliation/doa:reminder');
 
+        if (null === $webInfo) {
+            return $this->notFoundAction();
+        }
+
         $form->get('subject')->setValue($webInfo->getSubject());
         $form->get('message')->setValue($webInfo->getContent());
 
@@ -117,55 +108,41 @@ class DoaManagerController extends AffiliationAbstractController
             /*
              * Send the email to the receiving user
              */
-            $receiver = $this->getContactService()->findContactById((int) $form->getData()['receiver']);
+            $receiver = $this->getContactService()->findContactById((int)$form->getData()['receiver']);
 
-            $email = $this->getEmailService()->create();
-            $email->setFromContact($this->identity());
-            $email->addTo($receiver);
-            $email->setSubject(str_replace(['[project]'], [$affiliation->getProject()], $form->getData()['subject']));
+            if (null !== $receiver) {
+                $this->emailService->setWebInfo('affiliation/doa/reminder');
+                $this->emailService->setSubject($form->getData()['subject']);
+                $this->emailService->setEmailContent($form->getData()['message']);
+                $this->emailService->addTo($receiver);
+                $this->emailService->setTemplateVariable('receiver', $receiver->getDisplayName());
+                $this->emailService->setTemplateVariable('organisation', $affiliation->getOrganisation());
+                $this->emailService->setTemplateVariable('project', $affiliation->getProject());
 
-            $email->setHtmlLayoutName('signature_twig');
-            $email->setReceiver($receiver->getDisplayName());
-            $email->setOrganisation($affiliation->getOrganisation());
-            $email->setProject($affiliation->getProject());
-            $email->setMessage($form->getData()['message']);
+                /** @var Target $target */
+                $target = $this->deeplinkService->find(Target::class, (int)$data['deeplinkTarget']);
+                $this->emailService->setDeeplink($target, $receiver, (string)$affiliation->getId());
+                $this->emailService->send();
 
-            /**
-             * Create the deeplink in the email
-             *
-             * @var Target $target
-             */
-            $target = $this->deeplinkService->find(Target::class, (int)$data['deeplinkTarget']);
-            //Create a deeplink for the user which redirects to the profile-page
-            $deeplink = $this->deeplinkService->createDeeplink($target, $receiver, null, $affiliation->getId());
+                //Store the reminder in the database
+                $doaReminder = new DoaReminderEntity();
+                $doaReminder->setAffiliation($affiliation);
+                $doaReminder->setEmail($form->getData()['message']);
+                $doaReminder->setReceiver($receiver);
+                $doaReminder->setSender($this->identity());
+                $this->getDoaService()->newEntity($doaReminder);
 
-            /**
-             * @var $deeplinkLink DeeplinkLink
-             */
-            $deeplinkLink = $this->getViewHelperManager()->get('deeplinkLink');
-            $email->setDeeplink($deeplinkLink($deeplink, 'view', 'link'));
-
-            $this->getEmailService()->send();
-
-            //Store the reminder in the database
-            $doaReminder = new DoaReminderEntity();
-            $doaReminder->setAffiliation($affiliation);
-            $doaReminder->setEmail($form->getData()['message']);
-            $doaReminder->setReceiver($this->getContactService()->findContactById((int) $form->getData()['receiver']));
-            $doaReminder->setSender($this->identity());
-            $this->getDoaService()->newEntity($doaReminder);
-
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(
-                    sprintf(
+                $this->flashMessenger()->addSuccessMessage(
+                    \sprintf(
                         $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
                         $affiliation->getOrganisation(),
                         $affiliation->getProject(),
-                        $this->getContactService()->findContactById((int) $form->getData()['receiver'])->getEmail()
+                        $this->getContactService()->findContactById((int)$form->getData()['receiver'])->getEmail()
                     )
                 );
 
-            return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
+            }
         }
 
         return new ViewModel(
@@ -182,7 +159,7 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function remindersAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int)$this->params('affiliationId'));
 
         return new ViewModel(
             [
@@ -196,7 +173,7 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function viewAction(): ViewModel
     {
-        $doa = $this->getDoaService()->findDoaById((int) $this->params('id'));
+        $doa = $this->getDoaService()->findDoaById((int)$this->params('id'));
         if (null === $doa) {
             return $this->notFoundAction();
         }
@@ -211,7 +188,7 @@ class DoaManagerController extends AffiliationAbstractController
      */
     public function editAction()
     {
-        $doa = $this->getDoaService()->findDoaById((int) $this->params('id'));
+        $doa = $this->getDoaService()->findDoaById((int)$this->params('id'));
         if (null === $doa) {
             return $this->notFoundAction();
         }
@@ -343,7 +320,7 @@ class DoaManagerController extends AffiliationAbstractController
          * @var $doa Doa
          */
         $doa = $this->getAffiliationService()->findEntityById(Doa::class, $doa);
-        $doa->setContact($this->getContactService()->findContactById((int) $contact));
+        $doa->setContact($this->getContactService()->findContactById((int)$contact));
         $doa->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
         $doa->setDateApproved(new \DateTime());
         $this->getDoaService()->updateEntity($doa);

@@ -61,55 +61,33 @@ class ContractVersion extends EntityAbstract
      */
     private $costVersion;
 
-    /**
-     * Version constructor.
-     */
     public function __construct()
     {
         $this->costVersion = new ArrayCollection();
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @param $property
-     *
-     * @return bool
-     */
     public function __isset($property)
     {
         return isset($this->$property);
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
-        return sprintf(
-            "%s in %s (%s)",
+        return \sprintf(
+            '%s in %s (%s)',
             $this->getAffiliation()->getOrganisation(),
             $this->getAffiliation()->getProject(),
-            $this->getVersion()->getVersionType()->getDescription()
+            $this->getVersion()->getContract()->getCountry()
         );
     }
 
@@ -123,6 +101,7 @@ class ContractVersion extends EntityAbstract
 
     /**
      * @param Affiliation $affiliation
+     *
      * @return ContractVersion
      */
     public function setAffiliation(Affiliation $affiliation): ContractVersion
@@ -142,6 +121,7 @@ class ContractVersion extends EntityAbstract
 
     /**
      * @param \Project\Entity\Contract\Version $version
+     *
      * @return ContractVersion
      */
     public function setVersion(\Project\Entity\Contract\Version $version): ContractVersion
@@ -161,6 +141,7 @@ class ContractVersion extends EntityAbstract
 
     /**
      * @param int $id
+     *
      * @return ContractVersion
      */
     public function setId(int $id): ContractVersion
@@ -180,6 +161,7 @@ class ContractVersion extends EntityAbstract
 
     /**
      * @param ArrayCollection|\Project\Entity\Cost\Version[] $costVersion
+     *
      * @return ContractVersion
      */
     public function setCostVersion($costVersion): ContractVersion

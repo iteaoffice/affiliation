@@ -43,7 +43,7 @@ class EditController extends AffiliationAbstractController
 {
     public function affiliationAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -51,7 +51,7 @@ class EditController extends AffiliationAbstractController
 
         $formData = $this->getRequest()->getPost()->toArray();
         $formData['affiliation'] = sprintf(
-            "%s|%s",
+            '%s|%s',
             $affiliation->getOrganisation()->getId(),
             $affiliation->getBranch()
         );
@@ -168,7 +168,7 @@ class EditController extends AffiliationAbstractController
                 list($organisationId, $branch) = explode('|', $formData['affiliation']);
                 $organisation = $this->getOrganisationService()->findOrganisationById($organisationId);
                 $affiliation->setOrganisation($organisation);
-                $affiliation->setContact($this->getContactService()->findContactById((int) $formData['technical']));
+                $affiliation->setContact($this->getContactService()->findContactById((int)$formData['technical']));
                 $affiliation->setBranch($branch);
                 $this->affiliationService->updateEntity($affiliation);
                 $affiliation->setValueChain($formData['valueChain']);
@@ -185,7 +185,7 @@ class EditController extends AffiliationAbstractController
                 $financial->setOrganisation($organisation);
                 $financial->setAffiliation($affiliation);
                 $financial->setBranch($branch);
-                $financial->setContact($this->getContactService()->findContactById((int) $formData['financial']));
+                $financial->setContact($this->getContactService()->findContactById((int)$formData['financial']));
                 $this->affiliationService->updateEntity($financial);
 
                 //Update the mode of the project
@@ -230,7 +230,7 @@ class EditController extends AffiliationAbstractController
 
     public function financialAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -354,7 +354,9 @@ class EditController extends AffiliationAbstractController
                     $affiliationFinancial = new Financial();
                     $affiliationFinancial->setAffiliation($affiliation);
                 }
-                $affiliationFinancial->setContact($this->getContactService()->findContactById((int) $formData['contact']));
+                $affiliationFinancial->setContact(
+                    $this->getContactService()->findContactById((int)$formData['contact'])
+                );
                 $affiliationFinancial->setOrganisation($organisation);
 
                 //Update the branch is complicated so we create a dedicated function for it in the
@@ -446,7 +448,7 @@ class EditController extends AffiliationAbstractController
                      * @var $addressType AddressType
                      */
                     $addressType = $this->getContactService()
-                        ->findEntityById(AddressType::class, AddressType::ADDRESS_TYPE_FINANCIAL);
+                        ->find(AddressType::class, AddressType::ADDRESS_TYPE_FINANCIAL);
                     $financialAddress->setType($addressType);
                 }
                 $financialAddress->setAddress($formData['address']);
@@ -457,7 +459,7 @@ class EditController extends AffiliationAbstractController
                  */
                 $country = $this->generalService->find(Country::class, (int)$formData['country']);
                 $financialAddress->setCountry($country);
-                $this->getContactService()->updateEntity($financialAddress);
+                $this->getContactService()->save($financialAddress);
 
                 $changelogMessage = sprintf(
                     $this->translate("txt-affiliation-financial-information-%s-has-successfully-been-updated"),
@@ -503,7 +505,7 @@ class EditController extends AffiliationAbstractController
      */
     public function addAssociateAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -542,7 +544,7 @@ class EditController extends AffiliationAbstractController
             if (isset($data['addKnownContact']) && !empty($data['contact'])) {
 
                 /** @var Contact $contact */
-                $contact = $this->getContactService()->findContactById((int) $data['contact']);
+                $contact = $this->getContactService()->findContactById((int)$data['contact']);
 
                 $this->affiliationService->addAssociate($affiliation, $contact);
 
@@ -605,7 +607,7 @@ class EditController extends AffiliationAbstractController
      */
     public function manageAssociateAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -682,7 +684,7 @@ class EditController extends AffiliationAbstractController
      */
     public function descriptionAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -751,13 +753,13 @@ class EditController extends AffiliationAbstractController
      */
     public function updateEffortSpentAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $report = $this->reportService->findReportById((int) $this->params('report'));
+        $report = $this->reportService->findReportById((int)$this->params('report'));
         if (null === $report) {
             return $this->notFoundAction();
         }
@@ -869,7 +871,7 @@ class EditController extends AffiliationAbstractController
      */
     public function costAndEffortAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();

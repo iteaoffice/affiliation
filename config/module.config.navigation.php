@@ -283,7 +283,7 @@ return [
                         'order' => 90,
                         'route' => 'zfcadmin/affiliation/doa/missing',
                         'pages' => [
-                            'edit'      => [
+                            'remind'      => [
                                 'label'   => _('txt-nav-doa-remind'),
                                 'route'   => 'zfcadmin/affiliation/doa/remind',
                                 'params'  => [

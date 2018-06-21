@@ -49,6 +49,12 @@ class Invoice extends EntityAbstract
      */
     private $year;
     /**
+     * @ORM\Column(name="years", type="array", nullable=false)
+     *
+     * @var array
+     */
+    private $years;
+    /**
      * @ORM\Column(name="amount_invoiced", type="decimal", nullable=true)
      *
      * @var float
@@ -56,81 +62,53 @@ class Invoice extends EntityAbstract
     private $amountInvoiced;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="affiliationInvoice", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=true)
-     * })
      *
      * @var \Project\Entity\Version\Version
      */
     private $version;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="affiliationInvoice", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contract_version_id", referencedColumnName="version_id", nullable=true)
-     * })
      *
      * @var \Project\Entity\Contract\Version
      */
     private $contractVersion;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="invoice", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\OneToOne(targetEntity="Invoice\Entity\Invoice", inversedBy="affiliationInvoice", cascade={"persist","remove"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="invoice_id", referencedColumnName="invoice_id", nullable=false)
-     * })
      * @var \Invoice\Entity\Invoice
      */
     private $invoice;
     /**
      * @ORM\ManyToOne(targetEntity="General\Entity\ExchangeRate", inversedBy="affiliationInvoice", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="exchange_rate_id", referencedColumnName="exchange_rate_id", nullable=true)
-     * })
      * @var \General\Entity\ExchangeRate|null
      */
     private $exchangeRate;
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @param $property
-     * @return bool
-     */
     public function __isset($property)
     {
         return isset($this->$property);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __toString(): string
     {
         return (string)$this->getInvoice();
@@ -154,6 +132,20 @@ class Invoice extends EntityAbstract
         $this->invoice = $invoice;
 
         return $this;
+    }
+
+    public function hasYearAndPeriod(int $year, int $period): bool
+    {
+        if (!$this->hasYear($year)) {
+            return false;
+        }
+
+        return \in_array($period, $this->years[$year], true);
+    }
+
+    public function hasYear(int $year): bool
+    {
+        return \array_key_exists($year, $this->years);
     }
 
     /**
@@ -239,7 +231,7 @@ class Invoice extends EntityAbstract
     /**
      * @return \Project\Entity\Version\Version
      */
-    public function getVersion():?\Project\Entity\Version\Version
+    public function getVersion(): ?\Project\Entity\Version\Version
     {
         return $this->version;
     }
@@ -266,6 +258,7 @@ class Invoice extends EntityAbstract
 
     /**
      * @param \Project\Entity\Contract\Version $contractVersion
+     *
      * @return Invoice
      */
     public function setContractVersion(\Project\Entity\Contract\Version $contractVersion): Invoice
@@ -305,12 +298,24 @@ class Invoice extends EntityAbstract
 
     /**
      * @param ExchangeRate|null $exchangeRate
+     *
      * @return Invoice
      */
     public function setExchangeRate(?ExchangeRate $exchangeRate): Invoice
     {
         $this->exchangeRate = $exchangeRate;
 
+        return $this;
+    }
+
+    public function getYears(): ?array
+    {
+        return $this->years;
+    }
+
+    public function setYears(array $years): Invoice
+    {
+        $this->years = $years;
         return $this;
     }
 }

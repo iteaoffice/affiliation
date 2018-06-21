@@ -26,16 +26,6 @@ use General\Entity\ExchangeRate;
  */
 class PaymentSheet extends LinkAbstract
 {
-    /**
-     * @param Affiliation $affiliation
-     * @param int $year
-     * @param int $period
-     * @param bool $useContractData
-     * @return string
-     * @throws \Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function __invoke(Affiliation $affiliation, int $year, int $period, bool $useContractData = true): string
     {
         $latestVersion = $this->getProjectService()->getLatestProjectVersion($affiliation->getProject());

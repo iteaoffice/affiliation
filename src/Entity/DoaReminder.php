@@ -51,48 +51,31 @@ class DoaReminder extends EntityAbstract
     private $dateCreated;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="doaReminder")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="doaReminderReceiver")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="receiver_id", referencedColumnName="contact_id", nullable=true)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $receiver;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="doaReminderSender")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="sender_id", referencedColumnName="contact_id", nullable=true)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $sender;
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;

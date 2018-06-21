@@ -283,7 +283,7 @@
     {% set total =  affiliationService.parseTotal(affiliation, version, year, period) %}
     {% set contributionDue =  affiliationService.parseContributionDue(affiliation, version, year, period) %}
     {% set contributionPaid = affiliationService.parseContributionPaid(affiliation, year, period) %}
-    {% set balance = affiliationService.parseBalance(affiliation, version, year, period, false) %}
+    {% set balance = affiliationService.parseBalance(affiliation, version, year, period) %}
 
     {% set contribution = affiliationService.parseContribution(affiliation, version, null, year, period, false) %}
     {% set contributionRaw = affiliationService.parseContribution(affiliation, version, null, year, period, false, true) %}

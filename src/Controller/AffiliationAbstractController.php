@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Affiliation\Controller;
 
 use Affiliation\Controller\Plugin;
+use Affiliation\Entity\Affiliation;
 use Affiliation\Options\ModuleOptions;
 use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\Service\AffiliationService;
@@ -51,7 +52,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      Identity|Contact identity()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
- * @method      Plugin\RenderPaymentSheet renderPaymentSheet()
+ * @method      Plugin\RenderPaymentSheet renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
  * @method      Plugin\RenderDoa renderDoa()
  * @method      Plugin\RenderLoi renderLoi()
  * @method      Plugin\GetFilter getAffiliationFilter

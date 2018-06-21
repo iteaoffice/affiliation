@@ -28,12 +28,9 @@ use Zend\View\Model\ViewModel;
  */
 class DoaController extends AffiliationAbstractController
 {
-    /**
-     * @return \Zend\Http\Response|ViewModel
-     */
     public function uploadAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('affiliationId'));
+        $affiliation = $this->getAffiliationService()->findAffiliationById((int)$this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -228,17 +225,15 @@ class DoaController extends AffiliationAbstractController
         return $response;
     }
 
-    /**
-     * @return Response
-     */
     public function downloadAction(): Response
     {
+        /** @var Doa $doa */
         $doa = $this->getAffiliationService()->findEntityById(Doa::class, (int)$this->params('id'));
 
         /** @var Response $response */
         $response = $this->getResponse();
 
-        if (null === $doa || count($doa->getObject()) === 0) {
+        if (null === $doa || \count($doa->getObject()) === 0) {
             return $response->setStatusCode(Response::STATUS_CODE_404);
         }
 
