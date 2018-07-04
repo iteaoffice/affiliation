@@ -1195,8 +1195,9 @@ class AffiliationService extends ServiceAbstract
         $this->getAdminService()->refreshAccessRolesByContact($contact);
 
         //Send an email to the invitee
-        $this->emailService->addTo($contact);
+
         $this->emailService->setWebInfo("/project/add_associate:associate");
+        $this->emailService->addTo($contact);
 
         /**
          * @var $deeplinkLink DeeplinkLink

@@ -32,13 +32,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  */
 class Affiliation extends EntityAbstract implements ResourceInterface
 {
-    /**
-     * Constant for mode = 0 (not self funded).
-     */
     public const NOT_SELF_FUNDED = 0;
-    /**
-     * Constant for mode = 1 (self funded).
-     */
     public const SELF_FUNDED = 1;
 
     protected static $selfFundedTemplates
@@ -436,50 +430,26 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->selfFunded = self::NOT_SELF_FUNDED;
     }
 
-    /**
-     * @return array
-     */
     public static function getSelfFundedTemplates(): array
     {
         return self::$selfFundedTemplates;
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @param $property
-     *
-     * @return bool
-     */
     public function __isset($property)
     {
         return isset($this->$property);
     }
 
-    /**
-     * ToString.
-     *
-     * @return string
-     */
     public function __toString(): string
     {
         return $this->parseBranchedName();
@@ -551,6 +521,16 @@ class Affiliation extends EntityAbstract implements ResourceInterface
     public function setOrganisation($organisation)
     {
         $this->organisation = $organisation;
+    }
+
+    public function isActive(): bool
+    {
+        return null === $this->dateEnd;
+    }
+
+    public function isSelfFunded(): bool
+    {
+        return null === $this->dateSelfFunded;
     }
 
     /**

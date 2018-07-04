@@ -152,7 +152,7 @@ abstract class ServiceAbstract implements ServiceInterface
         /*
          * Update the permissions
          */
-        $this->getAdminService()->flushPermitsByEntityAndId($entity, (int) $entity->getId());
+        $this->getAdminService()->flushPermitsByEntityAndId($entity, (int)$entity->getId());
 
         return $entity;
     }
@@ -348,17 +348,8 @@ abstract class ServiceAbstract implements ServiceInterface
         return $this;
     }
 
-    /**
-     * @return EmailService
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function getEmailService(): EmailService
     {
-        if (null === $this->emailService) {
-            $this->emailService = $this->getServiceLocator()->get(EmailService::class);
-        }
-
         return $this->emailService;
     }
 

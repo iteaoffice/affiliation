@@ -21,6 +21,7 @@ use Admin\Service\AdminService;
 use Affiliation\Service\AffiliationService;
 use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
+use General\Service\EmailService;
 use General\Service\GeneralService;
 use Interop\Container\ContainerInterface;
 use Invoice\Service\InvoiceService;
@@ -85,6 +86,10 @@ final class AffiliationServiceFactory implements FactoryInterface
         /** @var Authorize $authorizeService */
         $authorizeService = $container->get(Authorize::class);
         $affiliationService->setAuthorizeService($authorizeService);
+
+        /** @var EmailService $emailService */
+        $emailService = $container->get(EmailService::class);
+        $affiliationService->setEmailService($emailService);
 
         return $affiliationService;
     }
