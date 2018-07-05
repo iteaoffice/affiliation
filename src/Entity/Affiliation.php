@@ -528,6 +528,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         return null === $this->dateEnd;
     }
 
+    public function hasFinancial(): bool
+    {
+        return null !== $this->financial;
+    }
+
     public function isSelfFunded(): bool
     {
         return null === $this->dateSelfFunded;
