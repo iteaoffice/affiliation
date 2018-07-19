@@ -546,7 +546,7 @@ class AffiliationService extends ServiceAbstract
                 return $fee->getContribution();
             case Method::METHOD_FUNDING_MEMBER:
                 if (null === $parent) {
-                    throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
+                    throw new \InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
                 $invoiceFactor = $this->getParentService()->parseInvoiceFactor(
@@ -614,7 +614,7 @@ class AffiliationService extends ServiceAbstract
         switch (true) {
             case !$this->isFundedInYear($affiliation, $year):
                 return (float)0;
-            case \is_null($period):
+            case null === $period:
                 return 1;
             case $this->getProjectService()->parseEndYear($affiliation->getProject()) === $year
                 && $this->getProjectService()->parseEndMonth($affiliation->getProject()) <= 6:
@@ -624,28 +624,15 @@ class AffiliationService extends ServiceAbstract
         }
     }
 
-    /**
-     * @param Affiliation $affiliation
-     * @param             $year
-     *
-     * @return bool
-     */
     public function isFundedInYear(Affiliation $affiliation, $year): bool
     {
         //Cast to int as some values can originate form templates (== twig > might be string)
         $year = (int)$year;
 
-        return \is_null($this->getFundingInYear($affiliation, $year)) ? false
+        return null === $this->getFundingInYear($affiliation, $year) ? false
             : $this->getFundingInYear($affiliation, $year)->getStatus()->getId() === Status::STATUS_ALL_GOOD;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     * @param             $year
-     * @param int         $source
-     *
-     * @return null|Funding
-     */
     public function getFundingInYear(Affiliation $affiliation, $year, $source = Source::SOURCE_OFFICE): ?Funding
     {
         //Cast to ints as some values can originate form templates (== twig > might be string)
@@ -981,6 +968,11 @@ class AffiliationService extends ServiceAbstract
         $hasInvoice = false;
 
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
+            //When the invoice is a credit invoice, skip the invoice
+            if ($this->getInvoiceService()->hasCredit($affiliationInvoice->getInvoice()) || $this->getInvoiceService()->isCredit($affiliationInvoice->getInvoice())) {
+                continue;
+            }
+
             //This is a check for the current year, we only need to check if the period has not been invoiced yet in this year
             if ($affiliationInvoice->hasYearAndPeriod($year, $period)) {
                 $hasInvoice = true;
