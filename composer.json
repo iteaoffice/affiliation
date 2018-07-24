@@ -34,6 +34,7 @@
   },
   "require-dev": {
     "iteaoffice/testing": "^1.1.4",
+    "iteaoffice/search": "^1.0",
     "iteaoffice/contact": "^3.1",
     "iteaoffice/organisation": "^3.1",
     "iteaoffice/general": "^3.1",
