@@ -23,7 +23,14 @@
   "require": {
     "php": "^7.2",
     "zendframework/zend-mvc": "^3.0.1",
-    "zendframework/zend-permissions-acl": "2.7.*"
+    "zendframework/zend-mvc-form": "^1.0.0",
+    "zendframework/zend-code": "@stable",
+    "zendframework/zend-mvc-console": "^1.2.0",
+    "zendframework/zend-mvc-plugins": "^1.0.1",
+    "zendframework/zend-navigation": "^2.9.0",
+    "kokspflanze/bjy-authorize": "^1.6.2",
+    "doctrine/doctrine-orm-module": "@stable",
+    "mailjet/mailjet-apiv3-php": "1.2.*"
   },
   "require-dev": {
     "iteaoffice/testing": "^1.1.4",
@@ -39,7 +46,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "AffiliationTest\\": "tests/"
+      "AffiliationTest\\": "test/"
     }
   },
   "extra": {
