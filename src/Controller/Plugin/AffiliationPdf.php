@@ -68,7 +68,7 @@ class AffiliationPdf extends TcpdfFpdi
         $this->SetLineWidth(0.1);
         $this->SetFont('', 'B');
         // Header
-        if (\is_null($width)) {
+        if (null === $width) {
             $w = [40, 35, 40, 45, 40];
         } else {
             $w = $width;
@@ -87,7 +87,6 @@ class AffiliationPdf extends TcpdfFpdi
 
         $this->Ln();
 
-
         // Color and font restoration
         $this->SetFillColor(249, 249, 249);
         $this->SetTextColor(0);
@@ -95,6 +94,7 @@ class AffiliationPdf extends TcpdfFpdi
         // Data
         $fill = true;
         $rowCounter = 1;
+        $rowHeight = 6;
         foreach ($data as $row) {
             $counter = 0;
 

@@ -55,7 +55,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      Plugin\RenderPaymentSheet renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
  * @method      Plugin\RenderDoa renderDoa()
  * @method      Plugin\RenderLoi renderLoi()
- * @method      Plugin\GetFilter getAffiliationFilter
+ * @method      Plugin\GetFilter getAffiliationFilter()
  * @method      Plugin\MergeAffiliation mergeAffiliation($mainAffiliation, $affiliation)
  * @method      Response csvExport(AbstractSearchService $searchService, array $fields, bool $header = true)
  *
