@@ -111,7 +111,7 @@ class DoaManagerController extends AffiliationAbstractController
             $receiver = $this->getContactService()->findContactById((int)$form->getData()['receiver']);
 
             if (null !== $receiver) {
-                $this->emailService->setWebInfo('affiliation/doa/reminder');
+                $this->emailService->setWebInfo('/affiliation/doa:reminder');
                 $this->emailService->setSubject($form->getData()['subject']);
                 $this->emailService->setEmailContent($form->getData()['message']);
                 $this->emailService->addTo($receiver);
