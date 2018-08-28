@@ -81,7 +81,7 @@ return [
                                             ],
                                             'cost-and-effort'    => [
                                                 'label'   => _('txt-edit-cost-and-effort'),
-                                                'route'   => 'community/affiliation/edit/cost-and-effort',
+                                                'route'   => 'community/affiliation/edit/costs-and-effort',
                                                 'visible' => false,
                                                 'params'  => [
                                                     'entities' => [
