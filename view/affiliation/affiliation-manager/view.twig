@@ -314,11 +314,24 @@
         {{ affiliationLink(affiliation, 'edit-financial','button') }}
     </div>
     <div class="tab-pane" role="tabpanel" id="paymentsheet">
-        {% set year =  "now"|date('Y') %}
-        {% set period = ("now"|date("n") <= 6) ? 1 : 2 %}
+        <br>
+        <ul class="nav nav-pills" role="tablist">
+            {% for paymentSheetPeriod in affiliationService.parsePaymentSheetPeriods(affiliation) %}
+                <li role="presentation"
+                    {% if paymentSheetPeriod.active %}class="active"{% endif %}>
+                    <a href="#{{ paymentSheetPeriod.id }}" aria-controls="home" role="tab"
+                       data-toggle="tab">{{ paymentSheetPeriod.label }}</a></li>
+            {% endfor %}
+        </ul>
 
-        {{ paymentSheet(affiliation, year, period) }}
-
+        <div class="tab-content">
+            {% for paymentSheetPeriod in affiliationService.parsePaymentSheetPeriods(affiliation) %}
+                <div role="tabpanel" id="{{ paymentSheetPeriod.id }}"
+                     class="tab-pane {% if paymentSheetPeriod.active %}active{% endif %}">
+                    {{ paymentSheet(affiliation, paymentSheetPeriod.year, paymentSheetPeriod.period) }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
     <div class="tab-pane" role="tabpanel" id="version">
         <h2>{{ translate("txt-version-information") }}</h2>

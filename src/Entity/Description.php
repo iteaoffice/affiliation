@@ -128,11 +128,6 @@ class Description extends EntityAbstract
         return $this;
     }
 
-    /**
-     * New function needed to make the hydrator happy
-     *
-     * @param Collections\Collection $affiliationCollection
-     */
     public function addAffiliation(Collections\Collection $affiliationCollection)
     {
         foreach ($affiliationCollection as $affiliation) {
@@ -140,11 +135,6 @@ class Description extends EntityAbstract
         }
     }
 
-    /**
-     * New function needed to make the hydrator happy
-     *
-     * @param Collections\Collection $affiliationCollection
-     */
     public function removeAffiliation(Collections\Collection $affiliationCollection)
     {
         foreach ($affiliationCollection as $single) {

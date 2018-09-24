@@ -240,9 +240,9 @@
 
 {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
 
-    {% set total = affiliationService.parseContractTotal(affiliation, contractVersion, year, period) %}
+    {% set total = affiliationService.parseContractTotal(affiliation, contractVersion, year, period, true) %}
 
-    {% if affiliationService.findInvoiceLines(affiliation, contractVersion, year, period)|length > 0 %}
+    {% if affiliationService.findInvoiceLines(affiliation, contractVersion, year, period, true)|length > 0 %}
         <h2>{{ translate("txt-upcoming-invoice-for-year-%s-period-%s")|format(year, period) }}</h2>
         <table class="table table-hover table-striped table-condensed table-sm">
             <thead>
@@ -254,7 +254,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for invoiceLine in affiliationService.findInvoiceLines(affiliation, contractVersion, year, period) %}
+            {% for invoiceLine in affiliationService.findInvoiceLines(affiliation, contractVersion, year, period, true) %}
                 <tr>
                     <td>{{ invoiceLine.periodOrdinal }}</td>
                     <td>{{ invoiceLine.description }}</td>

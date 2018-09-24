@@ -41,9 +41,6 @@ use Zend\View\Model\ViewModel;
  */
 class AffiliationManagerController extends AffiliationAbstractController
 {
-    /**
-     * @return Response|ViewModel
-     */
     public function listAction()
     {
         /** @var Request $request */
@@ -168,12 +165,6 @@ class AffiliationManagerController extends AffiliationAbstractController
         }
     }
 
-    /**
-     * @return ViewModel
-     * @throws \Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function viewAction(): ViewModel
     {
         $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));

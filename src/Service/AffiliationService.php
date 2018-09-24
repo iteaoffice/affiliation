@@ -17,6 +17,7 @@ use Affiliation\Entity\Invoice;
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
 use Affiliation\Repository;
+use Affiliation\ValueObject\PaymentSheetPeriod;
 use Contact\Controller\Plugin\ContactActions;
 use Contact\Entity\Contact;
 use Contact\Entity\ContactOrganisation;
@@ -98,23 +99,37 @@ class AffiliationService extends ServiceAbstract
         return null !== $affiliation->getDoa();
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
-     */
     public function hasLoi(Affiliation $affiliation): bool
     {
         return null !== $affiliation->getLoi();
     }
 
-    /**
-     * Returns true when the affiliation has a contract with a version
-     *
-     * @param Affiliation $affiliation
-     *
-     * @return bool
-     */
+    public function parsePaymentSheetPeriods(Affiliation $affiliation): array
+    {
+        $periods = [];
+
+        $currentYear = (int)date('Y');
+        $currentMonth = (int)date('m');
+
+        foreach ($this->getProjectService()->parseYearRange($affiliation->getProject()) as $year) {
+            foreach ([1, 2] as $period) {
+                //Stop the script for the second half of the year for the current year
+                if ($currentYear === $year && $currentMonth < 6 && $period === 2) {
+                    break 2;
+                }
+
+                //Stop the script for the next years in the first 10 months of the current year
+                if ($currentYear < $year && (($currentMonth > 10 && $period === 2) || $currentMonth <= 10)) {
+                    break 2;
+                }
+
+                $periods[] = new PaymentSheetPeriod($year, $period);
+            }
+        }
+
+        return $periods;
+    }
+
     public function useActiveContract(Affiliation $affiliation): bool
     {
         /** Only use the contract is the flag (invoice method) is set */
@@ -137,15 +152,6 @@ class AffiliationService extends ServiceAbstract
         return false;
     }
 
-    /**
-     * Upload a LOI to the system and store it for the user.
-     *
-     * @param array       $file
-     * @param Contact     $contact
-     * @param Affiliation $affiliation
-     *
-     * @return Loi
-     */
     public function uploadLoi(array $file, Contact $contact, Affiliation $affiliation): Loi
     {
         $loiObject = new LoiObject();
@@ -387,12 +393,6 @@ class AffiliationService extends ServiceAbstract
                 if (null === $version) {
                     return 0;
                 }
-
-                //@todo: have no idea what this statement is doing here, should be releated to the calculation of PENTA
-                //if (null !== $period) {
-                //return $this->parseContributionFee($affiliation, $year);
-                //}
-
 
                 return $this->parseContributionBase($affiliation, $version, null, $year, false)
                     * $this->parseContributionFactor($affiliation, $year, $period) * $this->parseContributionFee(
@@ -847,42 +847,28 @@ class AffiliationService extends ServiceAbstract
         return (float)$contributionPaid;
     }
 
-    /**
-     * @param Affiliation     $affiliation
-     * @param ContractVersion $version
-     * @param int             $year
-     * @param int|null        $period
-     *
-     * @return float
-     */
+
     public function parseContractTotal(
         Affiliation $affiliation,
         ContractVersion $version,
         int $year,
-        ?int $period = null
+        ?int $period = null,
+        bool $skipAlreadyInvoiced = false
     ): float {
-        return $this->parseTotalByInvoiceLines($affiliation, $version, $year, $period);
+        return $this->parseTotalByInvoiceLines($affiliation, $version, $year, $period, $skipAlreadyInvoiced);
     }
 
-    /**
-     * @param Affiliation     $affiliation
-     * @param ContractVersion $contractVersion
-     * @param int             $year
-     * @param int|null        $period
-     *
-     * @return float
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
+
     public function parseTotalByInvoiceLines(
         Affiliation $affiliation,
         ContractVersion $contractVersion,
         int $year,
-        ?int $period = null
+        ?int $period = null,
+        bool $skipAlreadyInvoiced = false
     ): float {
         $total = 0.0;
 
-        foreach ($this->findInvoiceLines($affiliation, $contractVersion, $year, $period) as $line) {
+        foreach ($this->findInvoiceLines($affiliation, $contractVersion, $year, $period, $skipAlreadyInvoiced) as $line) {
             $total += $line->lineTotal;
         }
 
@@ -893,7 +879,8 @@ class AffiliationService extends ServiceAbstract
         Affiliation $affiliation,
         ContractVersion $contractVersion,
         int $year,
-        ?int $period = null
+        ?int $period = null,
+        bool $skipAlreadyInvoiced = false
     ): array {
         $lines = [];
 
@@ -919,9 +906,21 @@ class AffiliationService extends ServiceAbstract
                     continue;
                 }
 
-                if (!$this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)) {
+                if (!$this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
+                ) {
                     $yearAndPeriod[$otherYear][] = $invoicePeriod;
                 }
+            }
+        }
+
+        //For the payment sheet we want to cancel the current invoice period because otherwise the current lines
+        //are ignored as soon as the invoice has been sent. By adding the 'years' of the current invoice (if any)
+        //the system will add these to the open items
+        if ($skipAlreadyInvoiced && $this->affiliationHasInvoiceInYearAndPeriod($affiliation, $year, $period)
+        ) {
+            $affiliationInvoice = $this->findAffiliationInvoiceInYearAndPeriod($affiliation, $year, $period);
+            if (null !== $affiliationInvoice) {
+                $yearAndPeriod += $affiliationInvoice->getYears();
             }
         }
 
@@ -965,21 +964,26 @@ class AffiliationService extends ServiceAbstract
 
     public function affiliationHasInvoiceInYearAndPeriod(Affiliation $affiliation, int $year, int $period): bool
     {
-        $hasInvoice = false;
+        return null !== $this->findAffiliationInvoiceInYearAndPeriod($affiliation, $year, $period);
+    }
 
+    public function findAffiliationInvoiceInYearAndPeriod(Affiliation $affiliation, int $year, int $period): ?Invoice
+    {
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
             //When the invoice is a credit invoice, skip the invoice
-            if ($this->getInvoiceService()->hasCredit($affiliationInvoice->getInvoice()) || $this->getInvoiceService()->isCredit($affiliationInvoice->getInvoice())) {
+            if ($this->getInvoiceService()->hasCredit($affiliationInvoice->getInvoice())
+                || $this->getInvoiceService()->isCredit($affiliationInvoice->getInvoice())
+            ) {
                 continue;
             }
 
             //This is a check for the current year, we only need to check if the period has not been invoiced yet in this year
             if ($affiliationInvoice->hasYearAndPeriod($year, $period)) {
-                $hasInvoice = true;
+                return $affiliationInvoice;
             }
         }
 
-        return $hasInvoice;
+        return null;
     }
 
     public function parseInvoiceLine(

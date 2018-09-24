@@ -658,7 +658,6 @@
     <div class="tab-pane" role="tabpanel" id="invoicing">
         {% if not invoiceViaParent and (isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial')) %}
 
-
             <h2>{{ translate("txt-invoicing-details") }}</h2>
             {% if affiliation.financial %}
 
@@ -698,16 +697,6 @@
             {% endif %}
 
             {{ affiliationLink(affiliation, 'edit-financial','button') }}
-        {% endif %}
-    </div>
-
-
-    {% if isAllowed(affiliation,'payment-sheet') %}
-        <div class="tab-pane" role="tabpanel" id="payment-sheet">
-            {% set year =  "now"|date('Y') %}
-            {% set period = ("now"|date("n") <= 6) ? 1 : 2 %}
-
-            {{ paymentSheet(affiliation, year, period) }}
 
             {% if affiliation.invoice|length > 0 %}
                 <h2>{{ translate("txt-partner-invoices") }}</h2>
@@ -739,6 +728,32 @@
                     </tbody>
                 </table>
             {% endif %}
+        {% endif %}
+    </div>
+
+
+    {% if isAllowed(affiliation,'payment-sheet') %}
+        <div class="tab-pane" role="tabpanel" id="payment-sheet">
+            <br>
+            <ul class="nav nav-pills" role="tablist">
+                {% for paymentSheetPeriod in affiliationService.parsePaymentSheetPeriods(affiliation) %}
+                    <li role="presentation"
+                        {% if paymentSheetPeriod.active %}class="active"{% endif %}>
+                        <a href="#{{ paymentSheetPeriod.id }}" aria-controls="home" role="tab"
+                           data-toggle="tab">{{ paymentSheetPeriod.label }}</a></li>
+                {% endfor %}
+            </ul>
+
+            <div class="tab-content">
+                {% for paymentSheetPeriod in affiliationService.parsePaymentSheetPeriods(affiliation) %}
+                    <div role="tabpanel" id="{{ paymentSheetPeriod.id }}"
+                         class="tab-pane {% if paymentSheetPeriod.active %}active{% endif %}">
+                        {{ paymentSheet(affiliation, paymentSheetPeriod.year, paymentSheetPeriod.period) }}
+                    </div>
+                {% endfor %}
+            </div>
+
+
         </div>
     {% endif %}
 
