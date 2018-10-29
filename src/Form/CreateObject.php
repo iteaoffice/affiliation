@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Form;
 
-use Affiliation\Entity\EntityAbstract;
+use Affiliation\Entity\AbstractEntity;
 use Doctrine\ORM\EntityManager;
 use Zend\Form\Form;
 
@@ -31,9 +31,9 @@ class CreateObject extends Form
      * CreateObject constructor.
      *
      * @param EntityManager  $entityManager
-     * @param EntityAbstract $object
+     * @param AbstractEntity $object
      */
-    public function __construct(EntityManager $entityManager, EntityAbstract $object)
+    public function __construct(EntityManager $entityManager, AbstractEntity $object)
     {
         parent::__construct($object->get("underscore_entity_name"));
 

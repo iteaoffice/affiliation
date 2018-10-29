@@ -16,19 +16,82 @@ declare(strict_types=1);
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
+use Affiliation\Service\AffiliationService;
+use Contact\Service\ContactService;
 use General\Entity\Currency;
 use General\Entity\ExchangeRate;
+use Invoice\Service\InvoiceService;
+use Organisation\Service\OrganisationService;
+use Project\Service\ContractService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
+use Zend\View\Helper\AbstractHelper;
+use ZfcTwig\View\TwigRenderer;
 
 /**
  * Class PaymentSheet
  *
  * @package Affiliation\View\Helper
  */
-class PaymentSheet extends LinkAbstract
+final class PaymentSheet extends AbstractHelper
 {
+    /**
+     * @var ProjectService
+     */
+    private $projectService;
+    /**
+     * @var ContractService
+     */
+    private $contractService;
+    /**
+     * @var InvoiceService
+     */
+    private $invoiceService;
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var OrganisationService
+     */
+    private $organisationService;
+    /**
+     * @var VersionService
+     */
+    private $versionService;
+    /**
+     * @var TwigRenderer
+     */
+    private $renderer;
+
+    public function __construct(
+        ProjectService $projectService,
+        ContractService $contractService,
+        InvoiceService $invoiceService,
+        AffiliationService $affiliationService,
+        ContactService $contactService,
+        OrganisationService $organisationService,
+        VersionService $versionService,
+        TwigRenderer $renderer
+    ) {
+        $this->projectService = $projectService;
+        $this->contractService = $contractService;
+        $this->invoiceService = $invoiceService;
+        $this->affiliationService = $affiliationService;
+        $this->contactService = $contactService;
+        $this->organisationService = $organisationService;
+        $this->versionService = $versionService;
+        $this->renderer = $renderer;
+    }
+
+
     public function __invoke(Affiliation $affiliation, int $year, int $period, bool $useContractData = true): string
     {
-        $latestVersion = $this->getProjectService()->getLatestProjectVersion($affiliation->getProject());
+        $latestVersion = $this->projectService->getLatestProjectVersion($affiliation->getProject());
 
         /**
          * We don't need a payment sheet, when we have no versions
@@ -37,7 +100,7 @@ class PaymentSheet extends LinkAbstract
             return '';
         }
 
-        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+        $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
 
         //Create a default currency
         $currency = new Currency();
@@ -49,18 +112,18 @@ class PaymentSheet extends LinkAbstract
 
         if (null !== $contractVersion && $useContractData) {
             $currency = $contractVersion->getContract()->getCurrency();
-            $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod($currency, $year, $period);
+            $exchangeRate = $this->contractService->findExchangeRateInInvoicePeriod($currency, $year, $period);
         }
 
         $invoiceMethod = $affiliation->getInvoiceMethod();
         if (null === $invoiceMethod) {
-            $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod(
+            $invoiceMethod = $this->invoiceService->findInvoiceMethod(
                 $affiliation->getProject()
                     ->getCall()->getProgram()
             );
         }
 
-        return $this->getRenderer()->render(
+        return $this->renderer->render(
             'affiliation/partial/payment-sheet',
             [
                 'year'                            => $year,
@@ -68,25 +131,26 @@ class PaymentSheet extends LinkAbstract
                 'useContractData'                 => $useContractData,
                 'affiliation'                     => $affiliation,
                 'project'                         => $affiliation->getProject(),
-                'affiliationService'              => $this->getAffiliationService(),
+                'affiliationService'              => $this->affiliationService,
                 'version'                         => $latestVersion,
-                'projectService'                  => $this->getProjectService(),
-                'contractService'                 => $this->getContractService(),
+                'projectService'                  => $this->projectService,
+                'contractService'                 => $this->contractService,
                 'contractVersion'                 => $contractVersion,
-                'contractContributionInformation' => null === $contractVersion ? null
-                    : $this->getContractService()->getContractVersionContributionInformation(
+                'contractContributionInformation' => null === $contractVersion
+                    ? null
+                    : $this->contractService->getContractVersionContributionInformation(
                         $affiliation,
                         $contractVersion
                     ),
                 'exchangeRate'                    => $exchangeRate,
                 'currency'                        => $currency,
-                'contactService'                  => $this->getContactService(),
-                'financialContact'                => $this->getAffiliationService()->getFinancialContact($affiliation),
-                'organisationService'             => $this->getOrganisationService(),
+                'contactService'                  => $this->contactService,
+                'financialContact'                => $this->affiliationService->getFinancialContact($affiliation),
+                'organisationService'             => $this->organisationService,
                 'invoiceMethod'                   => $invoiceMethod,
-                'invoiceService'                  => $this->getInvoiceService(),
-                'versionService'                  => $this->getVersionService(),
-                'versionContributionInformation'  => $this->getVersionService()
+                'invoiceService'                  => $this->invoiceService,
+                'versionService'                  => $this->versionService,
+                'versionContributionInformation'  => $this->versionService
                     ->getProjectVersionContributionInformation(
                         $affiliation,
                         $latestVersion

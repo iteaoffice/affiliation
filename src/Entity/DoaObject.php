@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="project_doa_object")
  * @ORM\Entity
  */
-class DoaObject extends EntityAbstract
+class DoaObject extends AbstractEntity
 {
     /**
      * @ORM\Column(name="object_id", type="integer", nullable=false)

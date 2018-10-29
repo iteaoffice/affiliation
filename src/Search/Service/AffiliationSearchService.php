@@ -17,9 +17,6 @@ declare(strict_types=1);
 
 namespace Affiliation\Search\Service;
 
-use Affiliation\Entity\Affiliation;
-use Affiliation\Service\AffiliationService;
-use Project\Service\ProjectService;
 use Search\Service\AbstractSearchService;
 use Search\Service\SearchServiceInterface;
 use Solarium\QueryType\Select\Query\Query;
@@ -29,96 +26,10 @@ use Solarium\QueryType\Select\Query\Query;
  *
  * @package Affiliation\Search\Service
  */
-class AffiliationSearchService extends AbstractSearchService
+final class AffiliationSearchService extends AbstractSearchService
 {
-    public const SOLR_CONNECTION = 'affiliation';
+    public const SOLR_CONNECTION = 'affiliation_affiliation';
 
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-
-    /**
-     * Update or insert an affiliation
-     *
-     * @param Affiliation $affiliation
-     *
-     * @return \Solarium\Core\Query\Result\ResultInterface
-     * @throws \Solarium\Exception\HttpException
-     */
-    public function updateDocument($affiliation)
-    {
-        $update         = $this->getSolrClient()->createUpdate();
-        $project        = $affiliation->getProject();
-        $contact        = $affiliation->getContact();
-        $now            = new \DateTime();
-
-        // Affiliation
-        $affiliationDocument = $update->createDocument();
-        $affiliationDocument->id             = $affiliation->getResourceId();
-        $affiliationDocument->affiliation_id = $affiliation->getId();
-        $affiliationDocument->date_created   = $affiliation->getDateCreated()->format(static::DATE_SOLR);
-        $affiliationDocument->is_active      = (\is_null($affiliation->getDateEnd()) || ($affiliation->getDateEnd() > $now));
-
-        $descriptionMerged = '';
-        foreach ($affiliation->getDescription() as $description) {
-            $descriptionMerged .= $description->getDescription() . "\n\n";
-        }
-        $affiliationDocument->description          = $descriptionMerged;
-        $affiliationDocument->branch               = $affiliation->getBranch();
-        $affiliationDocument->value_chain          = $affiliation->getValueChain();
-        $affiliationDocument->market_access        = $affiliation->getMarketAccess();
-        $affiliationDocument->main_contribution    = $affiliation->getMainContribution();
-        $affiliationDocument->strategic_importance = $affiliation->getStrategicImportance();
-
-        // Organisation
-        $affiliationDocument->organisation         = (string)$affiliation->getOrganisation();
-        $affiliationDocument->organisation_id      = $affiliation->getOrganisation()->getId();
-        $affiliationDocument->organisation_type    = (string)$affiliation->getOrganisation()->getType();
-        $affiliationDocument->organisation_country = (string)$affiliation->getOrganisation()->getCountry();
-
-        // Project
-        $affiliationDocument->project         = $project->getProject();
-        $affiliationDocument->project_id      = $project->getId();
-        $affiliationDocument->project_number  = $project->getNumber();
-        $affiliationDocument->project_title   = $project->getTitle();
-        $affiliationDocument->project_status  = $this->projectService->parseStatus($project);
-        $affiliationDocument->project_call    = (string)$project->getCall()->shortName();
-        $affiliationDocument->project_call_id = $project->getCall()->getId();
-        $affiliationDocument->project_program = (string)$project->getCall()->getProgram();
-
-        // Contact
-        $affiliationDocument->contact    = $contact->parseFullName();
-        $affiliationDocument->contact_id = $contact->getId();
-
-        $update->addDocument($affiliationDocument);
-
-        return $this->executeUpdateDocument($update);
-    }
-
-    /**
-     * Update the current index and optionally clear all existing data.
-     *
-     * @param boolean $clear
-     */
-    public function updateIndex($clear = false)
-    {
-        $this->updateIndexWithCollection($this->affiliationService->findAll(Affiliation::class), $clear);
-    }
-
-    /**
-     * @param string $searchTerm
-     * @param array  $searchFields
-     * @param string $order
-     * @param string $direction
-     *
-     * @return SearchServiceInterface
-     */
     public function setSearch(
         string $searchTerm,
         array $searchFields = [],
@@ -127,16 +38,18 @@ class AffiliationSearchService extends AbstractSearchService
     ): SearchServiceInterface {
         $this->setQuery($this->getSolrClient()->createSelect());
 
-        // Enable highligting
+        // Enable highlighting
         if ($searchTerm && ($searchTerm !== '*')) {
             $highlighting = $this->getQuery()->getHighlighting();
-            $highlighting->setFields([
-                'description',
-                'main_contribution',
-                'market_access',
-                'value_chain',
-                'strategic_importance'
-            ]);
+            $highlighting->setFields(
+                [
+                    'description',
+                    'main_contribution',
+                    'market_access',
+                    'value_chain',
+                    'strategic_importance'
+                ]
+            );
             $highlighting->setSimplePrefix('<mark>');
             $highlighting->setSimplePostfix('</mark>');
             $highlighting->setSnippets(10);
@@ -167,30 +80,6 @@ class AffiliationSearchService extends AbstractSearchService
             ->setExcludes(['organisation_type']);
         $facetSet->createFacetField('organisation_country_group')->setField('organisation_country_group')
             ->setMinCount(1)->setExcludes(['organisation_country_group']);
-
-        return $this;
-    }
-
-    /**
-     * @param ProjectService $projectService
-     *
-     * @return AffiliationSearchService
-     */
-    public function setProjectService(ProjectService $projectService)
-    {
-        $this->projectService = $projectService;
-
-        return $this;
-    }
-
-    /**
-     * @param AffiliationService $affiliationService
-     *
-     * @return AffiliationSearchService
-     */
-    public function setAffiliationService(AffiliationService $affiliationService)
-    {
-        $this->affiliationService = $affiliationService;
 
         return $this;
     }

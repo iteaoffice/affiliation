@@ -12,7 +12,21 @@ declare(strict_types=1);
 
 namespace Affiliation\Controller;
 
-use Project\Acl\Assertion\Project as ProjectAssertion;
+use Affiliation\Service\AffiliationService;
+use Application\Service\AssertionService;
+use Contact\Service\ContactService;
+use Invoice\Options\ModuleOptions;
+use Invoice\Service\InvoiceService;
+use Organisation\Service\OrganisationService;
+use Organisation\Service\ParentService;
+use Program\Service\CallService;
+use Project\Acl\Assertion\Project;
+use Project\Service\ContractService;
+use Project\Service\ProjectService;
+use Project\Service\ReportService;
+use Project\Service\VersionService;
+use Project\Service\WorkpackageService;
+use Zend\Http\Response;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -20,61 +34,136 @@ use Zend\View\Model\ViewModel;
  *
  * @package Affiliation\Controller
  */
-class CommunityController extends AffiliationAbstractController
+final class CommunityController extends AffiliationAbstractController
 {
     /**
-     * @return ViewModel
-     * @throws \Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @var AffiliationService
      */
+    private $affiliationService;
+    /**
+     * @var ProjectService
+     */
+    private $projectService;
+    /**
+     * @var VersionService
+     */
+    private $versionService;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var OrganisationService
+     */
+    private $organisationService;
+    /**
+     * @var ReportService
+     */
+    private $reportService;
+    /**
+     * @var ContractService
+     */
+    private $contractService;
+    /**
+     * @var WorkpackageService
+     */
+    private $workpackageService;
+    /**
+     * @var InvoiceService
+     */
+    private $invoiceService;
+    /**
+     * @var ParentService
+     */
+    private $parentService;
+    /**
+     * @var CallService
+     */
+    private $callService;
+    /**
+     * @var ModuleOptions
+     */
+    private $invoiceModuleOptions;
+    /**
+     * @var AssertionService
+     */
+    private $assertionService;
+
+    public function __construct(
+        AffiliationService $affiliationService,
+        ProjectService $projectService,
+        VersionService $versionService,
+        ContactService $contactService,
+        OrganisationService $organisationService,
+        ReportService $reportService,
+        ContractService $contractService,
+        WorkpackageService $workpackageService,
+        InvoiceService $invoiceService,
+        ParentService $parentService,
+        CallService $callService,
+        ModuleOptions $invoiceModuleOptions,
+        AssertionService $assertionService
+    ) {
+        $this->affiliationService = $affiliationService;
+        $this->projectService = $projectService;
+        $this->versionService = $versionService;
+        $this->contactService = $contactService;
+        $this->organisationService = $organisationService;
+        $this->reportService = $reportService;
+        $this->contractService = $contractService;
+        $this->workpackageService = $workpackageService;
+        $this->invoiceService = $invoiceService;
+        $this->parentService = $parentService;
+        $this->callService = $callService;
+        $this->invoiceModuleOptions = $invoiceModuleOptions;
+        $this->assertionService = $assertionService;
+    }
+
+
     public function affiliationAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $this->getProjectService()->addResource($affiliation->getProject(), ProjectAssertion::class);
+        $this->assertionService->addResource($affiliation->getProject(), Project::class);
         $hasProjectEditRights = $this->isAllowed($affiliation->getProject(), 'edit-community');
 
         return new ViewModel(
             [
-                'affiliationService'    => $this->getAffiliationService(),
+                'affiliationService'    => $this->affiliationService,
                 'affiliation'           => $affiliation,
-                'contactsInAffiliation' => $this->getContactService()->findContactsInAffiliation($affiliation),
-                'projectService'        => $this->getProjectService(),
-                'contractService'       => $this->getContractService(),
-                'workpackageService'    => $this->getWorkpackageService(),
-                'latestVersion'         => $this->getProjectService()->getLatestProjectVersion(
+                'contactsInAffiliation' => $this->contactService->findContactsInAffiliation($affiliation),
+                'projectService'        => $this->projectService,
+                'contractService'       => $this->contractService,
+                'workpackageService'    => $this->workpackageService,
+                'latestVersion'         => $this->projectService->getLatestProjectVersion(
                     $affiliation->getProject()
                 ),
-                'contractVersion'       => $this->getContractService()->findLatestContractVersionByAffiliation(
+                'contractVersion'       => $this->contractService->findLatestContractVersionByAffiliation(
                     $affiliation
                 ),
-                'versionType'           => $this->getProjectService()->getNextMode(
+                'versionType'           => $this->projectService->getNextMode(
                     $affiliation->getProject()
-                )->versionType,
+                )->getVersionType(),
                 'hasProjectEditRights'  => $hasProjectEditRights,
-                'reportService'         => $this->getReportService(),
-                'versionService'        => $this->getVersionService(),
-                'invoiceService'        => $this->getInvoiceService(),
-                'contactService'        => $this->getContactService(),
-                'organisationService'   => $this->getOrganisationService(),
-                'parentService'         => $this->getParentService(),
-                'callService'           => $this->getCallService(),
-                'invoiceViaParent'      => $this->getInvoiceModuleOptions()->getInvoiceViaParent()
+                'reportService'         => $this->reportService,
+                'versionService'        => $this->versionService,
+                'invoiceService'        => $this->invoiceService,
+                'contactService'        => $this->contactService,
+                'organisationService'   => $this->organisationService,
+                'parentService'         => $this->parentService,
+                'callService'           => $this->callService,
+                'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent()
             ]
         );
     }
 
-    /**
-     * @return ViewModel
-     */
     public function paymentSheetAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
         $contract = $this->params('contract');
 
         if (null === $affiliation) {
@@ -89,26 +178,22 @@ class CommunityController extends AffiliationAbstractController
                 'year'               => $year,
                 'period'             => $period,
                 'useContractData'    => null !== $contract,
-                'affiliationService' => $this->getAffiliationService(),
+                'affiliationService' => $this->affiliationService,
                 'affiliation'        => $affiliation,
 
             ]
         );
     }
 
-    /**
-     * @return \Zend\Stdlib\ResponseInterface|ViewModel
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function paymentSheetPdfAction()
+    public function paymentSheetPdfAction(): Response
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int) $this->params('id'));
+        /** @var Response $response */
+        $response = $this->getResponse();
+
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
 
         if (null === $affiliation) {
-            return $this->notFoundAction();
+            return $response->setStatusCode(Response::STATUS_CODE_404);
         }
 
         $year = (int)$this->params('year');
@@ -120,17 +205,17 @@ class CommunityController extends AffiliationAbstractController
             $period,
             null !== $this->params('contract')
         );
-        $response = $this->getResponse();
+
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . sprintf(
-                    "payment_sheet_%s_%s_%sH.pdf",
+                'attachment; filename=\'' . sprintf(
+                    'payment_sheet_%s_%s_%sH.pdf',
                     $affiliation->getOrganisation()->getDocRef(),
                     $year,
                     $period
-                ) . '"'
+                ) . '\''
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', \strlen($renderPaymentSheet->getPDFData()));

@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace Affiliation\View\Helper;
 
 use Interop\Container\ContainerInterface;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Router\Http\RouteMatch;
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\HelperPluginManager;
@@ -41,7 +42,11 @@ abstract class AbstractViewHelper extends AbstractHelper
     /**
      * @var RouteMatch
      */
-    protected $routeMatch = null;
+    protected $routeMatch;
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * RouteInterface match returned by the router.
@@ -114,5 +119,21 @@ abstract class AbstractViewHelper extends AbstractHelper
         $this->helperPluginManager = $helperPluginManager;
 
         return $this;
+    }
+
+    /**
+     * @return TranslatorInterface
+     */
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
+
+    /**
+     * @param TranslatorInterface $translator
+     */
+    public function setTranslator(TranslatorInterface $translator): void
+    {
+        $this->translator = $translator;
     }
 }

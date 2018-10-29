@@ -29,15 +29,6 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  */
 final class InputFilterFactory implements FactoryInterface
 {
-    /**
-     * Create an instance of the requested class name.
-     *
-     * @param ContainerInterface $container
-     * @param string $requestedName
-     * @param null|array $options
-     *
-     * @return InputFilter
-     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): InputFilter
     {
         return new $requestedName($container->get(EntityManager::class), $options);

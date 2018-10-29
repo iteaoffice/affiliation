@@ -25,7 +25,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class Financial extends EntityAbstract
+class Financial extends AbstractEntity
 {
     /**
      * @ORM\Column(name="affiliation_financial_id", type="integer", nullable=false)
@@ -75,49 +75,31 @@ class Financial extends EntityAbstract
      */
     private $emailCC;
 
-    /**
-     * @return mixed
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf("%s financial", $this->affiliation);
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Financial
-     */
     public function setId($id)
     {
         $this->id = $id;

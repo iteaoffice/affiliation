@@ -26,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class ContractVersion extends EntityAbstract
+class ContractVersion extends AbstractEntity
 {
     /**
      * @var integer

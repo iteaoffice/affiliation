@@ -17,14 +17,13 @@ use Doctrine\ORM\EntityRepository;
 use Organisation\Entity\Organisation;
 
 /**
- * @category    Affiliation
+ * Class Loi
+ *
+ * @package Affiliation\Repository
  */
-class Loi extends EntityRepository
+final class Loi extends EntityRepository
 {
-    /**
-     * @return iterable
-     */
-    public function findNotApprovedLoi(): iterable
+    public function findNotApprovedLoi(): array
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_loi');
@@ -38,12 +37,7 @@ class Loi extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param  Organisation $organisation
-     *
-     * @return LoiEntity[]
-     */
-    public function findLoiByOrganisation(Organisation $organisation): iterable
+    public function findLoiByOrganisation(Organisation $organisation): array
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_loi');

@@ -19,31 +19,23 @@ namespace Affiliation\View\Factory;
 
 use Affiliation\View\Helper\AbstractViewHelper;
 use Interop\Container\ContainerInterface;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\View\HelperPluginManager;
 
 /**
- * Class LinkInvokableFactory
+ * Class ViewHelperFactory
  *
  * @package Affiliation\View\Factory
  */
 final class ViewHelperFactory implements FactoryInterface
 {
-    /**
-     * Create an instance of the requested class name.
-     *
-     * @param ContainerInterface|HelperPluginManager $container
-     * @param string $requestedName
-     * @param null|array $options
-     *
-     * @return AbstractViewHelper
-     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): AbstractViewHelper
     {
         /** @var AbstractViewHelper $viewHelper */
         $viewHelper = new $requestedName($options);
         $viewHelper->setServiceManager($container);
         $viewHelper->setHelperPluginManager($container->get('ViewHelperManager'));
+        $viewHelper->setTranslator($container->get(TranslatorInterface::class));
 
         return $viewHelper;
     }

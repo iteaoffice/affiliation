@@ -16,8 +16,13 @@ use Affiliation\Entity;
 use Affiliation\Entity\Loi;
 use Affiliation\Form\SubmitLoi;
 use Affiliation\Form\UploadLoi;
+use Affiliation\Service\AffiliationService;
+use Affiliation\Service\LoiService;
+use General\Service\GeneralService;
 use Project\Entity\Changelog;
+use Project\Service\ProjectService;
 use Zend\Http\Response;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
 use Zend\View\Model\ViewModel;
@@ -27,11 +32,47 @@ use Zend\View\Model\ViewModel;
  *
  * @package Affiliation\Controller
  */
-class LoiController extends AffiliationAbstractController
+final class LoiController extends AffiliationAbstractController
 {
+    /**
+     * @var LoiService
+     */
+    private $loiService;
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
+    /**
+     * @var ProjectService
+     */
+    private $projectService;
+    /**
+     * @var GeneralService
+     */
+    private $generalService;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(
+        LoiService $loiService,
+        AffiliationService $affiliationService,
+        ProjectService $projectService,
+        GeneralService $generalService,
+        TranslatorInterface $translator
+    ) {
+        $this->loiService = $loiService;
+        $this->affiliationService = $affiliationService;
+        $this->projectService = $projectService;
+        $this->generalService = $generalService;
+        $this->translator = $translator;
+    }
+
+
     public function submitAction()
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('affiliationId'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -53,7 +94,7 @@ class LoiController extends AffiliationAbstractController
                 $this->affiliationService->uploadLoi($fileData['file'], $contact, $affiliation);
 
                 $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(sprintf($this->translate("txt-loi-has-been-uploaded-successfully")));
+                    ->addMessage(sprintf($this->translator->translate('txt-loi-has-been-uploaded-successfully')));
             }
 
 
@@ -70,8 +111,8 @@ class LoiController extends AffiliationAbstractController
                 $this->affiliationService->submitLoi($contact, $affiliation);
 
                 $changelogMessage = sprintf(
-                    $this->translate(
-                        "txt-loi-for-%s-has-been-submitted-and-approved-successfully"
+                    $this->translator->translate(
+                        'txt-loi-for-%s-has-been-submitted-and-approved-successfully'
                     ),
                     $affiliation
                 );
@@ -102,7 +143,7 @@ class LoiController extends AffiliationAbstractController
 
     public function replaceAction()
     {
-        $loi = $this->loiService->findLoiById((int) $this->params('id'));
+        $loi = $this->loiService->findLoiById((int)$this->params('id'));
 
         if (null === $loi || \count($loi->getObject()) === 0) {
             return $this->notFoundAction();
@@ -112,7 +153,7 @@ class LoiController extends AffiliationAbstractController
             $this->getRequest()->getFiles()->toArray()
         );
         $form = new UploadLoi();
-        $form->get('submit')->setValue(_("txt-replace-loi"));
+        $form->get('submit')->setValue(_('txt-replace-loi'));
         $form->setData($data);
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
@@ -130,7 +171,7 @@ class LoiController extends AffiliationAbstractController
                  * Remove the current entity
                  */
                 foreach ($loi->getObject() as $object) {
-                    $this->affiliationService->removeEntity($object);
+                    $this->affiliationService->delete($object);
                 }
                 //Create a article object element
                 $affiliationLoiObject = new Entity\LoiObject();
@@ -146,14 +187,14 @@ class LoiController extends AffiliationAbstractController
                 $fileTypeValidator = new MimeType();
                 $fileTypeValidator->isValid($fileData['file']);
                 $loi->setContentType(
-                    $this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type)
+                    $this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type)
                 );
 
                 $affiliationLoiObject->setLoi($loi);
-                $this->affiliationService->newEntity($affiliationLoiObject);
+                $this->affiliationService->save($affiliationLoiObject);
 
                 $changelogMessage = sprintf(
-                    $this->translate("txt-project-loi-for-organisation-%s-in-project-%s-has-been-replaced"),
+                    $this->translator->translate('txt-project-loi-for-organisation-%s-in-project-%s-has-been-replaced'),
                     $loi->getAffiliation()->getOrganisation(),
                     $loi->getAffiliation()->getProject()
                 );
@@ -185,12 +226,9 @@ class LoiController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return Response
-     */
     public function renderAction(): Response
     {
-        $affiliation = $this->affiliationService->findAffiliationById((int) $this->params('affiliationId'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
 
         /** @var Response $response */
         $response = $this->getResponse();
@@ -211,7 +249,7 @@ class LoiController extends AffiliationAbstractController
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $programLoi->parseFileName() . '.pdf"'
+                'attachment; filename=\'' . $programLoi->parseFileName() . '.pdf\''
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', \strlen($renderProjectLoi->getPDFData()));
@@ -220,9 +258,6 @@ class LoiController extends AffiliationAbstractController
         return $response;
     }
 
-    /**
-     * @return Response
-     */
     public function downloadAction(): Response
     {
         $loi = $this->loiService->findLoiById((int)$this->params('id'));
@@ -238,13 +273,13 @@ class LoiController extends AffiliationAbstractController
          */
         $object = $loi->getObject()->first()->getObject();
 
-        $response->setContent(stream_get_contents($object));
+        $response->setContent(\stream_get_contents($object));
         $response->getHeaders()
             ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '"'
+                'attachment; filename=\'' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '\''
             )
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(

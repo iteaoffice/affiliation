@@ -5,74 +5,86 @@
  *
  * PHP Version 7
  *
- * @category    Project
+ * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
- * @link        http://github.com/iteaoffice/project for the canonical source repository
+ * @link        http://github.com/iteaoffice/affiliation for the canonical source repository
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\Controller\Plugin;
 
-use Zend\Mvc\Controller\PluginManager;
+use Doctrine\Common\Collections\Criteria;
+use Zend\Http\Request;
+use Zend\Mvc\Application;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\ServiceManager\ServiceManager;
 
 /**
- * @category    Application
+ * Class GetFilter
+ *
+ * @package Affiliation\Controller\Plugin
  */
-class GetFilter extends AbstractPlugin
+final class GetFilter extends AbstractPlugin
 {
     /**
-     * @var PluginManager
+     * @var ServiceManager
      */
-    protected $serviceManager;
+    private $serviceManager;
     /**
      * @var array
      */
-    protected $filter = [];
+    private $filter = [];
 
-    /**
-     * Instantiate the filter
-     *
-     * @return GetFilter
-     */
-    public function __invoke()
+    public function __construct(ServiceManager $serviceManager)
     {
-        $encodedFilter = urldecode((string)$this->getRouteMatch()->getParam('encodedFilter'));
+        $this->serviceManager = $serviceManager;
+    }
 
-        $order = $this->getRequest()->getQuery('order');
-        $direction = $this->getRequest()->getQuery('direction');
+    public function __invoke(): GetFilter
+    {
+        $filter = [];
+        /** @var Application $application */
+        $application = $this->serviceManager->get('application');
+        $encodedFilter = \urldecode((string)$application->getMvcEvent()->getRouteMatch()->getParam('encodedFilter'));
+        /** @var Request $request */
+        $request = $application->getMvcEvent()->getRequest();
 
-        //Take the filter from the URL
-        $filter = (array)json_decode(base64_decode($encodedFilter));
-
-
-        //If the form is submitted, refresh the URL
-        if ($this->getRequest()->isGet() && !\is_null($this->getRequest()->getQuery('submit'))) {
-            $filter = $this->getRequest()->getQuery()->toArray()['filter'];
+        if (!empty($encodedFilter)) {
+            // Take the filter from the URL
+            $filter = (array)\json_decode(\base64_decode($encodedFilter));
         }
 
-        //Create a new filter if not set already
-        if (!$filter) {
-            $filter = [];
+        $order = $request->getQuery('order');
+        $direction = $request->getQuery('direction');
+
+        // If the form is submitted, refresh the URL
+        if ($request->isGet()
+            && (($request->getQuery('submit') !== null) || ($request->getQuery('presentation') !== null))
+        ) {
+            $query = $request->getQuery()->toArray();
+            if (isset($query['filter'])) {
+                $filter = $query['filter'];
+            }
         }
 
-        //Add a default order and direction if not known in the filter
+        // Add a default order and direction if not known in the filter
         if (!isset($filter['order'])) {
-            $filter['order'] = 'id';
-            $filter['direction'] = 'desc';
+            $filter['order'] = '';
+            $filter['direction'] = Criteria::ASC;
         }
 
-        //Overrule the order if set in the query
-        if (!\is_null($order)) {
+        // Overrule the order if set in the query
+        if (null !== $order) {
             $filter['order'] = $order;
         }
 
-        //Overrule the direction if set in the query
-        if (!\is_null($direction)) {
+        // Overrule the direction if set in the query
+        if (null !== $direction) {
             $filter['direction'] = $direction;
         }
 
@@ -81,39 +93,34 @@ class GetFilter extends AbstractPlugin
         return $this;
     }
 
-    /**
-     * Return the filter
-     *
-     * @return array
-     */
-    public function getFilter()
+    public function getFilter(): array
     {
         return $this->filter;
     }
 
-    /**
-     * @return string
-     */
-    public function getOrder()
+    public function parseFilteredSortQuery(array $removeParams = []): string
+    {
+        $filterCopy = $this->filter;
+        unset($filterCopy['order'], $filterCopy['direction']);
+        foreach ($removeParams as $param) {
+            unset($filterCopy[$param]);
+        }
+
+        return \http_build_query(['filter' => $filterCopy, 'submit' => 'true']);
+    }
+
+    public function getOrder(): string
     {
         return $this->filter['order'];
     }
 
-    /**
-     * @return string
-     */
-    public function getDirection()
+    public function getDirection(): string
     {
         return $this->filter['direction'];
     }
 
-    /**
-     * Give the compressed version of the filter
-     *
-     * @return string
-     */
-    public function getHash()
+    public function getHash(): string
     {
-        return base64_encode(json_encode($this->filter));
+        return \base64_encode(\json_encode($this->filter));
     }
 }

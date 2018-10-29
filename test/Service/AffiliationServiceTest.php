@@ -70,7 +70,7 @@ class AffiliationServiceTest extends AbstractServiceTest
         $entityManagerMock = $this->getEntityManagerMock(Entity\Affiliation::class, $affiliationRepositoryMock);
         $service->setEntityManager($entityManagerMock);
 
-        $this->assertEquals($affiliation, $service->findAffiliationById($affiliationId));
+        $this->assertEquals($affiliation, $service->findAffiliationById((int) $affiliationId));
     }
 
     public function testIsSelfFunded()

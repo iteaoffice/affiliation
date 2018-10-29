@@ -24,7 +24,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  * @ORM\Table(name="project_doa")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Doa")
  */
-class Doa extends EntityAbstract implements ResourceInterface
+class Doa extends AbstractEntity
 {
     /**
      * @ORM\Column(name="doa_id", type="integer", nullable=false)
@@ -130,43 +130,24 @@ class Doa extends EntityAbstract implements ResourceInterface
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @param $property
-     *
-     * @return bool
-     */
     public function __isset($property)
     {
         return isset($this->$property);
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return sprintf("Doa: %s", $this->id);
     }
 
-    /**
-     * Parse a filename.
-     *
-     * @return string
-     */
     public function parseFileName(): string
     {
-        return sprintf("DOA_%s_%s", $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
+        return sprintf('DOA_%s_%s', $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
     }
 
     /**

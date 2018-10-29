@@ -19,11 +19,8 @@ use Organisation\Entity\Organisation;
 /**
  * @category    Affiliation
  */
-class Doa extends EntityRepository
+final class Doa extends EntityRepository
 {
-    /**
-     * @return Entity\Doa[]
-     */
     public function findNotApprovedDoa(): array
     {
         $qb = $this->_em->createQueryBuilder();
@@ -38,12 +35,6 @@ class Doa extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param  Organisation $organisation
-     *
-     * @return Entity\Doa[]
-     *
-     */
     public function findDoaByOrganisation(Organisation $organisation): array
     {
         $qb = $this->_em->createQueryBuilder();

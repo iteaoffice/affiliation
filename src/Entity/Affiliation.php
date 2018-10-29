@@ -30,7 +30,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  *
  * @category    Affiliation
  */
-class Affiliation extends EntityAbstract implements ResourceInterface
+class Affiliation extends AbstractEntity
 {
     public const NOT_SELF_FUNDED = 0;
     public const SELF_FUNDED = 1;
@@ -455,19 +455,8 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         return $this->parseBranchedName();
     }
 
-    /**
-     * @return string
-     */
     public function parseBranchedName(): string
     {
-        //Todo, fix this
-        if (false && !\is_null($this->getParentOrganisation())) {
-            return OrganisationService::parseBranch(
-                $this->getBranch(),
-                $this->getParentOrganisation()->getOrganisation()
-            );
-        }
-
         return OrganisationService::parseBranch($this->getBranch(), $this->getOrganisation());
     }
 
@@ -507,17 +496,11 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->branch = $branch;
     }
 
-    /**
-     * @return \Organisation\Entity\Organisation
-     */
     public function getOrganisation()
     {
         return $this->organisation;
     }
 
-    /**
-     * @param \Organisation\Entity\Organisation $organisation
-     */
     public function setOrganisation($organisation)
     {
         $this->organisation = $organisation;

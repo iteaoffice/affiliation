@@ -12,42 +12,61 @@ declare(strict_types=1);
 
 namespace Affiliation\Service;
 
+use Affiliation\Entity\AbstractEntity;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice;
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
 use Affiliation\Repository;
+use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\ValueObject\PaymentSheetPeriod;
 use Contact\Controller\Plugin\ContactActions;
 use Contact\Entity\Contact;
 use Contact\Entity\ContactOrganisation;
+use Contact\Service\ContactService;
+use Contact\Service\SelectionContactService;
+use Deeplink\Service\DeeplinkService;
 use Deeplink\View\Helper\DeeplinkLink;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
 use General\Entity\Currency;
+use General\Service\EmailService;
+use General\Service\GeneralService;
 use Invoice\Entity\Method;
+use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
 use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
+use Organisation\Service\OrganisationService;
+use Organisation\Service\ParentService;
 use Program\Entity\Call\Call;
-use Program\Entity\Program;
 use Project\Entity\Contract\Version as ContractVersion;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Funding\Source;
 use Project\Entity\Funding\Status;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
+use Project\Service\ContractService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
+use Search\Service\AbstractSearchService;
+use Search\Service\SearchUpdateInterface;
+use Solarium\Client;
+use Solarium\Core\Query\AbstractQuery;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Controller\PluginManager;
 use Zend\Validator\File\MimeType;
+use Zend\View\HelperPluginManager;
 
 /**
  * Class AffiliationService
  *
  * @package Affiliation\Service
  */
-class AffiliationService extends ServiceAbstract
+class AffiliationService extends AbstractService implements SearchUpdateInterface
 {
     /**
      * Constant to determine which affiliations must be taken from the database.
@@ -56,81 +75,103 @@ class AffiliationService extends ServiceAbstract
     public const WHICH_ONLY_ACTIVE = 2;
     public const WHICH_ONLY_INACTIVE = 3;
 
-    /**
-     * @param $id
-     *
-     * @return null|Affiliation|object
-     */
-    public function findAffiliationById($id): ?Affiliation
-    {
-        return $this->getEntityManager()->getRepository(Affiliation::class)->find($id);
-    }
+    public const AFFILIATION_DEACTIVATE = 'deacivate';
+    public const AFFILIATION_REACTIVATE = 'reactivate';
 
     /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
+     * @var AffiliationSearchService
      */
-    public function isSelfFunded(Affiliation $affiliation): bool
-    {
-        return $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
-            && !\is_null($affiliation->getDateSelfFunded());
-    }
-
+    private $affiliationSearchService;
     /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
+     * @var GeneralService
      */
-    public function isActiveInVersion(Affiliation $affiliation): bool
-    {
-        return !$affiliation->getVersion()->isEmpty();
-    }
-
+    private $generalService;
     /**
-     * Checks if the affiliation has a DOA.
-     *
-     * @param Affiliation $affiliation
-     *
-     * @return bool
+     * @var ProjectService
      */
-    public function hasDoa(Affiliation $affiliation): bool
-    {
-        return null !== $affiliation->getDoa();
+    private $projectService;
+    /**
+     * @var InvoiceService
+     */
+    private $invoiceService;
+    /**
+     * @var ContractService
+     */
+    private $contractService;
+    /**
+     * @var OrganisationService
+     */
+    private $organisationService;
+    /**
+     * @var VersionService
+     */
+    private $versionService;
+    /**
+     * @var ParentService
+     */
+    private $parentService;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var DeeplinkService
+     */
+    private $deeplinkService;
+    /**
+     * @var EmailService
+     */
+    private $emailService;
+    /**
+     * @var HelperPluginManager
+     */
+    private $viewHelperManager;
+    /**
+     * @var PluginManager;
+     */
+    private $controllerPluginManager;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(
+        EntityManager $entityManager,
+        SelectionContactService $selectionContactService,
+        AffiliationSearchService $affiliationSearchService,
+        GeneralService $generalService,
+        ProjectService $projectService,
+        InvoiceService $invoiceService,
+        ContractService $contractService,
+        OrganisationService $organisationService,
+        VersionService $versionService,
+        ParentService $parentService,
+        ContactService $contactService,
+        DeeplinkService $deeplinkService,
+        EmailService $emailService,
+        HelperPluginManager $viewHelperManager,
+        PluginManager $controllerPluginManager,
+        TranslatorInterface $translator
+    ) {
+        parent::__construct($entityManager, $selectionContactService);
+
+        $this->affiliationSearchService = $affiliationSearchService;
+        $this->generalService = $generalService;
+        $this->projectService = $projectService;
+        $this->invoiceService = $invoiceService;
+        $this->contractService = $contractService;
+        $this->organisationService = $organisationService;
+        $this->versionService = $versionService;
+        $this->parentService = $parentService;
+        $this->contactService = $contactService;
+        $this->deeplinkService = $deeplinkService;
+        $this->emailService = $emailService;
+        $this->viewHelperManager = $viewHelperManager;
+        $this->controllerPluginManager = $controllerPluginManager;
+        $this->translator = $translator;
     }
 
-    public function hasLoi(Affiliation $affiliation): bool
-    {
-        return null !== $affiliation->getLoi();
-    }
-
-    public function parsePaymentSheetPeriods(Affiliation $affiliation): array
-    {
-        $periods = [];
-
-        $currentYear = (int)date('Y');
-        $currentMonth = (int)date('m');
-
-        foreach ($this->getProjectService()->parseYearRange($affiliation->getProject()) as $year) {
-            foreach ([1, 2] as $period) {
-                //Stop the script for the second half of the year for the current year
-                if ($currentYear === $year && $currentMonth < 6 && $period === 2) {
-                    break 2;
-                }
-
-                //Stop the script for the next years in the first 10 months of the current year
-                if ($currentYear < $year && (($currentMonth > 10 && $period === 2) || $currentMonth <= 10)) {
-                    break 2;
-                }
-
-                $periods[] = new PaymentSheetPeriod($year, $period);
-            }
-        }
-
-        return $periods;
-    }
-
-    public function useActiveContract(Affiliation $affiliation): bool
+    public static function useActiveContract(Affiliation $affiliation): bool
     {
         /** Only use the contract is the flag (invoice method) is set */
         if (null === $affiliation->getInvoiceMethod()
@@ -152,6 +193,57 @@ class AffiliationService extends ServiceAbstract
         return false;
     }
 
+    public function findAffiliationById(int $id): ?Affiliation
+    {
+        return $this->entityManager->getRepository(Affiliation::class)->find($id);
+    }
+
+    public function isSelfFunded(Affiliation $affiliation): bool
+    {
+        return $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED && null !== $affiliation->getDateSelfFunded();
+    }
+
+    public function isActiveInVersion(Affiliation $affiliation): bool
+    {
+        return !$affiliation->getVersion()->isEmpty();
+    }
+
+    public function hasDoa(Affiliation $affiliation): bool
+    {
+        return null !== $affiliation->getDoa();
+    }
+
+    public function hasLoi(Affiliation $affiliation): bool
+    {
+        return null !== $affiliation->getLoi();
+    }
+
+    public function parsePaymentSheetPeriods(Affiliation $affiliation): array
+    {
+        $periods = [];
+
+        $currentYear = (int)date('Y');
+        $currentMonth = (int)date('m');
+
+        foreach ($this->projectService->parseYearRange($affiliation->getProject()) as $year) {
+            foreach ([1, 2] as $period) {
+                //Stop the script for the second half of the year for the current year
+                if ($currentYear === $year && $currentMonth < 6 && $period === 2) {
+                    break 2;
+                }
+
+                //Stop the script for the next years in the first 10 months of the current year
+                if ($currentYear < $year && (($currentMonth > 10 && $period === 2) || $currentMonth <= 10)) {
+                    break 2;
+                }
+
+                $periods[] = new PaymentSheetPeriod($year, $period);
+            }
+        }
+
+        return $periods;
+    }
+
     public function uploadLoi(array $file, Contact $contact, Affiliation $affiliation): Loi
     {
         $loiObject = new LoiObject();
@@ -163,12 +255,89 @@ class AffiliationService extends ServiceAbstract
 
         $fileTypeValidator = new MimeType();
         $fileTypeValidator->isValid($file);
-        $loi->setContentType($this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type));
+        $loi->setContentType($this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type));
 
         $loiObject->setLoi($loi);
-        $this->newEntity($loiObject);
+        $this->save($loiObject);
 
         return $loiObject->getLoi();
+    }
+
+    public function save(AbstractEntity $abstractEntity): AbstractEntity
+    {
+        parent::save($abstractEntity);
+
+        if ($abstractEntity instanceof Affiliation) {
+            $this->updateEntityInSearchEngine($abstractEntity);
+        }
+
+        return $abstractEntity;
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     */
+    public function updateEntityInSearchEngine($affiliation): void
+    {
+        $document = $this->prepareSearchUpdate($affiliation);
+
+        $this->affiliationSearchService->executeUpdateDocument($document);
+    }
+
+    /**
+     * @param Affiliation $affiliation
+     *
+     * @return AbstractQuery
+     */
+    public function prepareSearchUpdate($affiliation): AbstractQuery
+    {
+        $client = new Client();
+
+        $update = $client->createUpdate();
+        $project = $affiliation->getProject();
+        $contact = $affiliation->getContact();
+
+        // Affiliation
+        $affiliationDocument = $update->createDocument();
+        $affiliationDocument->id = $affiliation->getResourceId();
+        $affiliationDocument->affiliation_id = $affiliation->getId();
+        $affiliationDocument->date_created = $affiliation->getDateCreated()->format(AbstractSearchService::DATE_SOLR);
+        $affiliationDocument->is_active = $affiliation->isActive();
+
+        $descriptionMerged = '';
+        foreach ($affiliation->getDescription() as $description) {
+            $descriptionMerged .= $description->getDescription() . "\n\n";
+        }
+        $affiliationDocument->description = $descriptionMerged;
+        $affiliationDocument->branch = $affiliation->getBranch();
+        $affiliationDocument->value_chain = $affiliation->getValueChain();
+        $affiliationDocument->market_access = $affiliation->getMarketAccess();
+        $affiliationDocument->main_contribution = $affiliation->getMainContribution();
+        $affiliationDocument->strategic_importance = $affiliation->getStrategicImportance();
+
+        // Organisation
+        $affiliationDocument->organisation = (string)$affiliation->getOrganisation();
+        $affiliationDocument->organisation_id = $affiliation->getOrganisation()->getId();
+        $affiliationDocument->organisation_type = (string)$affiliation->getOrganisation()->getType();
+        $affiliationDocument->organisation_country = (string)$affiliation->getOrganisation()->getCountry();
+
+        // Project
+        $affiliationDocument->project = $project->getProject();
+        $affiliationDocument->project_id = $project->getId();
+        $affiliationDocument->project_number = $project->getNumber();
+        $affiliationDocument->project_title = $project->getTitle();
+        $affiliationDocument->project_status = $this->projectService->parseStatus($project);
+        $affiliationDocument->project_call = (string)$project->getCall()->shortName();
+        $affiliationDocument->project_call_id = $project->getCall()->getId();
+        $affiliationDocument->project_program = (string)$project->getCall()->getProgram();
+
+        // Contact
+        $affiliationDocument->contact = $contact->parseFullName();
+        $affiliationDocument->contact_id = $contact->getId();
+
+        $update->addDocument($affiliationDocument);
+
+        return $update;
     }
 
     public function submitLoi(Contact $contact, Affiliation $affiliation): Loi
@@ -180,7 +349,7 @@ class AffiliationService extends ServiceAbstract
         $loi->setDateApproved(new \DateTime());
         $loi->setAffiliation($affiliation);
 
-        $this->newEntity($loi);
+        $this->save($loi);
 
         return $loi;
     }
@@ -191,30 +360,19 @@ class AffiliationService extends ServiceAbstract
     public function findNotValidatedSelfFundedAffiliation(): array
     {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findNotValidatedSelfFundedAffiliation();
     }
 
-    /**
-     * @return Query
-     */
     public function findMissingAffiliationParent(): Query
     {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findMissingAffiliationParent();
     }
 
-    /**
-     * The VATnumber is first checked in the financial organisation. If that cannot be found we do a fallback
-     * tot he organisation > financial
-     *
-     * @param Affiliation $affiliation
-     *
-     * @return string|null
-     */
     public function parseVatNumber(Affiliation $affiliation): ?string
     {
         $financial = $this->findOrganisationFinancial($affiliation);
@@ -226,18 +384,13 @@ class AffiliationService extends ServiceAbstract
         return $financial->getVat();
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return null|\Organisation\Entity\Financial
-     */
     public function findOrganisationFinancial(Affiliation $affiliation): ?Financial
     {
         $organisation = null;
 
         // We need to find the financial organisation and will do that in order of importance
         // We will first try to find the organisation is if we can find this return the financial in the end
-        if (!\is_null($affiliation->getParentOrganisation())) {
+        if (null !== $affiliation->getParentOrganisation()) {
             // We have to deal with the parent system
             $parent = $affiliation->getParentOrganisation()->getParent();
 
@@ -251,37 +404,91 @@ class AffiliationService extends ServiceAbstract
         if (null === $organisation) {
             $organisation = $affiliation->getOrganisation();
 
-            if (!\is_null($affiliation->getFinancial())) {
+            if (null !== $affiliation->getFinancial()) {
                 $organisation = $affiliation->getFinancial()->getOrganisation();
             }
         }
 
-        if (\is_null($organisation) || \is_null($organisation->getFinancial())) {
+        if (null === $organisation || null === $organisation->getFinancial()) {
             return null;
         }
 
         return $organisation->getFinancial();
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Contact
-     */
+    public function updateCountryRationaleByAffiliation(Affiliation $affiliation, string $action): void
+    {
+        switch ($action) {
+            case self::AFFILIATION_DEACTIVATE:
+                $rationale = $this->projectService->findRationaleByProjectAndCountry(
+                    $affiliation->getProject(),
+                    $affiliation->getOrganisation()->getCountry()
+                );
+
+                // We need to check the rationale and maybe delete or update the contact persons.
+                if (null !== $rationale && $rationale->getContact()->getId() === $affiliation->getContact()->getId()) {
+                    // There is only 1 rationale, and our partner is contact person, so we need to update the contact
+                    // or delete the rationale if there are no other countries available for the project
+                    $countryFound = false;
+                    // The country is still active in the project, we need to assign a new rationale responsible
+                    $affiliations = $this->findAffiliationByProjectAndCountryAndWhich(
+                        $affiliation->getProject(),
+                        $affiliation->getOrganisation()->getCountry()
+                    );
+                    foreach ($affiliations as $otherAffiliation) {
+                        // Give the country rationale to the first contact in the affiliation
+                        $rationale->setContact($otherAffiliation->getContact());
+                        $this->save($otherAffiliation);
+                        break 2;
+                    }
+
+                    if (!$countryFound) {
+                        $this->delete($rationale);
+                    }
+                }
+
+                break;
+            case self::AFFILIATION_REACTIVATE:
+                // Simply use this function as a proxy to the generate function
+                $this->projectService->generateCountryRationaleByProject($affiliation->getProject());
+                break;
+        }
+    }
+
+    public function findAffiliationByProjectAndCountryAndWhich(
+        Project $project,
+        Country $country,
+        int $which = self::WHICH_ONLY_ACTIVE
+    ): ArrayCollection {
+        /** @var \Affiliation\Repository\Affiliation $repository */
+        $repository = $this->entityManager->getRepository(Affiliation::class);
+        $affiliations = $repository->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
+
+        if (\count($affiliations) === 0) {
+            $affiliations = [];
+        }
+
+        return new ArrayCollection($affiliations);
+    }
+
+    public function delete(AbstractEntity $abstractEntity): void
+    {
+        if ($abstractEntity instanceof Affiliation) {
+            $this->affiliationSearchService->deleteDocument($abstractEntity);
+        }
+
+        parent::delete($abstractEntity);
+    }
+
     public function getFinancialContact(Affiliation $affiliation): ?Contact
     {
-        if (\is_null($affiliation->getFinancial())) {
+        if (null === $affiliation->getFinancial()) {
             return null;
         }
 
         return $affiliation->getFinancial()->getContact();
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return array
-     */
     public function canCreateInvoice(Affiliation $affiliation): array
     {
         $errors = [];
@@ -294,16 +501,16 @@ class AffiliationService extends ServiceAbstract
                     $affiliation->getOrganisation()->getType()->getDescription()
                 );
                 break;
-            case \is_null($affiliation->getFinancial()):
+            case null === $affiliation->getFinancial():
                 $errors[] = 'No financial organisation (affiliation financial) set for this partner';
                 break;
-            case !$this->isActive($affiliation):
+            case !$affiliation->isActive():
                 $errors[] = 'Partner is de-activated';
                 break;
-            case \is_null($affiliation->getFinancial()->getOrganisation()->getFinancial()):
+            case null === $affiliation->getFinancial()->getOrganisation()->getFinancial():
                 $errors[] = 'No financial information set for this organisation';
                 break;
-            case \is_null($affiliation->getFinancial()->getContact()):
+            case null === $affiliation->getFinancial()->getContact():
                 $errors[] = 'No financial contact set for this organisation';
                 break;
         }
@@ -311,29 +518,11 @@ class AffiliationService extends ServiceAbstract
         return $errors;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
-     */
-    public function isActive(Affiliation $affiliation): bool
-    {
-        return \is_null($affiliation->getDateEnd());
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     * @param             $period
-     * @param             $year
-     *
-     * @return Invoice[]|ArrayCollection
-     */
-    public function findAffiliationInvoiceByAffiliationPeriodAndYear(Affiliation $affiliation, $period, $year)
-    {
-        //Cast to int as some values can originate form templates (== twig > might be string)
-        $year = (int)$year;
-        $period = (int)$period;
-
+    public function findAffiliationInvoiceByAffiliationPeriodAndYear(
+        Affiliation $affiliation,
+        int $period,
+        int $year
+    ): array {
         return $affiliation->getInvoice()->filter(
             function (Invoice $invoice) use ($period, $year) {
                 return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
@@ -344,7 +533,7 @@ class AffiliationService extends ServiceAbstract
     public function findAffiliationInProjectLog(): array
     {
         /** @var Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationInProjectLog();
     }
@@ -437,12 +626,12 @@ class AffiliationService extends ServiceAbstract
             return $affiliation->getInvoiceMethod()->getId();
         }
 
-        $invoiceMethod = (int)$this->getInvoiceService()->findInvoiceMethod(
+        $invoiceMethod = (int)$this->invoiceService->findInvoiceMethod(
             $affiliation->getProject()->getCall()->getProgram()
         )->getId();
 
         //The percentage method depends on the fact if we have a contract or not.
-        $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+        $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
 
         //Force the invoiceMethod back to _percentage_ when we don't want to use contract data
         if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || !$useContractData)) {
@@ -471,12 +660,12 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_PERCENTAGE:
                 if (null === $version) {
                     throw new \InvalidArgumentException(
-                        "The contract version cannot be null for parsing the contribution base"
+                        'The contract version cannot be null for parsing the contribution base'
                     );
                 }
 
                 $costsPerYear
-                    = $this->getVersionService()
+                    = $this->versionService
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
                 if (array_key_exists($year, $costsPerYear)) {
                     return (float)$costsPerYear[$year];
@@ -486,12 +675,12 @@ class AffiliationService extends ServiceAbstract
             case Method::METHOD_PERCENTAGE_CONTRACT:
                 if (null === $contractVersion) {
                     throw new \InvalidArgumentException(
-                        "The contract version cannot be null for parsing the contribution base"
+                        'The contract version cannot be null for parsing the contribution base'
                     );
                 }
 
                 $costsPerYear
-                    = $this->getContractService()
+                    = $this->contractService
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $contractVersion);
                 if (array_key_exists($year, $costsPerYear)) {
                     return (float)$costsPerYear[$year];
@@ -500,7 +689,7 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_CONTRIBUTION:
                 $effortPerYear
-                    = $this->getVersionService()
+                    = $this->versionService
                     ->findTotalEffortVersionByAffiliationAndVersionPerYear($affiliation, $version);
                 if (array_key_exists($year, $effortPerYear)) {
                     return (float)$effortPerYear[$year];
@@ -508,7 +697,7 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_FUNDING_MEMBER:
             case Method::METHOD_FUNDING:
-                return $this->getVersionService()
+                return $this->versionService
                     ->findTotalFundingVersionByAffiliationAndVersion($affiliation, $version);
         }
 
@@ -532,7 +721,7 @@ class AffiliationService extends ServiceAbstract
         /**
          * Based on the invoiceMethod we return or a percentage or the contribution
          */
-        $fee = $this->getProjectService()->findProjectFeeByYear($year);
+        $fee = $this->projectService->findProjectFeeByYear($year);
 
         if (null === $fee) {
             return 0;
@@ -549,18 +738,18 @@ class AffiliationService extends ServiceAbstract
                     throw new \InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
-                $invoiceFactor = $this->getParentService()->parseInvoiceFactor(
+                $invoiceFactor = $this->parentService->parseInvoiceFactor(
                     $parent,
                     $affiliation->getProject()->getCall()->getProgram()
                 ) / 100;
 
                 if ($parent->isMember()) {
-                    $membershipFactor = $this->getParentService()->parseMembershipFactor($parent);
+                    $membershipFactor = $this->parentService->parseMembershipFactor($parent);
 
                     return $invoiceFactor / (3 * $membershipFactor);
                 }
 
-                $doaFactor = $this->getParentService()->parseDoaFactor(
+                $doaFactor = $this->parentService->parseDoaFactor(
                     $parent,
                     $affiliation->getProject()->getCall()->getProgram()
                 );
@@ -575,13 +764,13 @@ class AffiliationService extends ServiceAbstract
 
             case Method::METHOD_FUNDING:
                 if (null === $parent) {
-                    throw new \InvalidArgumentException("Invoice cannot be funding when no parent is known");
+                    throw new \InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
                 //Funding PENTA === 1.5 %
                 $invoiceFactor = 1.5 / 100;
 
-                $doaFactor = $this->getParentService()->parseDoaFactor(
+                $doaFactor = $this->parentService->parseDoaFactor(
                     $parent,
                     $affiliation->getProject()->getCall()->getProgram()
                 );
@@ -593,22 +782,10 @@ class AffiliationService extends ServiceAbstract
                 return 0;
 
             default:
-                throw new \InvalidArgumentException(sprintf("Unknown contribution fee in %s", __FUNCTION__));
+                throw new \InvalidArgumentException(sprintf('Unknown contribution fee in %s', __FUNCTION__));
         }
     }
 
-    /**
-     * This function calculates the factor to which the contribution should be calculated.
-     * We removed the switch on office to facilitate the contribution based invoicing
-     *
-     * @param Affiliation $affiliation
-     * @param int         $year
-     * @param int|null    $period
-     *
-     * @return float|int
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function parseContributionFactor(Affiliation $affiliation, int $year, ?int $period = null): float
     {
         switch (true) {
@@ -616,8 +793,8 @@ class AffiliationService extends ServiceAbstract
                 return (float)0;
             case null === $period:
                 return 1;
-            case $this->getProjectService()->parseEndYear($affiliation->getProject()) === $year
-                && $this->getProjectService()->parseEndMonth($affiliation->getProject()) <= 6:
+            case $this->projectService->parseEndYear($affiliation->getProject()) === $year
+                && $this->projectService->parseEndMonth($affiliation->getProject()) <= 6:
                 return (float)($period === 1 ? 1 : 0);
             default:
                 return 0.5;
@@ -642,18 +819,11 @@ class AffiliationService extends ServiceAbstract
             if ((int)$funding->getDateStart()->format('Y') === $year && $funding->getSource()->getId() === $source) {
                 return $funding;
             }
-        };
+        }
 
         return null;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     * @param int         $year
-     * @param int|null    $period
-     *
-     * @return float
-     */
     public function parseExchangeRate(
         Affiliation $affiliation,
         int $year,
@@ -673,9 +843,13 @@ class AffiliationService extends ServiceAbstract
                 return (float)1;
             case Method::METHOD_PERCENTAGE_CONTRACT:
                 //The percentage method depends on the fact if we have a contract or not.
-                $contractVersion = $this->getContractService()->findLatestContractVersionByAffiliation($affiliation);
+                $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
 
-                $exchangeRate = $this->getContractService()->findExchangeRateInInvoicePeriod(
+                if (null === $contractVersion) {
+                    return 1;
+                }
+
+                $exchangeRate = $this->contractService->findExchangeRateInInvoicePeriod(
                     $contractVersion->getContract()->getCurrency(),
                     $year,
                     $period
@@ -689,7 +863,7 @@ class AffiliationService extends ServiceAbstract
                 return (float)$exchangeRate->getRate();
         }
 
-        return (float)1;
+        return 1;
     }
 
     public function parseBalance(
@@ -712,16 +886,6 @@ class AffiliationService extends ServiceAbstract
         ) - $this->parseContributionPaid($affiliation, $year, $period);
     }
 
-    /**
-     * @param Affiliation $affiliation
-     * @param Version     $version
-     * @param int         $year
-     * @param int|null    $period
-     *
-     * @return float
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function parseContributionDue(
         Affiliation $affiliation,
         Version $version,
@@ -736,13 +900,13 @@ class AffiliationService extends ServiceAbstract
         switch ($invoiceMethod) {
             case Method::METHOD_PERCENTAGE:
             case Method::METHOD_PERCENTAGE_CONTRACT:
-                $costsPerYear = $this->getVersionService()
+                $costsPerYear = $this->versionService
                     ->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version);
 
 
                 foreach ($costsPerYear as $costsYear => $cost) {
                     //fee
-                    $fee = $this->getProjectService()->findProjectFeeByYear($costsYear);
+                    $fee = $this->projectService->findProjectFeeByYear($costsYear);
                     $factor = $this->parseContributionFactorDue($affiliation, $costsYear, $year, $period);
 
                     //Only add the value to the contribution if the partner is funded in that year
@@ -754,14 +918,14 @@ class AffiliationService extends ServiceAbstract
                 break;
             case Method::METHOD_CONTRIBUTION:
                 //Fix the versionService
-                $effortPerYear = $this->getVersionService()
+                $effortPerYear = $this->versionService
                     ->findTotalEffortVersionByAffiliationAndVersionPerYear($affiliation, $version);
 
                 foreach ($effortPerYear as $effortYear => $effort) {
-                    $fee = $this->getProjectService()->findProjectFeeByYear($year);
+                    $fee = $this->projectService->findProjectFeeByYear($year);
 
                     switch (true) {
-                        case \is_null($period):
+                        case null === $period:
                             //costs in the past
                             $factor = 1;
                             break;
@@ -779,27 +943,16 @@ class AffiliationService extends ServiceAbstract
         return (float)$contributionDue;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     * @param             $projectYear
-     * @param int         $year
-     * @param int|null    $period
-     *
-     * @return float
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function parseContributionFactorDue(
         Affiliation $affiliation,
-        $projectYear,
+        int $projectYear,
         int $year,
         int $period = null
     ): float {
-        //Cast to int as some values can originate form templates (== twig > might be string)
         switch (true) {
             case !$this->isFundedInYear($affiliation, $projectYear):
                 return (float)0;
-            case \is_null($period) || $projectYear < $year:
+            case null === $period || $projectYear < $year:
                 return (float)1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
@@ -809,16 +962,6 @@ class AffiliationService extends ServiceAbstract
         }
     }
 
-    /**
-     * Sum up the amount paid already by the affiliation in the previous period
-     * Exclude of course the credit notes
-     *
-     * @param Affiliation $affiliation
-     * @param int         $year
-     * @param int|null    $period
-     *
-     * @return float
-     */
     public function parseContributionPaid(Affiliation $affiliation, int $year, int $period = null): float
     {
         $contributionPaid = 0;
@@ -826,8 +969,8 @@ class AffiliationService extends ServiceAbstract
         //Sum the invoiced amount of all invoices for this affiliation
         foreach ($affiliation->getInvoice() as $invoice) {
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
-            if (!\is_null($invoice->getInvoice()->getDayBookNumber())) {
-                if (!\is_null($period)) {
+            if (null !== $invoice->getInvoice()->getDayBookNumber()) {
+                if (null !== $period) {
                     //When we have a period, we also take the period fo the current year into account
                     if ($invoice->getYear() < $year
                         || ($invoice->getPeriod() < $period
@@ -847,7 +990,6 @@ class AffiliationService extends ServiceAbstract
         return (float)$contributionPaid;
     }
 
-
     public function parseContractTotal(
         Affiliation $affiliation,
         ContractVersion $version,
@@ -857,7 +999,6 @@ class AffiliationService extends ServiceAbstract
     ): float {
         return $this->parseTotalByInvoiceLines($affiliation, $version, $year, $period, $skipAlreadyInvoiced);
     }
-
 
     public function parseTotalByInvoiceLines(
         Affiliation $affiliation,
@@ -971,8 +1112,8 @@ class AffiliationService extends ServiceAbstract
     {
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
             //When the invoice is a credit invoice, skip the invoice
-            if ($this->getInvoiceService()->hasCredit($affiliationInvoice->getInvoice())
-                || $this->getInvoiceService()->isCredit($affiliationInvoice->getInvoice())
+            if ($this->invoiceService->hasCredit($affiliationInvoice->getInvoice())
+                || $this->invoiceService->isCredit($affiliationInvoice->getInvoice())
             ) {
                 continue;
             }
@@ -995,21 +1136,13 @@ class AffiliationService extends ServiceAbstract
         $contributionFactor = $this->parseContributionFactor($affiliation, $year, $period);
 
         return sprintf(
-            $this->translate("txt-%s%%-contribution-for-%s"),
+            $this->translator->translate("txt-%s%%-contribution-for-%s"),
             number_format($contributionFactor * 100, 0),
             $year,
             $currency->getSymbol()
         );
     }
 
-    /**
-     * This function calculates the amount invoiced in a given year
-     *
-     * @param Affiliation $affiliation
-     * @param int         $year
-     *
-     * @return float
-     */
     public function parseAmountInvoicedInYearByAffiliation(Affiliation $affiliation, int $year): float
     {
         $amountInvoiced = 0;
@@ -1036,18 +1169,12 @@ class AffiliationService extends ServiceAbstract
         return $hasBeenInvoicedInPast;
     }
 
-    /**
-     * @param Project $project
-     * @param int     $which
-     *
-     * @return Affiliation[]|ArrayCollection
-     */
     public function findAffiliationByProjectAndWhich(
         Project $project,
-        $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectAndWhich($project, $which);
 
         if (null === $affiliations) {
@@ -1057,20 +1184,12 @@ class AffiliationService extends ServiceAbstract
         return new ArrayCollection($affiliations);
     }
 
-    /**
-     * @param Version $version
-     * @param Country $country
-     * @param int     $which
-     *
-     * @return Affiliation[]|ArrayCollection
-     */
     public function findAffiliationByProjectVersionAndCountryAndWhich(
         Version $version,
         Country $country,
-        $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
 
         if (null === $affiliations) {
@@ -1080,16 +1199,12 @@ class AffiliationService extends ServiceAbstract
         return new ArrayCollection($affiliations);
     }
 
-    /**
-     * @param Version $version
-     * @param int     $which
-     *
-     * @return ArrayCollection|Affiliation[]
-     */
-    public function findAffiliationByProjectVersionAndWhich(Version $version, $which = self::WHICH_ALL): ArrayCollection
-    {
+    public function findAffiliationByProjectVersionAndWhich(
+        Version $version,
+        int $which = self::WHICH_ALL
+    ): ArrayCollection {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndWhich($version, $which);
 
         if (null === $affiliations) {
@@ -1099,46 +1214,10 @@ class AffiliationService extends ServiceAbstract
         return new ArrayCollection($affiliations);
     }
 
-    /**
-     * @param OParent $parent
-     * @param Program $program
-     * @param int     $which
-     *
-     * @return ArrayCollection
-     */
-    public function findAffiliationByParentAndProgramAndWhich(
-        OParent $parent,
-        Program $program,
-        $which = self::WHICH_ONLY_ACTIVE
-    ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
-        $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which);
-
-        if (null === $affiliations) {
-            $affiliations = [];
-        }
-
-        return new ArrayCollection($affiliations);
-    }
-
-    /**
-     * @param Affiliation  $affiliation
-     * @param Contact|null $contact
-     * @param string|null  $email
-     *
-     * @return Contact
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function addAssociate(Affiliation $affiliation, Contact $contact = null, string $email = null): Contact
     {
         if (null === $contact && empty($email)) {
-            throw new \InvalidArgumentException("Both contact and email address cannot be null to add an associate");
+            throw new \InvalidArgumentException('Both contact and email address cannot be null to add an associate');
         }
 
         //Boolean to see if the contact whas known already
@@ -1147,22 +1226,20 @@ class AffiliationService extends ServiceAbstract
         //When we have an email, create a contact based also on the $affiliation
         if (!empty($email)) {
             //Try to find the contact based on the email address
-            $contact = $this->getContactService()->findContactByEmail($email);
+            $contact = $this->contactService->findContactByEmail($email);
 
 
             //If we don't find the contact by email, we will create it.
             if (null === $contact) {
                 $hasContact = false;
 
-                /** @var PluginManager $controllerPluginManager */
-                $controllerPluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
                 /** @var ContactActions $contactActions */
-                $contactActions = $controllerPluginManager->get(ContactActions::class);
+                $contactActions = $this->controllerPluginManager->get(ContactActions::class);
 
                 $contact = $contactActions->createContact(
                     $email,
-                    sprintf(
-                        "Created via invitation for %s in %s",
+                    \sprintf(
+                        'Created via invitation for %s in %s',
                         $affiliation->getOrganisation(),
                         $affiliation->getProject()
                     ),
@@ -1175,9 +1252,9 @@ class AffiliationService extends ServiceAbstract
                 $contactOrganisation = new ContactOrganisation();
                 $contactOrganisation->setContact($contact);
                 $contactOrganisation->setOrganisation($affiliation->getOrganisation());
-                $this->getContactService()->save($contactOrganisation);
+                $this->contactService->save($contactOrganisation);
 
-                $this->getContactService()->addNoteToContact(
+                $this->contactService->addNoteToContact(
                     'Set organisation to ' . $affiliation->getOrganisation(),
                     'Account upgrade via associate',
                     $contact
@@ -1186,25 +1263,22 @@ class AffiliationService extends ServiceAbstract
         }
 
         $affiliation->addAssociate($contact);
-        $this->updateEntity($affiliation);
+        $this->save($affiliation);
 
-        $this->getAdminService()->refreshAccessRolesByContact($contact);
+        $this->refreshAccessRolesByContact($contact);
 
         //Send an email to the invitee
 
         $this->emailService->setWebInfo("/project/add_associate:associate");
         $this->emailService->addTo($contact);
 
-        /**
-         * @var $deeplinkLink DeeplinkLink
-         */
-        $deeplinkLink = $this->getServiceLocator()->get('ViewHelperManager')->get('deeplinkLink');
+        $deeplinkLink = $this->viewHelperManager->get(DeeplinkLink::class);
 
         //The contact can be found. But we forward him to the profile-edit
-        $targetProfile = $this->getDeeplinkService()->createTargetFromRoute('community/contact/profile/edit');
-        $deeplinkProfile = $this->getDeeplinkService()->createDeeplink($targetProfile, $contact);
-        $targetPartner = $this->getDeeplinkService()->createTargetFromRoute('community/affiliation/affiliation');
-        $deeplinkPartner = $this->getDeeplinkService()->createDeeplink(
+        $targetProfile = $this->deeplinkService->createTargetFromRoute('community/contact/profile/edit');
+        $deeplinkProfile = $this->deeplinkService->createDeeplink($targetProfile, $contact);
+        $targetPartner = $this->deeplinkService->createTargetFromRoute('community/affiliation/affiliation');
+        $deeplinkPartner = $this->deeplinkService->createDeeplink(
             $targetPartner,
             $contact,
             null,
@@ -1219,7 +1293,7 @@ class AffiliationService extends ServiceAbstract
         $this->emailService->setTemplateVariable('technical_contact', $affiliation->getContact()->parseFullName());
         $this->emailService->setTemplateVariable(
             'technical_contact_organisation',
-            $this->getContactService()->parseOrganisation($affiliation->getContact())
+            $this->contactService->parseOrganisation($affiliation->getContact())
         );
         $this->emailService->setTemplateVariable('technical_contact_email', $affiliation->getContact()->getEmail());
 
@@ -1228,20 +1302,13 @@ class AffiliationService extends ServiceAbstract
         return $contact;
     }
 
-    /**
-     * @param Project $project
-     * @param int     $criterion
-     * @param int     $which
-     *
-     * @return ArrayCollection|Affiliation[]
-     */
     public function findAffiliationByProjectAndWhichAndCriterion(
         Project $project,
         int $criterion,
         int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
         /** @var Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return new ArrayCollection(
             $repository->findAffiliationByProjectAndWhichAndCriterion(
@@ -1252,69 +1319,40 @@ class AffiliationService extends ServiceAbstract
         );
     }
 
-    /**
-     * @param Project $project
-     * @param Country $country
-     * @param int     $which
-     *
-     * @return int
-     */
     public function findAmountOfAffiliationByProjectAndCountryAndWhich(
         Project $project,
         Country $country,
-        $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE
     ): int {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByProjectAndCountryAndWhich($project, $country, $which);
     }
 
-    /**
-     * @param Country $country
-     * @param Call    $call
-     *
-     * @return int
-     */
     public function findAmountOfAffiliationByCountryAndCall(
         Country $country,
         Call $call
     ): int {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByCountryAndCall($country, $call);
     }
 
-    /**
-     * @param Version $version
-     * @param Country $country
-     * @param int     $which
-     *
-     * @return int
-     */
     public function findAmountOfAffiliationByProjectVersionAndCountryAndWhich(
         Version $version,
         Country $country,
-        $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE
     ): int {
-        /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
     }
 
-    /**
-     * Produce a list of affiliations grouped per country.
-     *
-     * @param Project $project
-     * @param int     $which
-     *
-     * @return ArrayCollection
-     */
     public function findAffiliationByProjectPerCountryAndWhich(
         Project $project,
-        $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
         $countries = $this->findAffiliationCountriesByProjectAndWhich($project, $which);
 
@@ -1329,18 +1367,11 @@ class AffiliationService extends ServiceAbstract
         return $result;
     }
 
-    /**
-     * @param Project $project
-     * @param int     $which
-     *
-     * @return \General\Entity\Country[]
-     */
     public function findAffiliationCountriesByProjectAndWhich(
         Project $project,
-        $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE
     ): array {
-        /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         /**
          * @var $affiliations Affiliation[]
@@ -1353,32 +1384,9 @@ class AffiliationService extends ServiceAbstract
             $result[$country->getCountry()] = $country;
         }
 
-        ksort($result);
+        \ksort($result);
 
         return $result;
-    }
-
-    /**
-     * @param Project $project
-     * @param Country $country
-     * @param int     $which
-     *
-     * @return Affiliation[]|ArrayCollection
-     */
-    public function findAffiliationByProjectAndCountryAndWhich(
-        Project $project,
-        Country $country,
-        $which = self::WHICH_ONLY_ACTIVE
-    ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
-        $affiliations = $repository->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
-
-        if (\is_null($affiliations)) {
-            $affiliations = [];
-        }
-
-        return new ArrayCollection($affiliations);
     }
 
     /**
@@ -1391,7 +1399,7 @@ class AffiliationService extends ServiceAbstract
         Organisation $organisation
     ): ArrayCollection {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return new ArrayCollection($repository->findAffiliationByOrganisation($organisation));
     }
@@ -1405,18 +1413,11 @@ class AffiliationService extends ServiceAbstract
         Organisation $organisation
     ): ArrayCollection {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return new ArrayCollection($repository->findAffiliationByOrganisationViaParentOrganisation($organisation));
     }
 
-    /**
-     * @param Project $project
-     * @param Contact $contact
-     * @param int     $which
-     *
-     * @return null|Affiliation
-     */
     public function findAffiliationByProjectAndContactAndWhich(
         Project $project,
         Contact $contact,
@@ -1430,10 +1431,10 @@ class AffiliationService extends ServiceAbstract
         }
 
         foreach ($project->getAffiliation() as $affiliation) {
-            if ($which === self::WHICH_ONLY_ACTIVE && !$this->isActive($affiliation)) {
+            if ($which === self::WHICH_ONLY_ACTIVE && !$affiliation->isActive()) {
                 continue;
             }
-            if ($which === self::WHICH_ONLY_INACTIVE && $this->isActive($affiliation)) {
+            if ($which === self::WHICH_ONLY_INACTIVE && $affiliation->isActive()) {
                 continue;
             }
 
@@ -1449,64 +1450,40 @@ class AffiliationService extends ServiceAbstract
         return null;
     }
 
-    /**
-     * Give a list of all affiliations which do not have a doa.
-     *
-     * @return Affiliation[]
-     */
     public function findAffiliationWithMissingDoa(): array
     {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationWithMissingDoa();
     }
 
-    /**
-     * Give a list of all affiliations which do not have a doa.
-     *
-     * @return Query
-     */
     public function findAffiliationWithMissingLoi(): Query
     {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationWithMissingLoi();
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
     public function deactivateAffiliation(Affiliation $affiliation): void
     {
         $affiliation->setDateEnd(new \DateTime());
-        $this->updateEntity($affiliation);
+        $this->save($affiliation);
         /*
          * Remove the current cost and effort of the affiliation
          */
         foreach ($affiliation->getEffort() as $effort) {
-            $this->getProjectService()->removeEntity($effort);
+            $this->projectService->delete($effort);
         }
         /*
          * Remove the current cost and effort of the affiliation
          */
         foreach ($affiliation->getCost() as $cost) {
-            $this->getProjectService()->removeEntity($cost);
+            $this->projectService->delete($cost);
         }
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return bool
-     */
     public function affiliationHasCostOrEffortInDraft(Affiliation $affiliation): bool
     {
         $effortInDraft = 0;
@@ -1522,39 +1499,27 @@ class AffiliationService extends ServiceAbstract
         return $effortInDraft > 0 || $costInDraft > 0;
     }
 
-    /**
-     * Reactivate an affiliation.
-     *
-     * @param Affiliation $affiliation
-     */
     public function reactivateAffiliation(Affiliation $affiliation): void
     {
         $affiliation->setDateEnd(null);
-        $this->updateEntity($affiliation);
+        $this->save($affiliation);
     }
 
-    /**
-     * @return array
-     */
     public function findLogAffiliations(): array
     {
         /** @var \Affiliation\Repository\Affiliation $repository */
-        $repository = $this->getEntityManager()->getRepository(Affiliation::class);
+        $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationInProjectLog();
     }
 
-    /**
-     * @param Affiliation $baseAffiliation
-     *
-     * @return array
-     */
     public function parseRenameOptions(
         Affiliation $baseAffiliation
     ): array {
         $options = [];
         $organisation = $baseAffiliation->getOrganisation();
         $contact = $baseAffiliation->getContact();
+
         /**
          * Go over the organisation and grab all its affiliations
          */
@@ -1562,7 +1527,7 @@ class AffiliationService extends ServiceAbstract
             $options[$affiliation->getOrganisation()->getCountry()->getCountry()]
             [$affiliation->getOrganisation()->getId()]
             [$affiliation->getBranch()]
-                = $this->getOrganisationService()
+                = $this->organisationService
                 ->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation());
         }
         /**
@@ -1574,7 +1539,7 @@ class AffiliationService extends ServiceAbstract
                     $options[$affiliation->getOrganisation()->getCountry()
                         ->getCountry()][$affiliation->getOrganisation()
                         ->getId()][$affiliation->getBranch()]
-                        = $this->getOrganisationService()
+                        = $this->organisationService
                         ->parseOrganisationWithBranch(
                             $affiliation->getBranch(),
                             $affiliation->getOrganisation()
@@ -1589,7 +1554,7 @@ class AffiliationService extends ServiceAbstract
             $options[$affiliation->getOrganisation()->getCountry()->getCountry()]
             [$affiliation->getOrganisation()->getId()]
             [$affiliation->getBranch()]
-                = $this->getOrganisationService()
+                = $this->organisationService
                 ->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation());
         }
         /**
@@ -1599,7 +1564,7 @@ class AffiliationService extends ServiceAbstract
             $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
-                = $this->getOrganisationService()->parseOrganisationWithBranch(
+                = $this->organisationService->parseOrganisationWithBranch(
                     $contact->getContactOrganisation()
                     ->getBranch(),
                     $contact->getContactOrganisation()->getOrganisation()
@@ -1616,7 +1581,7 @@ class AffiliationService extends ServiceAbstract
                 $options[$contact->getContactOrganisation()->getOrganisation()->getCountry()
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
-                    = $this->getOrganisationService()->parseOrganisationWithBranch(
+                    = $this->organisationService->parseOrganisationWithBranch(
                         $contact->getContactOrganisation()
                         ->getBranch(),
                         $contact->getContactOrganisation()->getOrganisation()
@@ -1632,7 +1597,7 @@ class AffiliationService extends ServiceAbstract
                             $options[$affiliation->getOrganisation()->getCountry()
                                 ->getCountry()][$affiliation->getOrganisation()
                                 ->getId()][$affiliation->getBranch()]
-                                = $this->getOrganisationService()
+                                = $this->organisationService
                                 ->parseOrganisationWithBranch(
                                     $affiliation->getBranch(),
                                     $affiliation->getOrganisation()
@@ -1644,5 +1609,18 @@ class AffiliationService extends ServiceAbstract
         }
 
         return $options;
+    }
+
+    public function updateCollectionInSearchEngine(bool $clearIndex = false): void
+    {
+        $affiliations = $this->findAll(Affiliation::class);
+        $collection = [];
+
+        /** @var Affiliation $press */
+        foreach ($affiliations as $affiliation) {
+            $collection[] = $this->prepareSearchUpdate($affiliation);
+        }
+
+        $this->affiliationSearchService->updateIndexWithCollection($collection, $clearIndex);
     }
 }

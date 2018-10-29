@@ -15,8 +15,12 @@ namespace Affiliation\Controller;
 use Affiliation\Entity;
 use Affiliation\Entity\Doa;
 use Affiliation\Form\UploadDoa;
+use Affiliation\Service\AffiliationService;
+use General\Service\GeneralService;
 use Project\Entity\Changelog;
+use Project\Service\ProjectService;
 use Zend\Http\Response;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
 use Zend\View\Model\ViewModel;
@@ -26,11 +30,41 @@ use Zend\View\Model\ViewModel;
  *
  * @package Affiliation\Controller
  */
-class DoaController extends AffiliationAbstractController
+final class DoaController extends AffiliationAbstractController
 {
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
+    /**
+     * @var ProjectService
+     */
+    private $projectService;
+    /**
+     * @var GeneralService
+     */
+    private $generalService;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(
+        AffiliationService $affiliationService,
+        ProjectService $projectService,
+        GeneralService $generalService,
+        TranslatorInterface $translator
+    ) {
+        $this->affiliationService = $affiliationService;
+        $this->projectService = $projectService;
+        $this->generalService = $generalService;
+        $this->translator = $translator;
+    }
+
+
     public function uploadAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int)$this->params('affiliationId'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
 
         if (null === $affiliation) {
             return $this->notFoundAction();
@@ -64,16 +98,16 @@ class DoaController extends AffiliationAbstractController
                 $fileTypeValidator = new MimeType();
                 $fileTypeValidator->isValid($fileData['file']);
                 $affiliationDoa->setContentType(
-                    $this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type)
+                    $this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type)
                 );
 
                 $affiliationDoa->setContact($this->identity());
                 $affiliationDoa->setAffiliation($affiliation);
                 $affiliationDoaObject->setDoa($affiliationDoa);
-                $this->getAffiliationService()->newEntity($affiliationDoaObject);
+                $this->affiliationService->save($affiliationDoaObject);
 
                 $changelogMessage = sprintf(
-                    $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded"),
+                    $this->translator->translate('txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded'),
                     $affiliation->getOrganisation(),
                     $affiliation->getProject()
                 );
@@ -97,22 +131,19 @@ class DoaController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliationService' => $this->getAffiliationService(),
+                'affiliationService' => $this->affiliationService,
                 'affiliation'        => $affiliation,
                 'form'               => $form,
             ]
         );
     }
 
-    /**
-     * @return array|\Zend\Http\Response|ViewModel
-     */
     public function replaceAction()
     {
         /**
          * @var Doa $doa
          */
-        $doa = $this->getAffiliationService()->findEntityById(Doa::class, $this->params('id'));
+        $doa = $this->affiliationService->find(Doa::class, (int) $this->params('id'));
 
         if (null === $doa || count($doa->getObject()) === 0) {
             return $this->notFoundAction();
@@ -139,7 +170,7 @@ class DoaController extends AffiliationAbstractController
                  * Remove the current entity
                  */
                 foreach ($doa->getObject() as $object) {
-                    $this->getAffiliationService()->removeEntity($object);
+                    $this->affiliationService->delete($object);
                 }
                 //Create a article object element
                 $affiliationDoaObject = new Entity\DoaObject();
@@ -152,14 +183,14 @@ class DoaController extends AffiliationAbstractController
                 $fileTypeValidator = new MimeType();
                 $fileTypeValidator->isValid($fileData['file']);
                 $doa->setContentType(
-                    $this->getGeneralService()->findContentTypeByContentTypeName($fileTypeValidator->type)
+                    $this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type)
                 );
 
                 $affiliationDoaObject->setDoa($doa);
-                $this->getAffiliationService()->newEntity($affiliationDoaObject);
+                $this->affiliationService->save($affiliationDoaObject);
 
                 $changelogMessage = sprintf(
-                    $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced"),
+                    $this->translator->translate('txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced'),
                     $doa->getAffiliation()->getOrganisation(),
                     $doa->getAffiliation()->getProject()
                 );
@@ -184,19 +215,16 @@ class DoaController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliationService' => $this->getAffiliationService(),
+                'affiliationService' => $this->affiliationService,
                 'doa'                => $doa,
                 'form'               => $form,
             ]
         );
     }
 
-    /**
-     * @return Response
-     */
     public function renderAction(): Response
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById((int)$this->params('affiliationId'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
 
         /** @var Response $response */
         $response = $this->getResponse();
@@ -216,7 +244,7 @@ class DoaController extends AffiliationAbstractController
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $programDoa->parseFileName() . '.pdf"'
+                'attachment; filename=\'' . $programDoa->parseFileName() . '.pdf\''
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', \strlen($renderProjectDoa->getPDFData()));
@@ -228,7 +256,7 @@ class DoaController extends AffiliationAbstractController
     public function downloadAction(): Response
     {
         /** @var Doa $doa */
-        $doa = $this->getAffiliationService()->findEntityById(Doa::class, (int)$this->params('id'));
+        $doa = $this->affiliationService->find(Doa::class, (int)$this->params('id'));
 
         /** @var Response $response */
         $response = $this->getResponse();
@@ -246,7 +274,7 @@ class DoaController extends AffiliationAbstractController
         $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
             ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename="' . $doa->parseFileName() . '.' . $doa->getContentType()->getExtension() . '"'
+                'attachment; filename=\'' . $doa->parseFileName() . '.' . $doa->getContentType()->getExtension() . '\''
             )
             ->addHeaderLine('Pragma: public')->addHeaderLine(
                 'Content-Type: ' . $doa->getContentType()

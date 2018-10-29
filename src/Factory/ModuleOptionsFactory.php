@@ -27,17 +27,10 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  */
 final class ModuleOptionsFactory implements FactoryInterface
 {
-    /**
-     * @param ContainerInterface $container
-     * @param string $requestedName
-     * @param array|null $options
-     *
-     * @return ModuleOptions
-     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ModuleOptions
     {
         $config = $container->get('Config');
 
-        return new ModuleOptions(isset($config['affiliation_option']) ? $config['affiliation_option'] : []);
+        return new ModuleOptions($config['affiliation_option'] ?? []);
     }
 }

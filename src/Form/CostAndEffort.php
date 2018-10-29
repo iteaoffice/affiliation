@@ -29,17 +29,10 @@ use Zend\InputFilter\InputFilterProviderInterface;
 /**
  * Class CostAndEffort
  *
- * @package Project\Form
+ * @package Affiliation\Form
  */
-class CostAndEffort extends Form implements InputFilterProviderInterface
+final class CostAndEffort extends Form implements InputFilterProviderInterface
 {
-    /**
-     * CostAndEffort constructor.
-     *
-     * @param Entity\Affiliation $affiliation
-     * @param ProjectService     $projectService
-     * @param WorkpackageService $workpackageService
-     */
     public function __construct(
         Entity\Affiliation $affiliation,
         ProjectService $projectService,
@@ -107,9 +100,6 @@ class CostAndEffort extends Form implements InputFilterProviderInterface
         );
     }
 
-    /**
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [];

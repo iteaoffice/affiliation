@@ -26,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class DoaReminder extends EntityAbstract
+class DoaReminder extends AbstractEntity
 {
     /**
      * @ORM\Column(name="reminder_id", type="integer", nullable=false)
@@ -81,27 +81,21 @@ class DoaReminder extends EntityAbstract
         $this->$property = $value;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return DoaReminder
-     */
     public function setId($id)
     {
         $this->id = $id;

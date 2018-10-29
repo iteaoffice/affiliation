@@ -26,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class Log extends EntityAbstract
+class Log extends AbstractEntity
 {
     /**
      * @ORM\Column(name="log_id", type="integer", nullable=false)
@@ -63,48 +63,35 @@ class Log extends EntityAbstract
     private $dateCreated;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="log")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=true)
-     * })
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliationLog")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=true)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $contact;
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    public function __toString(): string
     {
         return sprintf("Log %s", $this->getId());
     }

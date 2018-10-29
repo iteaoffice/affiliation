@@ -17,37 +17,37 @@ use Affiliation\Options;
 use Affiliation\Search;
 use Affiliation\Service;
 use Affiliation\View;
+use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\Stdlib;
 
 $config = [
     'controllers'        => [
         'factories' => [
-            Controller\AffiliationManagerController::class => Controller\Factory\ControllerFactory::class,
-            Controller\CommunityController::class          => Controller\Factory\ControllerFactory::class,
-            Controller\DoaController::class                => Controller\Factory\ControllerFactory::class,
-            Controller\DoaManagerController::class         => Controller\Factory\ControllerFactory::class,
-            Controller\EditController::class               => Controller\Factory\ControllerFactory::class,
-            Controller\LoiController::class                => Controller\Factory\ControllerFactory::class,
-            Controller\LoiManagerController::class         => Controller\Factory\ControllerFactory::class,
+            Controller\AffiliationManagerController::class => ConfigAbstractFactory::class,
+            Controller\CommunityController::class          => ConfigAbstractFactory::class,
+            Controller\DoaController::class                => ConfigAbstractFactory::class,
+            Controller\DoaManagerController::class         => ConfigAbstractFactory::class,
+            Controller\EditController::class               => ConfigAbstractFactory::class,
+            Controller\LoiController::class                => ConfigAbstractFactory::class,
+            Controller\LoiManagerController::class         => ConfigAbstractFactory::class,
         ],
     ],
     'service_manager'    => [
         'factories' => [
-            Service\AffiliationService::class              => Factory\AffiliationServiceFactory::class,
-            Service\DoaService::class                      => Factory\DoaServiceFactory::class,
-            Service\LoiService::class                      => Factory\LoiServiceFactory::class,
+            Service\AffiliationService::class              => ConfigAbstractFactory::class,
+            Service\DoaService::class                      => ConfigAbstractFactory::class,
+            Service\LoiService::class                      => ConfigAbstractFactory::class,
             Service\FormService::class                     => Factory\FormServiceFactory::class,
             InputFilter\AffiliationFilter::class           => Factory\InputFilterFactory::class,
             InputFilter\DescriptionFilter::class           => Factory\InputFilterFactory::class,
             Options\ModuleOptions::class                   => Factory\ModuleOptionsFactory::class,
-            Search\Service\AffiliationSearchService::class => Search\Factory\AffiliationSearchFactory::class,
-            Acl\Assertion\Affiliation::class               => Acl\Factory\AssertionFactory::class,
-            Acl\Assertion\Doa::class                       => Acl\Factory\AssertionFactory::class,
-            Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
-            Acl\Assertion\Loi::class                       => Acl\Factory\AssertionFactory::class,
-            Navigation\Invokable\AffiliationLabel::class   => Navigation\Factory\NavigationInvokableFactory::class,
-            Navigation\Invokable\DoaLabel::class           => Navigation\Factory\NavigationInvokableFactory::class,
-            Navigation\Invokable\LoiLabel::class           => Navigation\Factory\NavigationInvokableFactory::class,
+            Search\Service\AffiliationSearchService::class => ConfigAbstractFactory::class,
+            Acl\Assertion\Affiliation::class               => Factory\InvokableFactory::class,
+            Acl\Assertion\Doa::class                       => Factory\InvokableFactory::class,
+            Acl\Assertion\Loi::class                       => Factory\InvokableFactory::class,
+            Navigation\Invokable\AffiliationLabel::class   => Factory\InvokableFactory::class,
+            Navigation\Invokable\DoaLabel::class           => Factory\InvokableFactory::class,
+            Navigation\Invokable\LoiLabel::class           => Factory\InvokableFactory::class,
         ],
     ],
     'controller_plugins' => [
@@ -59,11 +59,11 @@ $config = [
             'mergeAffiliation'     => Controller\Plugin\MergeAffiliation::class,
         ],
         'factories' => [
-            Controller\Plugin\RenderPaymentSheet::class => Controller\Factory\PluginFactory::class,
-            Controller\Plugin\RenderDoa::class          => Controller\Factory\PluginFactory::class,
-            Controller\Plugin\RenderLoi::class          => Controller\Factory\PluginFactory::class,
-            Controller\Plugin\GetFilter::class          => Controller\Factory\PluginFactory::class,
-            Controller\Plugin\MergeAffiliation::class   => Controller\Factory\PluginFactory::class,
+            Controller\Plugin\RenderPaymentSheet::class => ConfigAbstractFactory::class,
+            Controller\Plugin\RenderDoa::class          => ConfigAbstractFactory::class,
+            Controller\Plugin\RenderLoi::class          => ConfigAbstractFactory::class,
+            Controller\Plugin\GetFilter::class          => Factory\InvokableFactory::class,
+            Controller\Plugin\MergeAffiliation::class   => ConfigAbstractFactory::class,
         ],
     ],
     'view_helpers'       => [
@@ -81,7 +81,7 @@ $config = [
             View\Helper\EffortSpentLink::class => View\Factory\ViewHelperFactory::class,
             View\Helper\DoaLink::class         => View\Factory\ViewHelperFactory::class,
             View\Helper\LoiLink::class         => View\Factory\ViewHelperFactory::class,
-            View\Helper\PaymentSheet::class    => View\Factory\ViewHelperFactory::class,
+            View\Helper\PaymentSheet::class    => ConfigAbstractFactory::class,
         ],
     ],
     'view_manager'       => [

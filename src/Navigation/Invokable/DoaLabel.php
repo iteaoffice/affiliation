@@ -50,9 +50,9 @@ class DoaLabel extends AbstractNavigationInvokable
                     ]
                 )
             );
-            $label = $this->translate('txt-doa');
+            $label = $this->translator->translate('txt-doa');
         } else {
-            $label = $this->translate('txt-nav-view');
+            $label = $this->translator->translate('txt-nav-view');
         }
         $page->set('label', $label);
     }

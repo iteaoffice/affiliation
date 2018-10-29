@@ -50,7 +50,7 @@ class AffiliationLabel extends AbstractNavigationInvokable
             );
             $label = (string)$affiliation;
         } else {
-            $label = $this->translate('txt-nav-view');
+            $label = $this->translator->translate('txt-nav-view');
         }
         $page->set('label', $label);
     }

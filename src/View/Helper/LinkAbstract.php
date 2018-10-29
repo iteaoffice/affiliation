@@ -13,10 +13,9 @@ declare(strict_types=1);
 
 namespace Affiliation\View\Helper;
 
-use Affiliation\Acl\Assertion\AssertionAbstract;
+use Affiliation\Entity\AbstractEntity;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
-use Affiliation\Entity\EntityAbstract;
 use Affiliation\Entity\Loi;
 use Affiliation\Service\AffiliationService;
 use BjyAuthorize\Controller\Plugin\IsAllowed;
@@ -106,21 +105,11 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     protected $report;
 
-    /**
-     * This function produces the link in the end.
-     *
-     * @return string
-     */
     public function createLink(): string
     {
-        /**
-         * @var $url Url
-         */
-        $url = $this->getHelperPluginManager()->get('url');
-        /**
-         * @var $serverUrl ServerUrl
-         */
-        $serverUrl = $this->getHelperPluginManager()->get('serverUrl');
+        $url = $this->getHelperPluginManager()->get(Url::class);
+        $serverUrl = $this->getHelperPluginManager()->get(ServerUrl::class);
+
         $this->linkContent = [];
         $this->classes = [];
         $this->parseAction();
@@ -135,7 +124,7 @@ abstract class LinkAbstract extends AbstractViewHelper
             $serverUrl() . $url(
                 $this->router,
                 $this->routerParams,
-                \is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
+                null === $this->getFragment() ? [] : ['fragment' => $this->getFragment()]
             ),
             htmlentities((string)$this->text),
             implode(' ', $this->classes),
@@ -144,17 +133,11 @@ abstract class LinkAbstract extends AbstractViewHelper
         );
     }
 
-    /**
-     *
-     */
     public function parseAction(): void
     {
         $this->action = null;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function parseShow(): void
     {
         switch ($this->getShow()) {
@@ -353,13 +336,13 @@ abstract class LinkAbstract extends AbstractViewHelper
     }
 
     /**
-     * @param EntityAbstract $entity
-     * @param string $assertion
-     * @param string $action
+     * @param AbstractEntity $entity
+     * @param string         $assertion
+     * @param string         $action
      *
      * @return bool
      */
-    public function hasAccess(EntityAbstract $entity, $assertion, $action)
+    public function hasAccess(AbstractEntity $entity, $assertion, $action)
     {
         $assertion = $this->getAssertion($assertion);
         if (!\is_null($entity) && !$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
@@ -373,30 +356,16 @@ abstract class LinkAbstract extends AbstractViewHelper
         return true;
     }
 
-    /**
-     * @param string $assertion
-     *
-     * @return AssertionAbstract
-     */
-    public function getAssertion($assertion)
+    public function getAssertion(string $assertion)
     {
         return $this->getServiceManager()->get($assertion);
     }
 
-    /**
-     * @return Authorize
-     */
-    public function getAuthorizeService()
+    public function getAuthorizeService(): Authorize
     {
         return $this->getServiceManager()->get('BjyAuthorize\Service\Authorize');
     }
 
-    /**
-     * @param null|EntityAbstract $resource
-     * @param string $privilege
-     *
-     * @return bool
-     */
     public function isAllowed($resource, $privilege = null)
     {
         /**
@@ -407,13 +376,6 @@ abstract class LinkAbstract extends AbstractViewHelper
         return $isAllowed($resource, $privilege);
     }
 
-    /**
-     * Add a parameter to the list of parameters for the router.
-     *
-     * @param string $key
-     * @param        $value
-     * @param bool $allowNull
-     */
     public function addRouterParam($key, $value, $allowNull = true)
     {
         if (!$allowNull && null === $value) {

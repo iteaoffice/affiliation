@@ -17,39 +17,15 @@ namespace Affiliation\Options;
  */
 interface AffiliationOptionsInterface
 {
-    /**
-     * @param $doaTemplate
-     *
-     * @return AffiliationOptionsInterface
-     */
-    public function setDoaTemplate($doaTemplate);
+    public function setDoaTemplate(string $doaTemplate);
 
-    /**
-     * @return string
-     */
     public function getDoaTemplate();
 
-    /**
-     * @param $loiTemplate
-     *
-     * @return AffiliationOptionsInterface
-     */
-    public function setLoiTemplate($loiTemplate);
+    public function setLoiTemplate(string $loiTemplate);
 
-    /**
-     * @return string
-     */
     public function getLoiTemplate();
 
-    /**
-     * @return string
-     */
-    public function getPaymentSheetTemplate();
+    public function setPaymentSheetTemplate(string $paymentSheetTemplate);
 
-    /**
-     * @param  string $paymentSheetTemplate
-     *
-     * @return ModuleOptions
-     */
-    public function setPaymentSheetTemplate($paymentSheetTemplate);
+    public function getPaymentSheetTemplate();
 }

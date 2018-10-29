@@ -50,9 +50,9 @@ class LoiLabel extends AbstractNavigationInvokable
                     ]
                 )
             );
-            $label = $this->translate('txt-loi');
+            $label = $this->translator->translate('txt-loi');
         } else {
-            $label = $this->translate('txt-nav-view');
+            $label = $this->translator->translate('txt-nav-view');
         }
         $page->set('label', $label);
     }

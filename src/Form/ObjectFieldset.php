@@ -38,9 +38,9 @@ class ObjectFieldset extends Fieldset
 {
     /**
      * @param EntityManager $entityManager
-     * @param Entity\EntityAbstract $object
+     * @param Entity\AbstractEntity $object
      */
-    public function __construct(EntityManager $entityManager, Entity\EntityAbstract $object)
+    public function __construct(EntityManager $entityManager, Entity\AbstractEntity $object)
     {
         parent::__construct($object->get('underscore_entity_name'));
         $doctrineHydrator = new DoctrineHydrator($entityManager);

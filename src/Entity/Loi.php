@@ -16,7 +16,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
-use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
  * ProjectLoi.
@@ -24,7 +23,7 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  * @ORM\Table(name="project_loi")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Loi")
  */
-class Loi extends EntityAbstract implements ResourceInterface
+class Loi extends AbstractEntity
 {
     /**
      * @ORM\Column(name="loi_id", type="integer", nullable=false)
@@ -100,84 +99,55 @@ class Loi extends EntityAbstract implements ResourceInterface
     private $dateCreated;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="loi")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
-     * })
+     * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="loi")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * })
+     * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * @Annotation\Exclude()
      *
      * @var \Contact\Entity\Contact
      */
     private $contact;
 
-    /**
-     * Loi constructor.
-     */
     public function __construct()
     {
         $this->object = new ArrayCollection();
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __isset($property)
     {
-        return sprintf("Loi: %s", $this->id);
+        return isset($this->$property);
     }
 
-    /**
-     * Parse a filename.
-     *
-     * @return string
-     */
+    public function __toString(): string
+    {
+        return sprintf('Loi: %s', $this->id);
+    }
+
     public function parseFileName(): string
     {
-        return sprintf("LOI_%s_%s", $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
+        return sprintf('LOI_%s_%s', $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
     }
 
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
+    public function getAffiliation(): Affiliation
     {
         return $this->affiliation;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Loi
-     */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
@@ -375,6 +345,7 @@ class Loi extends EntityAbstract implements ResourceInterface
 
     /**
      * @param \Contact\Entity\Contact $approver
+     *
      * @return Loi
      */
     public function setApprover(\Contact\Entity\Contact $approver): Loi
