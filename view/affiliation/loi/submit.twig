@@ -105,7 +105,7 @@
 
     <dl class="dl-horizontal">
         <dt>{{ translate("txt-contact") }}</dt>
-        <dd>{{ zfcUserIdentity().displayName() }}</dd>
+        <dd>{{ identity().displayName() }}</dd>
         {% if not loi.object.isEmpty() %}
             <dt>{{ translate("txt-download-loi") }}</dt>
             <dd>{{ loiLink(loi,'download', 'text') }}</dd>

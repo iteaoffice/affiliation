@@ -250,13 +250,6 @@ final class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-
-    /**
-     * @param OParent $parent
-     * @param Program $program
-     * @param int $which
-     * @return array
-     */
     public function findAffiliationByParentAndProgramAndWhich(OParent $parent, Program $program, int $which): array
     {
         $qb = $this->_em->createQueryBuilder();

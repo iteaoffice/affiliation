@@ -15,7 +15,7 @@
 return [
     'solr' => [
         'connection' => [
-            'affiliation' => [
+            'affiliation_affiliation' => [
                 'endpoint' => [
                     'server' => [
                         'host'     => '10.213.157.15',

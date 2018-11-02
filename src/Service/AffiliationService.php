@@ -43,6 +43,7 @@ use Organisation\Entity\Type;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
 use Program\Entity\Call\Call;
+use Program\Entity\Program;
 use Project\Entity\Contract\Version as ContractVersion;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Funding\Source;
@@ -522,7 +523,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         Affiliation $affiliation,
         int $period,
         int $year
-    ): array {
+    ): ArrayCollection {
         return $affiliation->getInvoice()->filter(
             function (Invoice $invoice) use ($period, $year) {
                 return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
@@ -1191,6 +1192,21 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     ): ArrayCollection {
         $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
+
+        if (null === $affiliations) {
+            $affiliations = [];
+        }
+
+        return new ArrayCollection($affiliations);
+    }
+
+    public function findAffiliationByParentAndProgramAndWhich(
+        OParent $parent,
+        Program $program,
+        int $which = self::WHICH_ONLY_ACTIVE
+    ): ArrayCollection {
+        $repository = $this->entityManager->getRepository(Affiliation::class);
+        $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which);
 
         if (null === $affiliations) {
             $affiliations = [];
