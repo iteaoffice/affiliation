@@ -13,12 +13,11 @@ declare(strict_types=1);
 namespace Affiliation\Version;
 
 /**
- * Class to store and retrieve the version of Project module.
+ * Class Version
+ *
+ * @package Affiliation\Version
  */
 final class Version
 {
-    /**
-     * Affiliation version identification
-     */
-    public const VERSION = '3.1.0-DEV';
+    public const VERSION = '4.0.0';
 }
