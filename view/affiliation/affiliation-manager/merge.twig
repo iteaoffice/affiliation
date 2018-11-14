@@ -1,7 +1,7 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
 
-<h1>{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.organisation, affiliation.project.parseFullName()) }}</h1>
+<h1 class="display-4">{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.organisation, affiliation.project.parseFullName()) }}</h1>
 
 <h2>{{ translate("txt-project-information") }}</h2>
 
@@ -17,8 +17,8 @@
     <dt>{{ translate("txt-status") }}</dt>
     <dd>{{ projectService.parseStatus(affiliation.project) }}</dd>
     <dt>{{ translate("txt-project-leader") }}</dt>
-    <dd>{{ contactLink(project.contact,'view-admin','name') }} <a
-                href="mailto:{{ project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+    <dd>{{ contactLink(affiliation.project.contact,'view-admin','name') }} <a
+                href="mailto:{{ affiliation.project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
     </dd>
 </dl>
 
@@ -34,7 +34,7 @@
     {% endfor %}
 
 <form method="post" action="">
-    <table class="table table-hover table-striped table-condensed">
+    <table class="table table-hover table-striped table-condensed table-sm">
         <thead>
         <tr>
             <th colspan="2">{{ translate("txt-organisation-name") }}</th>
@@ -63,9 +63,7 @@
         <tbody>
         <tr class="success">
             <td>
-                {% if merge %}
-                    {{ translate("txt-main") }}:
-                {% endif %}
+                {{ translate("txt-main") }}:
             </td>
             <td>
                 {{ affiliationLink(affiliation,'view-admin', 'name') }}
@@ -82,7 +80,7 @@
             <td>{{ affiliation.associate.count() }}</td>
             <td>{{ affiliation.invoice.count() }}</td>
         </tr>
-        {% for affiliation in projectService.getAffiliation(affiliation.project, constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) if affiliation.id != mainAffiliationId %}
+        {% for affiliation in affiliationService.findAffiliationByProjectAndWhich(affiliation.project, constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) if affiliation.id != mainAffiliationId %}
             {% set effortVersionTableAmount = 0 %}
             {% for affiliationVersion in affiliation.version %}
                 {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}

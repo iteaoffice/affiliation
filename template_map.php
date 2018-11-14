@@ -6,6 +6,8 @@ return array(
     'affiliation/edit/affiliation'                               => __DIR__ . '//view/affiliation/edit/affiliation.twig',
     'affiliation/edit/description'                               => __DIR__ . '//view/affiliation/edit/description.twig',
     'affiliation/edit/update-effort-spent'                       => __DIR__ . '//view/affiliation/edit/update-effort-spent.twig',
+    'affiliation/edit/cost-and-effort'                           => __DIR__ . '//view/affiliation/edit/cost-and-effort.twig',
+    'affiliation/edit/manage-associate'                          => __DIR__ . '//view/affiliation/edit/manage-associate.twig',
     'affiliation/edit/add-associate'                             => __DIR__ . '//view/affiliation/edit/add-associate.twig',
     'affiliation/partial/pagination-control'                     => __DIR__ . '//view/affiliation/partial/pagination-control.twig',
     'affiliation/partial/payment-sheet'                          => __DIR__ . '//view/affiliation/partial/payment-sheet.twig',
@@ -22,6 +24,7 @@ return array(
     'affiliation/affiliation-manager/view'                       => __DIR__ . '//view/affiliation/affiliation-manager/view.twig',
     'affiliation/affiliation-manager/list'                       => __DIR__ . '//view/affiliation/affiliation-manager/list.twig',
     'affiliation/affiliation-manager/edit-associate'             => __DIR__ . '//view/affiliation/affiliation-manager/edit-associate.twig',
+    'affiliation/affiliation-manager/add-associate'              => __DIR__ . '//view/affiliation/affiliation-manager/add-associate.twig',
     'affiliation/loi-manager/edit'                               => __DIR__ . '//view/affiliation/loi-manager/edit.twig',
     'affiliation/loi-manager/reminders'                          => __DIR__ . '//view/affiliation/loi-manager/reminders.twig',
     'affiliation/loi-manager/approval'                           => __DIR__ . '//view/affiliation/loi-manager/approval.twig',
@@ -38,4 +41,5 @@ return array(
     'affiliation/doa-manager/list'                               => __DIR__ . '//view/affiliation/doa-manager/list.twig',
     'affiliation/loi/upload'                                     => __DIR__ . '//view/affiliation/loi/upload.twig',
     'affiliation/loi/replace'                                    => __DIR__ . '//view/affiliation/loi/replace.twig',
+    'affiliation/loi/submit'                                     => __DIR__ . '//view/affiliation/loi/submit.twig',
 );

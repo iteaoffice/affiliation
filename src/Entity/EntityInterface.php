@@ -13,37 +13,15 @@
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
-/**
- * Interface EntityInterface
- *
- * @package Affiliation\Entity
- */
 interface EntityInterface
 {
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property);
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return mixed
-     */
     public function __set($property, $value);
 
-    /**
-     * @return mixed
-     */
-    public function __toString();
-
-    /**
-     * @return mixed
-     */
     public function getId();
 }

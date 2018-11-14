@@ -7,6 +7,7 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
+
 use Admin\Entity\Access;
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Acl\Assertion\Doa as DoaAssertion;
@@ -23,195 +24,210 @@ return [
             'BjyAuthorize\Guard\Route' => [
                 [
                     'route' => 'zfcadmin/affiliation/list',
-                    'roles' => [Access::ACCESS_OFFICE],
+                    'roles' => ['office'],
                 ],
                 [
                     'route' => 'zfcadmin/affiliation/list-csv',
-                    'roles' => [Access::ACCESS_OFFICE],
+                    'roles' => ['office'],
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/view',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/edit',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/merge',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/missing-affiliation-parent',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/edit-associate',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/add-associate',
+                    'roles'     => ['office'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/list',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/approval',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/missing',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/view',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/edit',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/remind',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/reminders',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/doa/approve',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/list',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/approval',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/missing',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/remind',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/reminders',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/view',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/edit',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/approve',
-                    'roles'     => [Access::ACCESS_OFFICE],
+                    'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/payment-sheet',
-                    'roles'     => [Access::ACCESS_USER],
+                    'roles'     => ['user'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/payment-sheet-pdf',
-                    'roles'     => [Access::ACCESS_USER],
+                    'roles'     => ['user'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/affiliation',
-                    'roles'     => [Access::ACCESS_USER],
+                    'roles'     => ['user'],
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/affiliation',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/add-associate',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/manage-associate',
+                    'roles'     => 'user',
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/cost-and-effort',
+                    'roles'     => 'user',
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/financial',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/update-effort-spent',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/description',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/upload',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/render',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/replace',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/download',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => DoaAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/loi/upload',
-                    'roles'     => Access::ACCESS_USER,
+                    'route'     => 'community/affiliation/loi/submit',
+                    'roles'     => 'user',
                     'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/loi/render',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/loi/replace',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/loi/download',
-                    'roles'     => Access::ACCESS_USER,
+                    'roles'     => 'user',
                     'assertion' => LoiAssertion::class,
                 ],
             ],

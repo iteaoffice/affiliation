@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Doa;
@@ -15,43 +17,24 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Organisation\Entity\Organisation;
 
 /**
- * DoaService.
+ * Class DoaService
  *
- * this is a generic wrapper service for all the other services
- *
- * First parameter of all methods (lowercase, underscore_separated)
- * will be used to fetch the correct model service, one exception is the 'linkModel'
- * method.
+ * @package Affiliation\Service
  */
-class DoaService extends ServiceAbstract
+class DoaService extends AbstractService
 {
-    /**
-     * @param $id
-     *
-     * @return null|Doa
-     */
-    public function findDoaById($id)
+    public function findDoaById(int $id): ?Doa
     {
-        return $this->getEntityManager()->getRepository(Doa::class)->find($id);
+        return $this->entityManager->getRepository(Doa::class)->find($id);
     }
 
-    /**
-     * Get a list of not approved doas.
-     *
-     * @return Doa[]|ArrayCollection
-     */
-    public function findNotApprovedDoa()
+    public function findNotApprovedDoa(): ArrayCollection
     {
-        return new ArrayCollection($this->getEntityManager()->getRepository(Doa::class)->findNotApprovedDoa());
+        return new ArrayCollection($this->entityManager->getRepository(Doa::class)->findNotApprovedDoa());
     }
 
-    /**
-     * Get a list DOA's by organisation
-     *
-     * @return Doa[]
-     */
-    public function findDoaByOrganisation(Organisation $organisation)
+    public function findDoaByOrganisation(Organisation $organisation): array
     {
-        return $this->getEntityManager()->getRepository(Doa::class)->findDoaByOrganisation($organisation);
+        return $this->entityManager->getRepository(Doa::class)->findDoaByOrganisation($organisation);
     }
 }

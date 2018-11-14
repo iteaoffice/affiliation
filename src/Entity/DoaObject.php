@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="project_doa_object")
  * @ORM\Entity
  */
-class DoaObject extends EntityAbstract
+class DoaObject extends AbstractEntity
 {
     /**
      * @ORM\Column(name="object_id", type="integer", nullable=false)
@@ -98,7 +100,7 @@ class DoaObject extends EntityAbstract
     }
 
     /**
-     * @param resource $object
+     * @param string $object
      *
      * @return DoaObject
      */

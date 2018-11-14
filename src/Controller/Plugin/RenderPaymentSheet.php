@@ -8,46 +8,142 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice as AffiliationInvoice;
+use Affiliation\Options\ModuleOptions;
+use Affiliation\Service\AffiliationService;
+use Contact\Service\ContactService;
+use General\Entity\Currency;
+use General\Entity\ExchangeRate;
 use Invoice\Entity\Method;
+use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
+use Organisation\Service\OrganisationService;
+use Project\Service\ContractService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
+use Zend\I18n\Translator\TranslatorInterface;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
- * Class RenderLoi.
+ * Class RenderPaymentSheet
+ *
+ * @package Affiliation\Controller\Plugin
  */
-class RenderPaymentSheet extends AbstractPlugin
+final class RenderPaymentSheet extends AbstractPlugin
 {
     /**
-     * @param Affiliation $affiliation
-     * @param             $year
-     * @param             $period
-     *
-     * @return AffiliationPdf
-     * @throws \Exception
+     * @var AffiliationService
      */
-    public function render(Affiliation $affiliation, $year, $period)
-    {
-        $project       = $affiliation->getProject();
-        $contact       = $affiliation->getContact();
-        $latestVersion = $this->getProjectService()->getLatestProjectVersion($project);
+    private $affiliationService;
+    /**
+     * @var ModuleOptions
+     */
+    private $moduleOptions;
+    /**
+     * @var ProjectService
+     */
+    private $projectService;
+    /**
+     * @var VersionService
+     */
+    private $versionService;
+    /**
+     * @var ContractService
+     */
+    private $contractService;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var OrganisationService
+     */
+    private $organisationService;
+    /**
+     * @var InvoiceService
+     */
+    private $invoiceService;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(
+        AffiliationService $affiliationService,
+        ModuleOptions $moduleOptions,
+        ProjectService $projectService,
+        VersionService $versionService,
+        ContractService $contractService,
+        ContactService $contactService,
+        OrganisationService $organisationService,
+        InvoiceService $invoiceService,
+        TranslatorInterface $translator
+    ) {
+        $this->affiliationService = $affiliationService;
+        $this->moduleOptions = $moduleOptions;
+        $this->projectService = $projectService;
+        $this->versionService = $versionService;
+        $this->contractService = $contractService;
+        $this->contactService = $contactService;
+        $this->organisationService = $organisationService;
+        $this->invoiceService = $invoiceService;
+        $this->translator = $translator;
+    }
 
 
-        $financialContact = $this->getAffiliationService()->getFinancialContact($affiliation);
+    public function __invoke(
+        Affiliation $affiliation,
+        int $year,
+        int $period,
+        bool $useContractData = true
+    ): AffiliationPdf {
+        $project = $affiliation->getProject();
+        $contact = $affiliation->getContact();
+        $latestVersion = $this->projectService->getLatestProjectVersion($project);
 
-        $versionContributionInformation = $this->getVersionService()
-                                               ->getProjectVersionContributionInformation($affiliation, $latestVersion);
+        if (null === $latestVersion) {
+            throw new \InvalidArgumentException('No latest version could be found, no payment sheet can be created');
+        }
 
-        $invoiceMethod = $this->getInvoiceService()->findInvoiceMethod(
-            $affiliation->getProject()->getCall()
-                        ->getProgram()
+        $financialContact = $this->affiliationService->getFinancialContact($affiliation);
+
+        $versionContributionInformation = $this->versionService
+            ->getProjectVersionContributionInformation($affiliation, $latestVersion);
+
+        $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
+
+        //Create a default currency
+        $currency = new Currency();
+        $currency->setName('EUR');
+        $currency->setSymbol('&euro;');
+
+        $exchangeRate = new ExchangeRate();
+        $exchangeRate->setRate(1);
+
+        if (null !== $contractVersion && $useContractData) {
+            $currency = $contractVersion->getContract()->getCurrency();
+        }
+
+        $contractContributionInformation = null;
+        if (null !== $contractVersion) {
+            $contractContributionInformation = $this->contractService->getContractVersionContributionInformation(
+                $affiliation,
+                $contractVersion
+            );
+        }
+
+        $invoiceMethod = $this->affiliationService->parseInvoiceMethod(
+            $affiliation,
+            $useContractData
         );
 
-        /** @var \TCPDF $pdf */
         $pdf = new AffiliationPdf();
-        $pdf->setTemplate($this->getModuleOptions()->getPaymentSheetTemplate());
+        $pdf->setTemplate($this->moduleOptions->getPaymentSheetTemplate());
         $pdf->AddPage();
         $pdf->SetFontSize(9);
         $pdf->SetTopMargin(55);
@@ -58,7 +154,7 @@ class RenderPaymentSheet extends AbstractPlugin
             '',
             '',
             '<h1 style="color: #00a651">' . sprintf(
-                $this->translate("txt-payment-sheet-year-%s-period-%s"),
+                $this->translator->translate('txt-payment-sheet-year-%s-period-%s'),
                 $year,
                 $period
             ) . '</h1>',
@@ -79,7 +175,7 @@ class RenderPaymentSheet extends AbstractPlugin
             0,
             '',
             '',
-            sprintf("<h3>%s</h3>", $this->translate("txt-project-details")),
+            sprintf('<h3>%s</h3>', $this->translator->translate('txt-project-details')),
             0,
             1,
             0,
@@ -90,32 +186,32 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $projectDetails = [
             [
-                $this->translate("txt-project-number"),
+                $this->translator->translate('txt-project-number'),
                 $project->getNumber(),
             ],
             [
-                $this->translate("txt-project-name"),
+                $this->translator->translate('txt-project-name'),
                 $project->getProject(),
             ],
             [
-                $this->translate("txt-start-date"),
-                $this->getProjectService()->parseOfficialDateStart($project)->format('d-m-Y'),
+                $this->translator->translate('txt-start-date'),
+                $this->projectService->parseOfficialDateStart($project)->format('d-m-Y'),
             ],
             [
-                $this->translate("txt-start-end"),
-                $this->getProjectService()->parseOfficialDateEnd($project)->format('d-m-Y'),
+                $this->translator->translate('txt-start-end'),
+                $this->projectService->parseOfficialDateEnd($project)->format('d-m-Y'),
             ],
             [
-                $this->translate("txt-version-name"),
+                $this->translator->translate('txt-version-name'),
                 $latestVersion->getVersionType(),
             ],
             [
-                $this->translate("txt-version-status"),
-                $this->getVersionService()->parseStatus($latestVersion),
+                $this->translator->translate('txt-version-status'),
+                $this->versionService->parseStatus($latestVersion),
             ],
             [
-                $this->translate("txt-version-date"),
-                ! is_null($latestVersion->getDateReviewed()) ? $latestVersion->getDateReviewed()->format("d-m-Y")
+                $this->translator->translate('txt-version-date'),
+                null !== $latestVersion->getDateReviewed() ? $latestVersion->getDateReviewed()->format('d-m-Y')
                     : '',
             ],
         ];
@@ -129,7 +225,7 @@ class RenderPaymentSheet extends AbstractPlugin
             0,
             '',
             '',
-            sprintf("<h3>%s</h3>", $this->translate("txt-project-partner")),
+            sprintf('<h3>%s</h3>', $this->translator->translate('txt-project-partner')),
             0,
             1,
             0,
@@ -140,33 +236,21 @@ class RenderPaymentSheet extends AbstractPlugin
 
         $partnersDetails = [
             [
-                $this->translate("txt-organisation"),
+                $this->translator->translate('txt-organisation'),
                 $affiliation->getOrganisation(),
             ],
             [
-                $this->translate("txt-organisation-type"),
+                $this->translator->translate('txt-organisation-type'),
                 $affiliation->getOrganisation()->getType(),
             ],
             [
-                $this->translate("txt-country"),
+                $this->translator->translate('txt-country'),
                 $affiliation->getOrganisation()->getCountry(),
             ],
             [
-                $this->translate("txt-total-person-years"),
+                $this->translator->translate('txt-total-person-years'),
                 $this->parseEffort($versionContributionInformation->totalEffort),
-            ],
-            [
-                $this->translate("txt-total-costs"),
-                $this->parseKiloCost($versionContributionInformation->totalCost),
-            ],
-            [
-                $this->translate("txt-average-cost"),
-                ($versionContributionInformation->totalEffort > 0
-                    ? $this->parseKiloCost(
-                        $versionContributionInformation->totalCost
-                        / $versionContributionInformation->totalEffort
-                    ) : '-') . '/PY',
-            ],
+            ]
         ];
 
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
@@ -177,7 +261,7 @@ class RenderPaymentSheet extends AbstractPlugin
             0,
             '',
             '',
-            sprintf("<h3>%s</h3>", $this->translate("txt-technical-contact")),
+            sprintf('<h3>%s</h3>', $this->translator->translate('txt-technical-contact')),
             0,
             1,
             0,
@@ -187,11 +271,11 @@ class RenderPaymentSheet extends AbstractPlugin
         );
         $partnersDetails = [
             [
-                $this->translate("txt-name"),
-                trim($this->getContactService()->parseAttention($contact) . ' ' . $contact->parseFullName()),
+                $this->translator->translate('txt-name'),
+                \trim($this->contactService->parseAttention($contact) . ' ' . $contact->parseFullName()),
             ],
             [
-                $this->translate("txt-email"),
+                $this->translator->translate('txt-email'),
                 $contact->getEmail(),
             ],
         ];
@@ -199,14 +283,14 @@ class RenderPaymentSheet extends AbstractPlugin
         $pdf->coloredTable([], $partnersDetails, [55, 130]);
 
 
-        if (! is_null($financialContact)) {
+        if (null !== $financialContact) {
             //Financial contact
             $pdf->writeHTMLCell(
                 0,
                 0,
                 '',
                 '',
-                sprintf("<h3>%s</h3>", $this->translate("txt-financial-contact")),
+                \sprintf('<h3>%s</h3>', $this->translator->translate('txt-financial-contact')),
                 0,
                 1,
                 0,
@@ -215,53 +299,58 @@ class RenderPaymentSheet extends AbstractPlugin
                 true
             );
 
+            $preferredDelivery = 'No billing organisation known';
 
-            $financialAddress = $this->getContactService()->getFinancialAddress($financialContact);
+            if (null !== $affiliation->getFinancial() && null !== $affiliation->getFinancial()->getOrganisation()->getFinancial()) {
+                $preferredDelivery = $this->translator->translate('txt-by-postal-mail');
+
+                if ($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail() === Financial::EMAIL_DELIVERY) {
+                    $preferredDelivery = \sprintf(
+                        $this->translator->translate('txt-by-email-to-%s'),
+                        $financialContact->getEmail()
+                    );
+                }
+            }
+
+            $financialAddress = $this->contactService->getFinancialAddress($financialContact);
             $financialDetails = [
                 [
-                    $this->translate("txt-name"),
-                    trim(
-                        $this->getContactService()->parseAttention($financialContact) . ' '
+                    $this->translator->translate('txt-name'),
+                    \trim(
+                        $this->contactService->parseAttention($financialContact) . ' '
                         . $financialContact->parseFullName()
                     ),
                 ],
                 [
-                    $this->translate("txt-email"),
+                    $this->translator->translate('txt-email'),
                     $financialContact->getEmail(),
                 ],
                 [
-                    $this->translate("txt-vat-number"),
-                    $this->getAffiliationService()->parseVatNumber($affiliation),
+                    $this->translator->translate('txt-vat-number'),
+                    $this->affiliationService->parseVatNumber($affiliation),
                 ],
                 [
-                    $this->translate("txt-billing-address"),
-                    ! is_null($financialAddress) ? sprintf(
-                        "%s \n %s\n%s\n%s %s\n%s",
-                        $this->getOrganisationService()->parseOrganisationWithBranch(
+                    $this->translator->translate('txt-billing-address'),
+                    null !== $financialAddress ? sprintf(
+                        '%s \n %s\n%s\n%s %s\n%s',
+                        $this->organisationService->parseOrganisationWithBranch(
                             $affiliation->getFinancial()
-                                        ->getBranch(),
+                                ->getBranch(),
                             $affiliation->getFinancial()->getOrganisation()
                         ),
-                        trim(
-                            $this->getContactService()->parseAttention($financialContact) . ' '
+                        \trim(
+                            $this->contactService->parseAttention($financialContact) . ' '
                             . $financialContact->parseFullName()
                         ),
                         $financialAddress->getAddress(),
                         $financialAddress->getZipCode(),
                         $financialAddress->getCity(),
-                        strtoupper($financialAddress->getCountry())
-                    ) : "No billing address could be found",
+                        \strtoupper($financialAddress->getCountry()->getCountry())
+                    ) : 'No billing address could be found',
                 ],
                 [
-                    $this->translate("txt-preferred-delivery"),
-                    is_null($affiliation->getFinancial())
-                    || is_null($affiliation->getFinancial()->getOrganisation()->getFinancial())
-                        ? 'No billing organisation known'
-                        : (($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
-                            === Financial::EMAIL_DELIVERY) ? sprintf(
-                                $this->translate("txt-by-email-to-%s"),
-                                $financialContact->getEmail()
-                            ) : $this->translate("txt-by-postal-mail")),
+                    $this->translator->translate('txt-preferred-delivery'),
+                   $preferredDelivery
 
                 ],
             ];
@@ -276,7 +365,7 @@ class RenderPaymentSheet extends AbstractPlugin
             0,
             '',
             '',
-            '<h3>' . $this->translate("txt-contribution-overview") . '</h3>',
+            '<h3>' . $this->translator->translate('txt-contribution-overview') . '</h3>',
             0,
             1,
             0,
@@ -286,313 +375,500 @@ class RenderPaymentSheet extends AbstractPlugin
         );
         $pdf->Ln();
 
-
-        //Funding information
-        $header = [
-            $this->translate("txt-period"),
-            $this->translate("txt-funding-status"),
-            $this->translate("txt-costs"),
-            $this->translate("txt-fee-percentage"),
-            $this->translate("txt-contribution"),
-            $this->translate("txt-due"),
-            $this->translate("txt-amount-due"),
-
-        ];
+        switch ($invoiceMethod) {
+            case Method::METHOD_PERCENTAGE_CONTRACT:
+                //Funding information
+                $header = [
+                    $this->translator->translate('txt-period'),
+                    $this->translator->translate('txt-funding-status'),
+                    $this->translator->translate('txt-costs-local-currency'),
+                    $this->translator->translate('txt-fee-percentage'),
+                    $this->translator->translate('txt-contribution'),
+                    $this->translator->translate('txt-amount-invoiced'),
+                ];
+                break;
+            default:
+                $header = [
+                    $this->translator->translate('txt-period'),
+                    $this->translator->translate('txt-funding-status'),
+                    $this->translator->translate('txt-costs'),
+                    $this->translator->translate('txt-fee-percentage'),
+                    $this->translator->translate('txt-contribution'),
+                    $this->translator->translate('txt-due'),
+                    $this->translator->translate('txt-amount-due'),
+                ];
+                break;
+        }
 
         $fundingDetails = [];
 
         $totalDueBasedOnProjectData = 0;
-        foreach ($this->getProjectService()->parseYearRange($project, false, $affiliation) as $projectYear) {
-            $dueFactor = $this->getAffiliationService()
-                              ->parseContributionFactorDue($affiliation, $projectYear, $year, $period);
+        foreach ($this->projectService->parseYearRange($project) as $projectYear) {
+            $dueFactor = $this->affiliationService
+                ->parseContributionFactorDue($affiliation, $projectYear, $year, $period);
 
             $yearData = [];
 
             $yearData[] = $projectYear;
 
-            if ($this->getAffiliationService()->isSelfFunded($affiliation)) {
-                $yearData[] = $this->translate("txt-self-funded");
-            } elseif (! is_null($this->getAffiliationService()->getFundingInYear($affiliation, $projectYear))) {
-                $yearData[] = $this->getAffiliationService()->getFundingInYear($affiliation, $projectYear)->getStatus()
-                                   ->getStatusFunding();
+            if ($this->affiliationService->isSelfFunded($affiliation)) {
+                $yearData[] = $this->translator->translate('txt-self-funded');
+            } elseif (null !== $this->affiliationService->getFundingInYear($affiliation, $projectYear)) {
+                $yearData[] = $this->affiliationService->getFundingInYear($affiliation, $projectYear)->getStatus()
+                    ->getStatusFunding();
             } else {
-                $yearData[] = "-";
+                $yearData[] = '-';
             }
 
-            if ($invoiceMethod->getId() === Method::METHOD_PERCENTAGE) {
-                if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
-                    $dueInYear  = $versionContributionInformation->cost[$projectYear] / 100 * $this->getProjectService()
-                                                                                                   ->findProjectFeeByYear($projectYear)
-                                                                                                   ->getPercentage();
-                    $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
-                } else {
-                    $dueInYear  = 0;
-                    $yearData[] = $this->parseCost(0);
-                }
+            $dueInYear = 0;
 
-                if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
-                    $yearData[] = $this->parsePercent(
-                        $this->getProjectService()->findProjectFeeByYear($projectYear)
-                             ->getPercentage()
-                    );
-                } else {
-                    $yearData[] = $this->parsePercent(0);
-                }
-            } else {
-                if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
-                    $dueInYear  = $versionContributionInformation->effort[$projectYear] * $this->getProjectService()
-                                                                                               ->findProjectFeeByYear($projectYear)
-                                                                                               ->getContribution();
-                    $yearData[] = $this->parseEffort($versionContributionInformation->effort[$projectYear]);
-                } else {
-                    $dueInYear  = 0;
-                    $yearData[] = 0;
-                }
+            switch ($invoiceMethod) {
+                case Method::METHOD_PERCENTAGE:
+                    if (\array_key_exists($projectYear, $versionContributionInformation->cost)) {
+                        $dueInYear = $versionContributionInformation->cost[$projectYear] / 100
+                            * $this->projectService
+                                ->findProjectFeeByYear($projectYear)
+                                ->getPercentage();
+                        $yearData[] = $this->parseCost($versionContributionInformation->cost[$projectYear]);
+                    } else {
+                        $yearData[] = $this->parseCost(0);
+                    }
 
-                if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
-                    $yearData[] = $this->parseCost(
-                        $this->getProjectService()->findProjectFeeByYear($projectYear)
-                             ->getContribution()
-                    );
-                } else {
-                    $yearData[] = $this->parseCost(0);
-                }
+                    if ($this->affiliationService->isFundedInYear($affiliation, $projectYear)) {
+                        $yearData[] = $this->parsePercent(
+                            $this->projectService->findProjectFeeByYear($projectYear)
+                                ->getPercentage()
+                        );
+                    } else {
+                        $yearData[] = $this->parsePercent(0);
+                    }
+
+                    if ($this->affiliationService->isFundedInYear($affiliation, $projectYear)) {
+                        $yearData[] = $this->parseCost($dueInYear);
+                    } else {
+                        $yearData[] = $this->parseCost(0);
+                    }
+
+                    $yearData[] = $this->parsePercent($dueFactor * 100, 0);
+                    $yearData[] = $this->parseCost($dueInYear * $dueFactor);
+
+                    break;
+
+                case Method::METHOD_PERCENTAGE_CONTRACT:
+                    // when we have no exchange rate, add a message that the exchange rate has been fixed to one
+
+                    //Check first if we have info in this year
+                    if (\array_key_exists($projectYear, $contractContributionInformation->cost)) {
+                        $dueInYear = $contractContributionInformation->cost[$projectYear] / 100
+                            * $this->projectService->findProjectFeeByYear($projectYear)->getPercentage();
+
+
+                        $yearData[] = $this->parseCost($contractContributionInformation->cost[$projectYear], $currency);
+
+                        if ($this->affiliationService->isFundedInYear($affiliation, $projectYear)) {
+                            $yearData[] = $this->parsePercent(
+                                $this->projectService->findProjectFeeByYear($projectYear)->getPercentage()
+                            );
+                            $yearData[] = $this->parseCost($dueInYear, $currency);
+                        } else {
+                            $yearData[] = $this->parsePercent(0);
+                            $yearData[] = $this->parseCost(0);
+                        }
+
+                        if ($projectYear <= $year) {
+                            $yearData[] = $this->parseCost(
+                                $this->affiliationService->parseAmountInvoicedInYearByAffiliation(
+                                    $affiliation,
+                                    $projectYear
+                                )
+                            );
+                        } else {
+                            $yearData[] = null;
+                        }
+                    } else {
+                        $yearData[] = null;
+                    }
+
+                    break;
+
+                case Method::METHOD_CONTRIBUTION:
+                    if (array_key_exists($projectYear, $versionContributionInformation->cost)) {
+                        $dueInYear = $versionContributionInformation->effort[$projectYear] * $this->projectService
+                                ->findProjectFeeByYear($projectYear)
+                                ->getContribution();
+                        $yearData[] = $this->parseEffort($versionContributionInformation->effort[$projectYear]);
+                    } else {
+                        $yearData[] = 0;
+                    }
+
+                    if ($this->affiliationService->isFundedInYear($affiliation, $projectYear)) {
+                        $yearData[] = $this->parseCost(
+                            $this->projectService->findProjectFeeByYear($projectYear)->getContribution()
+                        );
+                    } else {
+                        $yearData[] = $this->parseCost(0);
+                    }
+
+
+                    if ($this->affiliationService->isFundedInYear($affiliation, $projectYear)) {
+                        $yearData[] = $this->parseCost($dueInYear);
+                    } else {
+                        $yearData[] = $this->parseCost(0);
+                    }
+
+                    $yearData[] = $this->parsePercent($dueFactor * 100, 0);
+                    $yearData[] = $this->parseCost($dueInYear * $dueFactor);
+
+                    break;
             }
 
-            if ($this->getAffiliationService()->isFundedInYear($affiliation, $projectYear)) {
-                $yearData[] = $this->parseCost($dueInYear);
-            } else {
-                $yearData[] = $this->parseCost(0);
-            }
-
-            $yearData[] = $this->parsePercent($dueFactor * 100);
-            $yearData[] = $this->parseCost($dueInYear * $dueFactor);
 
             $totalDueBasedOnProjectData += $dueInYear * $dueFactor;
 
             $fundingDetails[] = $yearData;
         }
 
-        //Add the total column
-        $totalColumn = [
-            '',
-            '',
-            '',
-            '',
-            '',
-            $this->translate("txt-total"),
-            $this->parseCost($totalDueBasedOnProjectData),
-        ];
+        switch ($invoiceMethod) {
+            case Method::METHOD_PERCENTAGE_CONTRACT:
+                //Funding information
+                $header = [
+                    $this->translator->translate('txt-period'),
+                    $this->translator->translate('txt-funding-status'),
+                    $this->translator->translate('txt-costs-local-currency'),
+                    $this->translator->translate('txt-fee-percentage'),
+                    $this->translator->translate('txt-contribution'),
+                    $this->translator->translate('txt-amount-invoiced'),
+                ];
 
-        $fundingDetails[] = $totalColumn;
+                $pdf->coloredTable($header, $fundingDetails, [20, 35, 40, 30, 30, 30], false);
+                break;
+            default:
+                //Add the total column
+                $totalColumn = [
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    $this->translator->translate('txt-total'),
+                    $this->parseCost($totalDueBasedOnProjectData),
+                ];
+
+                $fundingDetails[] = $totalColumn;
+
+                $pdf->coloredTable($header, $fundingDetails, [20, 30, 30, 30, 30, 15, 30], true);
+                break;
+        }
 
 
-        $pdf->coloredTable($header, $fundingDetails, [15, 25, 35, 25, 25, 25, 35], true);
-
-        $contributionDue  = $this->getAffiliationService()
-                                 ->parseContributionDue($affiliation, $latestVersion, $year, $period);
-        $contributionPaid = $this->getAffiliationService()->parseContributionPaid($affiliation, $year, $period);
-
-        $balance      = $this->getAffiliationService()->parseBalance($affiliation, $latestVersion, $year, $period);
-        $total        = $this->getAffiliationService()->parseTotal($affiliation, $latestVersion, $year, $period);
-        $contribution = $this->getAffiliationService()->parseContribution($affiliation, $latestVersion, $year, $period);
-
-
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h3>' . sprintf($this->translate("txt-already-sent-invoices-upto-year-%s-period-%s"), $year, $period)
-            . '</h3>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
+        $contributionDue = $this->affiliationService->parseContributionDue(
+            $affiliation,
+            $latestVersion,
+            $year,
+            $period
         );
-        $pdf->Ln();
-
-
-        //Funding information
-        $header = [
-            $this->translate("txt-invoice"),
-            $this->translate("txt-period"),
-            $this->translate("txt-date"),
-            $this->translate("txt-contribution"),
-            $this->translate("txt-paid"),
-            $this->translate("txt-invoiced"),
-        ];
-
+        $contributionPaid = $this->affiliationService->parseContributionPaid($affiliation, $year, $period);
 
         //Old Invoices
         $previousInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if (! is_null($affiliationInvoice->getInvoice()->getDayBookNumber())
-                 && ($affiliationInvoice->getYear() < $year
-                     || ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() < $period))
+            if (null !== $affiliationInvoice->getInvoice()->getDayBookNumber()
+                && ($affiliationInvoice->getYear() < $year
+                    || ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() < $period))
             ) {
                 $previousInvoices[] = $affiliationInvoice;
             }
         }
 
-        $currentInvoiceDetails = [];
+        if (\count($previousInvoices) > 0) {
+            $pdf->writeHTMLCell(
+                0,
+                0,
+                '',
+                '',
+                '<h3>' . sprintf($this->translator->translate('txt-already-sent-invoices-upto-year-%s-period-%s'), $year, $period)
+                . '</h3>',
+                0,
+                1,
+                0,
+                true,
+                '',
+                true
+            );
+            $pdf->Ln();
 
-        if (count($previousInvoices) === 0) {
-            $currentInvoiceDetails[] = [
-                $this->translate("txt-no-invoices-found"),
+
+            //Old Invoices
+            $header = [
+                $this->translator->translate('txt-invoice'),
+                $this->translator->translate('txt-period'),
+                $this->translator->translate('txt-date'),
+                $this->translator->translate('txt-contribution'),
+                $this->translator->translate('txt-paid'),
+                $this->translator->translate('txt-invoiced'),
             ];
-        } else {
+
+            $currentInvoiceDetails = [];
+
             /**
              * @var $affiliationInvoice AffiliationInvoice
              */
             foreach ($previousInvoices as $affiliationInvoice) {
                 $currentInvoiceDetails[] = [
                     $affiliationInvoice->getInvoice()->getInvoiceNr(),
-                    sprintf("%s-%s", $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
+                    sprintf('%s-%s', $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
-                    $this->parseCost($this->getInvoiceService()->parseSumAmount($affiliationInvoice->getInvoice())),
-                    (! is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
-                                                                                                         ->getBookingDate()
-                                                                                                         ->format('d-m-Y')
-                        : ''),
-                    $this->parseCost($this->getInvoiceService()->parseTotal($affiliationInvoice->getInvoice())),
+                    $this->parseCost($this->invoiceService->parseSumAmount($affiliationInvoice->getInvoice())),
+                    null !== $affiliationInvoice->getInvoice()->getBookingDate() ? $affiliationInvoice->getInvoice()
+                        ->getBookingDate()
+                        ->format('d-m-Y')
+                        : '',
+                    $this->parseCost($this->invoiceService->parseTotal($affiliationInvoice->getInvoice())),
                 ];
             }
+
+            if ($invoiceMethod !== Method::METHOD_PERCENTAGE_CONTRACT) {
+                //Add the total column
+                $currentInvoiceDetails[] = [
+                    '',
+                    '',
+                    $this->translator->translate('txt-total'),
+                    $this->parseCost($contributionPaid),
+                    '',
+                    '',
+                ];
+            }
+
+            $pdf->coloredTable(
+                $header,
+                $currentInvoiceDetails,
+                [40, 35, 25, 25, 25, 35],
+                $invoiceMethod !== Method::METHOD_PERCENTAGE_CONTRACT
+            );
         }
 
-        //Add the total column
-        $currentInvoiceDetails[] = [
-            '',
-            '',
-            $this->translate("txt-total"),
-            $this->parseCost($contributionPaid),
-            '',
-            '',
-        ];
+        switch ($invoiceMethod) {
+            case Method::METHOD_PERCENTAGE_CONTRACT:
+                $pdf->writeHTMLCell(
+                    0,
+                    0,
+                    '',
+                    '',
+                    '<h3>' . sprintf($this->translator->translate('txt-invoice-for-year-%s-period-%s'), $year, $period) . '</h3>',
+                    0,
+                    1,
+                    0,
+                    true,
+                    '',
+                    true
+                );
+                $pdf->Ln();
 
-        $pdf->coloredTable($header, $currentInvoiceDetails, [40, 35, 25, 25, 25, 35], true);
-
-
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h3>' . $this->translate("txt-correction-calculation") . '</h3>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
+                $header = [
+                    $this->translator->translate('txt-period'),
+                    $this->translator->translate('txt-information'),
+                    $this->translator->translate('txt-amount'),
+                ];
 
 
-        $correctionDetails = [
-            [
-                sprintf($this->translate("txt-total-contribution-invoiced-upto-year-%s-period-%s"), $year, $period),
-                $this->parseCost($contributionPaid),
-            ],
-            [
-                sprintf($this->translate("txt-total-contribution-amount-due-upto-year-%s-period-%s"), $year, $period),
-                $this->parseCost($contributionDue),
-            ],
-            [
-                $this->translate("txt-correction"),
-                $this->parseCost($balance),
-            ],
-        ];
+                $upcomingDetails = [];
+                foreach ($this->affiliationService->findInvoiceLines(
+                    $affiliation,
+                    $contractVersion,
+                    $year,
+                    $period,
+                    true
+                ) as $invoiceLine) {
+                    $upcomingDetails[] = [
+                        $invoiceLine->periodOrdinal,
+                        $invoiceLine->description,
+                        $this->parseCost($invoiceLine->lineTotal) . ($invoiceLine->lineTotal < -0.1 ? ' '
+                            . $this->translator->translate('txt-credit') : ''),
 
-        $pdf->coloredTable([], $correctionDetails, [95, 85], true);
+                    ];
+                }
+
+                $total = $this->affiliationService->parseTotalByInvoiceLines(
+                    $affiliation,
+                    $contractVersion,
+                    $year,
+                    $period,
+                    true
+                );
+
+                if (\count($upcomingDetails) > 0) {
+                    $upcomingDetails[] = [
+                        '',
+                        $this->translator->translate('txt-total'),
+                        $this->parseCost($total) . ($total < -0.1 ? ' ' . $this->translator->translate('txt-credit') : '')
+
+                    ];
+
+                    $pdf->coloredTable($header, $upcomingDetails, [20, 120, 45], true, 6);
+
+                    $pdf->Ln();
+
+                    $pdf->writeHTMLCell(
+                        0,
+                        0,
+                        '',
+                        '',
+                        $this->invoiceService->parseExchangeRateLine(null, $currency, $year),
+                        0,
+                        0,
+                        0
+                    );
+                }
 
 
-        $pdf->writeHTMLCell(
-            0,
-            0,
-            '',
-            '',
-            '<h3>' . sprintf($this->translate("txt-invoice-for-year-%s-period-%s"), $year, $period) . '</h3>',
-            0,
-            1,
-            0,
-            true,
-            '',
-            true
-        );
-        $pdf->Ln();
+                break;
+            default:
+                $pdf->writeHTMLCell(
+                    0,
+                    0,
+                    '',
+                    '',
+                    '<h3>' . $this->translator->translate('txt-correction-calculation') . '</h3>',
+                    0,
+                    1,
+                    0,
+                    true,
+                    '',
+                    true
+                );
 
-        //Partner information
+                $balance = $this->affiliationService->parseBalance(
+                    $affiliation,
+                    $latestVersion,
+                    $year,
+                    $period
+                );
+                $total = $this->affiliationService->parseTotal($affiliation, $latestVersion, $year, $period);
+                $contribution = $this->affiliationService->parseContribution(
+                    $affiliation,
+                    $latestVersion,
+                    null,
+                    $year,
+                    $period,
+                    false
+                );
+
+
+                $correctionDetails = [
+                    [
+                        sprintf(
+                            $this->translator->translate('txt-total-contribution-invoiced-upto-year-%s-period-%s'),
+                            $year,
+                            $period
+                        ),
+                        $this->parseCost($contributionPaid),
+                    ],
+                    [
+                        sprintf(
+                            $this->translator->translate('txt-total-contribution-amount-due-upto-year-%s-period-%s'),
+                            $year,
+                            $period
+                        ),
+                        $this->parseCost($contributionDue),
+                    ],
+                    [
+                        $this->translator->translate('txt-correction'),
+                        $this->parseCost($balance),
+                    ],
+                ];
+
+                $pdf->coloredTable([], $correctionDetails, [100, 85], true);
+
+
+                $pdf->writeHTMLCell(
+                    0,
+                    0,
+                    '',
+                    '',
+                    '<h3>' . sprintf($this->translator->translate('txt-invoice-for-year-%s-period-%s'), $year, $period) . '</h3>',
+                    0,
+                    1,
+                    0,
+                    true,
+                    '',
+                    true
+                );
+                $pdf->Ln();
+
+                //Partner information
+                $header = [
+                    $this->translator->translate('txt-period'),
+                    $this->translator->translate('txt-contribution'),
+                    $this->translator->translate('txt-amount'),
+
+                ];
+
+                $upcomingDetails = [
+                    [
+                        sprintf('%s-%s', $year, $period),
+                        sprintf(
+                            $this->translator->translate('txt-%s-contribution-for-%s'),
+                            $this->parsePercent(
+                                $this->affiliationService
+                                    ->parseContributionFactor($affiliation, $year, $period) * 100,
+                                0
+                            ),
+                            $year
+                        ),
+                        $this->parseCost($contribution),
+                    ],
+                    [
+                        '',
+                        $this->translator->translate('txt-correction'),
+                        $this->parseCost($balance),
+                    ],
+                    [
+                        '',
+                        $this->translator->translate('txt-total'),
+                        $this->parseCost($total),
+                    ],
+                ];
+
+                $pdf->coloredTable($header, $upcomingDetails, [25, 70, 90], true);
+
+                break;
+        }
+
+
+        //$already sent invoices
         $header = [
-            $this->translate("txt-period"),
-            $this->translate("txt-contribution"),
-            $this->translate("txt-amount"),
-
-        ];
-
-        $upcomingDetails = [
-            [
-                sprintf("%s-%s", $year, $period),
-                sprintf(
-                    $this->translate("txt-%s-contribution-for-%s"),
-                    $this->parsePercent(
-                        $this->getAffiliationService()
-                             ->parseContributionFactor($affiliation, $year, $period) * 100
-                    ),
-                    $year
-                ),
-                $this->parseCost($contribution),
-            ],
-            [
-                '',
-                $this->translate("txt-correction"),
-                $this->parseCost($balance),
-            ],
-            [
-                '',
-                $this->translate("txt-total"),
-                $this->parseCost($total),
-            ],
-        ];
-
-        $pdf->coloredTable($header, $upcomingDetails, [25, 70, 85], true);
-
-
-        //Funding information
-        $header = [
-            $this->translate("txt-invoice-number"),
-            $this->translate("txt-period"),
-            $this->translate("txt-date"),
-            $this->translate("txt-paid"),
-            $this->translate("txt-total-excl-vat"),
-            $this->translate("txt-total"),
+            $this->translator->translate('txt-invoice-number'),
+            $this->translator->translate('txt-period'),
+            $this->translator->translate('txt-date'),
+            $this->translator->translate('txt-paid'),
+            $this->translator->translate('txt-total-excl-vat'),
+            $this->translator->translate('txt-total'),
         ];
 
 
         //Old Invoices
-        $upcomingInvoices = [];
+        $alreadySentInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
             if ($affiliationInvoice->getYear() > $year
                 || ($affiliationInvoice->getYear() === $year
                     && $affiliationInvoice->getPeriod() > $period)
             ) {
-                if (! is_null($affiliationInvoice->getInvoice()->getDateSent())) {
-                    $upcomingInvoices[] = $affiliationInvoice;
+                if (null !== $affiliationInvoice->getInvoice()->getDateSent()) {
+                    $alreadySentInvoices[] = $affiliationInvoice;
                 }
             }
         }
 
-        $upcomingInvoiceDetails = [];
+        $alreadySentInvoiceDetails = [];
 
-        if (count($upcomingInvoices) > 0) {
+        if (\count($alreadySentInvoices) > 0) {
             $pdf->writeHTMLCell(
                 0,
                 0,
                 '',
                 '',
                 '<h3>' . sprintf(
-                    $this->translate("txt-already-sent-invoices-after-year-%s-period-%s") . '</h3>',
+                    $this->translator->translate('txt-already-sent-invoices-after-year-%s-period-%s') . '</h3>',
                     $year,
                     $period
                 ),
@@ -608,64 +884,54 @@ class RenderPaymentSheet extends AbstractPlugin
             /**
              * @var $affiliationInvoice AffiliationInvoice
              */
-            foreach ($upcomingInvoices as $affiliationInvoice) {
-                $upcomingInvoiceDetails[] = [
+            foreach ($alreadySentInvoices as $affiliationInvoice) {
+                $alreadySentInvoiceDetails[] = [
                     $affiliationInvoice->getInvoice()->getInvoiceNr(),
-                    sprintf("%s-%s", $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
+                    sprintf('%s-%s', $affiliationInvoice->getYear(), $affiliationInvoice->getPeriod()),
                     $affiliationInvoice->getInvoice()->getDateSent()->format('d-m-Y'),
-                    (! is_null($affiliationInvoice->getInvoice()->getBookingDate()) ? $affiliationInvoice->getInvoice()
-                                                                                                         ->getBookingDate()
-                                                                                                         ->format('d-m-Y')
-                        : ''),
-                    $this->parseCost($this->getInvoiceService()->parseSumAmount($affiliationInvoice->getInvoice())),
-                    $this->parseCost($this->getInvoiceService()->parseTotal($affiliationInvoice->getInvoice())),
+                    null !== $affiliationInvoice->getInvoice()->getBookingDate() ? $affiliationInvoice->getInvoice()
+                        ->getBookingDate()
+                        ->format('d-m-Y')
+                        : '',
+                    $this->parseCost($this->invoiceService->parseSumAmount($affiliationInvoice->getInvoice())),
+                    $this->parseCost($this->invoiceService->parseTotal($affiliationInvoice->getInvoice())),
                 ];
             }
 
-            $pdf->coloredTable($header, $upcomingInvoiceDetails, [45, 25, 25, 25, 25, 35], true);
+            $pdf->coloredTable($header, $alreadySentInvoiceDetails, [45, 25, 25, 25, 25, 35], true);
         }
 
 
         return $pdf;
     }
 
-    /**
-     * @param $effort
-     *
-     * @return string
-     */
-    public function parseEffort($effort)
+    public function parseEffort($effort): string
     {
-        return sprintf("%s %s", number_format($effort, 2, '.', ','), 'PY');
+        return sprintf('%s %s', number_format($effort, 2, '.', ','), 'PY');
     }
 
-    /**
-     * @param $cost
-     *
-     * @return string
-     */
-    public function parseKiloCost($cost)
+    public function parseCost($cost, Currency $currency = null): string
     {
-        return sprintf("%s kEUR", number_format($cost / 1000, 0, '.', ','));
+        $abbreviation = 'EUR';
+        if (null !== $currency) {
+            $abbreviation = $currency->getIso4217();
+        }
+
+        return sprintf('%s %s', number_format($cost, 2, '.', ','), $abbreviation);
     }
 
-    /**
-     * @param $cost
-     *
-     * @return string
-     */
-    public function parseCost($cost)
+    public function parsePercent($percent, int $decimals = 2): string
     {
-        return sprintf("%s EUR", number_format($cost, 2, '.', ','));
+        return sprintf('%s %s', number_format((float)$percent, $decimals, '.', ','), '%');
     }
 
-    /**
-     * @param $percent
-     *
-     * @return string
-     */
-    public function parsePercent($percent)
+    public function parseKiloCost($cost, Currency $currency = null): string
     {
-        return sprintf("%s %s", number_format($percent, 2, '.', ','), "%");
+        $abbreviation = 'EUR';
+        if (null !== $currency) {
+            $abbreviation = $currency->getIso4217();
+        }
+
+        return sprintf('%s k%s', number_format($cost / 1000, 0, '.', ','), $abbreviation);
     }
 }

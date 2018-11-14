@@ -8,15 +8,16 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Version;
 
 /**
- * Class to store and retrieve the version of Project module.
+ * Class Version
+ *
+ * @package Affiliation\Version
  */
 final class Version
 {
-    /**
-     * Affiliation version identification
-     */
-    const VERSION = '3.0.0';
+    public const VERSION = '4.0.0';
 }

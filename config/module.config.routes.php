@@ -7,6 +7,8 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
+declare(strict_types=1);
+
 namespace Affiliation;
 
 use Affiliation\Controller;
@@ -42,7 +44,7 @@ return [
                             'payment-sheet'     => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].html',
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period][/:contract].html',
                                     'defaults' => [
                                         'action'    => 'payment-sheet',
                                         'privilege' => 'payment-sheet',
@@ -52,7 +54,7 @@ return [
                             'payment-sheet-pdf' => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period].pdf',
+                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period][/:contract].pdf',
                                     'defaults' => [
                                         'action'    => 'payment-sheet-pdf',
                                         'privilege' => 'payment-sheet',
@@ -87,6 +89,26 @@ return [
                                             'defaults' => [
                                                 'action'    => 'add-associate',
                                                 'privilege' => 'add-associate',
+                                            ],
+                                        ],
+                                    ],
+                                    'manage-associate'    => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/manage-associate/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'manage-associate',
+                                                'privilege' => 'manage-associate',
+                                            ],
+                                        ],
+                                    ],
+                                    'cost-and-effort'     => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/cost-and-effort/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'cost-and-effort',
+                                                'privilege' => 'edit-cost-and-effort',
                                             ],
                                         ],
                                     ],
@@ -165,7 +187,7 @@ return [
                                     'download' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/download/[:id].[:ext]',
+                                            'route'    => '/download/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download',
@@ -194,13 +216,13 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'upload'   => [
+                                    'submit'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/upload/affiliation-[:affiliationId].html',
+                                            'route'    => '/submit/affiliation-[:affiliationId].html',
                                             'defaults' => [
-                                                'action'    => 'upload',
-                                                'privilege' => 'upload',
+                                                'action'    => 'submit',
+                                                'privilege' => 'submit',
                                             ],
                                         ],
                                     ],
@@ -217,7 +239,7 @@ return [
                                     'download' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/download/[:id].[:ext]',
+                                            'route'    => '/download/[:id].html',
                                             'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download',

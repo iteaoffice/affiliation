@@ -9,6 +9,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
@@ -23,9 +25,9 @@ class AssociateLink extends LinkAbstract
 {
     /**
      * @param Affiliation $affiliation
-     * @param string      $action
-     * @param string      $show
-     * @param Contact     $contact
+     * @param string $action
+     * @param string $show
+     * @param Contact $contact
      *
      * @return string
      *
@@ -37,7 +39,7 @@ class AssociateLink extends LinkAbstract
         $action = 'view',
         $show = 'name',
         Contact $contact = null
-    ) {
+    ): string {
         $this->setAffiliation($affiliation);
         $this->setAction($action);
         $this->setShow($show);
@@ -51,7 +53,7 @@ class AssociateLink extends LinkAbstract
             ]
         );
 
-        $this->addRouterParam('affiliation', $this->getAffiliation()->getId());
+        $this->addRouterParam('id', $this->getAffiliation()->getId());
         $this->addRouterParam('contact', $this->getContact()->getId());
 
         return $this->createLink();
@@ -62,7 +64,7 @@ class AssociateLink extends LinkAbstract
      *
      * @throws \Exception
      */
-    public function parseAction()
+    public function parseAction(): void
     {
         switch ($this->getAction()) {
             case 'edit':

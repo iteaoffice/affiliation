@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\Common\Collections;
@@ -24,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class Description extends EntityAbstract
+class Description extends AbstractEntity
 {
     /**
      * @ORM\Column(name="description_id", type="integer", nullable=false)
@@ -75,33 +77,22 @@ class Description extends EntityAbstract
         $this->affiliation = new Collections\ArrayCollection();
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * ToString.
-     *
-     * @return string
-     */
-    public function __toString()
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    public function __toString(): string
     {
         return $this->getDescription();
     }
@@ -126,11 +117,6 @@ class Description extends EntityAbstract
         return $this;
     }
 
-    /**
-     * New function needed to make the hydrator happy
-     *
-     * @param Collections\Collection $affiliationCollection
-     */
     public function addAffiliation(Collections\Collection $affiliationCollection)
     {
         foreach ($affiliationCollection as $affiliation) {
@@ -138,11 +124,6 @@ class Description extends EntityAbstract
         }
     }
 
-    /**
-     * New function needed to make the hydrator happy
-     *
-     * @param Collections\Collection $affiliationCollection
-     */
     public function removeAffiliation(Collections\Collection $affiliationCollection)
     {
         foreach ($affiliationCollection as $single) {

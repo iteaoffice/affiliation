@@ -1,6 +1,10 @@
 {% do headTitle().append(translate("txt-payment-sheet-for-affiliation-%s")|format(affiliation)) %}
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
-<h1>{{ translate("txt-payment-sheet-for-affiliation-%s")|format(affiliation) }} {{ affiliationLink(affiliation, 'payment-sheet-pdf','icon',year,period) }}</h1>
+<h1 class="display-4">{{ translate("txt-payment-sheet-for-affiliation-%s")|format(affiliation) }}
 
-{{ paymentSheet(affiliation,year,period) }}
-
+    {% set show = 'payment-sheet-pdf' %}
+    {% if useContractData %}
+        {% set show = 'payment-sheet-pdf-contract' %}
+    {% endif %}
+</h1>
+{{ paymentSheet(affiliation,year,period, useContractData) }}

@@ -8,12 +8,16 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller\Plugin;
+
+use setasign\Fpdi\TcpdfFpdi;
 
 /**
  * Class PDF.
  */
-class AffiliationPdf extends \FPDI
+class AffiliationPdf extends TcpdfFpdi
 {
     /**
      * "Remembers" the template id of the imported page.
@@ -31,8 +35,8 @@ class AffiliationPdf extends \FPDI
      */
     public function header()
     {
-        if (is_null($this->_tplIdx)) {
-            if (! file_exists($this->template)) {
+        if (\is_null($this->_tplIdx)) {
+            if (!file_exists($this->template)) {
                 throw new \InvalidArgumentException(sprintf("Template %s cannot be found", $this->template));
             }
             $this->setSourceFile($this->template);
@@ -47,16 +51,24 @@ class AffiliationPdf extends \FPDI
     /**
      * @param $header
      * @param $data
+     * @param array|null $width
+     * @param bool $lastRow
+     * @param int $height
      */
-    public function coloredTable($header, $data, array $width = null, $lastRow = false)
-    {
+    public function coloredTable(
+        array $header,
+        array $data,
+        array $width = null,
+        bool $lastRow = false,
+        int $height = 6
+    ): void {
         // Colors, line width and bold font
         $this->SetDrawColor(205, 205, 205);
         $this->SetFillColor(255, 255, 255);
         $this->SetLineWidth(0.1);
         $this->SetFont('', 'B');
         // Header
-        if (is_null($width)) {
+        if (null === $width) {
             $w = [40, 35, 40, 45, 40];
         } else {
             $w = $width;
@@ -75,29 +87,49 @@ class AffiliationPdf extends \FPDI
 
         $this->Ln();
 
-
         // Color and font restoration
         $this->SetFillColor(249, 249, 249);
         $this->SetTextColor(0);
         $this->SetFont('');
         // Data
-        $fill       = 0;
+        $fill = true;
         $rowCounter = 1;
+        $rowHeight = 6;
         foreach ($data as $row) {
             $counter = 0;
 
+            //Calculate the row height
             foreach ($row as $column) {
-                if ($lastRow && $rowCounter === (count($data))) {
+                $rowHeight = max($height, substr_count((string)$column, PHP_EOL) * 6);
+            }
+
+            foreach ($row as $column) {
+                if ($lastRow && $rowCounter === \count($data)) {
                     $this->SetFont('', 'B');
                 }
 
-
-                $this->Cell($w[$counter], 6, $column, 'LR', 0, 'L', $fill);
+                $this->MultiCell(
+                    $w[$counter],
+                    $rowHeight,
+                    $column,
+                    'LR',
+                    'L',
+                    $fill,
+                    0,
+                    '',
+                    '',
+                    true,
+                    0,
+                    false,
+                    true,
+                    $rowHeight,
+                    "M"
+                );
                 $counter++;
             }
             $rowCounter++;
             $this->Ln();
-            $fill = ! $fill;
+            $fill = !$fill;
         }
         $this->Cell(array_sum($w), 0, '', 'T');
         $this->Ln();

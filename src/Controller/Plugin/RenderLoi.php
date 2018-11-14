@@ -8,47 +8,67 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Loi;
+use Affiliation\Options\ModuleOptions;
+use Contact\Service\ContactService;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use ZfcTwig\View\TwigRenderer;
 
 /**
  * Class RenderLoi
  *
  * @package Affiliation\Controller\Plugin
  */
-class RenderLoi extends AbstractPlugin
+final class RenderLoi extends AbstractPlugin
 {
-
     /**
-     * @param Loi $loi
-     *
-     * @return AffiliationPdf
+     * @var ModuleOptions
      */
+    private $moduleOptions;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var TwigRenderer
+     */
+    private $renderer;
+
+    public function __construct(ModuleOptions $moduleOptions, ContactService $contactService, TwigRenderer $renderer)
+    {
+        $this->moduleOptions = $moduleOptions;
+        $this->contactService = $contactService;
+        $this->renderer = $renderer;
+    }
+
     public function renderProjectLoi(Loi $loi): AffiliationPdf
     {
         $pdf = new AffiliationPdf();
-        $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
+        $pdf->setTemplate($this->moduleOptions->getDoaTemplate());
         $pdf->AddPage();
         $pdf->SetFontSize(9);
-        $twig = $this->getTwigRenderer();
+
 
         // Write the contact details
         $pdf->SetXY(14, 55);
         $pdf->Write(0, $loi->getContact()->parseFullName());
         $pdf->SetXY(14, 60);
-        $pdf->Write(0, $this->getContactService()->parseOrganisation($loi->getContact()));
+        $pdf->Write(0, $this->contactService->parseOrganisation($loi->getContact()));
 
         // Write the current date
         $pdf->SetXY(77, 55);
-        $pdf->Write(0, date("Y-m-d"));
+        $pdf->Write(0, date('d-m-Y'));
 
         // Write the Reference
         $pdf->SetXY(118, 55);
 
         // Use the NDA object to render the filename
         $pdf->Write(0, $loi->parseFileName());
-        $ndaContent = $twig->render(
+        $ndaContent = $this->renderer->render(
             'affiliation/pdf/loi-project',
             [
                 'contact'      => $loi->getContact(),

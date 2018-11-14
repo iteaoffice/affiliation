@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class LoiReminder extends EntityAbstract
+class LoiReminder extends AbstractEntity
 {
     /**
      * @ORM\Column(name="reminder_id", type="integer", nullable=false)
@@ -75,48 +77,31 @@ class LoiReminder extends EntityAbstract
      */
     private $sender;
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return LoiReminder
-     */
     public function setId($id)
     {
         $this->id = $id;

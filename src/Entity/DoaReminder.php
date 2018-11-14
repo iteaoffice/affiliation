@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class DoaReminder extends EntityAbstract
+class DoaReminder extends AbstractEntity
 {
     /**
      * @ORM\Column(name="reminder_id", type="integer", nullable=false)
@@ -49,74 +51,51 @@ class DoaReminder extends EntityAbstract
     private $dateCreated;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="doaReminder")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="doaReminderReceiver")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="receiver_id", referencedColumnName="contact_id", nullable=true)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $receiver;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="doaReminderSender")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="sender_id", referencedColumnName="contact_id", nullable=true)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $sender;
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return DoaReminder
-     */
     public function setId($id)
     {
         $this->id = $id;

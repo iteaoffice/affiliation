@@ -1,0 +1,120 @@
+
+{% do headTitle().append(translate(affiliation.project.parseFullname())) %}
+{% do headTitle().append(translate("txt-upload-loi-title")) %}
+
+<h1 class="display-4">{{ translate("txt-submit-letter-of-intent-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
+
+{% if not loi %}
+
+    <p>You can agree with the Letter of Intent (LOI), also on behalf of your organisation, in two different ways:</p>
+
+    <ul>
+        <li>Sign the paper version and upload it below</li>
+        <li>Sign the digital version by ticking the checkbox below</li>
+    </ul>
+
+    {% do form.prepare() %}
+    {{ form().openTag(form)|raw }}
+
+    <fieldset>
+        <legend>{{ translate("txt-loi-sign-digital-version") }}</legend>
+
+        <div class="form-group row">
+            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+                <p>{{ translate("txt-please-read-the-text-below-before-signing-the-loi") }}</p>
+                <div style="background-color: #f8f8f8; padding: 10px;">
+                    <strong>{{ affiliation.organisation }}</strong>, partner in the project <strong>{{ affiliation.project }}</strong>, intends to participate in this project, should it be accepted by the ITEA Board.
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group {% if form.get('selfApprove').getMessages() %}has-error{% endif %}">
+            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+                <div class="checkbox">
+                    <label>
+                        {{ formelement(form.get('selfApprove')) }} {{ translate("txt-self-approve-loi-checkbox-help-text") }}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+                {{ formelement(form.get('approve')) }}
+            </div>
+        </div>
+    </fieldset>
+
+    <hr>
+
+    <fieldset>
+        <legend>{{ translate("txt-sign-and-upload-paper-version") }}</legend>
+
+        <div class="form-group row">
+            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project") }}</label>
+
+            <div class="col-sm-9">
+                <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community','name') }}
+                    ({{ affiliation.project.call.program }})</p>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-organisation") }}</label>
+
+            <div class="col-sm-9">
+                <p class="form-control-static form-control-plaintext">{{ affiliation.organisation }}</p>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-download-loi") }}</label>
+
+            <div class="col-sm-9">
+                <p class="form-control-static form-control-plaintext">{{ translate("txt-download-loi-link-text") }}</p>
+            </div>
+        </div>
+
+        {{ ztbformelement(form.get('file')) }}
+
+        <div class="form-group row">
+            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+                {{ ztbformelement(form.get('submit')) }}
+                {{ ztbformelement(form.get('cancel')) }}
+            </div>
+        </div>
+    </fieldset>
+
+
+
+    {{ form().closeTag()|raw }}
+
+{% else %}
+
+    {% if loi.dateApproved %}
+        <div class="alert alert-block alert-success">
+            <div class="alert-heading"><h4>{{ translate("txt-loi-already-approved") }}</h4></div>
+            <p>{{ translate("txt-loi-for-organisation-%s-in-project-%s-has-already-been-approved-on-%s")|format(
+                loi.affiliation.organisation, loi.affiliation.project, loi.dateApproved|date("d-m-Y")) }}</p>
+        </div>
+    {% else %}
+        <div class="alert alert-block alert-warning">
+            <div class="alert-heading"><h4>{{ translate("txt-loi-waiting-for-approval") }}</h4></div>
+            <p>{{ translate("txt-loi-for-organisation-%s-in-project-%s-has-already-been-submitted-on-%s-and-is-waiting-for-approval")|format(
+                loi.affiliation.organisation, loi.affiliation.project, loi.dateSigned|date("d-m-Y")) }}</p>
+        </div>
+    {% endif %}
+
+    <dl class="dl-horizontal">
+        <dt>{{ translate("txt-contact") }}</dt>
+        <dd>{{ identity().displayName() }}</dd>
+        {% if not loi.object.isEmpty() %}
+            <dt>{{ translate("txt-download-loi") }}</dt>
+            <dd>{{ loiLink(loi,'download', 'text') }}</dd>
+        {% endif %}
+    </dl>
+
+    {{ loiLink(loi,'replace','button') }}
+
+{% endif %}

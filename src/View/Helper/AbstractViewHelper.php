@@ -13,11 +13,13 @@
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
 use Interop\Container\ContainerInterface;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Router\Http\RouteMatch;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\HelperPluginManager;
 use ZfcTwig\View\TwigRenderer;
@@ -40,7 +42,11 @@ abstract class AbstractViewHelper extends AbstractHelper
     /**
      * @var RouteMatch
      */
-    protected $routeMatch = null;
+    protected $routeMatch;
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * RouteInterface match returned by the router.
@@ -48,9 +54,9 @@ abstract class AbstractViewHelper extends AbstractHelper
      *
      * @return RouteMatch.
      */
-    public function getRouteMatch()
+    public function getRouteMatch(): ?RouteMatch
     {
-        if (is_null($this->routeMatch)) {
+        if (null === $this->routeMatch) {
             $this->routeMatch = $this->getServiceManager()->get('application')->getMvcEvent()->getRouteMatch();
         }
 
@@ -60,17 +66,17 @@ abstract class AbstractViewHelper extends AbstractHelper
     /**
      * @return ContainerInterface
      */
-    public function getServiceManager()
+    public function getServiceManager(): ContainerInterface
     {
         return $this->serviceManager;
     }
 
     /**
-     * @param ContainerInterface|ServiceLocatorInterface $serviceManager
+     * @param ContainerInterface $serviceManager
      *
      * @return AbstractViewHelper
      */
-    public function setServiceManager($serviceManager)
+    public function setServiceManager($serviceManager): AbstractViewHelper
     {
         $this->serviceManager = $serviceManager;
 
@@ -80,7 +86,7 @@ abstract class AbstractViewHelper extends AbstractHelper
     /**
      * @return TwigRenderer
      */
-    public function getRenderer()
+    public function getRenderer(): TwigRenderer
     {
         return $this->getServiceManager()->get('ZfcTwigRenderer');
     }
@@ -90,15 +96,15 @@ abstract class AbstractViewHelper extends AbstractHelper
      *
      * @return string
      */
-    public function translate($string)
+    public function translate($string): string
     {
-        return $this->getHelperPluginManager()->get('translate')->__invoke($string);
+        return ($this->getHelperPluginManager()->get('translate'))($string);
     }
 
     /**
      * @return HelperPluginManager
      */
-    public function getHelperPluginManager()
+    public function getHelperPluginManager(): HelperPluginManager
     {
         return $this->helperPluginManager;
     }
@@ -108,10 +114,26 @@ abstract class AbstractViewHelper extends AbstractHelper
      *
      * @return AbstractViewHelper
      */
-    public function setHelperPluginManager($helperPluginManager)
+    public function setHelperPluginManager($helperPluginManager): AbstractViewHelper
     {
         $this->helperPluginManager = $helperPluginManager;
 
         return $this;
+    }
+
+    /**
+     * @return TranslatorInterface
+     */
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
+
+    /**
+     * @param TranslatorInterface $translator
+     */
+    public function setTranslator(TranslatorInterface $translator): void
+    {
+        $this->translator = $translator;
     }
 }

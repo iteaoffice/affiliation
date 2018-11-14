@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Contact\Entity\Contact;
@@ -28,21 +30,11 @@ use Zend\Permissions\Acl\Resource\ResourceInterface;
  *
  * @category    Affiliation
  */
-class Affiliation extends EntityAbstract implements ResourceInterface
+class Affiliation extends AbstractEntity
 {
-    /**
-     * Constant for mode = 0 (not self funded).
-     */
-    const NOT_SELF_FUNDED = 0;
-    /**
-     * Constant for mode = 1 (self funded).
-     */
-    const SELF_FUNDED = 1;
-    /**
-     * Templates for the self funded parameter.
-     *
-     * @var array
-     */
+    public const NOT_SELF_FUNDED = 0;
+    public const SELF_FUNDED = 1;
+
     protected static $selfFundedTemplates
         = [
             self::NOT_SELF_FUNDED => 'txt-not-self-funded',
@@ -252,6 +244,20 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $version;
     /**
+     * @ORM\ManyToMany(targetEntity="Project\Entity\Contract", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Contract[]|Collections\ArrayCollection()
+     */
+    private $contract;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\ContractVersion", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Affiliation\Entity\ContractVersion[]|Collections\ArrayCollection()
+     */
+    private $contractVersion;
+    /**
      * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", inversedBy="associate", cascade={"persist"})
      * @ORM\OrderBy=({"Lastname"="ASC"})
      * @ORM\JoinTable(name="associate",
@@ -284,12 +290,19 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $funding;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
      */
     private $cost;
+    /**
+     * @ORM\OneToMany(targetEntity="Project\Entity\Contract\Cost", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\Contract\Cost[]|Collections\ArrayCollection()
+     */
+    private $contractCost;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -356,12 +369,19 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     private $achievement;
     /**
-     * @ORM\OneToMany(targetEntity="Project\Entity\ChangeRequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
+     * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\ChangeRequest\CostChange[]|Collections\ArrayCollection
      */
-    private $changerequestCostChange;
+    private $changeRequestCostChange;
+    /**
+     * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\Country", cascade={"persist"}, mappedBy="affiliation")
+     * @Annotation\Exclude()
+     *
+     * @var \Project\Entity\ChangeRequest\Country[]|Collections\ArrayCollection
+     */
+    private $changeRequestCountry;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -369,103 +389,81 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      * @var \Project\Entity\Log[]|Collections\ArrayCollection
      */
     private $projectLog;
+    /**
+     * @ORM\ManyToOne(targetEntity="Invoice\Entity\Method", inversedBy="affiliation", cascade={"persist"})
+     * @ORM\JoinColumn(name="method_id", referencedColumnName="method_id", nullable=true)
+     * @Annotation\Exclude()
+     *
+     * @var \Invoice\Entity\Method
+     */
+    private $invoiceMethod;
 
     /**
      * Class constructor.
      */
     public function __construct()
     {
-        $this->ictOrganisation          = new Collections\ArrayCollection();
-        $this->description              = new Collections\ArrayCollection();
-        $this->invoice                  = new Collections\ArrayCollection();
-        $this->log                      = new Collections\ArrayCollection();
-        $this->version                  = new Collections\ArrayCollection();
-        $this->associate                = new Collections\ArrayCollection();
-        $this->funding                  = new Collections\ArrayCollection();
-        $this->cost                     = new Collections\ArrayCollection();
-        $this->funded                   = new Collections\ArrayCollection();
-        $this->effort                   = new Collections\ArrayCollection();
-        $this->spent                    = new Collections\ArrayCollection();
-        $this->doaReminder              = new Collections\ArrayCollection();
-        $this->loiReminder              = new Collections\ArrayCollection();
-        $this->achievement              = new Collections\ArrayCollection();
+        $this->ictOrganisation = new Collections\ArrayCollection();
+        $this->description = new Collections\ArrayCollection();
+        $this->invoice = new Collections\ArrayCollection();
+        $this->log = new Collections\ArrayCollection();
+        $this->version = new Collections\ArrayCollection();
+        $this->contractVersion = new Collections\ArrayCollection();
+        $this->contract = new Collections\ArrayCollection();
+        $this->associate = new Collections\ArrayCollection();
+        $this->funding = new Collections\ArrayCollection();
+        $this->cost = new Collections\ArrayCollection();
+        $this->contractCost = new Collections\ArrayCollection();
+        $this->funded = new Collections\ArrayCollection();
+        $this->effort = new Collections\ArrayCollection();
+        $this->spent = new Collections\ArrayCollection();
+        $this->doaReminder = new Collections\ArrayCollection();
+        $this->loiReminder = new Collections\ArrayCollection();
+        $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changerequestCostChange  = new Collections\ArrayCollection();
-        $this->projectLog               = new Collections\ArrayCollection();
+        $this->changeRequestCostChange = new Collections\ArrayCollection();
+        $this->changeRequestCountry = new Collections\ArrayCollection();
+        $this->projectLog = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
         $this->selfFunded = self::NOT_SELF_FUNDED;
     }
 
-    /**
-     * @return array
-     */
     public static function getSelfFundedTemplates(): array
     {
         return self::$selfFundedTemplates;
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @param $property
-     *
-     * @return bool
-     */
     public function __isset($property)
     {
         return isset($this->$property);
     }
 
-    /**
-     * ToString.
-     *
-     * @return string
-     */
     public function __toString(): string
     {
         return $this->parseBranchedName();
     }
 
-    /**
-     * @return string
-     */
     public function parseBranchedName(): string
     {
-        if (! is_null($this->getParentOrganisation())) {
-            return OrganisationService::parseBranch(
-                $this->getBranch(),
-                (string)$this->getParentOrganisation()->getOrganisation()
-            );
-        }
-
-        return OrganisationService::parseBranch($this->getBranch(), (string)$this->getOrganisation());
+        return OrganisationService::parseBranch($this->getBranch(), $this->getOrganisation());
     }
 
     /**
      * @return null|\Organisation\Entity\Parent\Organisation
      */
-    public function getParentOrganisation()
+    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
     {
         return $this->parentOrganisation;
     }
@@ -475,7 +473,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setParentOrganisation($parentOrganisation)
+    public function setParentOrganisation($parentOrganisation): Affiliation
     {
         $this->parentOrganisation = $parentOrganisation;
 
@@ -498,20 +496,29 @@ class Affiliation extends EntityAbstract implements ResourceInterface
         $this->branch = $branch;
     }
 
-    /**
-     * @return \Organisation\Entity\Organisation
-     */
     public function getOrganisation()
     {
         return $this->organisation;
     }
 
-    /**
-     * @param \Organisation\Entity\Organisation $organisation
-     */
     public function setOrganisation($organisation)
     {
         $this->organisation = $organisation;
+    }
+
+    public function isActive(): bool
+    {
+        return null === $this->dateEnd;
+    }
+
+    public function hasFinancial(): bool
+    {
+        return null !== $this->financial;
+    }
+
+    public function isSelfFunded(): bool
+    {
+        return null === $this->dateSelfFunded;
     }
 
     /**
@@ -519,7 +526,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function addAssociate(Contact $contact)
     {
-        if (! $this->associate->contains($contact)) {
+        if (!$this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
@@ -729,7 +736,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return int
      */
-    public function getSelfFunded($textual = false)
+    public function getSelfFunded(bool $textual = false)
     {
         if ($textual) {
             return self::$selfFundedTemplates[$this->selfFunded];
@@ -983,7 +990,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setProjectReportEffortSpent($projectReportEffortSpent)
+    public function setProjectReportEffortSpent($projectReportEffortSpent): Affiliation
     {
         $this->projectReportEffortSpent = $projectReportEffortSpent;
 
@@ -995,7 +1002,7 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      */
     public function getChangeRequestCostChange()
     {
-        return $this->changerequestCostChange;
+        return $this->changeRequestCostChange;
     }
 
     /**
@@ -1003,9 +1010,29 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setChangeRequestCostChange($changerequestCostChange)
+    public function setChangeRequestCostChange($changerequestCostChange): Affiliation
     {
-        $this->changerequestCostChange = $changerequestCostChange;
+        $this->changeRequestCostChange = $changerequestCostChange;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[]
+     */
+    public function getChangeRequestCountry()
+    {
+        return $this->changeRequestCountry;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[] $changerequestCountry
+     *
+     * @return Affiliation
+     */
+    public function setChangeRequestCountry($changerequestCountry): Affiliation
+    {
+        $this->changeRequestCountry = $changerequestCountry;
 
         return $this;
     }
@@ -1063,9 +1090,89 @@ class Affiliation extends EntityAbstract implements ResourceInterface
      *
      * @return Affiliation
      */
-    public function setFunded($funded)
+    public function setFunded($funded): Affiliation
     {
         $this->funded = $funded;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Contract[]
+     */
+    public function getContract()
+    {
+        return $this->contract;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Contract[] $contract
+     *
+     * @return Affiliation
+     */
+    public function setContract($contract): Affiliation
+    {
+        $this->contract = $contract;
+
+        return $this;
+    }
+
+    /**
+     * @return ContractVersion[]|Collections\ArrayCollection
+     */
+    public function getContractVersion()
+    {
+        return $this->contractVersion;
+    }
+
+    /**
+     * @param ContractVersion[]|Collections\ArrayCollection $contractVersion
+     *
+     * @return Affiliation
+     */
+    public function setContractVersion($contractVersion): Affiliation
+    {
+        $this->contractVersion = $contractVersion;
+
+        return $this;
+    }
+
+    /**
+     * @return Collections\ArrayCollection|\Project\Entity\Contract\Cost[]
+     */
+    public function getContractCost()
+    {
+        return $this->contractCost;
+    }
+
+    /**
+     * @param Collections\ArrayCollection|\Project\Entity\Contract\Cost[] $contractCost
+     *
+     * @return Affiliation
+     */
+    public function setContractCost($contractCost): Affiliation
+    {
+        $this->contractCost = $contractCost;
+
+        return $this;
+    }
+
+    /**
+     * @return \Invoice\Entity\Method
+     */
+    public function getInvoiceMethod(): ?\Invoice\Entity\Method
+    {
+        return $this->invoiceMethod;
+    }
+
+    /**
+     * @param \Invoice\Entity\Method $invoiceMethod
+     *
+     * @return Affiliation
+     */
+    public function setInvoiceMethod(?\Invoice\Entity\Method $invoiceMethod): Affiliation
+    {
+        $this->invoiceMethod = $invoiceMethod;
 
         return $this;
     }

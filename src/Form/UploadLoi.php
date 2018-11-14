@@ -17,13 +17,12 @@ use Zend\Validator\File\Extension;
 use Zend\Validator\File\Size;
 
 /**
+ * Class UploadLoi
  *
+ * @package Affiliation\Form
  */
 class UploadLoi extends Form implements InputFilterProviderInterface
 {
-    /**
-     * Class constructor.
-     */
     public function __construct()
     {
         parent::__construct();
@@ -69,7 +68,7 @@ class UploadLoi extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'file' => [

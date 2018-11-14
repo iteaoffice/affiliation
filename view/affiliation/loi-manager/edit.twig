@@ -8,7 +8,7 @@ loi.affiliation.project
 '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
 ) %}
 
-<h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
+<h1 class="display-4">{{ translate("txt-edit-loi-%s-in-%s")|format(
     loi.affiliation.parseBranchedName(),
     loi.affiliation.project
     ) }}</h1>
@@ -18,19 +18,19 @@ loi.affiliation.project
 {{ form().openTag(form)|raw }}
 
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-project-name") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(loi.affiliation.project,'view-admin', 'name') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ projectLink(loi.affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-affiliation") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliationLink(loi.affiliation,'view-community') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ affiliationLink(loi.affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -42,11 +42,11 @@ loi.affiliation.project
 {{ ztbformelement(loiForm.get('dateApproved')) }}
 {{ contactformelement(loiForm.get('contact')) }}
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-download-current-loi") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-download-current-loi") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ loiLink(loi,'download','text') }}</p>
+        <p class="form-control-static form-control-plaintext">{{ loiLink(loi,'download','text') }}</p>
     </div>
 </div>
 
@@ -55,8 +55,8 @@ loi.affiliation.project
 <hr>
 
 
-<div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
+<div class="form-group row">
+    <div class="offset-md-3 col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
         {{ ztbformelement(form.get('delete')) }}

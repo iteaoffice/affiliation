@@ -16,7 +16,8 @@ use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Validator\Callback;
 
 /**
- *
+ * Class EffortSpent
+ * @package Affiliation\Form
  */
 class EffortSpent extends Form implements InputFilterProviderInterface
 {
@@ -28,9 +29,10 @@ class EffortSpent extends Form implements InputFilterProviderInterface
     protected $effortPlanned;
 
     /**
-     *
+     * EffortSpent constructor.
+     * @param float $effortPlanned
      */
-    public function __construct($effortPlanned)
+    public function __construct(float $effortPlanned = null)
     {
         parent::__construct();
         $this->effortPlanned = $effortPlanned;
@@ -76,6 +78,7 @@ class EffortSpent extends Form implements InputFilterProviderInterface
                 ],
                 'attributes' => [
                     'id'    => 'mainContribution',
+                    'rows'  => 8,
                     'class' => 'form-control',
                 ],
             ]
@@ -143,7 +146,7 @@ class EffortSpent extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'effort'  => [
@@ -189,7 +192,7 @@ class EffortSpent extends Form implements InputFilterProviderInterface
 
                                 if (abs(
                                     ($context['effort']
-                                         - $this->effortPlanned)
+                                            - $this->effortPlanned)
                                         / $this->effortPlanned
                                 ) > 0.2
                                 ) {

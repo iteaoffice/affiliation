@@ -13,6 +13,8 @@
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Factory;
 
 use Doctrine\ORM\EntityManager;
@@ -27,15 +29,6 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  */
 final class InputFilterFactory implements FactoryInterface
 {
-    /**
-     * Create an instance of the requested class name.
-     *
-     * @param ContainerInterface $container
-     * @param string             $requestedName
-     * @param null|array         $options
-     *
-     * @return InputFilter
-     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): InputFilter
     {
         return new $requestedName($container->get(EntityManager::class), $options);

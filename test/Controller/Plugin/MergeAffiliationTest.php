@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace AffiliationTest\Controller\Plugin;
 
 use Admin\Service\AdminService;
@@ -391,7 +393,7 @@ class MergeAffiliationTest extends AbstractServiceTest
      *
      * @return EntityManager|MockObject
      */
-    private function setUpEntityManagerMock(int $strategy, $throwException = false): MockObject
+    private function setUpEntityManagerMock(int $strategy, $throwException = false)
     {
         $entityManagerMock = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
@@ -453,7 +455,7 @@ class MergeAffiliationTest extends AbstractServiceTest
                 break;
         }
 
-        $entityManagerMock->expects($this->exactly(count($params)))
+        $entityManagerMock->expects($this->exactly(\count($params)))
             ->method('persist')
             ->withConsecutive(...$params);
 
@@ -466,7 +468,7 @@ class MergeAffiliationTest extends AbstractServiceTest
             [$this->identicalTo($this->otherAffiliation->getVersion()->first())],
             [$this->identicalTo($this->otherAffiliation)],
         ];
-        $entityManagerMock->expects($this->exactly(count($params)))
+        $entityManagerMock->expects($this->exactly(\count($params)))
             ->method('remove')
             ->withConsecutive(...$params);
 
@@ -480,16 +482,16 @@ class MergeAffiliationTest extends AbstractServiceTest
      *
      * @return AdminService|MockObject
      */
-    private function setUpAdminServiceMock(): MockObject
+    private function setUpAdminServiceMock()
     {
-        $adminServiceMock = $this->getMockBuilder(AdminService::class)
+        $adminServiceMock = $this->getMockBuilder(AdminService::class)->disableOriginalConstructor()
             ->setMethods(['flushPermitsByEntityAndId'])
             ->getMock();
 
         $adminServiceMock->expects($this->exactly(1))
             ->method('flushPermitsByEntityAndId')
             ->with(
-                $this->identicalTo($this->mainAffiliation->get('underscore_entity_name')),
+                $this->identicalTo($this->mainAffiliation),
                 $this->identicalTo($this->mainAffiliation->getId())
             )
             ->will($this->returnValue(true));

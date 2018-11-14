@@ -9,6 +9,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Loi as LoiAssertion;
@@ -23,23 +25,14 @@ use Affiliation\Entity\Loi;
 class LoiLink extends LinkAbstract
 {
     /**
-     * @var Loi
-     */
-    protected $loi;
-    /**
-     * @var Affiliation
-     */
-    protected $affiliation;
-
-    /**
-     * @param Loi         $loi
-     * @param string      $action
-     * @param string      $show
+     * @param Loi $loi
+     * @param string $action
+     * @param string $show
      * @param Affiliation $affiliation
      *
      * @return string
      */
-    public function __invoke(Loi $loi = null, $action = 'view', $show = 'name', Affiliation $affiliation = null)
+    public function __invoke(Loi $loi = null, $action = 'view', $show = 'name', Affiliation $affiliation = null): string
     {
         $this->setLoi($loi);
         $this->setAffiliation($affiliation);
@@ -53,7 +46,7 @@ class LoiLink extends LinkAbstract
                 'name' => $this->getLoi(),
             ]
         );
-        if (! $this->hasAccess(
+        if (!$this->hasAccess(
             $this->getLoi(),
             LoiAssertion::class,
             $this->getAction()
@@ -62,57 +55,22 @@ class LoiLink extends LinkAbstract
             return '';
         }
 
-        if (! is_null($loi)) {
-            $this->addRouterParam('id', $this->getLoi()->getId());
-            $this->addRouterParam('ext', $this->getLoi()->getContentType()->getExtension());
-        }
+        $this->addRouterParam('id', $this->getLoi()->getId());
         $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
 
         return $this->createLink();
     }
 
     /**
-     * @return Loi
-     */
-    public function getLoi()
-    {
-        if (is_null($this->loi)) {
-            $this->loi = new Loi();
-        }
-
-        return $this->loi;
-    }
-
-    /**
-     * @param Loi $loi
-     */
-    public function setLoi($loi)
-    {
-        $this->loi = $loi;
-    }
-
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        if (is_null($this->affiliation)) {
-            $this->affiliation = new Affiliation();
-        }
-
-        return $this->affiliation;
-    }
-
-    /**
      * @param Affiliation $affiliation
      */
-    public function setAffiliation($affiliation)
+    public function setAffiliation($affiliation): void
     {
         $this->affiliation = $affiliation;
         /*
          * Only overwrite the the Affiliation in the LOI when this is not is_null
          */
-        if (! is_null($affiliation)) {
+        if (null !== $affiliation) {
             $this->getLoi()->setAffiliation($affiliation);
         }
     }
@@ -122,14 +80,14 @@ class LoiLink extends LinkAbstract
      *
      * @throws \Exception
      */
-    public function parseAction()
+    public function parseAction(): void
     {
         switch ($this->getAction()) {
-            case 'upload':
-                $this->setRouter('community/affiliation/loi/upload');
+            case 'submit':
+                $this->setRouter('community/affiliation/loi/submit');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-upload-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate("txt-submit-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getAffiliation()->parseBranchedName(),
                         $this->getAffiliation()->getProject()
                     )
@@ -139,7 +97,7 @@ class LoiLink extends LinkAbstract
                 $this->setRouter('community/affiliation/loi/render');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate("txt-render-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
@@ -149,7 +107,7 @@ class LoiLink extends LinkAbstract
                 $this->setRouter('community/affiliation/loi/replace');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate("txt-replace-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
@@ -159,7 +117,7 @@ class LoiLink extends LinkAbstract
                 $this->setRouter('community/affiliation/loi/download');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate("txt-download-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getLoi()->getAffiliation()->getOrganisation(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
@@ -167,21 +125,21 @@ class LoiLink extends LinkAbstract
                 break;
             case 'remind-admin':
                 $this->setRouter('zfcadmin/affiliation/loi/remind');
-                $this->setText($this->translate("txt-send-reminder"));
+                $this->setText($this->translator->translate("txt-send-reminder"));
                 break;
             case 'approval-admin':
                 $this->setRouter('zfcadmin/affiliation/loi/approval');
-                $this->setText($this->translate("txt-approval-loi"));
+                $this->setText($this->translator->translate("txt-approval-loi"));
                 break;
             case 'missing-admin':
                 $this->setRouter('zfcadmin/affiliation/loi/missing');
-                $this->setText($this->translate("txt-missing-loi"));
+                $this->setText($this->translator->translate("txt-missing-loi"));
                 break;
             case 'reminders-admin':
                 $this->setRouter('zfcadmin/affiliation/loi/reminders');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-see-reminders-%s-sent"),
+                        $this->translator->translate("txt-see-reminders-%s-sent"),
                         $this->getAffiliation()->getLoiReminder()->count()
                     )
                 );
@@ -190,7 +148,7 @@ class LoiLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/loi/view');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-view-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate("txt-view-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )
@@ -200,7 +158,7 @@ class LoiLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/loi/edit');
                 $this->setText(
                     sprintf(
-                        $this->translate("txt-edit-loi-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate("txt-edit-loi-for-organisation-%s-in-project-%s-link-title"),
                         $this->getLoi()->getAffiliation()->parseBranchedName(),
                         $this->getLoi()->getAffiliation()->getProject()
                     )

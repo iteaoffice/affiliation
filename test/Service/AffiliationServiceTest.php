@@ -13,6 +13,8 @@
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace AffiliationTest\Service;
 
 use Affiliation\Entity;
@@ -20,7 +22,9 @@ use Affiliation\Repository;
 use Affiliation\Service\AffiliationService;
 use Contact\Entity\Contact;
 use Contact\Entity\ContactOrganisation;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use Organisation\Entity\Financial;
 use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
@@ -35,21 +39,15 @@ use Testing\Util\AbstractServiceTest;
  */
 class AffiliationServiceTest extends AbstractServiceTest
 {
-    /**
-     *
-     */
     public function testCanCreateService()
     {
         $service = new AffiliationService();
         $this->assertInstanceOf(AffiliationService::class, $service);
     }
 
-    /**
-     *
-     */
-    public function testCanFindAffiliationBId()
+    public function testFindAffiliationBId()
     {
-        $service       = new AffiliationService();
+        $service = new AffiliationService();
         $affiliationId = 1;
 
         // Create a dummy project entity
@@ -58,38 +56,26 @@ class AffiliationServiceTest extends AbstractServiceTest
 
         // Mock the repository, disabling the constructor
         $affiliationRepositoryMock = $this->getMockBuilder(Repository\Affiliation::class)
-                                          ->disableOriginalConstructor()
-                                          ->setMethods(['find'])
-                                          ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['find'])
+            ->getMock();
+
         $affiliationRepositoryMock->expects($this->once())
-                                  ->method('find')
-                                  ->with($this->identicalTo($affiliationId))
-                                  ->will($this->returnValue($affiliation));
+            ->method('find')
+            ->with($this->identicalTo($affiliationId))
+            ->will($this->returnValue($affiliation));
 
         // Mock the entity manager + affiliation repository
         /** @var EntityManager $entityManagerMock */
         $entityManagerMock = $this->getEntityManagerMock(Entity\Affiliation::class, $affiliationRepositoryMock);
         $service->setEntityManager($entityManagerMock);
 
-        $this->assertEquals($affiliation, $service->findAffiliationById($affiliationId));
-    }
-
-    public function testIsActive()
-    {
-        $service           = new AffiliationService();
-        $activeAffiliation = new Entity\Affiliation();
-
-        $this->assertTrue($service->isActive($activeAffiliation));
-
-        $inActiveAffiliation = new Entity\Affiliation();
-        $inActiveAffiliation->setDateEnd(new \DateTime());
-
-        $this->assertFalse($service->isActive($inActiveAffiliation));
+        $this->assertEquals($affiliation, $service->findAffiliationById((int) $affiliationId));
     }
 
     public function testIsSelfFunded()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->isSelfFunded($affiliation));
@@ -108,7 +94,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testIsActiveInVersion()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->isActiveInVersion($affiliation));
@@ -119,9 +105,22 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertTrue($service->isActiveInVersion($isActiveAffiliation));
     }
 
+    public function testIsActive()
+    {
+        $service = new AffiliationService();
+        $activeAffiliation = new Entity\Affiliation();
+
+        $this->assertTrue($service->isActive($activeAffiliation));
+
+        $inActiveAffiliation = new Entity\Affiliation();
+        $inActiveAffiliation->setDateEnd(new \DateTime());
+
+        $this->assertFalse($service->isActive($inActiveAffiliation));
+    }
+
     public function testHasDoa()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->hasDoa($affiliation));
@@ -137,7 +136,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testHasLoi()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->hasLoi($affiliation));
@@ -151,17 +150,72 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertTrue($service->hasLoi($isActiveAffiliation));
     }
 
-    public function testfindOrganisationFinancial()
+    public function testFindNotValidatedSelfFundedAffiliation()
     {
-        $service      = new AffiliationService();
-        $affiliation  = new Entity\Affiliation();
+        $service = new AffiliationService();
+        $affiliationRepositoryMock = $this->getMockBuilder(Repository\Affiliation::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['findNotValidatedSelfFundedAffiliation'])
+            ->getMock();
+        $affiliationRepositoryMock->expects($this->once())
+            ->method('findNotValidatedSelfFundedAffiliation')
+            ->will($this->returnValue([new Entity\Affiliation()]));
+
+        // Mock the entity manager + affiliation repository
+        /** @var EntityManager $entityManagerMock */
+        $entityManagerMock = $this->getEntityManagerMock(Entity\Affiliation::class, $affiliationRepositoryMock);
+        $service->setEntityManager($entityManagerMock);
+
+        $results = $service->findNotValidatedSelfFundedAffiliation();
+
+        $this->assertCount(1, $results);
+        $this->assertInstanceOf(Entity\Affiliation::class, reset($results));
+    }
+
+    public function testFindMissingAffiliationParent()
+    {
+        $service = new AffiliationService();
+
+        $entityManagerConfig = new Configuration();
+        $entityManagerMock1 = $this->getMockBuilder(EntityManager::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getConfiguration'])
+            ->getMock();
+        $entityManagerMock1->expects($this->exactly(2))
+            ->method('getConfiguration')
+            ->will($this->returnValue($entityManagerConfig));
+
+        /** @var EntityManager $entityManagerMock1 */
+        $query = new Query($entityManagerMock1);
+
+        $affiliationRepositoryMock = $this->getMockBuilder(Repository\Affiliation::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['findMissingAffiliationParent'])
+            ->getMock();
+        $affiliationRepositoryMock->expects($this->once())
+            ->method('findMissingAffiliationParent')
+            ->will($this->returnValue($query));
+
+        // Mock the entity manager + affiliation repository
+        /** @var EntityManager $entityManagerMock */
+        $entityManagerMock2 = $this->getEntityManagerMock(Entity\Affiliation::class, $affiliationRepositoryMock);
+        $service->setEntityManager($entityManagerMock2);
+
+        $result = $service->findMissingAffiliationParent();
+        $this->assertSame($query, $result);
+    }
+
+    public function testFindOrganisationFinancial()
+    {
+        $service = new AffiliationService();
+        $affiliation = new Entity\Affiliation();
         $organisation = new Organisation();
         $affiliation->setOrganisation($organisation);
 
         $this->assertNull($service->parseVatNumber($affiliation));
 
-        $affiliation  = new Entity\Affiliation();
-        $parent       = new OParent();
+        $affiliation = new Entity\Affiliation();
+        $parent = new OParent();
         $organisation = new Organisation();
         $parent->setOrganisation($organisation);
         $parentOrganisation = new \Organisation\Entity\Parent\Organisation();
@@ -173,11 +227,11 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertNull($service->parseVatNumber($affiliation));
 
         //Situation with a parent and no parent financial
-        $vatNumber    = 'VATNUMBER';
-        $affiliation  = new Entity\Affiliation();
-        $parent       = new OParent();
+        $vatNumber = 'VATNUMBER';
+        $affiliation = new Entity\Affiliation();
+        $parent = new OParent();
         $organisation = new Organisation();
-        $financial    = new Financial();
+        $financial = new Financial();
         $financial->setVat($vatNumber);
         $organisation->setFinancial($financial);
         $parent->setOrganisation($organisation);
@@ -189,11 +243,11 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertEquals($financial, $service->findOrganisationFinancial($affiliation));
         $this->assertEquals($vatNumber, $service->parseVatNumber($affiliation));
 
-        $vatNumber    = 'VATNUMBER';
-        $affiliation  = new Entity\Affiliation();
-        $parent       = new OParent();
+        $vatNumber = 'VATNUMBER';
+        $affiliation = new Entity\Affiliation();
+        $parent = new OParent();
         $organisation = new Organisation();
-        $financial    = new Financial();
+        $financial = new Financial();
         $financial->setVat($vatNumber);
         $organisation->setFinancial($financial);
         $parentFinancial = new \Organisation\Entity\Parent\Financial();
@@ -212,15 +266,15 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testCanFindFinancialContact()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertNull($service->getFinancialContact($affiliation));
 
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
-        $financial   = new Entity\Financial();
-        $contact     = new Contact();
+        $financial = new Entity\Financial();
+        $contact = new Contact();
         $financial->setContact($contact);
         $affiliation->setFinancial($financial);
 
@@ -229,11 +283,11 @@ class AffiliationServiceTest extends AbstractServiceTest
 
     public function testCanCreateInvoices()
     {
-        $service     = new AffiliationService();
+        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $organisation = new Organisation();
-        $type         = new Type();
+        $type = new Type();
         $type->setInvoice(Type::INVOICE);
         $organisation->setType($type);
 
@@ -265,7 +319,6 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertEquals($affiliation1, $service->findAffiliationByProjectAndContactAndWhich($project, $contact));
         $this->assertEquals($affiliation2, $service->findAffiliationByProjectAndContactAndWhich($project, $contact,
             AffiliationService::WHICH_ONLY_INACTIVE));
-
 
     }
 }

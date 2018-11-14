@@ -11,66 +11,150 @@
  * @link       https://itea3.org
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
+use Affiliation\Service\AffiliationService;
+use Contact\Service\ContactService;
+use General\Entity\Currency;
+use General\Entity\ExchangeRate;
+use Invoice\Service\InvoiceService;
+use Organisation\Service\OrganisationService;
+use Project\Service\ContractService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
+use Zend\View\Helper\AbstractHelper;
+use ZfcTwig\View\TwigRenderer;
 
 /**
- * Create a link to an document.
+ * Class PaymentSheet
  *
- * @category   Affiliation
- *
- * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright  Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
- * @license    https://itea3.org/license.txt proprietary
- *
- * @link       https://itea3.org
+ * @package Affiliation\View\Helper
  */
-class PaymentSheet extends LinkAbstract
+final class PaymentSheet extends AbstractHelper
 {
     /**
-     * @param Affiliation $affiliation
-     * @param             $year
-     * @param             $period
-     *
-     * @return null|string
-     * @throws \Exception
+     * @var ProjectService
      */
-    public function __invoke(Affiliation $affiliation, $year, $period)
+    private $projectService;
+    /**
+     * @var ContractService
+     */
+    private $contractService;
+    /**
+     * @var InvoiceService
+     */
+    private $invoiceService;
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var OrganisationService
+     */
+    private $organisationService;
+    /**
+     * @var VersionService
+     */
+    private $versionService;
+    /**
+     * @var TwigRenderer
+     */
+    private $renderer;
+
+    public function __construct(
+        ProjectService $projectService,
+        ContractService $contractService,
+        InvoiceService $invoiceService,
+        AffiliationService $affiliationService,
+        ContactService $contactService,
+        OrganisationService $organisationService,
+        VersionService $versionService,
+        TwigRenderer $renderer
+    ) {
+        $this->projectService = $projectService;
+        $this->contractService = $contractService;
+        $this->invoiceService = $invoiceService;
+        $this->affiliationService = $affiliationService;
+        $this->contactService = $contactService;
+        $this->organisationService = $organisationService;
+        $this->versionService = $versionService;
+        $this->renderer = $renderer;
+    }
+
+
+    public function __invoke(Affiliation $affiliation, int $year, int $period, bool $useContractData = true): string
     {
-        $latestVersion = $this->getProjectService()->getLatestProjectVersion($affiliation->getProject());
+        $latestVersion = $this->projectService->getLatestProjectVersion($affiliation->getProject());
 
         /**
          * We don't need a payment sheet, when we have no versions
          */
-        if (is_null($latestVersion)) {
+        if (null === $latestVersion) {
             return '';
         }
 
-        return $this->getRenderer()->render(
+        $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
+
+        //Create a default currency
+        $currency = new Currency();
+        $currency->setName('EUR');
+        $currency->setSymbol('&euro;');
+
+        $exchangeRate = new ExchangeRate();
+        $exchangeRate->setRate(1);
+
+        if (null !== $contractVersion && $useContractData) {
+            $currency = $contractVersion->getContract()->getCurrency();
+            $exchangeRate = $this->contractService->findExchangeRateInInvoicePeriod($currency, $year, $period);
+        }
+
+        $invoiceMethod = $affiliation->getInvoiceMethod();
+        if (null === $invoiceMethod) {
+            $invoiceMethod = $this->invoiceService->findInvoiceMethod(
+                $affiliation->getProject()
+                    ->getCall()->getProgram()
+            );
+        }
+
+        return $this->renderer->render(
             'affiliation/partial/payment-sheet',
             [
-                'year'                           => $year,
-                'period'                         => $period,
-                'affiliation'                    => $affiliation,
-                'project'                        => $affiliation->getProject(),
-                'affiliationService'             => $this->getAffiliationService(),
-                'version'                        => $latestVersion,
-                'projectService'                 => $this->getProjectService(),
-                'contactService'                 => $this->getContactService(),
-                'financialContact'               => $this->getAffiliationService()->getFinancialContact($affiliation),
-                'organisationService'            => $this->getOrganisationService(),
-                'invoiceMethod'                  => $this->getInvoiceService()->findInvoiceMethod(
-                    $affiliation->getProject()
-                                ->getCall()->getProgram()
-                ),
-                'invoiceService'                 => $this->getInvoiceService(),
-                'versionService'                 => $this->getVersionService(),
-                'versionContributionInformation' => $this->getVersionService()
-                                                         ->getProjectVersionContributionInformation(
-                                                             $affiliation,
-                                                             $latestVersion
-                                                         ),
+                'year'                            => $year,
+                'period'                          => $period,
+                'useContractData'                 => $useContractData,
+                'affiliation'                     => $affiliation,
+                'project'                         => $affiliation->getProject(),
+                'affiliationService'              => $this->affiliationService,
+                'version'                         => $latestVersion,
+                'projectService'                  => $this->projectService,
+                'contractService'                 => $this->contractService,
+                'contractVersion'                 => $contractVersion,
+                'contractContributionInformation' => null === $contractVersion
+                    ? null
+                    : $this->contractService->getContractVersionContributionInformation(
+                        $affiliation,
+                        $contractVersion
+                    ),
+                'exchangeRate'                    => $exchangeRate,
+                'currency'                        => $currency,
+                'contactService'                  => $this->contactService,
+                'financialContact'                => $this->affiliationService->getFinancialContact($affiliation),
+                'organisationService'             => $this->organisationService,
+                'invoiceMethod'                   => $invoiceMethod,
+                'invoiceService'                  => $this->invoiceService,
+                'versionService'                  => $this->versionService,
+                'versionContributionInformation'  => $this->versionService
+                    ->getProjectVersionContributionInformation(
+                        $affiliation,
+                        $latestVersion
+                    ),
             ]
         );
     }

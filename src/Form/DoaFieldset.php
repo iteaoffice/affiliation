@@ -33,7 +33,7 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
     public function __construct(EntityManager $entityManager)
     {
         parent::__construct('affiliation_entity_doa');
-        $doa              = new Entity\Doa();
+        $doa = new Entity\Doa();
         $doctrineHydrator = new DoctrineHydrator($entityManager, Entity\Doa::class);
         $this->setHydrator($doctrineHydrator)->setObject($doa);
         $builder = new AnnotationBuilder();
@@ -85,7 +85,7 @@ class DoaFieldset extends Fieldset implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'dateApproved' => [

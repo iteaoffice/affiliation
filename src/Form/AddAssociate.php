@@ -8,12 +8,18 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
+use Zend\Form\Element\Email;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\Uri\Uri;
+use Zend\Validator\Callback;
+use Zend\Validator\EmailAddress;
 
 /**
  * Class AddAssociate
@@ -22,6 +28,11 @@ use Zend\InputFilter\InputFilterProviderInterface;
  */
 class AddAssociate extends Form implements InputFilterProviderInterface
 {
+    /**
+     * @var array
+     */
+    protected $extensions = [];
+
     /**
      * @param Affiliation    $affiliation
      * @param ContactService $contactService
@@ -38,17 +49,65 @@ class AddAssociate extends Form implements InputFilterProviderInterface
             $contacts[$contact->getId()] = $contact->getFormName();
         }
 
+        //Collect all the existing email addresses in the list
+        foreach ($affiliation->getOrganisation()->getContactOrganisation() as $contactOrganisation) {
+            $email = $contactOrganisation->getContact()->getEmail();
+            $validator = new EmailAddress();
+            if ($validator->isValid($email)
+                && !\in_array(
+                    $validator->hostname,
+                    ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],
+                    true
+                )
+            ) {
+                $this->extensions[$validator->hostname] = $validator->hostname;
+            }
+        }
+
+        foreach ($affiliation->getOrganisation()->getWeb() as $web) {
+            $validator = new Uri();
+
+            //Strip any www.
+            $web = str_replace('www.', '', $web->getWeb());
+
+            $parse = $validator->parse($web);
+
+            $this->extensions[$parse->getHost()] = $parse->getHost();
+        }
+
+        natcasesort($contacts);
+
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Select',
+                'type'       => "Contact\Form\Element\Contact",
                 'name'       => 'contact',
                 'options'    => [
                     'value_options' => $contacts,
-                    'label'         => _("txt-contact-name"),
+                    'allow_empty'   => true,
+                    'empty_option'  => '-- ' . ("Select here the known contact"),
+                    'label'         => _("txt-add-associate-by-known-contact-label"),
+                    'help-block'    => _("txt-add-associate-by-known-contact-help-block"),
                 ],
                 'attributes' => [
-                    'class'    => 'form-control',
-                    'required' => true,
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => Email::class,
+                'name'       => 'email',
+                'options'    => [
+                    'label'      => _("txt-company-email-address"),
+                    'help-block' => sprintf(
+                        "Here you can add an associate via the company email address. The email address should have (one of) the following extension(s): %s",
+                        implode(', ', $this->extensions)
+                    ),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+
                 ],
             ]
         );
@@ -59,7 +118,27 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'value' => _("txt-submit"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'addKnownContact',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-add-known-contact"),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => 'Zend\Form\Element\Submit',
+                'name'       => 'addEmail',
+                'attributes' => [
+                    'class' => "btn btn-primary",
+                    'value' => _("txt-add-via-company-email"),
                 ],
             ]
         );
@@ -81,11 +160,39 @@ class AddAssociate extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'contact' => [
-                'required' => true,
+                'required'   => false,
+                'validators' => [
+                    new \Zend\Validator\NotEmpty(\Zend\Validator\NotEmpty::INTEGER),
+                ],
+            ],
+            'email'   => [
+                'required'   => false,
+                'validators' => [
+                    new \Zend\Validator\NotEmpty(\Zend\Validator\NotEmpty::NULL),
+                    new Callback(
+                        [
+                            'messages' => [
+                                Callback::INVALID_VALUE => 'The given email address (%value%) should have (one of) the extension(s): '
+                                    . implode(
+                                        ', ',
+                                        $this->extensions
+                                    ),
+                            ],
+                            'callback' => function ($value) {
+                                $validator = new EmailAddress();
+                                if (!$validator->isValid($value)) {
+                                    return false;
+                                }
+
+                                return \in_array($validator->hostname, $this->extensions, true);
+                            },
+                        ]
+                    ),
+                ],
             ],
         ];
     }

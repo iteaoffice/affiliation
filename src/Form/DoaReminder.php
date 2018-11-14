@@ -14,22 +14,22 @@ namespace Affiliation\Form;
 use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
 use Deeplink\Entity\Target;
+use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 /**
+ * Class DoaReminder
  *
+ * @package Affiliation\Form
  */
 class DoaReminder extends Form implements InputFilterProviderInterface
 {
-    /**
-     * @param Affiliation    $affiliation
-     * @param ContactService $contactService
-     */
     public function __construct(
         Affiliation $affiliation,
-        ContactService $contactService
+        ContactService $contactService,
+        EntityManager $entityManager
     ) {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -85,7 +85,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                     'label' => _("txt-deeplink-target"),
                 ],
                 'options'    => [
-                    'object_manager'  => $contactService->getEntityManager(),
+                    'object_manager'  => $entityManager,
                     'target_class'    => "Deeplink\Entity\Target",
                     'find_method'     => [
                         'name'   => 'findTargetsWithRoute',
@@ -97,7 +97,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
                         ],
                     ],
                     'label_generator' => function (Target $targetEntity) {
-                        return sprintf("%s (%s)", $targetEntity->getTarget(), $targetEntity->getRoute());
+                        return sprintf('%s (%s)', $targetEntity->getTarget(), $targetEntity->getRoute());
                     },
                 ],
             ]
@@ -125,13 +125,7 @@ class DoaReminder extends Form implements InputFilterProviderInterface
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [];
     }

@@ -10,32 +10,22 @@
  * @version     4.0
  */
 
+declare(strict_types=1);
+
 namespace Affiliation;
 
 use Zend\ModuleManager\Feature;
 
-//Makes the module class more strict
 /**
  *
  */
-class Module implements Feature\AutoloaderProviderInterface, Feature\ConfigProviderInterface
+class Module implements Feature\ConfigProviderInterface
 {
-    /**
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Zend\Loader\ClassMapAutoloader' => [
-                __DIR__ . '/../autoload_classmap.php',
-            ],
-        ];
-    }
 
     /**
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return include __DIR__ . '/../config/module.config.php';
     }

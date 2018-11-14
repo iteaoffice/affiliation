@@ -8,6 +8,8 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -24,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class Version extends EntityAbstract
+class Version extends AbstractEntity
 {
     /**
      * @var integer
@@ -85,49 +87,30 @@ class Version extends EntityAbstract
      */
     public function __construct()
     {
-        $this->costVersion    = new ArrayCollection();
-        $this->effortVersion  = new ArrayCollection();
+        $this->costVersion = new ArrayCollection();
+        $this->effortVersion = new ArrayCollection();
         $this->fundingVersion = new ArrayCollection();
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @param $property
-     *
-     * @return bool
-     */
     public function __isset($property)
     {
         return isset($this->$property);
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
-        return sprintf(
-            "%s in %s (%s)",
+        return \sprintf(
+            '%s in %s (%s)',
             $this->getAffiliation()->getOrganisation(),
             $this->getAffiliation()->getProject(),
             $this->getVersion()->getVersionType()->getDescription()

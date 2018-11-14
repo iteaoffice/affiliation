@@ -2,7 +2,7 @@
 
 {% set project = affiliation.project %}
 
-<h1>{{ translate("txt-upload-doa-for-organisation-%s-for-project-%s")|
+<h1 class="display-4">{{ translate("txt-upload-doa-for-organisation-%s-for-project-%s")|
     format(affiliation.organisation, project)|raw }}</h1>
 
 {% do form.prepare() %}
@@ -10,28 +10,28 @@
 
 {{ form().openTag(form)|raw }}
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-project") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ projectLink(affiliation.project,'view-community','name') }}
+        <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community','name') }}
             ({{ project.call.program }})</p>
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-organisation") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-organisation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ affiliation.organisation }}</p>
+        <p class="form-control-static form-control-plaintext">{{ affiliation.organisation }}</p>
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-sm-3 control-label">{{ translate("txt-download-doa") }}</label>
+<div class="form-group row">
+    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-download-doa") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static">{{ translate("txt-download-doa-link-text") }}</p>
+        <p class="form-control-static form-control-plaintext">{{ translate("txt-download-doa-link-text") }}</p>
     </div>
 </div>
 
@@ -39,8 +39,8 @@
 {{ ztbformelement(form.get('file')) }}
 
 
-<div class="form-group">
-    <div class="col-sm-offset-3 col-sm-9">
+<div class="form-group row">
+    <div class="offset-md-3 col-sm-offset-3 col-sm-9">
         {{ ztbformelement(form.get('submit'))|raw }}
         {{ ztbformelement(form.get('cancel')) }}
     </div>

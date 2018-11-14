@@ -8,43 +8,51 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Acl\Assertion;
 
 use Admin\Entity\Access;
 use Affiliation\Entity\Doa as DoaEntity;
+use Affiliation\Service\AffiliationService;
+use Affiliation\Service\DoaService;
+use Interop\Container\ContainerInterface;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
 use Zend\Permissions\Acl\Role\RoleInterface;
 
 /**
- * Class Affiliation.
+ * Class Doa
  *
- * @var object
+ * @package Affiliation\Acl\Assertion
  */
-class Doa extends AssertionAbstract
+final class Doa extends AbstractAssertion
 {
     /**
-     * Returns true if and only if the assertion conditions are met.
-     *
-     * This method is passed the ACL, Role, Resource, and privilege to which the authorization query applies. If the
-     * $role, $doa, or $privilege parameters are null, it means that the query applies to all Roles, Resources, or
-     * privileges, respectively.
-     *
-     * @param Acl               $acl
-     * @param RoleInterface     $role
-     * @param ResourceInterface $doa
-     * @param string            $privilege
-     *
-     * @return bool
+     * @var DoaService
      */
-    public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $doa = null, $privilege = null)
+    private $doaService;
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct($container);
+
+        $this->doaService = $container->get(DoaService::class);
+        $this->affiliationService = $container->get(AffiliationService::class);
+    }
+
+    public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $doa = null, $privilege = null): bool
     {
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (! $doa instanceof DoaEntity && ! is_null($id)) {
+        if (!$doa instanceof DoaEntity && null !== $id) {
             /** @var DoaEntity $doa */
-            $doa = $this->getAffiliationService()->findEntityById(DoaEntity::class, $id);
+            $doa = $this->doaService->findDoaById((int)$id);
         }
 
         switch ($this->getPrivilege()) {
@@ -57,42 +65,41 @@ class Doa extends AssertionAbstract
                 if ($doa instanceof DoaEntity) {
                     $affiliation = $doa->getAffiliation();
                 }
-                if (is_null($affiliation)) {
+                if (null === $affiliation) {
                     /*
                      * The id can originate from two different params
                      */
-                    if (! is_null($this->getRouteMatch()->getParam('id'))) {
+                    if (null !== $this->getRouteMatch()->getParam('id')) {
                         $affiliationId = $this->getRouteMatch()->getParam('id');
                     } else {
                         $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
                     }
-                    $affiliation = $this->getAffiliationService()->findAffiliationById($affiliationId);
+                    $affiliation = $this->affiliationService->findAffiliationById((int)$affiliationId);
                 }
 
-                return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'edit-community');
+                return $this->contactService->contactHasPermit($this->contact, 'edit', $affiliation);
             case 'replace':
                 /*
                  * For the replace we need to see if the user has access on the editing of the affiliation
                  * and the acl should not be approved
                  */
 
-                return is_null($doa->getDateApproved())
-                       && $this->getAffiliationAssertion()
-                               ->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
+                return null === $doa->getDateApproved()
+                    && $this->contactService->contactHasPermit($this->contact, 'edit', $doa->getAffiliation());
             case 'render':
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  */
-                if (! is_null($this->getRouteMatch()->getParam('id'))) {
+                if (null !== $this->getRouteMatch()->getParam('id')) {
                     $affiliationId = $this->getRouteMatch()->getParam('id');
                 } else {
                     $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
                 }
-                $affiliation = $this->getAffiliationService()->findAffiliationById($affiliationId);
+                $affiliation = $this->doaService->findAffiliationById((int)$affiliationId);
 
-                return $this->getAffiliationAssertion()->assert($acl, $role, $affiliation, 'view-community');
+                return $this->contactService->contactHasPermit($this->contact, 'view', $affiliation);
             case 'download':
-                return $this->getAffiliationAssertion()->assert($acl, $role, $doa->getAffiliation(), 'view-community');
+                return $this->contactService->contactHasPermit($this->contact, 'edit', $doa->getAffiliation());
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':

@@ -13,6 +13,8 @@
  * @link        https://itea3.org
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller;
 
 use Affiliation\Entity\Doa;
@@ -20,66 +22,127 @@ use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\DoaReminder as DoaReminderEntity;
 use Affiliation\Form\DoaApproval;
 use Affiliation\Form\DoaReminder;
+use Affiliation\Service\AffiliationService;
+use Affiliation\Service\DoaService;
+use Affiliation\Service\FormService;
+use Contact\Service\ContactService;
 use Deeplink\Entity\Target;
-use Deeplink\View\Helper\DeeplinkLink;
+use Deeplink\Service\DeeplinkService;
+use Doctrine\ORM\EntityManager;
+use General\Service\EmailService;
+use General\Service\GeneralService;
+use Project\Service\ProjectService;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Validator\File\FilesSize;
+use Zend\Validator\File\MimeType;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 /**
- * Affiliation controller.
+ * Class DoaManagerController
  *
- * @category   Affiliation
- *
- * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright  Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
- * @license    https://itea3.org/license.txt proprietary
- *
- * @link       https://itea3.org
+ * @package Affiliation\Controller
  */
-class DoaManagerController extends AffiliationAbstractController
+final class DoaManagerController extends AffiliationAbstractController
 {
     /**
-     * @return ViewModel
+     * @var DoaService
      */
-    public function listAction()
-    {
-        $doa = $this->getDoaService()->findNotApprovedDoa();
+    private $doaService;
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var ProjectService
+     */
+    private $projectService;
+    /**
+     * @var GeneralService
+     */
+    private $generalService;
+    /**
+     * @var EmailService
+     */
+    private $emailService;
+    /**
+     * @var DeeplinkService
+     */
+    private $deeplinkService;
+    /**
+     * @var FormService
+     */
+    private $formService;
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
-        $form = new DoaApproval($doa, $this->getContactService());
+    public function __construct(
+        DoaService $doaService,
+        AffiliationService $affiliationService,
+        ContactService $contactService,
+        ProjectService $projectService,
+        GeneralService $generalService,
+        EmailService $emailService,
+        DeeplinkService $deeplinkService,
+        FormService $formService,
+        EntityManager $entityManager,
+        TranslatorInterface $translator
+    ) {
+        $this->doaService = $doaService;
+        $this->affiliationService = $affiliationService;
+        $this->contactService = $contactService;
+        $this->projectService = $projectService;
+        $this->generalService = $generalService;
+        $this->emailService = $emailService;
+        $this->deeplinkService = $deeplinkService;
+        $this->formService = $formService;
+        $this->entityManager = $entityManager;
+        $this->translator = $translator;
+    }
+
+
+    public function listAction(): ViewModel
+    {
+        $doa = $this->doaService->findNotApprovedDoa();
+
+        $form = new DoaApproval($doa, $this->contactService);
 
         return new ViewModel(
             [
                 'doa'            => $doa,
                 'form'           => $form,
-                'projectService' => $this->getProjectService(),
+                'projectService' => $this->projectService,
             ]
         );
     }
 
-    /**
-     * @return ViewModel
-     */
-    public function approvalAction()
+    public function approvalAction(): ViewModel
     {
-        $doa = $this->getDoaService()->findNotApprovedDoa();
-        $form = new DoaApproval($doa, $this->getContactService());
+        $doa = $this->doaService->findNotApprovedDoa();
+        $form = new DoaApproval($doa, $this->contactService);
 
         return new ViewModel(
             [
                 'doa'            => $doa,
                 'form'           => $form,
-                'projectService' => $this->getProjectService(),
+                'projectService' => $this->projectService,
             ]
         );
     }
 
-    /**
-     * @return ViewModel
-     */
-    public function missingAction()
+    public function missingAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationWithMissingDoa();
+        $affiliation = $this->affiliationService->findAffiliationWithMissingDoa();
 
         return new ViewModel(
             [
@@ -88,18 +151,15 @@ class DoaManagerController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return array|\Zend\Http\Response|ViewModel
-     */
     public function remindAction()
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById($this->params('affiliationId'));
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
 
-        if (is_null($affiliation)) {
+        if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $form = new DoaReminder($affiliation, $this->getContactService());
+        $form = new DoaReminder($affiliation, $this->contactService, $this->entityManager);
 
         $data = array_merge(
             [
@@ -109,7 +169,11 @@ class DoaManagerController extends AffiliationAbstractController
         );
 
         //Get the corresponding template
-        $webInfo = $this->getGeneralService()->findWebInfoByInfo('/affiliation/doa:reminder');
+        $webInfo = $this->generalService->findWebInfoByInfo('/affiliation/doa:reminder');
+
+        if (null === $webInfo) {
+            return $this->notFoundAction();
+        }
 
         $form->get('subject')->setValue($webInfo->getSubject());
         $form->get('message')->setValue($webInfo->getContent());
@@ -120,55 +184,43 @@ class DoaManagerController extends AffiliationAbstractController
             /*
              * Send the email to the receiving user
              */
-            $receiver = $this->getContactService()->findContactById($form->getData()['receiver']);
+            $receiver = $this->contactService->findContactById((int)$form->getData()['receiver']);
 
-            $email = $this->getEmailService()->create();
-            $email->setFromContact($this->zfcUserAuthentication()->getIdentity());
-            $email->addTo($receiver);
-            $email->setSubject(str_replace(['[project]'], [$affiliation->getProject()], $form->getData()['subject']));
+            if (null !== $receiver) {
+                $this->emailService->setWebInfo('/affiliation/doa:reminder');
+                $this->emailService->setSubject($form->getData()['subject']);
+                $this->emailService->setEmailContent($form->getData()['message']);
+                $this->emailService->addTo($receiver);
+                $this->emailService->setTemplateVariable('receiver', $receiver->getDisplayName());
+                $this->emailService->setTemplateVariable('organisation', $affiliation->getOrganisation());
+                $this->emailService->setTemplateVariable('project', $affiliation->getProject());
 
-            $email->setHtmlLayoutName('signature_twig');
-            $email->setReceiver($receiver->getDisplayName());
-            $email->setOrganisation($affiliation->getOrganisation());
-            $email->setProject($affiliation->getProject());
-            $email->setMessage($form->getData()['message']);
+                /** @var Target $target */
+                $target = $this->deeplinkService->find(Target::class, (int)$data['deeplinkTarget']);
+                $this->emailService->setDeeplink($target, $receiver, (string)$affiliation->getId());
+                $this->emailService->send();
 
-            /**
-             * Create the deeplink in the email
-             *
-             * @var Target $target
-             */
-            $target = $this->getDeeplinkService()->findEntityById(Target::class, $data['deeplinkTarget']);
-            //Create a deeplink for the user which redirects to the profile-page
-            $deeplink = $this->getDeeplinkService()->createDeeplink($target, $receiver, null, $affiliation->getId());
+                //Store the reminder in the database
+                $doaReminder = new DoaReminderEntity();
+                $doaReminder->setAffiliation($affiliation);
+                $doaReminder->setEmail($form->getData()['message']);
+                $doaReminder->setReceiver($receiver);
+                $doaReminder->setSender($this->identity());
+                $this->doaService->save($doaReminder);
 
-            /**
-             * @var $deeplinkLink DeeplinkLink
-             */
-            $deeplinkLink = $this->getViewHelperManager()->get('deeplinkLink');
-            $email->setDeeplink($deeplinkLink($deeplink, 'view', 'link'));
-
-            $this->getEmailService()->send();
-
-            //Store the reminder in the database
-            $doaReminder = new DoaReminderEntity();
-            $doaReminder->setAffiliation($affiliation);
-            $doaReminder->setEmail($form->getData()['message']);
-            $doaReminder->setReceiver($this->getContactService()->findContactById($form->getData()['receiver']));
-            $doaReminder->setSender($this->zfcUserAuthentication()->getIdentity());
-            $this->getDoaService()->newEntity($doaReminder);
-
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(
-                    sprintf(
-                        $this->translate("txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s"),
+                $this->flashMessenger()->addSuccessMessage(
+                    \sprintf(
+                        $this->translator->translate(
+                            'txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s'
+                        ),
                         $affiliation->getOrganisation(),
                         $affiliation->getProject(),
-                        $this->getContactService()->findContactById($form->getData()['receiver'])->getEmail()
+                        $this->contactService->findContactById((int)$form->getData()['receiver'])->getEmail()
                     )
                 );
 
-            return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/doa/missing');
+            }
         }
 
         return new ViewModel(
@@ -180,15 +232,9 @@ class DoaManagerController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return ViewModel
-     */
-    public function remindersAction()
+    public function remindersAction(): ViewModel
     {
-        $affiliation = $this->getAffiliationService()->findAffiliationById(
-            $this->getEvent()->getRouteMatch()
-                ->getParam('affiliationId')
-        );
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
 
         return new ViewModel(
             [
@@ -197,26 +243,21 @@ class DoaManagerController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return array|ViewModel
-     */
-    public function viewAction()
+    public function viewAction(): ViewModel
     {
-        $doa = $this->getDoaService()->findDoaById($this->params('id'));
-        if (is_null($doa)) {
+        $doa = $this->doaService->findDoaById((int)$this->params('id'));
+
+        if (null === $doa) {
             return $this->notFoundAction();
         }
 
         return new ViewModel(['doa' => $doa]);
     }
 
-    /**
-     * @return array|\Zend\Http\Response|ViewModel
-     */
     public function editAction()
     {
-        $doa = $this->getDoaService()->findDoaById($this->params('id'));
-        if (is_null($doa)) {
+        $doa = $this->doaService->findDoaById((int)$this->params('id'));
+        if (null === $doa) {
             return $this->notFoundAction();
         }
 
@@ -225,13 +266,13 @@ class DoaManagerController extends AffiliationAbstractController
             $this->getRequest()->getFiles()->toArray()
         );
 
-        $form = $this->getFormService()->prepare($doa, $doa, $data);
+        $form = $this->formService->prepare($doa, $data);
 
 
         //Get contacts in an organisation
-        $contacts = $this->getContactService()->findContactsInAffiliation($doa->getAffiliation());
+        $contacts = $this->contactService->findContactsInAffiliation($doa->getAffiliation());
         $form->get('affiliation_entity_doa')->get('contact')->setValueOptions(
-            $this->getContactService()->toFormValueOptions($contacts['contacts'])
+            $this->contactService->toFormValueOptions($contacts['contacts'])
         )->setDisableInArrayValidator(true);
 
         /**
@@ -243,16 +284,17 @@ class DoaManagerController extends AffiliationAbstractController
             }
 
             if (isset($data['delete'])) {
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed"),
-                            $doa->getAffiliation()->getOrganisation(),
-                            $doa->getAffiliation()->getProject()
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate(
+                            'txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed'
+                        ),
+                        $doa->getAffiliation()->getOrganisation(),
+                        $doa->getAffiliation()->getProject()
+                    )
+                );
 
-                $this->getDoaService()->removeEntity($doa);
+                $this->doaService->delete($doa);
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/doa/list');
             }
@@ -276,29 +318,32 @@ class DoaManagerController extends AffiliationAbstractController
                             file_get_contents($fileData['affiliation_entity_doa']['file']['tmp_name'])
                         );
                         $doaObject->setDoa($doa);
-                        $this->getDoaService()->newEntity($doaObject);
+                        $this->doaService->save($doaObject);
                     }
 
                     //Create a article object element
                     $fileSizeValidator = new FilesSize(PHP_INT_MAX);
                     $fileSizeValidator->isValid($fileData['affiliation_entity_doa']['file']);
                     $doa->setSize($fileSizeValidator->size);
+
+                    $fileTypeValidator = new MimeType();
+                    $fileTypeValidator->isValid($fileData['affiliation_entity_doa']['file']);
                     $doa->setContentType(
-                        $this->getGeneralService()
-                            ->findContentTypeByContentTypeName($fileData['affiliation_entity_doa']['file']['type'])
+                        $this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type)
                     );
                 }
 
-                $this->getDoaService()->updateEntity($doa);
+                $this->doaService->save($doa);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translate("txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated"),
-                            $doa->getAffiliation()->getOrganisation(),
-                            $doa->getAffiliation()->getProject()
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate(
+                            'txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated'
+                        ),
+                        $doa->getAffiliation()->getOrganisation(),
+                        $doa->getAffiliation()->getProject()
+                    )
+                );
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/doa/view', ['id' => $doa->getId()]);
             }
@@ -312,12 +357,7 @@ class DoaManagerController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * Dedicated action to approve DOAs via an AJAX call.
-     *
-     * @return JsonModel
-     */
-    public function approveAction()
+    public function approveAction(): JsonModel
     {
         $doa = $this->params()->fromPost('doa');
         $contact = $this->params()->fromPost('contact');
@@ -327,16 +367,16 @@ class DoaManagerController extends AffiliationAbstractController
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => _("txt-contact-or-date-signed-is-empty"),
+                    'error'  => _('txt-contact-or-date-signed-is-empty'),
                 ]
             );
         }
 
-        if (!\DateTime::createFromFormat('Y-h-d', $dateSigned)) {
+        if (!\DateTime::createFromFormat('Y-m-d', $dateSigned)) {
             return new JsonModel(
                 [
                     'result' => 'error',
-                    'error'  => $this->translate("txt-incorrect-date-format-should-be-yyyy-mm-dd"),
+                    'error'  => $this->translator->translate('txt-incorrect-date-format-should-be-yyyy-mm-dd'),
                 ]
             );
         }
@@ -344,11 +384,11 @@ class DoaManagerController extends AffiliationAbstractController
         /**
          * @var $doa Doa
          */
-        $doa = $this->getAffiliationService()->findEntityById(Doa::class, $doa);
-        $doa->setContact($this->getContactService()->findContactById($contact));
-        $doa->setDateSigned(\DateTime::createFromFormat('Y-h-d', $dateSigned));
+        $doa = $this->affiliationService->find(Doa::class, (int)$doa);
+        $doa->setContact($this->contactService->findContactById((int)$contact));
+        $doa->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
         $doa->setDateApproved(new \DateTime());
-        $this->getDoaService()->updateEntity($doa);
+        $this->doaService->save($doa);
 
         return new JsonModel(
             [

@@ -8,40 +8,59 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Controller\Plugin;
 
 use Affiliation\Entity\Doa;
+use Affiliation\Options\ModuleOptions;
+use Contact\Service\ContactService;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use ZfcTwig\View\TwigRenderer;
 
 /**
  * Class RenderDoa.
  */
-class RenderDoa extends AbstractPlugin
+final class RenderDoa extends AbstractPlugin
 {
     /**
-     * @param Doa $doa
-     *
-     * @return AffiliationPdf
+     * @var ModuleOptions
      */
+    private $moduleOptions;
+    /**
+     * @var ContactService
+     */
+    private $contactService;
+    /**
+     * @var TwigRenderer
+     */
+    private $renderer;
+
+    public function __construct(ModuleOptions $moduleOptions, ContactService $contactService, TwigRenderer $renderer)
+    {
+        $this->moduleOptions = $moduleOptions;
+        $this->contactService = $contactService;
+        $this->renderer = $renderer;
+    }
+
     public function renderProjectDoa(Doa $doa): AffiliationPdf
     {
-        /** @var \TCPDF $pdf */
         $pdf = new AffiliationPdf();
-        $pdf->setTemplate($this->getModuleOptions()->getDoaTemplate());
+        $pdf->setTemplate($this->moduleOptions->getDoaTemplate());
         $pdf->AddPage();
         $pdf->SetFontSize(9);
-        $twig = $this->getTwigRenderer();
         /*
          * Write the contact details
          */
         $pdf->SetXY(14, 55);
         $pdf->Write(0, $doa->getContact()->parseFullName());
         $pdf->SetXY(14, 60);
-        $pdf->Write(0, $this->getContactService()->parseOrganisation($doa->getContact()));
+        $pdf->Write(0, $this->contactService->parseOrganisation($doa->getContact()));
         /*
          * Write the current date
          */
         $pdf->SetXY(77, 55);
-        $pdf->Write(0, date("Y-m-d"));
+        $pdf->Write(0, date('d-m-Y'));
         /*
          * Write the Reference
          */
@@ -50,13 +69,13 @@ class RenderDoa extends AbstractPlugin
          * Use the NDA object to render the filename
          */
         $pdf->Write(0, $doa->parseFileName());
-        $ndaContent = $twig->render(
+        $ndaContent = $this->renderer->render(
             'affiliation/pdf/doa-project',
             [
                 'contact'        => $doa->getContact(),
                 'project'        => $doa->getAffiliation()->getProject(),
                 'organisation'   => $doa->getAffiliation()->getOrganisation(),
-                'contactService' => $this->getContactService(),
+                'contactService' => $this->contactService,
             ]
         );
         $pdf->writeHTMLCell(0, 0, 14, 85, $ndaContent);

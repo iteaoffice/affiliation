@@ -9,11 +9,14 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\View\Helper;
 
-use Affiliation\Acl\Assertion\AssertionAbstract;
+use Affiliation\Entity\AbstractEntity;
 use Affiliation\Entity\Affiliation;
-use Affiliation\Entity\EntityAbstract;
+use Affiliation\Entity\Doa;
+use Affiliation\Entity\Loi;
 use Affiliation\Service\AffiliationService;
 use BjyAuthorize\Controller\Plugin\IsAllowed;
 use BjyAuthorize\Service\Authorize;
@@ -21,6 +24,8 @@ use Contact\Entity\Contact;
 use Contact\Service\ContactService;
 use Invoice\Service\InvoiceService;
 use Organisation\Service\OrganisationService;
+use Project\Entity\Report\Report;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\View\Helper\ServerUrl;
@@ -87,24 +92,26 @@ abstract class LinkAbstract extends AbstractViewHelper
      * @var Affiliation
      */
     protected $affiliation;
-
     /**
-     * This function produces the link in the end.
-     *
-     * @return string
+     * @var Doa
      */
-    public function createLink()
+    protected $doa;
+    /**
+     * @var Loi
+     */
+    protected $loi;
+    /**
+     * @var Report
+     */
+    protected $report;
+
+    public function createLink(): string
     {
-        /**
-         * @var $url Url
-         */
-        $url = $this->getHelperPluginManager()->get('url');
-        /**
-         * @var $serverUrl ServerUrl
-         */
-        $serverUrl         = $this->getHelperPluginManager()->get('serverUrl');
+        $url = $this->getHelperPluginManager()->get(Url::class);
+        $serverUrl = $this->getHelperPluginManager()->get(ServerUrl::class);
+
         $this->linkContent = [];
-        $this->classes     = [];
+        $this->classes = [];
         $this->parseAction();
         $this->parseShow();
         if ('social' === $this->getShow()) {
@@ -115,28 +122,23 @@ abstract class LinkAbstract extends AbstractViewHelper
         return sprintf(
             $uri,
             $serverUrl() . $url(
-                $this->router, $this->routerParams,
-                is_null($this->getFragment()) ? [] : ['fragment' => $this->getFragment()]
+                $this->router,
+                $this->routerParams,
+                null === $this->getFragment() ? [] : ['fragment' => $this->getFragment()]
             ),
-            htmlentities($this->text),
+            htmlentities((string)$this->text),
             implode(' ', $this->classes),
-            in_array($this->getShow(), ['icon', 'button', 'alternativeShow']) ? implode('', $this->linkContent)
+            \in_array($this->getShow(), ['icon', 'button', 'alternativeShow'], true) ? implode('', $this->linkContent)
                 : htmlentities(implode('', $this->linkContent))
         );
     }
 
-    /**
-     *
-     */
-    public function parseAction()
+    public function parseAction(): void
     {
         $this->action = null;
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function parseShow()
+    public function parseShow(): void
     {
         switch ($this->getShow()) {
             case 'icon':
@@ -146,6 +148,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                     case 'edit-description':
                     case 'edit-community':
                     case 'edit-financial':
+                    case 'edit-cost-and-effort':
                     case 'update-effort-spent':
                     case 'edit-admin':
                         $this->addLinkContent('<i class="fa fa-pencil-square-o"></i>');
@@ -154,7 +157,21 @@ abstract class LinkAbstract extends AbstractViewHelper
                         $this->addLinkContent('<i class="fa fa-download"></i>');
                         break;
                     case 'payment-sheet-pdf':
+                    case 'payment-sheet-pdf-contract':
                         $this->addLinkContent('<i class="fa fa-file-pdf-o"></i>');
+                        break;
+                    case 'payment-sheet':
+                        $this->addLinkContent('<i class="fa fa-eur success"></i>');
+                        break;
+                    case 'payment-sheet-contract':
+                        $this->addLinkContent('<i class="fa fa-eur"></i>');
+                        break;
+                    case 'add-associate':
+                    case 'add-associate-admin':
+                        $this->addLinkContent('<i class="fa fa-plus"></i>');
+                        break;
+                    case 'manage-associate':
+                        $this->addLinkContent('<i class="fa fa-users"></i>');
                         break;
                     default:
                         $this->addLinkContent('<i class="fa fa-link"></i>');
@@ -162,7 +179,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                 }
                 if ($this->getShow() === 'button') {
                     $this->addLinkContent(' ' . $this->getText());
-                    $this->addClasses("btn btn-primary");
+                    $this->addClasses('btn btn-primary');
                 }
                 break;
 
@@ -170,7 +187,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                 $this->addLinkContent($this->getText());
                 break;
             case 'paginator':
-                if (is_null($this->getAlternativeShow())) {
+                if (null === $this->getAlternativeShow()) {
                     throw new \InvalidArgumentException(
                         sprintf("this->alternativeShow cannot be null for a paginator link")
                     );
@@ -185,7 +202,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                 return;
                 break;
             default:
-                if (! array_key_exists($this->getShow(), $this->showOptions)) {
+                if (!array_key_exists($this->getShow(), $this->showOptions)) {
                     throw new \InvalidArgumentException(
                         sprintf(
                             "The option \"%s\" should be available in the showOptions array, only \"%s\" are available",
@@ -238,7 +255,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function addLinkContent($linkContent)
     {
-        if (! is_array($linkContent)) {
+        if (!is_array($linkContent)) {
             $linkContent = [$linkContent];
         }
         foreach ($linkContent as $content) {
@@ -271,10 +288,7 @@ abstract class LinkAbstract extends AbstractViewHelper
      */
     public function addClasses($classes)
     {
-        if (! is_array($classes)) {
-            $classes = [$classes];
-        }
-        foreach ($classes as $class) {
+        foreach ((array)$classes as $class) {
             $this->classes[] = $class;
         }
 
@@ -314,7 +328,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     }
 
     /**
-     * @param string $showOptions
+     * @param array $showOptions
      */
     public function setShowOptions($showOptions)
     {
@@ -322,50 +336,36 @@ abstract class LinkAbstract extends AbstractViewHelper
     }
 
     /**
-     * @param EntityAbstract $entity
+     * @param AbstractEntity $entity
      * @param string         $assertion
      * @param string         $action
      *
      * @return bool
      */
-    public function hasAccess(EntityAbstract $entity, $assertion, $action)
+    public function hasAccess(AbstractEntity $entity, $assertion, $action)
     {
         $assertion = $this->getAssertion($assertion);
-        if (! is_null($entity) && ! $this->getAuthorizeService()->getAcl()->hasResource($entity)) {
+        if (!\is_null($entity) && !$this->getAuthorizeService()->getAcl()->hasResource($entity)) {
             $this->getAuthorizeService()->getAcl()->addResource($entity);
             $this->getAuthorizeService()->getAcl()->allow([], $entity, [], $assertion);
         }
-        if (! $this->isAllowed($entity, $action)) {
+        if (!$this->isAllowed($entity, $action)) {
             return false;
         }
 
         return true;
     }
 
-    /**
-     * @param string $assertion
-     *
-     * @return AssertionAbstract
-     */
-    public function getAssertion($assertion)
+    public function getAssertion(string $assertion)
     {
         return $this->getServiceManager()->get($assertion);
     }
 
-    /**
-     * @return Authorize
-     */
-    public function getAuthorizeService()
+    public function getAuthorizeService(): Authorize
     {
         return $this->getServiceManager()->get('BjyAuthorize\Service\Authorize');
     }
 
-    /**
-     * @param null|EntityAbstract $resource
-     * @param string              $privilege
-     *
-     * @return bool
-     */
     public function isAllowed($resource, $privilege = null)
     {
         /**
@@ -376,19 +376,12 @@ abstract class LinkAbstract extends AbstractViewHelper
         return $isAllowed($resource, $privilege);
     }
 
-    /**
-     * Add a parameter to the list of parameters for the router.
-     *
-     * @param string $key
-     * @param        $value
-     * @param bool   $allowNull
-     */
     public function addRouterParam($key, $value, $allowNull = true)
     {
-        if (! $allowNull && is_null($value)) {
+        if (!$allowNull && null === $value) {
             throw new \InvalidArgumentException(sprintf("null is not allowed for %s", $key));
         }
-        if (! is_null($value)) {
+        if (null !== $value) {
             $this->routerParams[$key] = $value;
         }
     }
@@ -420,15 +413,23 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return ProjectService
      */
-    public function getProjectService()
+    public function getProjectService(): ProjectService
     {
         return $this->getServiceManager()->get(ProjectService::class);
     }
 
     /**
+     * @return ContractService
+     */
+    public function getContractService(): ContractService
+    {
+        return $this->getServiceManager()->get(ContractService::class);
+    }
+
+    /**
      * @return AffiliationService
      */
-    public function getAffiliationService()
+    public function getAffiliationService(): AffiliationService
     {
         return $this->getServiceManager()->get(AffiliationService::class);
     }
@@ -436,7 +437,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return VersionService
      */
-    public function getVersionService()
+    public function getVersionService(): VersionService
     {
         return $this->getServiceManager()->get(VersionService::class);
     }
@@ -444,7 +445,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return ContactService
      */
-    public function getContactService()
+    public function getContactService(): ContactService
     {
         return $this->getServiceManager()->get(ContactService::class);
     }
@@ -452,7 +453,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return InvoiceService
      */
-    public function getInvoiceService()
+    public function getInvoiceService(): InvoiceService
     {
         return $this->getServiceManager()->get(InvoiceService::class);
     }
@@ -460,7 +461,7 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return OrganisationService
      */
-    public function getOrganisationService()
+    public function getOrganisationService(): OrganisationService
     {
         return $this->getServiceManager()->get(OrganisationService::class);
     }
@@ -528,8 +529,12 @@ abstract class LinkAbstract extends AbstractViewHelper
     /**
      * @return Affiliation
      */
-    public function getAffiliation()
+    public function getAffiliation(): Affiliation
     {
+        if (\is_null($this->affiliation)) {
+            $this->affiliation = new Affiliation();
+        }
+
         return $this->affiliation;
     }
 
@@ -543,5 +548,65 @@ abstract class LinkAbstract extends AbstractViewHelper
         $this->affiliation = $affiliation;
 
         return $this;
+    }
+
+    /**
+     * @return Doa
+     */
+    public function getDoa(): Doa
+    {
+        if (\is_null($this->doa)) {
+            $this->doa = new Doa();
+        }
+
+        return $this->doa;
+    }
+
+    /**
+     * @param Doa $doa
+     */
+    public function setDoa($doa)
+    {
+        $this->doa = $doa;
+    }
+
+    /**
+     * @return Loi
+     */
+    public function getLoi()
+    {
+        if (\is_null($this->loi)) {
+            $this->loi = new Loi();
+        }
+
+        return $this->loi;
+    }
+
+    /**
+     * @param Loi $loi
+     */
+    public function setLoi($loi)
+    {
+        $this->loi = $loi;
+    }
+
+    /**
+     * @return Report
+     */
+    public function getReport()
+    {
+        if (\is_null($this->report)) {
+            $this->report = new Report();
+        }
+
+        return $this->report;
+    }
+
+    /**
+     * @param Report $report
+     */
+    public function setReport($report)
+    {
+        $this->report = $report;
     }
 }

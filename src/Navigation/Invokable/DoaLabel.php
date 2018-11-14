@@ -13,6 +13,8 @@
  * @link        http://github.com/iteaoffice/affiliation for the canonical source repository
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Navigation\Invokable;
 
 use Admin\Navigation\Invokable\AbstractNavigationInvokable;
@@ -33,7 +35,7 @@ class DoaLabel extends AbstractNavigationInvokable
      *
      * @return void
      */
-    public function __invoke(Mvc $page)
+    public function __invoke(Mvc $page): void
     {
         if ($this->getEntities()->containsKey(Doa::class)) {
             /** @var Doa $doa */
@@ -48,9 +50,9 @@ class DoaLabel extends AbstractNavigationInvokable
                     ]
                 )
             );
-            $label = $this->translate('txt-doa');
+            $label = $this->translator->translate('txt-doa');
         } else {
-            $label = $this->translate('txt-nav-view');
+            $label = $this->translator->translate('txt-nav-view');
         }
         $page->set('label', $label);
     }

@@ -8,9 +8,12 @@
  * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
  */
 
+declare(strict_types=1);
+
 namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use General\Entity\ExchangeRate;
 use Zend\Form\Annotation;
 
 /**
@@ -23,7 +26,7 @@ use Zend\Form\Annotation;
  *
  * @category    Affiliation
  */
-class Invoice extends EntityAbstract
+class Invoice extends AbstractEntity
 {
     /**
      * @ORM\Column(name="affiliation_invoice_id", type="integer", nullable=false)
@@ -46,6 +49,12 @@ class Invoice extends EntityAbstract
      */
     private $year;
     /**
+     * @ORM\Column(name="years", type="array", nullable=false)
+     *
+     * @var array
+     */
+    private $years;
+    /**
      * @ORM\Column(name="amount_invoiced", type="decimal", nullable=true)
      *
      * @var float
@@ -53,57 +62,54 @@ class Invoice extends EntityAbstract
     private $amountInvoiced;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="affiliationInvoice", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=true)
-     * })
      *
      * @var \Project\Entity\Version\Version
      */
     private $version;
     /**
+     * @ORM\ManyToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="affiliationInvoice", cascade={"persist"})
+     * @ORM\JoinColumn(name="contract_version_id", referencedColumnName="version_id", nullable=true)
+     *
+     * @var \Project\Entity\Contract\Version
+     */
+    private $contractVersion;
+    /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="invoice", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\OneToOne(targetEntity="Invoice\Entity\Invoice", inversedBy="affiliationInvoice", cascade={"persist","remove"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="invoice_id", referencedColumnName="invoice_id", nullable=false)
-     * })
      * @var \Invoice\Entity\Invoice
      */
     private $invoice;
-
     /**
-     * @param $property
-     *
-     * @return mixed
+     * @ORM\ManyToOne(targetEntity="General\Entity\ExchangeRate", inversedBy="affiliationInvoice", cascade={"persist"})
+     * @ORM\JoinColumn(name="exchange_rate_id", referencedColumnName="exchange_rate_id", nullable=true)
+     * @var \General\Entity\ExchangeRate|null
      */
+    private $exchangeRate;
+
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->getInvoice();
     }
@@ -111,7 +117,7 @@ class Invoice extends EntityAbstract
     /**
      * @return \Invoice\Entity\Invoice
      */
-    public function getInvoice()
+    public function getInvoice(): ?\Invoice\Entity\Invoice
     {
         return $this->invoice;
     }
@@ -121,11 +127,25 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setInvoice($invoice)
+    public function setInvoice($invoice): ?Invoice
     {
         $this->invoice = $invoice;
 
         return $this;
+    }
+
+    public function hasYearAndPeriod(int $year, int $period): bool
+    {
+        if (!$this->hasYear($year)) {
+            return false;
+        }
+
+        return \in_array($period, $this->years[$year], true);
+    }
+
+    public function hasYear(int $year): bool
+    {
+        return \array_key_exists($year, $this->years);
     }
 
     /**
@@ -141,7 +161,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setId($id)
+    public function setId($id): ?Invoice
     {
         $this->id = $id;
 
@@ -161,7 +181,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setPeriod($period)
+    public function setPeriod($period): ?Invoice
     {
         $this->period = $period;
 
@@ -181,7 +201,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setYear($year)
+    public function setYear($year): ?Invoice
     {
         $this->year = $year;
 
@@ -201,7 +221,7 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setAmountInvoiced($amountInvoiced)
+    public function setAmountInvoiced($amountInvoiced): ?Invoice
     {
         $this->amountInvoiced = $amountInvoiced;
 
@@ -211,7 +231,7 @@ class Invoice extends EntityAbstract
     /**
      * @return \Project\Entity\Version\Version
      */
-    public function getVersion()
+    public function getVersion(): ?\Project\Entity\Version\Version
     {
         return $this->version;
     }
@@ -221,9 +241,29 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setVersion($version)
+    public function setVersion($version): ?Invoice
     {
         $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return \Project\Entity\Contract\Version|null
+     */
+    public function getContractVersion(): ?\Project\Entity\Contract\Version
+    {
+        return $this->contractVersion;
+    }
+
+    /**
+     * @param \Project\Entity\Contract\Version $contractVersion
+     *
+     * @return Invoice
+     */
+    public function setContractVersion(\Project\Entity\Contract\Version $contractVersion): Invoice
+    {
+        $this->contractVersion = $contractVersion;
 
         return $this;
     }
@@ -241,10 +281,41 @@ class Invoice extends EntityAbstract
      *
      * @return Invoice
      */
-    public function setAffiliation($affiliation)
+    public function setAffiliation($affiliation): ?Invoice
     {
         $this->affiliation = $affiliation;
 
+        return $this;
+    }
+
+    /**
+     * @return ExchangeRate|null
+     */
+    public function getExchangeRate(): ?ExchangeRate
+    {
+        return $this->exchangeRate;
+    }
+
+    /**
+     * @param ExchangeRate|null $exchangeRate
+     *
+     * @return Invoice
+     */
+    public function setExchangeRate(?ExchangeRate $exchangeRate): Invoice
+    {
+        $this->exchangeRate = $exchangeRate;
+
+        return $this;
+    }
+
+    public function getYears(): ?array
+    {
+        return $this->years;
+    }
+
+    public function setYears(array $years): Invoice
+    {
+        $this->years = $years;
         return $this;
     }
 }

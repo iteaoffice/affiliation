@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use Contact\Service\ContactService;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
@@ -24,10 +25,10 @@ class EditAssociate extends Form implements InputFilterProviderInterface
 {
     /**
      * EditAssociate constructor.
-     *
      * @param Affiliation $affiliation
+     * @param ContactService $contactService
      */
-    public function __construct(Affiliation $affiliation)
+    public function __construct(Affiliation $affiliation, ContactService $contactService)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -42,11 +43,31 @@ class EditAssociate extends Form implements InputFilterProviderInterface
                 "%s (%s) %s",
                 $otherAffiliation->getOrganisation()->getOrganisation(),
                 $otherAffiliation->getOrganisation()->getCountry(),
-                is_null($otherAffiliation->getDateEnd()) ? '' : ' (deactivated)'
+                \is_null($otherAffiliation->getDateEnd()) ? '' : ' (deactivated)'
             );
         }
 
-        asort($affiliations);
+        natcasesort($affiliations);
+
+        $contacts = [];
+        foreach ($contactService->findContactsInOrganisation($affiliation->getOrganisation()) as $contact) {
+            $contacts[$contact->getId()] = $contact->getFormName();
+        }
+
+        $this->add(
+            [
+                'type'       => 'Contact\Form\Element\Contact',
+                'name'       => 'contact',
+                'options'    => [
+                    'value_options' => $contacts,
+                    'label'         => _("txt-contact-name"),
+                ],
+                'attributes' => [
+                    'class'    => 'form-control',
+                    'required' => true,
+                ],
+            ]
+        );
 
         $this->add(
             [
@@ -98,7 +119,7 @@ class EditAssociate extends Form implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'affiliation' => [

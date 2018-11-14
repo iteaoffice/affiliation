@@ -31,7 +31,7 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
     public function __construct(EntityManager $entityManager)
     {
         parent::__construct('affiliation_entity_loi');
-        $loi              = new Entity\Loi();
+        $loi = new Entity\Loi();
         $doctrineHydrator = new DoctrineHydrator($entityManager, 'Affiliation\Entity\Loi');
         $this->setHydrator($doctrineHydrator)->setObject($loi);
         $builder = new AnnotationBuilder();
@@ -83,7 +83,7 @@ class LoiFieldset extends Fieldset implements InputFilterProviderInterface
      *
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification(): array
     {
         return [
             'dateApproved' => [

@@ -7,309 +7,80 @@
 <div class="row">
     <div class="col-md-10">
 
-        <h1>{{ translate("txt-affiliation-list") }}</h1>
+        <h1 class="display-4">{{ translate("txt-affiliation-list") }}</h1>
+        <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
 
         <div class="row">
+            <div class="col-md-8">
+
+                <div class="form-group row">{{ formelement(form.get('query')) }}</div>
+                {% if form.has('fields') %}
+                    {{ ztbformelement(form.get('fields')) }}
+                {% endif %}
+            </div>
             <div class="col-md-4">
-                <p class="lead">{{ translate("txt-affiliation-list-explanation") }}</p>
+                <p>
+                    {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
+                </p>
                 <p>
                     <a href="{{ url('zfcadmin/affiliation/list-csv') }}{% if fullArguments %}?{{ fullArguments }}{% endif %}"
                        class="btn btn-primary">{{ translate("txt-download-as-csv") }}</a>
                 </p>
-            </div>
-            <div class="col-md-4">
-                <p>
-                <div>
-                    <div class="form-group">{{ formelement(form.get('query')) }}</div>
-                    {{ formelement(form.get('search')) }} {{ formelement(form.get('reset')) }}
-                </div>
-                </p>
-                <p>
-                <div>
-                    <div class="form-group">{{ formelement(form.get('group')) }}</div>
-                    {{ formelement(form.get('apply')) }}
-                    {% if groups %}
-                        {{ formbutton(form.get('btn-collapse')) }}
-                        {{ formelement(form.get('collapse')) }}
-                    {% endif %}
-                </div>
-                </p>
                 {% if paginator %}
                     <p class="text-muted">
-                        {{ translate("txt-%s-items-on-%s-pages")|format(paginator.adapter.count, paginator.pageRange) }}
-                    </p>
-                {% elseif groups %}
-                    <p class="text-muted">
-                        {{ translate("txt-%s-items-in-%s-groups")|format(groups.getMatches(), groups.getNumberOfGroups()) }}
+                        {{ translate("txt-%s-items-on-%s-pages")|format(paginator.adapter.count, paginator.pageRange) }}<br>
+                        <span class="label" style="background-color: #f2dede;">&nbsp;</span> = {{ translate('txt-inactive-affiliation') }}
                     </p>
                 {% endif %}
-                <div><span class="label" style="background-color: #f2dede;">&nbsp;</span>
-                    = {{ translate('txt-inactive-affiliation') }}</div>
-            </div>
-            <div class="col-md-4">
-                <div class="row">
-                    {{ ztbformelement(form.get('cols')) }}
-                </div>
             </div>
         </div>
-        {% if groups %}
-            <hr>
-            <table id="tbl-list" class="table table-striped table-condensed">
+        {% if paginator and (paginator.pageRange > 0) %}
+            <table class="table table-striped table-hover table-condensed table-sm">
                 <thead>
                 <tr>
-                    <th>{{ translate('txt-group') }}</th>
-                    <th class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}">
+                    <th>
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'organisation_sort', 'text': translate('txt-affiliation')} %}
                     </th>
-                    <th class="col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_draft_cost', 'text': translate('txt-project-draft-cost')} %}
-                    </th>
-                    <th class="col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_draft_effort', 'text': translate('txt-project-draft-effort')} %}
-                    </th>
-                    <th class="col-version{% if 'col-version' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_type', 'text': translate('txt-version')} %}
-                    </th>
-                    <th class="col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_status', 'text': translate('txt-version-status')} %}
-                    </th>
-                    <th class="col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_cost', 'text': translate('txt-version-cost')} %}
-                    </th>
-                    <th class="col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_effort', 'text': translate('txt-version-effort')} %}
-                    </th>
-                    <th class="text-center col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_latest_version_type', 'text': translate('txt-lastest-version')} %}
-                    </th>
-                    <th class="col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'cost_latest', 'text': translate('txt-latest-version-cost')} %}
-                    </th>
-                    <th class="col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'effort_latest', 'text': translate('txt-latest-version-effort')} %}
-                    </th>
-                    <th class="col-project{% if 'col-project' not in cols %} hidden{% endif %}">
+                    <th>
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_sort', 'text': translate('txt-project')} %}
                     </th>
-                    <th class="col-call{% if 'col-call' not in cols %} hidden{% endif %}">
+                    <th>
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_call', 'text': translate('txt-call')} %}
                     </th>
-                    <th class="col-contact{% if 'col-contact' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'contact_sort', 'text': translate('txt-contact')} %}
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {% set latestCostTotal, latestEffortTotal, draftCostTotal, draftEffortTotal = 0, 0, 0, 0 %}
-                {% set effortTotal, costTotal = 0, 0 %}
-
-                {% for valueGroup in groups %}
-
-                    {% set latestCostSum, latestEffortSum, draftCostSum, draftEffortSum = 0, 0, 0, 0 %}
-                    {% set effortSum, costSum = 0, 0 %}
-
-                    {% for result in valueGroup %}
-
-                        {% set latestCostSum = latestCostSum+result.fields.project_latest_version_cost %}
-                        {% set latestEffortSum = latestEffortSum+effortCount+result.fields.project_latest_version_effort %}
-                        {% set draftCostSum = draftCostSum+result.fields.project_draft_cost %}
-                        {% set draftEffortSum = draftEffortSum+result.fields.project_draft_effort %}
-                        {% set effortSum = effortSum+result.fields.project_version_effort %}
-                        {% set costSum = costSum+result.fields.project_version_cost %}
-                        <tr{% if collapse or result.fields.date_end %} class="{% if result.fields.date_end %}danger{% endif %} {% if collapse %}hidden{% endif %}"{% endif %}>
-                            <td>{{ valueGroup.getValue() }}</td>
-                            <td class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}">
-                                <a href="{{ url('zfcadmin/affiliation/view',{'id':result.fields.affiliation_id }) }}">{{ result.fields.organisation }}</a>
-                            </td>
-                            <td class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_draft_cost|parse_cost }} k&euro;
-                            </td>
-                            <td class="text-right col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_draft_effort|parse_effort }} {{ translate('txt-py') }}
-                            </td>
-                            <td class="text-right col-version{% if 'col-version' not in cols %} hidden{% endif %}">
-                                <a href="{{ url('zfcadmin/project/version/view',{'id':result.fields.project_version_id }) }}">{{ result.fields.project_version_type }}</a>
-                            </td>
-                            <td class="text-right col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_version_status }}
-                            </td>
-                            <td class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_version_cost|parse_cost }} k&euro;
-                            </td>
-                            <td class="text-right col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_version_effort|parse_effort }} {{ translate('txt-py') }}
-                            </td>
-                            <td class="text-center col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}">
-                                {% if result.fields.project_latest_version_type|length > 0 %}
-                                    <a href="{{ url('zfcadmin/project/version/view',{'id':result.fields.project_latest_version_id }) }}">{{ result.fields.project_latest_version_type }}</a>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_latest_version_cost|parse_cost }} k&euro;
-                            </td>
-                            <td class="text-right col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_latest_version_effort|parse_effort }} {{ translate("txt-py") }}
-                            </td>
-                            <td class="col-project{% if 'col-project' not in cols %} hidden{% endif %}">
-                                <a href="{{ url('zfcadmin/project/project/view',{'id':result.fields.project_id }) }}">{{ result.fields.project }}</a>
-                            </td>
-                            <td class="col-call{% if 'col-call' not in cols %} hidden{% endif %}">
-                                {{ result.fields.project_call }}
-                            </td>
-                            <td class="col-contact{% if 'col-contact' not in cols %} hidden{% endif %}">
-                                <a href="{{ url('zfcadmin/contact-admin/view',{'id':result.fields.contact_id }) }}">{{ result.fields.contact }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    {% set latestCostTotal, latestEffortTotal = (latestCostTotal+latestCostSum), (latestEffortTotal+latestEffortSum) %}
-                    {% set draftCostTotal, draftEffortTotal = (draftCostTotal+draftCostSum), (draftEffortTotal+draftEffortSum) %}
-                    {% set costTotal, effortTotal = (costTotal+costSum), (effortTotal+effortSum) %}
-                    <tr class="row-totals">
-                        <th>{{ translate("txt-total") }} {{ valueGroup.getValue() }}</th>
-                        <th class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}"></th>
-                        <th class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">{{ draftCostSum|parse_cost }}
-                            k&euro;</th>
-                        <th class="text-right col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">{{ draftEffortSum|parse_effort }} {{ translate('txt-py') }}</th>
-                        <th class="text-right col-version{% if 'col-version' not in cols %} hidden{% endif %}"></th>
-                        <th class="text-right col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}"></th>
-                        <th class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">{{ costSum|parse_cost }}
-                            k&euro;</th>
-                        <th class="text-right col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">{{ effortSum|parse_effort }} {{ translate('txt-py') }}</th>
-                        <th class="col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}"></th>
-                        <th class="col-latest-status{% if 'col-latest-status' not in cols %} hidden{% endif %}"></th>
-                        <th class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">{{ latestCostSum|parse_cost }}
-                            k&euro;</th>
-                        <th class="text-right col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">{{ latestEffortSum|parse_effort }} {{ translate('txt-py') }}</th>
-                        <th class="col-project{% if 'col-project' not in cols %} hidden{% endif %}"></th>
-                        <th class="col-call{% if 'col-call' not in cols %} hidden{% endif %}"></th>
-                        <th class="col-contact{% if 'col-contact' not in cols %} hidden{% endif %}"></th>
-                    </tr>
-                {% endfor %}
-                </tbody>
-                <tfoot>
-                <tr style="background-color: #d9dadc">
-                    <th>{{ translate("txt-grand-total") }}</th>
-                    <th class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}"></th>
-                    <th class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">{{ draftCostTotal|parse_cost }}
-                        k&euro;</th>
-                    <th class="text-right col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">{{ draftEffortTotal|parse_effort }} {{ translate('txt-py') }}</th>
-                    <th class="text-right col-version{% if 'col-version' not in cols %} hidden{% endif %}"></th>
-                    <th class="text-right col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}"></th>
-                    <th class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">{{ costTotal|parse_cost }}
-                        k&euro;</th>
-                    <th class="text-right col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">{{ effortTotal|parse_effort }} {{ translate('txt-py') }}</th>
-                    <th class="col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}"></th>
-                    <th class="col-latest-status{% if 'col-latest-status' not in cols %} hidden{% endif %}"></th>
-                    <th class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">{{ latestCostTotal|parse_cost }}
-                        k&euro;</th>
-                    <th class="text-right col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">{{ latestEffortTotal|parse_effort }} {{ translate('txt-py') }}</th>
-                    <th class="col-project{% if 'col-project' not in cols %} hidden{% endif %}"></th>
-                    <th class="col-call{% if 'col-call' not in cols %} hidden{% endif %}"></th>
-                    <th class="col-contact{% if 'col-contact' not in cols %} hidden{% endif %}"></th>
-                </tr>
-                </tfoot>
-            </table>
-
-        {% elseif paginator and (paginator.pageRange > 0) %}
-            <table id="tbl-list" class="table table-striped">
-                <thead>
-                <tr>
-                    <th class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'organisation_sort', 'text': translate('txt-affiliation')} %}
-                    </th>
-                    <th class="col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'cost_draft', 'text': translate('txt-project-draft-cost')} %}
-                    </th>
-                    <th class="col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'effort_draft', 'text': translate('txt-project-draft-effort')} %}
-                    </th>
-                    <th class="text-center col-version{% if 'col-version' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_type', 'text': translate('txt-version')} %}
-                    </th>
-                    <th class="col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_status', 'text': translate('txt-version-status')} %}
-                    </th>
-                    <th class="col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_cost', 'text': translate('txt-version-cost')} %}
-                    </th>
-                    <th class="col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_version_effort', 'text': translate('txt-version-effort')} %}
-                    </th>
-                    <th class="text-center col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_latest_version_type', 'text': translate('txt-lastest-version')} %}
-                    </th>
-                    <th class="col-latest-status{% if 'col-latest-status' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_latest_version_status', 'text': translate('txt-latest-version-status')} %}
-                    </th>
-                    <th class="col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'cost_latest', 'text': translate('txt-latest-version-cost')} %}
-                    </th>
-                    <th class="col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'effort_latest', 'text': translate('txt-latest-version-effort')} %}
-                    </th>
-                    <th class="col-project{% if 'col-project' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_sort', 'text': translate('txt-project')} %}
-                    </th>
-                    <th class="col-call{% if 'col-call' not in cols %} hidden{% endif %}">
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_call', 'text': translate('txt-call')} %}
-                    </th>
-                    <th class="col-contact{% if 'col-contact' not in cols %} hidden{% endif %}">
+                    <th>
                         {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'contact_sort', 'text': translate('txt-contact')} %}
                     </th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for result in paginator.getCurrentItems() %}
-                    <tr{% if result.fields.date_end %} class="danger"{% endif %}>
-                        <td class="col-affiliation{% if 'col-affiliation' not in cols %} hidden{% endif %}">
+                    <tr{% if not result.fields.is_active %} class="danger"{% endif %}>
+                        <td>
                             <a href="{{ url('zfcadmin/affiliation/view',{'id':result.fields.affiliation_id }) }}">{{ result.fields.organisation }}</a>
                         </td>
-                        <td class="text-right col-draft-cost{% if 'col-draft-cost' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_draft_cost|parse_cost }} k&euro;
-                        </td>
-                        <td class="text-right col-draft-effort{% if 'col-draft-effort' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_draft_effort|parse_effort }} {{ translate('txt-py') }}
-                        </td>
-                        <td class="text-center text-right col-version{% if 'col-version' not in cols %} hidden{% endif %}">
-                            <a href="{{ url('zfcadmin/project/version/view',{'id':result.fields.project_version_id }) }}">{{ result.fields.project_version_type }}</a>
-                        </td>
-                        <td class="col-version-status{% if 'col-version-status' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_version_status }}
-                        </td>
-                        <td class="text-right col-version-cost{% if 'col-version-cost' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_version_cost|parse_cost }} k&euro;
-                        </td>
-                        <td class="text-right col-version-effort{% if 'col-version-effort' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_version_effort|parse_effort }} {{ translate('txt-py') }}
-                        </td>
-                        <td class="text-center col-latest-version{% if 'col-latest-version' not in cols %} hidden{% endif %}">
-                            {% if result.fields.project_latest_version_type|length > 0 %}
-                                <a href="{{ url('zfcadmin/project/version/view',{'id':result.fields.project_latest_version_id }) }}">{{ result.fields.project_latest_version_type }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td class="col-latest-status{% if 'col-latest-status' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_latest_version_status }}
-                        </td>
-                        <td class="text-right col-latest-cost{% if 'col-latest-cost' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_latest_version_cost|parse_cost }} k&euro;
-                        </td>
-                        <td class="text-right col-latest-effort{% if 'col-latest-effort' not in cols %} hidden{% endif %}">
-                            {{ result.fields.project_latest_version_effort|parse_effort }} {{ translate("txt-py") }}
-                        </td>
-                        <td class="col-project{% if 'col-project' not in cols %} hidden{% endif %}">
+                        <td>
                             <a href="{{ url('zfcadmin/project/project/view',{'id':result.fields.project_id }) }}">{{ result.fields.project }}</a>
                         </td>
-                        <td class="col-call{% if 'col-call' not in cols %} hidden{% endif %}">
+                        <td>
                             {{ result.fields.project_call }}
                         </td>
-                        <td class="col-contact{% if 'col-contact' not in cols %} hidden{% endif %}">
+                        <td>
                             <a href="{{ url('zfcadmin/contact-admin/view',{'id':result.fields.contact_id }) }}">{{ result.fields.contact }}</a>
                         </td>
                     </tr>
+                    {% set highlightDoc = highlighting.getResult(result.fields.id) %}
+                    {% if highlightDoc and highlightDoc is not empty %}
+                    <tr>
+                        <td colspan="4">
+                            <dl class="dl-horizontal">
+                            {% for field, highlight in highlightDoc %}
+                                <dt>{{ highlightingFields[field] }}</dt>
+                                <dd>...{{ highlight|join(' (...) ')|striptags('<mark>')|raw }}...</dd>
+                            {% endfor %}
+                            </dl>
+                        </td>
+                    </tr>
+                    {% endif %}
                 {% endfor %}
                 </tbody>
                 <tfoot>
@@ -332,10 +103,9 @@
 
 {{ form().closeTag()|raw }}
 
-<script type="text/javascript">
+<script>
     $(function () {
-        var facetCheckBoxes = $('div.well input[type="checkbox"]'),
-            colCheckboxes = $('#control-group-cols');
+        var facetCheckBoxes = $('div.well input[type="checkbox"]');
         facetCheckBoxes.add('#searchButton, #resetButton').on('click', function () {
             if ($(this).is('#resetButton')) {
                 facetCheckBoxes.each(function () {
@@ -345,13 +115,5 @@
             }
             $('#search').submit();
         });
-        colCheckboxes.find('input[type="checkbox"]').on('change', function () {
-            var $self = $(this);
-            $('#tbl-list .' + $self.attr('value')).toggleClass('hidden', !$self.is(':checked'));
-        });
-        {% if groups %}$('#btn-collapse').click(function () {
-            $('#hid-collapse').val(($('#tbl-list tbody tr').not('.row-totals').is(':hidden') ? 0 : 1));
-            $('#search').submit();
-        });{% endif %}
     });
 </script>
