@@ -1,57 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
- PERFORMANCE NOTE: this schema includes many optional features and should not
- be used for benchmarking.  To improve performance one could
-  - set stored="false" for all fields possible (esp large fields) when you
-    only need to search on the field but don't need to return the original
-    value.
-  - set indexed="false" if you don't need to search on the field, but only
-    return the field as a result of searching on other indexed fields.
-  - remove all unneeded copyField statements
-  - for best index size and searching performance, set "index" to false
-    for all general text fields, use copyField to copy them to the
-    catchall "text" field, and use that for searching.
-  - For maximum indexing performance, use the ConcurrentUpdateSolrServer
-    java client.
-  - Remember to run the JVM in server mode, and use a higher logging level
-    that avoids logging every request
--->
-
 <schema name="affiliation" version="1.5">
-    <!-- Valid attributes for fields:
-     name: mandatory - the name for the field
-     type: mandatory - the name of a field type from the 
-       <types> fieldType section
-     indexed: true if this field should be indexed (searchable or sortable)
-     stored: true if this field should be retrievable
-     docValues: true if this field should have doc values. Doc values are
-       useful for faceting, grouping, sorting and function queries. Although not
-       required, doc values will make the index faster to load, more
-       NRT-friendly and more memory-efficient. They however come with some
-       limitations: they are currently only supported by StrField, UUIDField
-       and all Trie*Fields, and depending on the field type, they might
-       require the field to be single-valued, be required or have a default
-       value (check the documentation of the field type you're interested in
-       for more information)
-     multiValued: true if this field may contain multiple values per document
-     omitNorms: (expert) set to true to omit the norms associated with
-       this field (this disables length normalization and index-time
-       boosting for the field, and saves some memory).  Only full-text
-       fields or fields that need an index-time boost need norms.
-       Norms are omitted for primitive (non-analyzed) types by default.
-     termVectors: [false] set to true to store the term vector for a
-       given field.
-       When using MoreLikeThis, fields used for similarity should be
-       stored for best performance.
-     termPositions: Store position information with the term vector.  
-       This will increase text-increase storage costs.
-     termOffsets: Store offset information with the term vector. This 
-       will increase text-increase storage costs.
-     required: The field is required.  It will throw an error if the
-       value does not exist
-     default: a value that should be used if no value is specified
-       when adding a document.
-   -->
 
     <!-- If you remove this field, you must _also_ disable the update log in solrconfig.xml
       or Solr won't start. _version_ and update log are required for SolrCloud
@@ -70,46 +18,46 @@
     <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false"/>
 
 
-	<field name="affiliation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="date_created" type="date" indexed="true" stored="true"/>
-	<field name="is_active" type="boolean" indexed="true" stored="true"/>
-	<field name="description" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="branch" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="value_chain" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="market_access" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="main_contribution" type="text_general_edge_ngram" indexed="true" stored="true"/>
-	<field name="strategic_importance" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="affiliation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="date_created" type="date" indexed="true" stored="true"/>
+    <field name="is_active" type="boolean" indexed="true" stored="true"/>
+    <field name="description" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="branch" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="value_chain" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="market_access" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="main_contribution" type="text_general_edge_ngram" indexed="true" stored="true"/>
+    <field name="strategic_importance" type="text_general_edge_ngram" indexed="true" stored="true"/>
 
-	<field name="organisation" type="string_ci" indexed="true" stored="true" omitNorms="true"  multiValued="false"/>
-	<field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation" dest="organisation_sort"/>
-	<field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation" dest="organisation_group"/>
-	<field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="organisation_type" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="organisation_type_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation_type" dest="organisation_type_group"/>
-	<field name="organisation_country" type="string" indexed="true" stored="true" omitNorms="true"/>
-	<field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="organisation_country" dest="organisation_country_group"/>
+    <field name="organisation" type="string_ci" indexed="true" stored="true" omitNorms="true" multiValued="false"/>
+    <field name="organisation_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation" dest="organisation_sort"/>
+    <field name="organisation_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation" dest="organisation_group"/>
+    <field name="organisation_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="organisation_type" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="organisation_type_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation_type" dest="organisation_type_group"/>
+    <field name="organisation_country" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="organisation_country_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="organisation_country" dest="organisation_country_group"/>
 
-	<field name="project" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+    <field name="project" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
     <copyField source="project" dest="project_sort"/>
-	<field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_title" type="string_ci" indexed="true" stored="true"/>
-	<field name="project_status" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_call" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="project_call" dest="project_call_group"/>
-	<field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_program" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
-	<copyField source="project_program" dest="project_program_group"/>
+    <field name="project_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_number" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_title" type="string_ci" indexed="true" stored="true"/>
+    <field name="project_status" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_call" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_call_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="project_call" dest="project_call_group"/>
+    <field name="project_call_id" type="int" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_program" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="project_program_group" type="string" indexed="true" stored="false" multiValued="false"/>
+    <copyField source="project_program" dest="project_program_group"/>
 
-	<field name="contact" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
-	<field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
+    <field name="contact" type="string_ci" indexed="true" stored="true" omitNorms="true"/>
+    <field name="contact_sort" type="c_text_sort" indexed="true" stored="false" multiValued="false"/>
 
     <copyField source="contact" dest="contact_sort"/>
     <field name="contact_id" type="int" indexed="true" stored="true" omitNorms="true"/>

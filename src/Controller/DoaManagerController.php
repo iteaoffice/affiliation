@@ -284,16 +284,15 @@ final class DoaManagerController extends AffiliationAbstractController
             }
 
             if (isset($data['delete'])) {
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translator->translate(
-                                'txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed'
-                            ),
-                            $doa->getAffiliation()->getOrganisation(),
-                            $doa->getAffiliation()->getProject()
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate(
+                            'txt-project-doa-for-organisation-%s-in-project-%s-has-been-removed'
+                        ),
+                        $doa->getAffiliation()->getOrganisation(),
+                        $doa->getAffiliation()->getProject()
+                    )
+                );
 
                 $this->doaService->delete($doa);
 
@@ -336,16 +335,15 @@ final class DoaManagerController extends AffiliationAbstractController
 
                 $this->doaService->save($doa);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translator->translate(
-                                'txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated'
-                            ),
-                            $doa->getAffiliation()->getOrganisation(),
-                            $doa->getAffiliation()->getProject()
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate(
+                            'txt-project-doa-for-organisation-%s-in-project-%s-has-been-updated'
+                        ),
+                        $doa->getAffiliation()->getOrganisation(),
+                        $doa->getAffiliation()->getProject()
+                    )
+                );
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/doa/view', ['id' => $doa->getId()]);
             }

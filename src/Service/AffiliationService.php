@@ -57,6 +57,7 @@ use Search\Service\AbstractSearchService;
 use Search\Service\SearchUpdateInterface;
 use Solarium\Client;
 use Solarium\Core\Query\AbstractQuery;
+use Solarium\QueryType\Update\Query\Document\Document;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Controller\PluginManager;
 use Zend\Validator\File\MimeType;
@@ -298,43 +299,47 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         $project = $affiliation->getProject();
         $contact = $affiliation->getContact();
 
-        // Affiliation
+        /** @var Document $affiliationDocument */
         $affiliationDocument = $update->createDocument();
-        $affiliationDocument->id = $affiliation->getResourceId();
-        $affiliationDocument->affiliation_id = $affiliation->getId();
-        $affiliationDocument->date_created = $affiliation->getDateCreated()->format(AbstractSearchService::DATE_SOLR);
-        $affiliationDocument->is_active = $affiliation->isActive();
+
+        $affiliationDocument->setField('id', $affiliation->getResourceId());
+        $affiliationDocument->setField('affiliation_id', $affiliation->getId());
+        $affiliationDocument->setField(
+            'date_created',
+            $affiliation->getDateCreated()->format(AbstractSearchService::DATE_SOLR)
+        );
+        $affiliationDocument->setField('is_active', $affiliation->isActive());
 
         $descriptionMerged = '';
         foreach ($affiliation->getDescription() as $description) {
             $descriptionMerged .= $description->getDescription() . "\n\n";
         }
-        $affiliationDocument->description = $descriptionMerged;
-        $affiliationDocument->branch = $affiliation->getBranch();
-        $affiliationDocument->value_chain = $affiliation->getValueChain();
-        $affiliationDocument->market_access = $affiliation->getMarketAccess();
-        $affiliationDocument->main_contribution = $affiliation->getMainContribution();
-        $affiliationDocument->strategic_importance = $affiliation->getStrategicImportance();
+        $affiliationDocument->setField('description', $descriptionMerged);
+        $affiliationDocument->setField('branch', $affiliation->getBranch());
+        $affiliationDocument->setField('value_chain', $affiliation->getValueChain());
+        $affiliationDocument->setField('market_access', $affiliation->getMarketAccess());
+        $affiliationDocument->setField('main_contribution', $affiliation->getMainContribution());
+        $affiliationDocument->setField('strategic_importance', $affiliation->getStrategicImportance());
 
         // Organisation
-        $affiliationDocument->organisation = (string)$affiliation->getOrganisation();
-        $affiliationDocument->organisation_id = $affiliation->getOrganisation()->getId();
-        $affiliationDocument->organisation_type = (string)$affiliation->getOrganisation()->getType();
-        $affiliationDocument->organisation_country = (string)$affiliation->getOrganisation()->getCountry();
+        $affiliationDocument->setField('organisation', (string)$affiliation->getOrganisation());
+        $affiliationDocument->setField('organisation_id', $affiliation->getOrganisation()->getId());
+        $affiliationDocument->setField('organisation_type', (string)$affiliation->getOrganisation()->getType());
+        $affiliationDocument->setField('organisation_country', (string)$affiliation->getOrganisation()->getCountry());
 
         // Project
-        $affiliationDocument->project = $project->getProject();
-        $affiliationDocument->project_id = $project->getId();
-        $affiliationDocument->project_number = $project->getNumber();
-        $affiliationDocument->project_title = $project->getTitle();
-        $affiliationDocument->project_status = $this->projectService->parseStatus($project);
-        $affiliationDocument->project_call = (string)$project->getCall()->shortName();
-        $affiliationDocument->project_call_id = $project->getCall()->getId();
-        $affiliationDocument->project_program = (string)$project->getCall()->getProgram();
+        $affiliationDocument->setField('project', $project->getProject());
+        $affiliationDocument->setField('project_id', $project->getId());
+        $affiliationDocument->setField('project_number', $project->getNumber());
+        $affiliationDocument->setField('project_title', $project->getTitle());
+        $affiliationDocument->setField('project_status', $this->projectService->parseStatus($project));
+        $affiliationDocument->setField('project_call', $project->getCall()->shortName());
+        $affiliationDocument->setField('project_call_id', $project->getCall()->getId());
+        $affiliationDocument->setField('project_program', (string)$project->getCall()->getProgram());
 
         // Contact
-        $affiliationDocument->contact = $contact->parseFullName();
-        $affiliationDocument->contact_id = $contact->getId();
+        $affiliationDocument->setField('contact', $contact->parseFullName());
+        $affiliationDocument->setField('contact_id', $contact->getId());
 
         $update->addDocument($affiliationDocument);
 
@@ -444,7 +449,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                     }
 
                     if (!$countryFound) {
-                        $this->delete($rationale);
+                        $this->projectService->delete($rationale);
                     }
                 }
 
@@ -705,20 +710,8 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         return (float)$base;
     }
 
-    /**
-     * @param Affiliation  $affiliation
-     * @param              $year
-     * @param OParent|null $parent
-     *
-     * @return float|int|string
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function parseContributionFee(Affiliation $affiliation, $year, OParent $parent = null)
+    public function parseContributionFee(Affiliation $affiliation, int $year, OParent $parent = null)
     {
-        //Cast to int as some values can originate form templates (== twig > might be string)
-        $year = (int)$year;
-
         /**
          * Based on the invoiceMethod we return or a percentage or the contribution
          */

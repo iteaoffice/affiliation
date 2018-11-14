@@ -489,10 +489,9 @@ final class EditController extends AffiliationAbstractController
                         );
 
                         if ($result->isValid()) {
-                            $this->flashMessenger()->setNamespace('success')
-                                ->addMessage(
-                                    sprintf($this->translator->translate('txt-vat-number-is-valid'), $affiliation)
-                                );
+                            $this->flashMessenger()->addSuccessMessage(
+                                sprintf($this->translator->translate('txt-vat-number-is-valid'), $affiliation)
+                            );
 
 
                             //Update the financial
@@ -702,13 +701,12 @@ final class EditController extends AffiliationAbstractController
 
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translator->translate('txt-manage-associates-of-affiliation-%s-cancelled'),
-                            $affiliation
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate('txt-manage-associates-of-affiliation-%s-cancelled'),
+                        $affiliation
+                    )
+                );
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',

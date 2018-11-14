@@ -273,16 +273,15 @@ final class LoiManagerController extends AffiliationAbstractController
             }
 
             if (isset($data['delete'])) {
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translator->translate(
-                                'txt-project-loi-for-organisation-%s-in-project-%s-has-been-removed'
-                            ),
-                            $loi->getAffiliation()->getOrganisation(),
-                            $loi->getAffiliation()->getProject()
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate(
+                            'txt-project-loi-for-organisation-%s-in-project-%s-has-been-removed'
+                        ),
+                        $loi->getAffiliation()->getOrganisation(),
+                        $loi->getAffiliation()->getProject()
+                    )
+                );
 
                 $this->loiService->delete($loi);
 
@@ -329,16 +328,15 @@ final class LoiManagerController extends AffiliationAbstractController
 
                 $this->loiService->save($loi);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translator->translate(
-                                'txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated'
-                            ),
-                            $loi->getAffiliation()->getOrganisation(),
-                            $loi->getAffiliation()->getProject()
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate(
+                            'txt-project-loi-for-organisation-%s-in-project-%s-has-been-updated'
+                        ),
+                        $loi->getAffiliation()->getOrganisation(),
+                        $loi->getAffiliation()->getProject()
+                    )
+                );
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/loi/view', ['id' => $loi->getId()]);
             }

@@ -627,13 +627,12 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $affiliation->removeAssociate($contact);
                 $this->affiliationService->save($affiliation);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translator->translate('txt-associate-%s-has-successfully-been-removed'),
-                            $contact->getDisplayName()
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate('txt-associate-%s-has-successfully-been-removed'),
+                        $contact->getDisplayName()
+                    )
+                );
 
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
@@ -656,13 +655,12 @@ final class AffiliationManagerController extends AffiliationAbstractController
 
                 $this->affiliationService->save($affiliation);
 
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage(
-                        sprintf(
-                            $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
-                            $affiliation
-                        )
-                    );
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf(
+                        $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
+                        $affiliation
+                    )
+                );
 
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
@@ -701,13 +699,12 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $this->affiliationService->save($affiliation);
             }
 
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(
-                    sprintf(
-                        $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
-                        $affiliation
-                    )
-                );
+            $this->flashMessenger()->addSuccessMessage(
+                sprintf(
+                    $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
+                    $affiliation
+                )
+            );
 
             return $this->redirect()->toRoute(
                 'zfcadmin/affiliation/view',
