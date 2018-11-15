@@ -36,6 +36,10 @@ final class Loi extends AbstractAssertion
      * @var AffiliationService
      */
     private $affiliationService;
+    /**
+     * @var Affiliation
+     */
+    private $affiliationAssertion;
 
     public function __construct(ContainerInterface $container)
     {
@@ -43,6 +47,7 @@ final class Loi extends AbstractAssertion
 
         $this->loiService = $container->get(LoiService::class);
         $this->affiliationService = $container->get(AffiliationService::class);
+        $this->affiliationAssertion = $container->get(Affiliation::class);
     }
 
     public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $loi = null, $privilege = null): bool
@@ -96,9 +101,9 @@ final class Loi extends AbstractAssertion
                  */
 
                 return null === $loi->getDateApproved()
-                    && $this->contactService->contactHasPermit($this->contact, 'edit', $loi->getAffiliation());
+                    && $this->affiliationAssertion->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
             case 'download':
-                return $this->contactService->contactHasPermit($this->contact, 'view', $loi->getAffiliation());
+                return $this->affiliationAssertion->assert($acl, $role, $loi->getAffiliation(), 'view-community');
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':

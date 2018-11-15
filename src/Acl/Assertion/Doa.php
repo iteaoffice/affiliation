@@ -36,6 +36,10 @@ final class Doa extends AbstractAssertion
      * @var AffiliationService
      */
     private $affiliationService;
+    /**
+     * @var Affiliation;
+     */
+    private $affiliationAssertion;
 
     public function __construct(ContainerInterface $container)
     {
@@ -43,6 +47,7 @@ final class Doa extends AbstractAssertion
 
         $this->doaService = $container->get(DoaService::class);
         $this->affiliationService = $container->get(AffiliationService::class);
+        $this->affiliationAssertion = $container->get(Affiliation::class);
     }
 
     public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $doa = null, $privilege = null): bool
@@ -77,7 +82,7 @@ final class Doa extends AbstractAssertion
                     $affiliation = $this->affiliationService->findAffiliationById((int)$affiliationId);
                 }
 
-                return $this->contactService->contactHasPermit($this->contact, 'edit', $affiliation);
+                return $this->affiliationAssertion->assert($acl, $role, $affiliation, 'edit-community');
             case 'replace':
                 /*
                  * For the replace we need to see if the user has access on the editing of the affiliation
@@ -85,7 +90,7 @@ final class Doa extends AbstractAssertion
                  */
 
                 return null === $doa->getDateApproved()
-                    && $this->contactService->contactHasPermit($this->contact, 'edit', $doa->getAffiliation());
+                    && $this->affiliationAssertion->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
             case 'render':
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
@@ -97,9 +102,9 @@ final class Doa extends AbstractAssertion
                 }
                 $affiliation = $this->doaService->findAffiliationById((int)$affiliationId);
 
-                return $this->contactService->contactHasPermit($this->contact, 'view', $affiliation);
+                return $this->affiliationAssertion->assert($acl, $role, $affiliation, 'view-community');
             case 'download':
-                return $this->contactService->contactHasPermit($this->contact, 'edit', $doa->getAffiliation());
+                return $this->affiliationAssertion->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':

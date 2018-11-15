@@ -16,6 +16,7 @@ use Admin\Entity\Access;
 use Affiliation\Entity\Affiliation as AffiliationEntity;
 use Affiliation\Service\AffiliationService;
 use Interop\Container\ContainerInterface;
+use Project\Acl\Assertion\Project;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Zend\Permissions\Acl\Acl;
@@ -39,6 +40,10 @@ final class Affiliation extends AbstractAssertion
      * @var ReportService
      */
     private $reportService;
+    /**
+     * @var Project
+     */
+    private $projectAssertion;
 
     public function __construct(ContainerInterface $container)
     {
@@ -47,6 +52,7 @@ final class Affiliation extends AbstractAssertion
         $this->affiliationService = $container->get(AffiliationService::class);
         $this->projectService = $container->get(ProjectService::class);
         $this->reportService = $container->get(ReportService::class);
+        $this->projectAssertion = $container->get(Project::class);
     }
 
     public function assert(
@@ -70,7 +76,7 @@ final class Affiliation extends AbstractAssertion
                 }
 
                 //whe the person has view rights on the project, the affiliation can also be viewed
-                return $this->contactService->contactHasPermit($this->contact, 'view', $affiliation->getProject());
+                return $this->projectAssertion->assert($acl, $role, $affiliation->getProject(), 'view-community');
             case 'add-associate':
             case 'manage-associate':
             case 'edit-cost-and-effort':
@@ -90,7 +96,6 @@ final class Affiliation extends AbstractAssertion
                     return true;
                 }
                 return false;
-                break;
             case 'update-effort-spent':
                 return true;
                 //Block access to an already closed report
