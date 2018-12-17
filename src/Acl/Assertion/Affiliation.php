@@ -102,7 +102,7 @@ final class Affiliation extends AbstractAssertion
                 $reportId = $this->getRouteMatch()->getParam('report');
             if (null !== $reportId) {
                 //Find the corresponding report
-                $report = $this->reportService->findReportById($reportId);
+                $report = $this->reportService->findReportById((int) $reportId);
                 if (null === $report || $this->reportService->isFinal($report)) {
                     return false;
                 }

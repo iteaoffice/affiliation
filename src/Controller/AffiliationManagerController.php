@@ -31,6 +31,7 @@ use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
 use Program\Service\CallService;
 use Project\Acl\Assertion\Project;
+use Project\Entity\Changelog;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
@@ -141,7 +142,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
     }
 
 
-    public function listAction(): ViewModel
+    public function listAction()
     {
         /** @var Request $request */
         $request = $this->getRequest();
@@ -359,6 +360,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
+        $data = $this->getRequest()->getPost()->toArray();
+
         $formData = [];
         $formData['affiliation'] = sprintf(
             '%s|%s',
@@ -425,8 +428,46 @@ final class AffiliationManagerController extends AffiliationAbstractController
             $form->remove('delete');
         }
 
-        if ($this->getRequest()->isPost() && $form->setData($this->getRequest()->getPost()->toArray())) {
-            if (isset($formData['cancel'])) {
+
+
+        if ($this->getRequest()->isPost() && $form->setData($data)) {
+            if (isset($data['delete']) && $this->affiliationService->isActiveInVersion($affiliation)) {
+                $this->affiliationService->deactivateAffiliation($affiliation);
+
+                //Update the rationale for public funding
+                $this->affiliationService
+                    ->updateCountryRationaleByAffiliation($affiliation, AffiliationService::AFFILIATION_DEACTIVATE);
+
+                $changelogMessage = sprintf(
+                    $this->translator->translate('txt-affiliation-%s-has-successfully-been-deactivated'),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_OFFICE,
+                    $changelogMessage
+                );
+
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/view',
+                    ['id' => $affiliation->getId(),]
+                );
+            }
+
+            if (isset($data['delete']) && !$this->affiliationService->isActiveInVersion($affiliation)) {
+                $this->affiliationService->delete($affiliation);
+
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/view',
+                    ['id' => $affiliation->getId(),]
+                );
+            }
+
+            if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
                     ['id' => $affiliation->getId(),]

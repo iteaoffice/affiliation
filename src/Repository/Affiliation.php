@@ -250,7 +250,8 @@ final class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findAffiliationByParentAndProgramAndWhich(OParent $parent, Program $program, int $which): array
+    public function findAffiliationByParentAndProgramAndWhich(OParent $parent, Program $program, int $which, ?int $year
+    ): array
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
@@ -262,6 +263,7 @@ final class Affiliation extends EntityRepository
             case AffiliationService::WHICH_ALL:
                 break;
             case AffiliationService::WHICH_ONLY_ACTIVE:
+            case AffiliationService::WHICH_INVOICING:
                 $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             case AffiliationService::WHICH_ONLY_INACTIVE:
@@ -278,13 +280,20 @@ final class Affiliation extends EntityRepository
         $qb->andWhere('program_entity_call.program = :program');
         $qb->setParameter('program', $program);
 
+        if ($which === AffiliationService::WHICH_INVOICING) {
+            $dateTime = \DateTime::createFromFormat('d-m-Y', '01-01-' . ($year - 4));
+            $qb->andWhere('project_entity_project.dateStart > :dateTime');
+            $qb->setParameter('dateTime', $dateTime);
+        }
+
         $qb->addOrderBy('program_entity_call.id', 'ASC');
         $qb->addOrderBy('project_entity_project.docRef', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
 
-    public function findAffiliationByProjectVersionAndCountryAndWhich(Version $version, Country $country, int $which): array
+    public function findAffiliationByProjectVersionAndCountryAndWhich(Version $version, Country $country, int $which
+    ): array
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
@@ -393,6 +402,7 @@ final class Affiliation extends EntityRepository
 
     /**
      * @param Organisation $organisation
+     *
      * @deprecated
      * @return Entity\Affiliation[]
      */
@@ -411,11 +421,6 @@ final class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param Organisation $organisation
-     *
-     * @return Entity\Affiliation[]
-     */
     public function findAffiliationByOrganisationViaParentOrganisation(Organisation $organisation): array
     {
         $qb = $this->_em->createQueryBuilder();
@@ -432,18 +437,8 @@ final class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * Returns the affiliations based on Project, which and country.
-     *
-     * @param Project $project
-     * @param Country $country
-     * @param int $which
-     *
-     * @throws InvalidArgumentException
-     *
-     * @return int
-     */
-    public function findAmountOfAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, $which): int
+    public function findAmountOfAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, int $which
+    ): int
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation) amount');
@@ -472,16 +467,6 @@ final class Affiliation extends EntityRepository
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
-    /**
-     * Returns the number of affiliations per Country and Call.
-     *
-     * @param Country $country
-     * @param Call $call
-     *
-     * @throws InvalidArgumentException
-     *
-     * @return int
-     */
     public function findAmountOfAffiliationByCountryAndCall(Country $country, Call $call): int
     {
         $qb = $this->_em->createQueryBuilder();
@@ -499,9 +484,6 @@ final class Affiliation extends EntityRepository
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
-    /**
-     * @return array
-     */
     public function findAffiliationInProjectLog(): array
     {
         $queryBuilder = $this->_em->createQueryBuilder();

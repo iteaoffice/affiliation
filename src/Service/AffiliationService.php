@@ -76,6 +76,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     public const WHICH_ALL = 1;
     public const WHICH_ONLY_ACTIVE = 2;
     public const WHICH_ONLY_INACTIVE = 3;
+    public const WHICH_INVOICING = 4;
 
     public const AFFILIATION_DEACTIVATE = 'deacivate';
     public const AFFILIATION_REACTIVATE = 'reactivate';
@@ -1196,10 +1197,11 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     public function findAffiliationByParentAndProgramAndWhich(
         OParent $parent,
         Program $program,
-        int $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE,
+        int $year = null
     ): ArrayCollection {
         $repository = $this->entityManager->getRepository(Affiliation::class);
-        $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which);
+        $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which, $year);
 
         if (null === $affiliations) {
             $affiliations = [];
