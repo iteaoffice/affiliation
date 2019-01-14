@@ -617,9 +617,21 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         return (float)0;
     }
 
+    public function parsePendingContractContribution(
+        Affiliation $affiliation,
+        ?Version $version,
+        ?ContractVersion $contractVersion,
+        int $year,
+        ?int $period = null,
+        bool $useContractData = true,
+        bool $omitExchangeRate = false,
+        ?int $exchangeRateYear = null
+    ): float {
+    }
+
     public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
     {
-        //When the partnre has an invoice method defined, we only return it when the $useContractData is set to
+        //When the partner has an invoice method defined, we only return it when the $useContractData is set to
         //True and otherwise we will return the normal
         if (null !== $affiliation->getInvoiceMethod()) {
             if ($affiliation->getInvoiceMethod()->getId() === Method::METHOD_PERCENTAGE_CONTRACT) {

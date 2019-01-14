@@ -177,7 +177,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 foreach ($data['facet'] as $facetField => $values) {
                     $quotedValues = [];
                     foreach ($values as $value) {
-                        $quotedValues[] = sprintf('\'%s\'', $value);
+                        $quotedValues[] = sprintf('"%s"', $value);
                     }
 
                     $this->searchService->addFilterQuery(

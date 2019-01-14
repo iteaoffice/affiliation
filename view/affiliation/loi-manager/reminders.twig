@@ -6,14 +6,14 @@ project
 
 {% set project = affiliation.project %}
 
-<h1 class="display-4">{{ translate("txt-edit-loi-%s-in-%s")|format(
+<h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
     affiliation.parseBranchedName(),
     project
     ) }}</h1>
 
 {% if affiliation.loiReminder.count() > 0 %}
 
-    <table class="table table-striped table-condensed table-sm table-hover">
+    <table class="table table-striped table-sm table-hover">
         <thead>
         <tr>
             <th>{{ translate("txt-reminder-date") }}</th>

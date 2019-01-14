@@ -3,7 +3,7 @@
     affiliation.project.parseFullName()
     ) ) %}
 
-<h1 class="display-4">{{ translate("txt-edit-cost-and-effort-of-affiliation-%s-in-%s")|format(
+<h1>{{ translate("txt-edit-cost-and-effort-of-affiliation-%s-in-%s")|format(
         affiliation.parseBranchedName(),
         affiliation.project.parseFullName()
     ) }}</h1>
@@ -23,7 +23,7 @@
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
@@ -32,7 +32,7 @@
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}
@@ -41,7 +41,7 @@
 </div>
 
 
-<table class="table table-listing table-striped table-condensed table-sm">
+<table class="table table-listing table-striped table-sm">
     <tfoot>
     <tr>
         <td colspan="{{ 1 + yearRange|length }}"></td>
@@ -177,7 +177,7 @@
 {{ formelement(form.get('csrf')) }}
 
 <div class="form-group row">
-    <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+    <div class="offset-sm-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
     </div>

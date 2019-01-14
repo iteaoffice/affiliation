@@ -4,7 +4,7 @@ report.parseName()
 )) %}
 
 
-<h1 class="display-4">{{ translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
+<h1>{{ translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
     affiliation.parseBranchedName(),
     report.parseName()
     ) }}</h1>
@@ -16,7 +16,7 @@ report.parseName()
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
@@ -24,7 +24,7 @@ report.parseName()
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
@@ -32,7 +32,7 @@ report.parseName()
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-report") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-report") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ reportLink(report,'report-community', 'name') }}</p>
@@ -44,7 +44,7 @@ report.parseName()
 {{ ztbformelement(form.get('summary')) }}
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-planned-effort") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-planned-effort") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ totalPlannedEffort }} [{{ translate("txt-py") }}]</p>
@@ -56,7 +56,7 @@ report.parseName()
 {{ ztbformelement(form.get('comment')) }}
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-exploitation-related-achievement") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-exploitation-related-achievement") }}</label>
 
     <div class="col-sm-9">
         {% for achievement in affiliation.achievement %}
@@ -71,7 +71,7 @@ report.parseName()
 
 
 <div class="form-group row">
-    <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+    <div class="offset-sm-3 col-sm-9">
 
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}

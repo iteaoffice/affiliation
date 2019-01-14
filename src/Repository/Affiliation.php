@@ -250,9 +250,12 @@ final class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findAffiliationByParentAndProgramAndWhich(OParent $parent, Program $program, int $which, ?int $year
-    ): array
-    {
+    public function findAffiliationByParentAndProgramAndWhich(
+        OParent $parent,
+        Program $program,
+        int $which,
+        ?int $year
+    ): array {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -292,9 +295,11 @@ final class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findAffiliationByProjectVersionAndCountryAndWhich(Version $version, Country $country, int $which
-    ): array
-    {
+    public function findAffiliationByProjectVersionAndCountryAndWhich(
+        Version $version,
+        Country $country,
+        int $which
+    ): array {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -437,9 +442,11 @@ final class Affiliation extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findAmountOfAffiliationByProjectAndCountryAndWhich(Project $project, Country $country, int $which
-    ): int
-    {
+    public function findAmountOfAffiliationByProjectAndCountryAndWhich(
+        Project $project,
+        Country $country,
+        int $which
+    ): int {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');

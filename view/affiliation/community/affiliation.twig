@@ -10,7 +10,7 @@
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
 {% set useContract = affiliationService.useActiveContract(affiliation) %}
 
-<h1 class="display-4">{{ affiliation.parseBranchedName() }}</h1>
+<h1>{{ affiliation.parseBranchedName() }}</h1>
 
 <p class="lead">{{ translate("txt-partner-in-%s")|format(
         affiliation.project.parseFullName()
@@ -173,7 +173,7 @@
 
             <dt>{{ translate("txt-funding-status") }}</dt>
             <dd>
-                <table class="table table-striped table-bordered table-sm table-condensed">
+                <table class="table table-striped table-bordered table-sm">
                     <thead>
                     <tr>
                         <th>{{ translate("txt-year") }}</th>
@@ -246,7 +246,7 @@
 
             <p>{{ translate("txt-latest-submitted-version-of-type-%s-explanation")|format(latestVersion.versionType) }}</p>
 
-            <table class="table table-hover table-striped table-condensed table-sm">
+            <table class="table table-hover table-striped table-sm">
                 <thead>
                 <tr class="success">
                     <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
@@ -347,7 +347,7 @@
 
             {{ ztbalert().info(translate("txt-explanation-cost-and-effort-edit-in-place"))|raw }}
 
-            <table class="table table-hover table-striped table-condensed table-sm">
+            <table class="table table-hover table-striped table-sm">
                 <thead>
                 <tr class="success">
                     <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
@@ -507,7 +507,7 @@
         <h2>{{ translate("txt-associate-details") }}</h2>
 
         {% if contactsInAffiliation.contacts|length > 0 %}
-            <table class="table table-striped table-hover table-condensed table-sm">
+            <table class="table table-striped table-hover table-sm">
                 <thead>
                 <tr>
                     <th>{{ translate("txt-associate-name") }}</th>
@@ -546,7 +546,7 @@
             <h2>{{ translate("txt-progress-report-information") }}</h2>
 
             {% if affiliation.project.report.count() > 0 %}
-                <table class="table table-hover table-striped table-condensed table-sm">
+                <table class="table table-hover table-striped table-sm">
                     <thead>
                     <tr>
                         <th>{{ translate("txt-report") }}</th>
@@ -616,7 +616,7 @@
             <h2>{{ translate("txt-exploitation-related-achievement") }}</h2>
 
             {% if affiliation.achievement.count > 0 %}
-                <table class="table table-hover table-striped table-condensed table-sm">
+                <table class="table table-hover table-striped table-sm">
                     <thead>
                     <tr>
                         <th>{{ translate("txt-achievement") }}</th>
@@ -701,7 +701,7 @@
             {% if affiliation.invoice|length > 0 %}
                 <h2>{{ translate("txt-partner-invoices") }}</h2>
 
-                <table class="table table-hover table-striped table-condensed table-sm">
+                <table class="table table-hover table-striped table-sm">
                     <thead>
                     <tr>
                         <th>{{ translate("txt-invoice-number") }}</th>
@@ -737,9 +737,10 @@
             <br>
             <ul class="nav nav-pills" role="tablist">
                 {% for paymentSheetPeriod in affiliationService.parsePaymentSheetPeriods(affiliation) %}
-                    <li role="presentation"
-                        {% if paymentSheetPeriod.active %}class="active"{% endif %}>
-                        <a href="#{{ paymentSheetPeriod.id }}" aria-controls="home" role="tab"
+                    <li role="presentation" class="nav-item">
+                        <a href="#{{ paymentSheetPeriod.id }}"
+                           class="nav-link  {% if paymentSheetPeriod.active %}active{% endif %}" aria-controls="home"
+                           role="tab"
                            data-toggle="tab">{{ paymentSheetPeriod.label }}</a></li>
                 {% endfor %}
             </ul>

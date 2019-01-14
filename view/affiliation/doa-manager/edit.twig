@@ -8,7 +8,7 @@ doa.affiliation.project.parseFullname()
 '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
 ) %}
 
-<h1 class="display-4">{{ translate("txt-edit-doa-%s-in-%s")|format(
+<h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
     doa.affiliation.parseBranchedName(),
     doa.affiliation.project
     ) }}</h1>
@@ -19,7 +19,7 @@ doa.affiliation.project.parseFullname()
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ projectLink(doa.affiliation.project,'view-admin', 'name') }}</p>
@@ -27,7 +27,7 @@ doa.affiliation.project.parseFullname()
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ affiliationLink(doa.affiliation,'view-community') }}</p>
@@ -43,7 +43,7 @@ doa.affiliation.project.parseFullname()
 {{ contactformelement(doaForm.get('contact')) }}
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-download-current-doa") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-download-current-doa") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ doaLink(doa,'download','text') }}</p>
@@ -56,7 +56,7 @@ doa.affiliation.project.parseFullname()
 
 
 <div class="form-group row">
-    <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+    <div class="offset-sm-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
         {{ ztbformelement(form.get('delete')) }}

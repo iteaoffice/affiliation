@@ -38,24 +38,34 @@ class Invoice extends AbstractEntity
     private $id;
     /**
      * @ORM\Column(name="period", type="integer", nullable=false)
+     * @Annotation\Type("\Zend\Form\Element\Number")
+     * @Annotation\Options({"label":"txt-affiliation-invoice-period-label","help-block":"txt-affiliation-invoice-period-help-block"})
+     * @Annotation\Options({"placeholder":"txt-affiliation-invoice-period-placeholder"})
      *
      * @var integer
      */
     private $period;
     /**
      * @ORM\Column(name="year", type="integer", nullable=false)
+     * @Annotation\Type("\Zend\Form\Element\Number")
+     * @Annotation\Options({"label":"txt-affiliation-invoice-year-label","help-block":"txt-affiliation-invoice-year-help-block"})
+     * @Annotation\Options({"placeholder":"txt-affiliation-invoice-year-placeholder"})
      *
      * @var integer
      */
     private $year;
     /**
      * @ORM\Column(name="years", type="array", nullable=false)
+     * @Annotation\Type("\Zend\Form\Element\Text")
      *
      * @var array
      */
     private $years;
     /**
      * @ORM\Column(name="amount_invoiced", type="decimal", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-affiliation-invoice-amount-invoiced-label","help-block":"txt-affiliation-invoice-amount-invoiced-help-block"})
+     * @Annotation\Options({"placeholder":"txt-affiliation-invoice-amount-invoiced-placeholder"})
      *
      * @var float
      */

@@ -1,6 +1,15 @@
 <?php
 _("txt-date-signed");
 _("txt-date-approved");
+_("txt-affiliation-invoice-period-label");
+_("txt-affiliation-invoice-period-help-block");
+_("txt-affiliation-invoice-period-placeholder");
+_("txt-affiliation-invoice-year-label");
+_("txt-affiliation-invoice-year-help-block");
+_("txt-affiliation-invoice-year-placeholder");
+_("txt-affiliation-invoice-amount-invoiced-label");
+_("txt-affiliation-invoice-amount-invoiced-help-block");
+_("txt-affiliation-invoice-amount-invoiced-placeholder");
 _("txt-branch");
 _("txt-note");
 _("txt-value-chain");

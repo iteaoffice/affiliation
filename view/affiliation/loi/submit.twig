@@ -2,7 +2,7 @@
 {% do headTitle().append(translate(affiliation.project.parseFullname())) %}
 {% do headTitle().append(translate("txt-upload-loi-title")) %}
 
-<h1 class="display-4">{{ translate("txt-submit-letter-of-intent-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
+<h1>{{ translate("txt-submit-letter-of-intent-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
 
 {% if not loi %}
 
@@ -20,7 +20,7 @@
         <legend>{{ translate("txt-loi-sign-digital-version") }}</legend>
 
         <div class="form-group row">
-            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+            <div class="offset-sm-3 col-sm-9">
                 <p>{{ translate("txt-please-read-the-text-below-before-signing-the-loi") }}</p>
                 <div style="background-color: #f8f8f8; padding: 10px;">
                     <strong>{{ affiliation.organisation }}</strong>, partner in the project <strong>{{ affiliation.project }}</strong>, intends to participate in this project, should it be accepted by the ITEA Board.
@@ -29,7 +29,7 @@
         </div>
 
         <div class="form-group {% if form.get('selfApprove').getMessages() %}has-error{% endif %}">
-            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+            <div class="offset-sm-3 col-sm-9">
                 <div class="checkbox">
                     <label>
                         {{ formelement(form.get('selfApprove')) }} {{ translate("txt-self-approve-loi-checkbox-help-text") }}
@@ -40,7 +40,7 @@
 
 
         <div class="form-group row">
-            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+            <div class="offset-sm-3 col-sm-9">
                 {{ formelement(form.get('approve')) }}
             </div>
         </div>
@@ -52,7 +52,7 @@
         <legend>{{ translate("txt-sign-and-upload-paper-version") }}</legend>
 
         <div class="form-group row">
-            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project") }}</label>
+            <label class="col-sm-3 col-form-label">{{ translate("txt-project") }}</label>
 
             <div class="col-sm-9">
                 <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community','name') }}
@@ -61,7 +61,7 @@
         </div>
 
         <div class="form-group row">
-            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-organisation") }}</label>
+            <label class="col-sm-3 col-form-label">{{ translate("txt-organisation") }}</label>
 
             <div class="col-sm-9">
                 <p class="form-control-static form-control-plaintext">{{ affiliation.organisation }}</p>
@@ -69,7 +69,7 @@
         </div>
 
         <div class="form-group row">
-            <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-download-loi") }}</label>
+            <label class="col-sm-3 col-form-label">{{ translate("txt-download-loi") }}</label>
 
             <div class="col-sm-9">
                 <p class="form-control-static form-control-plaintext">{{ translate("txt-download-loi-link-text") }}</p>
@@ -79,7 +79,7 @@
         {{ ztbformelement(form.get('file')) }}
 
         <div class="form-group row">
-            <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+            <div class="offset-sm-3 col-sm-9">
                 {{ ztbformelement(form.get('submit')) }}
                 {{ ztbformelement(form.get('cancel')) }}
             </div>

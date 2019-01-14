@@ -173,7 +173,10 @@ $communityNavigation = [
 return [
     'navigation' => [
         'community'  => $communityNavigation,
-        'community3' => $communityNavigation,
+        'community2' => ['index' => [
+            'pages' => $communityNavigation
+            ],
+        ],
         'admin'      => [
             'organisation' => [
                 // And finally, here is where we define our page hierarchy

@@ -43,27 +43,21 @@ class Financial extends AbstractEntity
     private $branch;
     /**
      * @ORM\OneToOne(targetEntity="\Affiliation\Entity\Affiliation", inversedBy="financial", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="financial", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $contact;
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliationFinancial", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
-     * })
      *
      * @var \Organisation\Entity\Organisation
      */
@@ -77,7 +71,7 @@ class Financial extends AbstractEntity
 
     public function __toString(): string
     {
-        return sprintf("%s financial", $this->affiliation);
+        return \sprintf("%s financial", $this->affiliation);
     }
 
     public function __get($property)
@@ -100,47 +94,31 @@ class Financial extends AbstractEntity
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): Financial
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getBranch()
     {
         return $this->branch;
     }
 
-    /**
-     * @param string $branch
-     *
-     * @return Financial
-     */
-    public function setBranch($branch)
+    public function setBranch($branch): Financial
     {
         $this->branch = $branch;
 
         return $this;
     }
 
-    /**
-     * @return Affiliation
-     */
     public function getAffiliation()
     {
         return $this->affiliation;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Financial
-     */
-    public function setAffiliation($affiliation)
+    public function setAffiliation($affiliation): Financial
     {
         $this->affiliation = $affiliation;
 
@@ -155,52 +133,32 @@ class Financial extends AbstractEntity
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     *
-     * @return Financial
-     */
-    public function setContact($contact)
+    public function setContact($contact): Financial
     {
         $this->contact = $contact;
 
         return $this;
     }
 
-    /**
-     * @return \Organisation\Entity\Organisation
-     */
     public function getOrganisation()
     {
         return $this->organisation;
     }
 
-    /**
-     * @param \Organisation\Entity\Organisation $organisation
-     *
-     * @return Financial
-     */
-    public function setOrganisation($organisation)
+    public function setOrganisation($organisation): Financial
     {
         $this->organisation = $organisation;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmailCC()
+
+    public function getEmailCC(): ?string
     {
         return $this->emailCC;
     }
 
-    /**
-     * @param string $emailCC
-     *
-     * @return Financial
-     */
-    public function setEmailCC($emailCC)
+    public function setEmailCC(string $emailCC): Financial
     {
         $this->emailCC = $emailCC;
 

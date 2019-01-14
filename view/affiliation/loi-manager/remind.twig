@@ -7,7 +7,7 @@ project
 )) %}
 
 
-<h1 class="display-4">{{ translate("txt-remind-loi-%s-in-%s")|format(
+<h1>{{ translate("txt-remind-loi-%s-in-%s")|format(
     affiliation.parseBranchedName(),
     project
     ) }}</h1>
@@ -18,7 +18,7 @@ project
 
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-project-name") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ projectLink(project,'view-admin', 'name') }}</p>
@@ -26,7 +26,7 @@ project
 </div>
 
 <div class="form-group row">
-    <label class="col-md-3 form-control-label control-label col-form-label">{{ translate("txt-affiliation") }}</label>
+    <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
         <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
@@ -39,7 +39,7 @@ project
 {{ ztbformelement(form.get('message')) }}
 
 <div class="form-group row">
-    <div class="offset-md-3 col-sm-offset-3 col-sm-9">
+    <div class="offset-sm-3 col-sm-9">
         {{ ztbformelement(form.get('submit')) }}
         {{ ztbformelement(form.get('cancel')) }}
     </div>
