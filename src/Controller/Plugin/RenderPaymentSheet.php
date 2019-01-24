@@ -721,7 +721,6 @@ final class RenderPaymentSheet extends AbstractPlugin
                 $pdf->Ln();
 
 
-
                 if ($this->affiliationService->affiliationHasInvoiceInYearAndPeriod($affiliation, $year, $period)) {
 
                     $pdf->writeHTMLCell(
@@ -742,15 +741,6 @@ final class RenderPaymentSheet extends AbstractPlugin
                     );
                     $pdf->Ln();
 
-                    $header = [
-                        $this->translator->translate("txt-invoice"),
-                        $this->translator->translate("txt-period"),
-                        $this->translator->translate("txt-invoice-period"),
-                        $this->translator->translate("txt-date"),
-                        $this->translator->translate("txt-contribution-euro"),
-                        $this->translator->translate("txt-paid"),
-                        $this->translator->translate("txt-invoiced-euro")
-                    ];
 
                     //Find the invoice
                     //@todo, this does not include the credit invoice!!!
@@ -770,6 +760,17 @@ final class RenderPaymentSheet extends AbstractPlugin
                         $years .= \sprintf('%d (%s) ', $invoiceYear, \implode(', ', $invoicePeriod));
                     }
 
+                    $header = [
+                        $this->translator->translate("txt-invoice"),
+                        $this->translator->translate("txt-period"),
+                        $this->translator->translate("txt-invoice-period"),
+                        $this->translator->translate("txt-date"),
+                        $this->translator->translate("txt-contribution-euro"),
+                        $this->translator->translate("txt-paid"),
+                        $this->translator->translate("txt-invoiced-euro") . ($this->invoiceService->hasVat($invoice)
+                            ? ' (' . $this->translator->translate('txt-including-vat') . ')' : '')
+                    ];
+
                     $upcomingDetails[] = [
                         $invoice->getInvoiceNr(),
                         $affiliationInvoice->getYear() . '-' . $affiliationInvoice->getPeriod() . 'H',
@@ -782,13 +783,14 @@ final class RenderPaymentSheet extends AbstractPlugin
                     ];
 
 
-                    $pdf->coloredTable($header, $upcomingDetails, [20, 20, 35, 20, 35, 20, 35], false, 6);
+                    $pdf->coloredTable($header, $upcomingDetails, [20, 15, 35, 18, 35, 18, 45], false, 6);
 
                     $pdf->Ln();
 
                     $upcomingDetails = [];
 
-                    $header = [\sprintf($this->translator->translate('txt-invoiced-in-%s'), $invoice->getInvoiceNr()), ''];
+                    $header = [\sprintf($this->translator->translate('txt-invoiced-in-%s'), $invoice->getInvoiceNr()),
+                               ''];
 
                     foreach ($invoice->getRow() as $row) {
                         $upcomingDetails[] = [

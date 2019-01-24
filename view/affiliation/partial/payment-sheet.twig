@@ -317,9 +317,7 @@
             <tr>
                 <td></td>
                 <th class="text-right">{{ translate("txt-total") }}</th>
-                <th style="border-top: 2px solid black;"><span
-                            class="pull-right">{{ (total)|currency_decimal() }}</span>
-                </th>
+                <th style="border-top: 2px solid black;" class="text-right">{{ (total)|currency_decimal() }}</th>
                 <th>{% if  total < -0.1 %}{{ translate("txt-credit") }}{% endif %}</th>
             </tr>
             </tfoot>
@@ -327,8 +325,11 @@
     {% endif %}
 
     {% set hasInvoicesInPeriod = false %}
+    {% set hasVat = false %}
     {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year == year and affiliationInvoice.period == period %}
         {% set hasInvoicesInPeriod = true %}
+
+        {% set hasVat = invoiceService.hasVat(affiliationInvoice.invoice) %}
     {% endfor %}
 
     {% if hasInvoicesInPeriod %}
@@ -343,7 +344,7 @@
                 <th>{{ translate("txt-date") }}</th>
                 <th>{{ translate("txt-contribution-euro") }}</th>
                 <th>{{ translate("txt-paid") }}</th>
-                <th><span class="pull-right">{{ translate("txt-invoiced-euro") }}</span></th>
+                <th class="text-right">{{ translate("txt-invoiced-euro") }} {% if hasVat %}({{ translate("txt-including-vat") }}){% endif %}</th>
             </tr>
             </thead>
             <tbody>
@@ -375,7 +376,7 @@
                 <tr>
                     <td></td>
                     <td colspan="2" class="text-right">{{ translate("txt-total-excl-vat") }}</td>
-                    <th colspan="4">{{ affiliationInvoice.amountInvoiced|currency_decimal() }}</th>
+                    <th colspan="4" >{{ affiliationInvoice.amountInvoiced|currency_decimal() }}</th>
                 </tr>
             {% endfor %}
             </tbody>
