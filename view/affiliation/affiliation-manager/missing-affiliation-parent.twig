@@ -46,7 +46,7 @@
                 {% endfor %}
                 </tbody>
             </table>
-            {% include 'project/partial/pagination-control' %}
+            {% include 'application/partial/pagination-control' %}
         {% else %}
             {{ ztbalert().info(translate("txt-affiliation-with-missing-parent-organisation"))|raw }}
         {% endif %}

@@ -16,7 +16,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
-use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
  * ProjectDoa.
@@ -93,9 +92,7 @@ class Doa extends AbstractEntity
     private $dateCreated;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="doa")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
-     * })
+     * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
      * @Annotation\Exclude()
      *
      * @var \Affiliation\Entity\Affiliation
@@ -103,28 +100,18 @@ class Doa extends AbstractEntity
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="affiliationDoa")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * })
+     * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * @Annotation\Exclude()
      *
      * @var \Contact\Entity\Contact
      */
     private $contact;
 
-    /**
-     * Doa constructor.
-     */
     public function __construct()
     {
         $this->object = new ArrayCollection();
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;

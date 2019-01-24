@@ -251,6 +251,7 @@
             <tr>
                 <th>{{ translate("txt-invoice") }}</th>
                 <th>{{ translate("txt-period") }}</th>
+                <th>{{ translate("txt-invoice-period") }}</th>
                 <th>{{ translate("txt-date") }}</th>
                 <th>{{ translate("txt-contribution-euro") }}</th>
                 <th>{{ translate("txt-paid") }}</th>
@@ -262,6 +263,11 @@
                 <tr>
                     <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }} {{ invoiceLink(affiliationInvoice.invoice,'view','icon') }}</td>
                     <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
+                    <td>
+                        {% for year, periods in affiliationInvoice.years %}
+                            {{ year }} ({% for period in periods %}{{ period }}H{% if not loop.last %}, {% endif %}{% endfor %})
+                        {% endfor %}
+                    </td>
                     <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
                     <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
                     <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
@@ -284,9 +290,9 @@
 
 {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
 
-    {% set total = affiliationService.parseContractTotal(affiliation, contractVersion, year, period, true) %}
+    {% set total = affiliationService.parseContractTotal(affiliation, contractVersion, year, period) %}
 
-    {% if affiliationService.findInvoiceLines(affiliation, contractVersion, year, period, true)|length > 0 %}
+    {% if affiliationService.findInvoiceLines(affiliation, contractVersion, year, period)|length > 0 %}
         <h2>{{ translate("txt-upcoming-invoice-for-year-%s-period-%s")|format(year, period) }}</h2>
         <table class="table table-hover table-striped table-sm">
             <thead>
@@ -298,7 +304,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for invoiceLine in affiliationService.findInvoiceLines(affiliation, contractVersion, year, period, true) %}
+            {% for invoiceLine in affiliationService.findInvoiceLines(affiliation, contractVersion, year, period) %}
                 <tr>
                     <td>{{ invoiceLine.periodOrdinal }}</td>
                     <td>{{ invoiceLine.description }}</td>
@@ -317,6 +323,48 @@
                 <th>{% if  total < -0.1 %}{{ translate("txt-credit") }}{% endif %}</th>
             </tr>
             </tfoot>
+        </table>
+    {% endif %}
+
+    {% set hasInvoicesInPeriod = false %}
+    {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year == year and affiliationInvoice.period == period %}
+        {% set hasInvoicesInPeriod = true %}
+    {% endfor %}
+
+    {% if hasInvoicesInPeriod %}
+        <h2>{{ translate("txt-invoice-sent-in-year-%s-period-%s")|format(year, period) }}</h2>
+        {# paid invoices in the selected period#}
+        <table class="table table-striped table-hover table-sm">
+            <thead>
+            <tr>
+                <th>{{ translate("txt-invoice") }}</th>
+                <th>{{ translate("txt-period") }}</th>
+                <th>{{ translate("txt-invoice-period") }}</th>
+                <th>{{ translate("txt-date") }}</th>
+                <th>{{ translate("txt-contribution-euro") }}</th>
+                <th>{{ translate("txt-paid") }}</th>
+                <th><span class="pull-right">{{ translate("txt-invoiced-euro") }}</span></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year == year and affiliationInvoice.period == period %}
+                <tr>
+                    <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }} {{ invoiceLink(affiliationInvoice.invoice,'view','icon') }}</td>
+                    <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
+                    <td>
+                        {% for year, periods in affiliationInvoice.years %}
+                            {{ year }} ({% for period in periods %}{{ period }}H{% if not loop.last %}, {% endif %}{% endfor %})
+                        {% endfor %}
+                    </td>
+                    <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
+                    <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                    <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
+                    <td>
+                        <span class="pull-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</span>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
     {% endif %}
 

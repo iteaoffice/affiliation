@@ -39,16 +39,16 @@
                 <thead>
                 <tr>
                     <th>
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'organisation_sort', 'text': translate('txt-affiliation')} %}
+                        {% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'organisation_sort', 'text': translate('txt-affiliation')} %}
                     </th>
                     <th>
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_sort', 'text': translate('txt-project')} %}
+                        {% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_sort', 'text': translate('txt-project')} %}
                     </th>
                     <th>
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_call', 'text': translate('txt-call')} %}
+                        {% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'project_call', 'text': translate('txt-call')} %}
                     </th>
                     <th>
-                        {% include 'affiliation/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'contact_sort', 'text': translate('txt-contact')} %}
+                        {% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/list', 'criteria': 'contact_sort', 'text': translate('txt-contact')} %}
                     </th>
                 </tr>
                 </thead>
@@ -86,7 +86,7 @@
                 <tfoot>
                 </tfoot>
             </table>
-            {% include 'affiliation/partial/pagination-control' with {'paginator': paginator} %}
+            {% include 'application/partial/pagination-control' with {'paginator': paginator} %}
         {% else %}
             {{ ztbalert().info(translate("txt-no-affiliations-found"))|raw }}
         {% endif %}

@@ -2,8 +2,8 @@
 {% do headTitle().append(translate("txt-list-affiliation-loi")) %}
 
 {% do headLink().appendStylesheet(
-'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
-) %}
+    '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
+    ) %}
 
 <h1>{{ translate("txt-list-affiliation-loi") }}</h1>
 
@@ -29,10 +29,8 @@
             <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('contact')) }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ loi.affiliation.id).get('dateSigned')) }}</td>
             <td>
-                <button type="button" rel="{{ loi.id }}" data-complete-text="Approved"
-                        class="btn btn-info approveButton"
-                        autocomplete="off"><i class="fa fa-check"></i>
-                    {{ translate("txt-approve") }}</button>
+                <button type="button" data-loi-id="{{ loi.id }}"
+                        class="btn btn-info approveButton">{{ translate("txt-approve") }}</button>
             </td>
         </tr>
     {% endfor %}
@@ -40,16 +38,16 @@
 </table>
 
 <script type="text/javascript">
-
     $(document).on('click', '.approveButton', function (e) {
 
         e.preventDefault();
 
         var btn = $(this);
-        btn.button('loading');
+        btn.data('original-text', btn.html());
+        btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> loading...');
 
         //LoiId
-        var loiId = btn.attr('rel');
+        var loiId = btn.data('loi-id');
 
         $.ajax({
             url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation/loi/approve') }}',
@@ -61,29 +59,25 @@
                 'dateSigned': $("#dateSigned-" + loiId).val()
             },
             success: function (response) {
-                if (response.result == 'success') {
-                    btn.addClass('complete');
-                    $("#loi-" + loiId).addClass('success');
-                    btn.button('complete'); // button text will be "finished!"
+                if (response.result === 'success') {
+                    btn.attr('class', 'btn btn-success');
+                    btn.html('<i class="fa fa-check"></i> Approved');
+                    $("#loi-" + loiId).addClass('table-success');
                 }
 
-                if (response.result == 'error') {
-                    btn.button('reset');
+                if (response.result === 'error') {
+                    btn.html(btn.data('original-text'));
                     alert(response.error);
                 }
-
             },
             error: function (xhr) {
-                console.log(xhr);
-                alert('Error! Did you enable adblock????? Status = ' + xhr.status);
+                alert('Error! Did you enable adblock? Status = ' + xhr.status);
             }
         });
-
-
     });
 
 
-    $('input[type=date]').datepicker({
+    $('input[type=text]').datepicker({
         sliderAccessArgs: {touchonly: false},
         dateFormat: 'yy-mm-dd'
     });

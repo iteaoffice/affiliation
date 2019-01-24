@@ -56,7 +56,7 @@ class DoaApproval extends Form implements InputFilterProviderInterface
 
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Text',
+                    'type'       => 'Zend\Form\Element\Date',
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',

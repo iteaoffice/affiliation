@@ -254,7 +254,7 @@ final class LoiController extends AffiliationAbstractController
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename=\'' . $programLoi->parseFileName() . '.pdf\''
+                'attachment; filename="' . $programLoi->parseFileName() . '.pdf"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', \strlen($renderProjectLoi->getPDFData()));
@@ -284,7 +284,7 @@ final class LoiController extends AffiliationAbstractController
             ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename=\'' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '\''
+                'attachment; filename="' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '"'
             )
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(

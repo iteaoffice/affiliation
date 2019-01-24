@@ -2,8 +2,8 @@
 {% do headTitle().append(translate("txt-unapproved-affiliation-doa")) %}
 
 {% do headLink().appendStylesheet(
-'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
-) %}
+    '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
+    ) %}
 
 <h1>{{ translate("txt-unapproved-affiliation-doa") }}</h1>
 
@@ -29,10 +29,8 @@
             <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('contact')) }}</td>
             <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('dateSigned')) }}</td>
             <td>
-                <button type="button" rel="{{ doa.id }}" data-complete-text="Approved"
-                        class="btn btn-info approveButton"
-                        autocomplete="off"><i class="fa fa-check"></i>
-                    {{ translate("txt-approve") }}</button>
+                <button type="button" data-doa-id="{{ doa.id }}"
+                        class="btn btn-info approveButton">{{ translate("txt-approve") }}</button>
             </td>
         </tr>
     {% endfor %}
@@ -40,16 +38,16 @@
 </table>
 
 <script type="text/javascript">
-
     $(document).on('click', '.approveButton', function (e) {
 
         e.preventDefault();
 
         var btn = $(this);
-        btn.button('loading');
+        btn.data('original-text', btn.html());
+        btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> loading...');
 
         //DoaId
-        var doaId = btn.attr('rel');
+        var doaId = btn.data('doa-id');
 
         $.ajax({
             url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation/doa/approve') }}',
@@ -61,21 +59,20 @@
                 'dateSigned': $("#dateSigned-" + doaId).val()
             },
             success: function (response) {
-                if (response.result == 'success') {
-                    btn.addClass('complete');
-                    $("#doa-" + doaId).addClass('success');
-                    btn.button('complete'); // button text will be "finished!"
+                if (response.result === 'success') {
+                    btn.attr('class', 'btn btn-success');
+                    btn.html('<i class="fa fa-check"></i> Approved');
+                    $("#doa-" + doaId).addClass('table-success');
                 }
 
-                if (response.result == 'error') {
-                    btn.button('reset');
+                if (response.result === 'error') {
+                    btn.html(btn.data('original-text'));
                     alert(response.error);
                 }
 
             },
             error: function (xhr) {
-                console.log(xhr);
-                alert('Error! Did you enable adblock????? Status = ' + xhr.status);
+                alert('Error! Did you enable adblock? Status = ' + xhr.status);
             }
         });
 

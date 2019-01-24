@@ -57,7 +57,7 @@
         {% for year in yearRange %}
             <th>{{ year }}
                 {% if projectService.isOutOfBounds(project, year) %}
-                    <i class="fa fa-exclamation-triangle error"
+                    <i class="fa fa-exclamation-triangle text-danger"
                        title="{{ translate("txt-cost-and-effort-data-outside-project-time-span") }}"></i>
                 {% endif %}
             </th>
@@ -100,7 +100,7 @@
             <td></td>
             {% for year in yearRange %}
                 {% if projectService.isOutOfBounds(project, year) %}
-                    <td class="has-error">
+                    <td class="bg-danger">
                 {% else %}
                     <td>
                 {% endif %}
@@ -141,7 +141,7 @@
             <td>{{ workpackage }}</td>
             {% for year in yearRange %}
                 {% if projectService.isOutOfBounds(project, year) %}
-                    <td class="has-error">
+                    <td class="bg-danger">
                 {% else %}
                     <td>
                 {% endif %}

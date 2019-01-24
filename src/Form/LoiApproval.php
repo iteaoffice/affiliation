@@ -18,14 +18,12 @@ use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 /**
+ * Class LoiApproval
  *
+ * @package Affiliation\Form
  */
 class LoiApproval extends Form implements InputFilterProviderInterface
 {
-    /**
-     * @param ArrayCollection $lois
-     * @param ContactService $contactService
-     */
     public function __construct(ArrayCollection $lois, ContactService $contactService)
     {
         parent::__construct();
@@ -58,7 +56,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
 
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Text',
+                    'type'       => 'Zend\Form\Element\Date',
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',

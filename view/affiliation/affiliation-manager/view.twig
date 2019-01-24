@@ -9,6 +9,7 @@
 
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-admin','button') %}
+{% set years = projectService.parseYearRange(affiliation.project, true) %}
 
 <h1>{{ affiliation.parseBranchedName() }}</h1>
 
@@ -194,7 +195,7 @@
                                 class="fa fa-envelope-o"></i></a></dd>
                 {% if affiliation.financial.branch %}
                     <dt>{{ translate("txt-financial-branch") }}</dt>
-                    <dd>{{ affiliation.financial.branch }}</dd>
+                    <dd><code>{{ affiliation.financial.branch }}</code></dd>
                 {% endif %}
             {% endif %}
             <dt>{{ translate("txt-invoice-method") }}</dt>
@@ -380,7 +381,7 @@
                 <th></th>
                 <th>{{ translate("txt-type") }}</th>
 
-                {% for year in projectService.parseYearRange(project) %}
+                {% for year in projectService.parseYearRange(project, true) %}
                     <th>{{ year }}</th>
                 {% endfor %}
                 <th>{{ translate("txt-total") }}</th>
@@ -390,14 +391,14 @@
             {% for affiliationVersion in affiliation.version %}
                 {% set version = affiliationVersion.version %}
                 <tr>
-                    <th colspan="{{ 4 + projectService.parseYearRange(project)|length }}">{{ versionLink(version,'view-admin','description') }}</th>
+                    <th colspan="{{ 4 + projectService.parseYearRange(project, true)|length }}">{{ versionLink(version,'view-admin','description') }}</th>
                 </tr>
                 <tr>
 
                     <td>{{ versionService.parseStatus(affiliationVersion.version) }}</td>
                     <td>{{ translate("txt-effort") }}</td>
 
-                    {% for year in projectService.parseYearRange(project) %}
+                    {% for year in projectService.parseYearRange(project, true) %}
                         {% set yearTotal = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, version)[year] %}
                         <td>{{ yearTotal|parse_effort }}</td>
                     {% endfor %}
@@ -410,7 +411,7 @@
                     <td></td>
                     <td>{{ translate("txt-costs") }}</td>
 
-                    {% for year in projectService.parseYearRange(affiliation.project) %}
+                    {% for year in years %}
 
                         {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
 
@@ -454,7 +455,7 @@
                 <td></td>
                 <td>{{ translate("txt-effort") }}</td>
 
-                {% for year in projectService.parseYearRange(affiliation.project) %}
+                {% for year in years %}
                     {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
 
                     <td>{{ yearTotal|parse_effort }}</td>
@@ -467,7 +468,7 @@
                 <td></td>
                 <td>{{ translate("txt-costs") }}</td>
 
-                {% for year in projectService.parseYearRange(affiliation.project) %}
+                {% for year in years %}
                     {% set yearTotal = projectService.findTotalCostByAffiliationPerYear(affiliation)[year] %}
 
                     <td>
@@ -483,7 +484,7 @@
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-national") }}</td>
-                <td colspan="{{ projectService.parseYearRange(affiliation.project)|length }}"></td>
+                <td colspan="{{ years|length }}"></td>
                 <td>
                     &euro; <a id="funding_national"
                               href="#" class="funding"
@@ -498,7 +499,7 @@
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-eu") }}</td>
-                <td colspan="{{ projectService.parseYearRange(affiliation.project)|length }}"></td>
+                <td colspan="{{ years|length }}"></td>
                 <td>
 
                     &euro; <a id="funding_eu"

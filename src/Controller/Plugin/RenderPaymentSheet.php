@@ -676,8 +676,7 @@ final class RenderPaymentSheet extends AbstractPlugin
                     $affiliation,
                     $contractVersion,
                     $year,
-                    $period,
-                    true
+                    $period
                 ) as $invoiceLine) {
                     $upcomingDetails[] = [
                         $invoiceLine->periodOrdinal,
@@ -692,8 +691,7 @@ final class RenderPaymentSheet extends AbstractPlugin
                     $affiliation,
                     $contractVersion,
                     $year,
-                    $period,
-                    true
+                    $period
                 );
 
                 if (\count($upcomingDetails) > 0) {
