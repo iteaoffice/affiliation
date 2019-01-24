@@ -359,9 +359,23 @@
                     <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
                     <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
                     <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
-                    <td>
-                        <span class="pull-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</span>
-                    </td>
+                    <td class="text-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <th colspan="6">{{ translate("txt-invoiced-in-%s")|format(affiliationInvoice.invoice.invoiceNr) }}</th>
+                </tr>
+                {% for row in affiliationInvoice.invoice.row %}
+                    <tr>
+                        <td></td>
+                        <td colspan="2">{{ row.row|raw }}
+                        <td colspan="4">{{ (row.quantity * row.amount)|currency_decimal() }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td colspan="2" class="text-right">{{ translate("txt-total-excl-vat") }}</td>
+                    <th colspan="4">{{ affiliationInvoice.amountInvoiced|currency_decimal() }}</th>
                 </tr>
             {% endfor %}
             </tbody>
