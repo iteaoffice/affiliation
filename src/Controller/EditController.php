@@ -1010,11 +1010,13 @@ final class EditController extends AffiliationAbstractController
             foreach ($formData['costPerAffiliationAndYear'][$affiliation->getId()] as $year => $costValue) {
                 $cost = $this->projectService->findCostByAffiliationAndYear($affiliation, $year);
 
-                if (null !== $cost && ($costValue['cost'] === '0' || empty($costValue['cost']))) {
+                $setCostValue = (float) \str_replace(',', '.', $costValue['cost']);
+
+                if (null !== $cost && $setCostValue === 0.0) {
                     $this->projectService->delete($cost);
                 }
 
-                if ((float)$costValue['cost'] > 0) {
+                if ($setCostValue > 0) {
                     /*
                      * Create a new if not set yet
                      */
@@ -1026,7 +1028,7 @@ final class EditController extends AffiliationAbstractController
                         $dateEnd = new \DateTime();
                         $cost->setDateEnd($dateEnd->modify('last day of december ' . $year));
                     }
-                    $cost->setCosts((float)$costValue['cost'] * 1000);
+                    $cost->setCosts($setCostValue * 1000);
                     $this->projectService->save($cost);
                 }
             }
@@ -1048,11 +1050,14 @@ final class EditController extends AffiliationAbstractController
                             $workpackage,
                             $year
                         );
-                    if (null !== $effort && ($effortValue['effort'] === '0' || empty($effortValue['effort']))) {
+
+                    $setEffortValue = (float) \str_replace(',', '.', $effortValue['effort']);
+
+                    if (null !== $effort && $setEffortValue === 0.0) {
                         $this->projectService->delete($effort);
                     }
 
-                    if ((float)$effortValue['effort'] > 0) {
+                    if ($setEffortValue > 0) {
                         /*
                          * Create a new if not set yet
                          */
@@ -1065,7 +1070,7 @@ final class EditController extends AffiliationAbstractController
                             $dateEnd = new \DateTime();
                             $effort->setDateEnd($dateEnd->modify('last day of december ' . $year));
                         }
-                        $effort->setEffort($effortValue['effort']);
+                        $effort->setEffort($setEffortValue);
                         $this->projectService->save($effort);
                     }
                 }

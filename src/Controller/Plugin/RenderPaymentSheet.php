@@ -591,7 +591,9 @@ final class RenderPaymentSheet extends AbstractPlugin
                 '',
                 '',
                 '<h3>' . sprintf(
-                    $this->translator->translate('txt-already-sent-invoices-upto-year-%s-period-%s'), $year, $period
+                    $this->translator->translate('txt-already-sent-invoices-upto-year-%s-period-%s'),
+                    $year,
+                    $period
                 )
                 . '</h3>',
                 0,
@@ -669,7 +671,9 @@ final class RenderPaymentSheet extends AbstractPlugin
                         '',
                         '',
                         '<h3>' . sprintf(
-                            $this->translator->translate('txt-invoice-for-year-%s-period-%s'), $year, $period
+                            $this->translator->translate('txt-invoice-for-year-%s-period-%s'),
+                            $year,
+                            $period
                         )
                         . '</h3>',
                         0,
@@ -714,7 +718,6 @@ final class RenderPaymentSheet extends AbstractPlugin
                     ];
 
                     $pdf->coloredTable($header, $upcomingDetails, [20, 120, 45], true, 6);
-
                 }
 
 
@@ -722,14 +725,15 @@ final class RenderPaymentSheet extends AbstractPlugin
 
 
                 if ($this->affiliationService->affiliationHasInvoiceInYearAndPeriod($affiliation, $year, $period)) {
-
                     $pdf->writeHTMLCell(
                         0,
                         0,
                         '',
                         '',
                         '<h3>' . sprintf(
-                            $this->translator->translate('txt-invoice-sent-in-year-%s-period-%s'), $year, $period
+                            $this->translator->translate('txt-invoice-sent-in-year-%s-period-%s'),
+                            $year,
+                            $period
                         )
                         . '</h3>',
                         0,
@@ -745,7 +749,9 @@ final class RenderPaymentSheet extends AbstractPlugin
                     //Find the invoice
                     //@todo, this does not include the credit invoice!!!
                     $affiliationInvoice = $this->affiliationService->findAffiliationInvoiceInYearAndPeriod(
-                        $affiliation, $year, $period
+                        $affiliation,
+                        $year,
+                        $period
                     );
 
 
@@ -811,7 +817,6 @@ final class RenderPaymentSheet extends AbstractPlugin
                         false,
                         6
                     );
-
                 }
 
 

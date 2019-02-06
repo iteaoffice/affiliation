@@ -88,7 +88,7 @@ final class Affiliation extends EntityRepository
         switch ($criterion) {
             case OParent::CRITERION_C_CHAMBER:
                 /** @var \Organisation\Repository\OParent $parentRepository */
-                $parentRepository = $this->_em->getRepository(\Organisation\Entity\OParent::class);
+                $parentRepository = $this->_em->getRepository(OParent::class);
                 $queryBuilder = $parentRepository->limitCChambers($queryBuilder);
                 break;
             case OParent::CRITERION_FREE_RIDER:
@@ -111,9 +111,13 @@ final class Affiliation extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
         $qb->where('affiliation_entity_affiliation.selfFunded = ?1');
         $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateSelfFunded'));
         $qb->setParameter(1, Entity\Affiliation::SELF_FUNDED);
+
+        $projectRepository = $this->_em->getRepository(Project::class);
+        $qb = $projectRepository->onlyActiveProject($qb);
 
         return $qb->getQuery()->getResult();
     }
