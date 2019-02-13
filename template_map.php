@@ -40,4 +40,5 @@ return array(
     'affiliation/loi/upload'                                     => __DIR__ . '//view/affiliation/loi/upload.twig',
     'affiliation/loi/replace'                                    => __DIR__ . '//view/affiliation/loi/replace.twig',
     'affiliation/loi/submit'                                     => __DIR__ . '//view/affiliation/loi/submit.twig',
+    'affiliation/question/category-manager/list'                 => __DIR__ . '//view/affiliation/question/category-manager/list.twig',
 );

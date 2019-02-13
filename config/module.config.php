@@ -23,18 +23,20 @@ use Zend\Stdlib;
 $config = [
     'controllers'        => [
         'factories' => [
-            Controller\AffiliationManagerController::class => ConfigAbstractFactory::class,
-            Controller\CommunityController::class          => ConfigAbstractFactory::class,
-            Controller\DoaController::class                => ConfigAbstractFactory::class,
-            Controller\DoaManagerController::class         => ConfigAbstractFactory::class,
-            Controller\EditController::class               => ConfigAbstractFactory::class,
-            Controller\LoiController::class                => ConfigAbstractFactory::class,
-            Controller\LoiManagerController::class         => ConfigAbstractFactory::class,
+            Controller\AffiliationManagerController::class       => ConfigAbstractFactory::class,
+            Controller\CommunityController::class                => ConfigAbstractFactory::class,
+            Controller\DoaController::class                      => ConfigAbstractFactory::class,
+            Controller\DoaManagerController::class               => ConfigAbstractFactory::class,
+            Controller\EditController::class                     => ConfigAbstractFactory::class,
+            Controller\LoiController::class                      => ConfigAbstractFactory::class,
+            Controller\LoiManagerController::class               => ConfigAbstractFactory::class,
+            Controller\Question\CategoryManagerController::class => ConfigAbstractFactory::class,
         ],
     ],
     'service_manager'    => [
         'factories' => [
             Service\AffiliationService::class              => ConfigAbstractFactory::class,
+            Service\AffiliationQuestionService::class      => ConfigAbstractFactory::class,
             Service\DoaService::class                      => ConfigAbstractFactory::class,
             Service\LoiService::class                      => ConfigAbstractFactory::class,
             Service\FormService::class                     => Factory\FormServiceFactory::class,
@@ -68,20 +70,22 @@ $config = [
     ],
     'view_helpers'       => [
         'aliases'   => [
-            'doaLink'                    => View\Helper\DoaLink::class,
-            'associateLink'              => View\Helper\AssociateLink::class,
-            'affiliationLink'            => View\Helper\AffiliationLink::class,
-            'loiLink'                    => View\Helper\LoiLink::class,
-            'paymentSheet'               => View\Helper\PaymentSheet::class,
-            'affiliationEffortSpentLink' => View\Helper\EffortSpentLink::class,
+            'doaLink'                         => View\Helper\DoaLink::class,
+            'associateLink'                   => View\Helper\AssociateLink::class,
+            'affiliationLink'                 => View\Helper\AffiliationLink::class,
+            'loiLink'                         => View\Helper\LoiLink::class,
+            'paymentSheet'                    => View\Helper\PaymentSheet::class,
+            'affiliationEffortSpentLink'      => View\Helper\EffortSpentLink::class,
+            'affiliationQuestionCategoryLink' => View\Helper\Question\CategoryLink::class
         ],
         'factories' => [
-            View\Helper\AffiliationLink::class => View\Factory\ViewHelperFactory::class,
-            View\Helper\AssociateLink::class   => View\Factory\ViewHelperFactory::class,
-            View\Helper\EffortSpentLink::class => View\Factory\ViewHelperFactory::class,
-            View\Helper\DoaLink::class         => View\Factory\ViewHelperFactory::class,
-            View\Helper\LoiLink::class         => View\Factory\ViewHelperFactory::class,
-            View\Helper\PaymentSheet::class    => ConfigAbstractFactory::class,
+            View\Helper\AffiliationLink::class       => View\Factory\ViewHelperFactory::class,
+            View\Helper\AssociateLink::class         => View\Factory\ViewHelperFactory::class,
+            View\Helper\EffortSpentLink::class       => View\Factory\ViewHelperFactory::class,
+            View\Helper\DoaLink::class               => View\Factory\ViewHelperFactory::class,
+            View\Helper\LoiLink::class               => View\Factory\ViewHelperFactory::class,
+            View\Helper\PaymentSheet::class          => ConfigAbstractFactory::class,
+            View\Helper\Question\CategoryLink::class => View\Factory\ViewHelperFactory::class,
         ],
     ],
     'view_manager'       => [

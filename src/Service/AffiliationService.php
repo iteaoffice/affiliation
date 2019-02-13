@@ -1384,14 +1384,14 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
         $this->refreshAccessRolesByContact($contact);
 
-        //Send an email to the invitee
+        // Send an email to the invitee
 
         $this->emailService->setWebInfo("/project/add_associate:associate");
         $this->emailService->addTo($contact);
 
         $deeplinkLink = $this->viewHelperManager->get(DeeplinkLink::class);
 
-        //The contact can be found. But we forward him to the profile-edit
+        // The contact can be found. But we forward him to the profile-edit
         $targetProfile = $this->deeplinkService->createTargetFromRoute('community/contact/profile/edit');
         $deeplinkProfile = $this->deeplinkService->createDeeplink($targetProfile, $contact);
         $targetPartner = $this->deeplinkService->createTargetFromRoute('community/affiliation/affiliation');

@@ -69,6 +69,9 @@ return [
             'ControllerPluginManager',
             TranslatorInterface::class
         ],
+        Service\AffiliationQuestionService::class      => [
+            EntityManager::class,
+        ],
         Service\DoaService::class                      => [
             EntityManager::class
         ],
@@ -180,6 +183,11 @@ return [
         Controller\Plugin\MergeAffiliation::class      => [
             AdminService::class,
             EntityManager::class
+        ],
+        Controller\Question\CategoryManagerController::class => [
+            Service\AffiliationQuestionService::class,
+            Service\FormService::class,
+            TranslatorInterface::class
         ],
         View\Helper\PaymentSheet::class                => [
             ProjectService::class,

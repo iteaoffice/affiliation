@@ -141,6 +141,10 @@ return [
                     'assertion' => DoaAssertion::class,
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/question/category/list',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
                     'route'     => 'community/affiliation/payment-sheet',
                     'roles'     => ['user'],
                     'assertion' => AffiliationAssertion::class,
