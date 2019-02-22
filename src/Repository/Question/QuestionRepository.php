@@ -13,20 +13,21 @@ declare(strict_types=1);
 namespace Affiliation\Repository\Question;
 
 use Affiliation\Entity\Question\Category;
+use Affiliation\Entity\Question\Question;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * Class CategoryRepository
+ * Class QuestionRepository
  * @package Affiliation\Repository\Question
  */
-final class CategoryRepository extends EntityRepository
+final class QuestionRepository extends EntityRepository
 {
     public function findFiltered(array $filter = []): QueryBuilder
     {
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
-        $queryBuilder->select('c');
-        $queryBuilder->from(Category::class, 'c');
+        $queryBuilder->select('q');
+        $queryBuilder->from(Question::class, 'q');
 
         $direction = 'ASC';
         if (isset($filter['direction']) && \in_array(\strtoupper($filter['direction']), ['ASC', 'DESC'])) {
@@ -35,19 +36,19 @@ final class CategoryRepository extends EntityRepository
 
         // Filter on the name
         if (\array_key_exists('search', $filter)) {
-            $queryBuilder->andWhere($queryBuilder->expr()->like('c.category', ':like'));
+            $queryBuilder->andWhere($queryBuilder->expr()->like('q.question', ':like'));
             $queryBuilder->setParameter('like', \sprintf("%%%s%%", $filter['search']));
         }
 
         switch ($filter['order']) {
             case 'id':
-                $queryBuilder->addOrderBy('c.id', $direction);
+                $queryBuilder->addOrderBy('q.id', $direction);
                 break;
             case 'category':
-                $queryBuilder->addOrderBy('c.category', $direction);
+                $queryBuilder->addOrderBy('q.cquestion', $direction);
                 break;
             default:
-                $queryBuilder->addOrderBy('c.sequence', $direction);
+                $queryBuilder->addOrderBy('q.sequence', $direction);
         }
 
         return $queryBuilder;

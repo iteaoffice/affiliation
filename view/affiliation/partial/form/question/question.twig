@@ -1,0 +1,28 @@
+{% do form.prepare() %}
+{% do form.setAttribute('class','form-horizontal') %}
+
+{{ form().openTag(form)|raw }}
+
+{% set question = form.get('affiliation_entity_question_question') %}
+
+{{ ztbformelement(question.get('sequence')) }}
+{{ ztbformelement(question.get('category')) }}
+{{ ztbformelement(question.get('question')) }}
+{{ ztbformelement(question.get('helpBlock')) }}
+{{ ztbformelement(question.get('placeholder')) }}
+{{ ztbformelement(question.get('inputType')) }}
+{{ ztbformelement(question.get('values')) }}
+{{ ztbformelement(question.get('required')) }}
+{{ ztbformelement(question.get('enabled')) }}
+
+<div class="form-group row">
+    <div class="offset-sm-3 col-sm-9">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+        {% if form.has('delete') %}
+            {{ ztbformelement(form.get('delete')) }}
+        {% endif %}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

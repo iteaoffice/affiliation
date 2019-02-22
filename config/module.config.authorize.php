@@ -141,7 +141,35 @@ return [
                     'assertion' => DoaAssertion::class,
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/question/list',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/question/view',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/question/new',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/question/edit',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/question/category/list',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/question/category/view',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/question/category/new',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/question/category/edit',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [

@@ -1,6 +1,6 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-affiliation")) %}
-{% do headTitle().append(translate("txt-question-category-list")) %}
+{% do headTitle().append(translate("txt-question-list")) %}
 
 {% do form.prepare() %}
 {{ form().openTag(form)|raw }}
@@ -12,11 +12,11 @@
 <div class="row">
 
     <div class="col-md-12">
-        <h1>{{ translate("txt-affiliation-question-category-list") }} {{ affiliationQuestionCategoryLink(null,'new','button') }}</h1>
+        <h1>{{ translate("txt-affiliation-question-list") }} {{ affiliationQuestionLink(null,'new','button') }}</h1>
 
         <div class="row">
             <div class="col-md-6">
-                <p class="lead">{{ translate("txt-affiliation-question-category-list-explanation") }}</p>
+                <p class="lead">{{ translate("txt-affiliation-question-list-explanation") }}</p>
             </div>
             <div class="col-md-6">
                 <div class="input-group">
@@ -32,22 +32,22 @@
             <table class="table table-hover table-striped table-sm">
                 <thead>
                 <tr>
-                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/question/category/list', 'criteria': 'id', 'text': translate('txt-id')} %}</th>
-                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/question/category/list', 'criteria': 'category', 'text': translate('txt-category')} %}</th>
-                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/question/category/list', 'criteria': 'sequence', 'text': translate('txt-sequence')} %}</th>
-                    <th>{{ translate("txt-questions") }}</th>
+                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/question/list', 'criteria': 'id', 'text': translate('txt-id')} %}</th>
+                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/question/list', 'criteria': 'category', 'text': translate('txt-question')} %}</th>
+                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/question/list', 'criteria': 'sequence', 'text': translate('txt-sequence')} %}</th>
+                    <th>{{ translate("txt-category") }}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for category in paginator.getCurrentItems() %}
+                {% for question in paginator.getCurrentItems() %}
                     <tr>
                         <td>
-                            {{ category.id }}
-                            {{ affiliationQuestionCategoryLink(category, 'edit', 'icon') }}
+                            {{ question.id }}
+                            {{ affiliationQuestionLink(question, 'edit', 'icon') }}
                         </td>
-                        <td>{{ affiliationQuestionCategoryLink(category, 'view', 'name') }}</td>
-                        <td>{{ category.sequence }}</td>
-                        <td>{{ category.questions.count() }}</td>
+                        <td>{{ affiliationQuestionLink(question, 'view', 'name') }}</td>
+                        <td>{{ question.sequence }}</td>
+                        <td></td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -14,32 +14,42 @@ declare(strict_types=1);
 namespace Affiliation\View\Helper\Question;
 
 use Affiliation\Entity\Question\Category;
+use Affiliation\Entity\Question\Question;
 use Affiliation\View\Helper\LinkAbstract;
 
 /**
  * Class CategoryLink
  * @package Affiliation\View\Helper\Question
  */
-class CategoryLink extends LinkAbstract
+class QuestionLink extends LinkAbstract
 {
     /**
-     * @var Category
+     * @var Question
      */
-    private $category;
+    private $question;
+
+    /**
+     * @var string
+     */
+    private $label = '';
 
     public function __invoke(
-        Category $category = null,
+        Question $question = null,
         string   $action = 'view',
         string   $show = 'name'
     ): string
     {
-        $this->category = $category ?? new Category();
+        $this->question = $question ?? new Question();
+        $this->label    = (\strlen((string) $this->question->getQuestion()) > 18)
+            ? \substr((string) $this->question->getQuestion(),0,15) . '...'
+            : (string) $this->question->getQuestion();
         $this->setAction($action);
         $this->setShow($show);
 
-        $this->addRouterParam('id', $this->category->getId());
+        $this->addRouterParam('id', $this->question->getId());
+
         $this->setShowOptions([
-            'name' => $this->category->getCategory()
+            'name' => $this->label
         ]);
 
         return $this->createLink();
@@ -54,16 +64,16 @@ class CategoryLink extends LinkAbstract
     {
         switch ($this->getAction()) {
             case 'view':
-                $this->setRouter('zfcadmin/affiliation/question/category/view');
-                $this->setText(\sprintf($this->translator->translate("txt-view-category-%s"), $this->category));
+                $this->setRouter('zfcadmin/affiliation/question/view');
+                $this->setText(\sprintf($this->translator->translate("txt-view-question-%s"), $this->label));
                 break;
             case 'new':
-                $this->setRouter('zfcadmin/affiliation/question/category/new');
-                $this->setText($this->translator->translate("txt-new-category"));
+                $this->setRouter('zfcadmin/affiliation/question/new');
+                $this->setText($this->translator->translate("txt-new-question"));
                 break;
             case 'edit':
-                $this->setRouter('zfcadmin/affiliation/question/category/edit');
-                $this->setText(\sprintf($this->translator->translate("txt-edit-category-%s"), $this->category));
+                $this->setRouter('zfcadmin/affiliation/question/edit');
+                $this->setText(\sprintf($this->translator->translate("txt-edit-question-%s"), $this->label));
                 break;
             default:
                 throw new \Exception(\sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));

@@ -159,6 +159,16 @@ return [
             FormService::class,
             TranslatorInterface::class
         ],
+        Controller\Question\CategoryManagerController::class => [
+            Service\AffiliationQuestionService::class,
+            Service\FormService::class,
+            TranslatorInterface::class
+        ],
+        Controller\Question\QuestionManagerController::class => [
+            Service\AffiliationQuestionService::class,
+            Service\FormService::class,
+            TranslatorInterface::class
+        ],
         Controller\Plugin\RenderPaymentSheet::class    => [
             AffiliationService::class,
             Options\ModuleOptions::class,
@@ -183,11 +193,6 @@ return [
         Controller\Plugin\MergeAffiliation::class      => [
             AdminService::class,
             EntityManager::class
-        ],
-        Controller\Question\CategoryManagerController::class => [
-            Service\AffiliationQuestionService::class,
-            Service\FormService::class,
-            TranslatorInterface::class
         ],
         View\Helper\PaymentSheet::class                => [
             ProjectService::class,

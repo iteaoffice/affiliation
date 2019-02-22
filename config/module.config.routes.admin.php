@@ -335,11 +335,53 @@ return [
                                 'type'          => 'Segment',
                                 'options'       => [
                                     'route'    => '/question',
+                                    'defaults' => [
+                                        'action'     => 'list',
+                                        'controller' => Controller\Question\QuestionManagerController::class,
+                                    ],
                                 ],
                                 'may_terminate' => false,
                                 'child_routes'  => [
+                                    'list'     => [
+                                        'type'     => 'Segment',
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                            'defaults' => [
+                                                'action' => 'list',
+                                            ],
+                                        ],
+                                    ],
+                                    'view'     => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/view/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'view',
+
+                                            ],
+                                        ],
+                                    ],
+                                    'edit'     => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/edit/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'edit',
+                                            ],
+                                        ],
+                                    ],
+                                    'new'      => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/new.html',
+                                            'defaults' => [
+                                                'action' => 'new',
+                                            ],
+                                        ],
+                                    ],
                                     'category'           => [
-                                        'type'          => 'Literal',
+                                        'type'          => 'Segment',
                                         'options'       => [
                                             'route'    => '/category',
                                             'defaults' => [

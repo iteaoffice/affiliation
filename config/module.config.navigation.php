@@ -340,7 +340,81 @@ return [
                         ],
                     ],
                 ]
-            ]
+            ],
+            'config'       => [
+                'pages' => [
+                    'question-list' => [
+                        'label' => _("txt-nav-affiliation-question-list"),
+                        'route' => 'zfcadmin/affiliation/question/list',
+                        'pages' => [
+                            'view-question' => [
+                                'route'   => 'zfcadmin/affiliation/question/view',
+                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => Affiliation\Entity\Question\Question::class,
+                                    ],
+                                    'invokables' => [
+                                        Affiliation\Navigation\Invokable\Question\QuestionLabel::class,
+                                    ],
+                                ],
+                                'pages'   => [
+                                    'edit-question' => [
+                                        'label'   => _('txt-edit'),
+                                        'route'   => 'zfcadmin/affiliation/question/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Affiliation\Entity\Question\Question::class,
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'new-question'  => [
+                                'label'   => _('txt-new-question'),
+                                'route'   => 'zfcadmin/affiliation/question/new',
+                                'visible' => false,
+                            ],
+                        ],
+                    ],
+                    'question-category-list' => [
+                        'label' => _("txt-nav-affiliation-question-category-list"),
+                        'route' => 'zfcadmin/affiliation/question/category/list',
+                        'pages' => [
+                            'view-question-category' => [
+                                'route'   => 'zfcadmin/affiliation/question/category/view',
+                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => Affiliation\Entity\Question\Category::class,
+                                    ],
+                                    'invokables' => [
+                                        Affiliation\Navigation\Invokable\Question\CategoryLabel::class,
+                                    ],
+                                ],
+                                'pages'   => [
+                                    'edit-question-category' => [
+                                        'label'   => _('txt-edit'),
+                                        'route'   => 'zfcadmin/affiliation/question/category/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Affiliation\Entity\Question\Category::class,
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'new-question-category'  => [
+                                'label'   => _('txt-new-question-category'),
+                                'route'   => 'zfcadmin/affiliation/question/category/new',
+                                'visible' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
 ];

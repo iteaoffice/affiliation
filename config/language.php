@@ -25,3 +25,4 @@ _("txt-associates");
 _("txt-not-self-funded");
 _("txt-affiliation-description");
 _("txt-affiliation-description-explanation");
+_("txt-input-type-numeric");

@@ -145,9 +145,9 @@ final class AffiliationManagerController extends AffiliationAbstractController
     public function listAction()
     {
         /** @var Request $request */
-        $request = $this->getRequest();
+        $request      = $this->getRequest();
         $requestQuery = $request->getQuery()->toArray();
-        $data = array_merge(
+        $data         = \array_merge(
             [
                 'order'     => '',
                 'direction' => '',

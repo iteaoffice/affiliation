@@ -13,8 +13,8 @@ declare(strict_types=1);
 namespace Affiliation\Controller\Question;
 
 use Affiliation\Controller\AffiliationAbstractController;
-use Affiliation\Entity\Question\Category;
-use Affiliation\Form\Question\CategoryFilter;
+use Affiliation\Entity\Question\Question;
+use Affiliation\Form\Question\QuestionFilter;
 use Affiliation\Service\AffiliationQuestionService;
 use Affiliation\Service\FormService;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
@@ -25,10 +25,10 @@ use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 /**
- * Class CategoryManagerController
+ * Class QuestionManagerController
  * @package Affiliation\Controller\Question
  */
-final class CategoryManagerController extends AffiliationAbstractController
+final class QuestionManagerController extends AffiliationAbstractController
 {
     /**
      * @var AffiliationQuestionService
@@ -59,14 +59,14 @@ final class CategoryManagerController extends AffiliationAbstractController
     {
         $page         = $this->params()->fromRoute('page', 1);
         $filterPlugin = $this->getAffiliationFilter();
-        $query        = $this->affiliationQuestionService->findFiltered(Category::class, $filterPlugin->getFilter());
+        $query        = $this->affiliationQuestionService->findFiltered(Question::class, $filterPlugin->getFilter());
 
         $paginator = new Paginator(new PaginatorAdapter(new ORMPaginator($query, false)));
         $paginator::setDefaultItemCountPerPage(($page === 'all') ? PHP_INT_MAX : 20);
         $paginator->setCurrentPageNumber($page);
         $paginator->setPageRange(\ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage()));
 
-        $form = new CategoryFilter();
+        $form = new QuestionFilter();
         $form->setData(['filter' => $filterPlugin->getFilter()]);
 
         return new ViewModel([
@@ -80,14 +80,14 @@ final class CategoryManagerController extends AffiliationAbstractController
 
     public function viewAction()
     {
-        $category = $this->affiliationQuestionService->find(Category::class, (int)$this->params('id'));
+        $question = $this->affiliationQuestionService->find(Question::class, (int)$this->params('id'));
 
-        if ($category === null) {
+        if ($question === null) {
             return $this->notFoundAction();
         }
 
         return new ViewModel([
-            'category' => $category
+            'question' => $question
         ]);
     }
 
@@ -96,17 +96,17 @@ final class CategoryManagerController extends AffiliationAbstractController
         /** @var Request $request */
         $request = $this->getRequest();
         $data    = $request->getPost()->toArray();
-        $form    = $this->formService->prepare(new Category(), $data);
+        $form    = $this->formService->prepare(new Question(), $data);
         $form->remove('delete');
 
         if ($request->isPost()) {
             if (!isset($data['cancel']) && $form->isValid()) {
-                /** @var Category $category */
-                $category = $form->getData();
+                /** @var Question $question */
+                $question = $form->getData();
 
-                $this->affiliationQuestionService->save($category);
+                $this->affiliationQuestionService->save($question);
             }
-            return $this->redirect()->toRoute('zfcadmin/affiliation/question/category/list');
+            return $this->redirect()->toRoute('zfcadmin/affiliation/question/list');
         }
 
         return new ViewModel([
@@ -116,45 +116,45 @@ final class CategoryManagerController extends AffiliationAbstractController
 
     public function editAction()
     {
-        /** @var Category $category */
-        $category = $this->affiliationQuestionService->find(Category::class, (int)$this->params('id'));
+        /** @var Question $question */
+        $question = $this->affiliationQuestionService->find(Question::class, (int)$this->params('id'));
 
-        if ($category === null) {
+        if ($question === null) {
             return $this->notFoundAction();
         }
 
         /** @var Request $request */
         $request = $this->getRequest();
         $data    = $request->getPost()->toArray();
-        $form    = $this->formService->prepare($category, $data);
-        if ($category->getQuestions()->count() > 0) {
+        $form    = $this->formService->prepare($question, $data);
+        if ($this->affiliationQuestionService->hasAnswers($question)) {
             $form->remove('delete');
         }
 
         if ($request->isPost()) {
             if (isset($data['cancel'])) {
-                return $this->redirect()->toRoute('zfcadmin/affiliation/question/category/list');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/question/list');
             }
 
             if (isset($data['delete'])) {
-                $this->affiliationQuestionService->delete($category);
-                return $this->redirect()->toRoute('zfcadmin/affiliation/question/category/list');
+                $this->affiliationQuestionService->delete($question);
+                return $this->redirect()->toRoute('zfcadmin/affiliation/question/list');
             }
 
             if ($form->isValid()) {
-                /** @var Category $category */
-                $category = $form->getData();
-                $this->affiliationQuestionService->save($category);
+                /** @var Question $question */
+                $question = $form->getData();
+                $this->affiliationQuestionService->save($question);
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation/question/category/view',
-                    ['id' => $category->getId()]
+                    'zfcadmin/affiliation/question/view',
+                    ['id' => $question->getId()]
                 );
             }
         }
 
         return new ViewModel([
             'form'     => $form,
-            'category' => $category
+            'question' => $question
         ]);
     }
 }

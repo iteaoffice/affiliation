@@ -23,18 +23,18 @@ use Zend\Form\Annotation;
  * Question
  *
  * @ORM\Table(name="affiliation_question")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Affiliation\Repository\Question\QuestionRepository")
  */
 class Question extends AbstractEntity
 {
     /** Input type is Yes/No */
-    public const INPUT_TYPE_BOOL   = 1;
+    public const INPUT_TYPE_BOOL    = 1;
     /** Input type is a single line textfield */
-    public const INPUT_TYPE_STRING = 2;
+    public const INPUT_TYPE_STRING  = 2;
     /** Input type is a multi-line textarea */
-    public const INPUT_TYPE_TEXT   = 3;
+    public const INPUT_TYPE_TEXT    = 3;
     /** Input type is select box */
-    public const INPUT_TYPE_SELECT = 4;
+    public const INPUT_TYPE_SELECT  = 4;
     /** Input type is a number */
     public const INPUT_TYPE_NUMERIC = 5;
 
@@ -93,7 +93,10 @@ class Question extends AbstractEntity
     /**
      * @ORM\Column(name="question", type="string", length=255, nullable=false)
      * @Annotation\Type("\Zend\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-question"})
+     * @Annotation\Options({
+     *     "label":"txt-question",
+     *     "help-block":"txt-question-help-block",
+     * })
      *
      * @var string
      */
@@ -113,7 +116,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="placeholder", type="string", length=255, nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Textarea")
+     * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({
      *     "label":"txt-placeholder",
      *     "help-block":"txt-placeholder-help-block"

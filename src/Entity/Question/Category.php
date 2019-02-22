@@ -54,7 +54,10 @@ class Category extends AbstractEntity
     /**
      * @ORM\Column(name="category", type="string", length=55, nullable=false)
      * @Annotation\Type("\Zend\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-category"})
+     * @Annotation\Options({
+     *     "label":"txt-category",
+     *     "help-block":"txt-category-help-block"
+     * })
      *
      * @var string
      */
