@@ -1226,22 +1226,10 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
         return sprintf(
             $this->translator->translate("txt-%s%%-contribution-for-%s"),
-            number_format($contributionFactor * 100, 0),
+            \number_format($contributionFactor * 100, 0),
             $year,
             $currency->getSymbol()
         );
-    }
-
-    public function parsePendingContractContribution(
-        Affiliation $affiliation,
-        ?Version $version,
-        ?ContractVersion $contractVersion,
-        int $year,
-        ?int $period = null,
-        bool $useContractData = true,
-        bool $omitExchangeRate = false,
-        ?int $exchangeRateYear = null
-    ): float {
     }
 
     public function parseAmountInvoicedInYearByAffiliation(Affiliation $affiliation, int $year): float
