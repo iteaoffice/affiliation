@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 namespace Affiliation\Service;
 
-use Affiliation\Entity\Question\Answer;
-use Affiliation\Entity\Question\Phase;
-use Affiliation\Entity\Question\Question;
-use Contact\Service\SelectionContactService;
+use Affiliation\Entity\Questionnaire\Question;;
+
+use Affiliation\Entity\Questionnaire\Questionnaire;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -31,12 +30,13 @@ class AffiliationQuestionService extends AbstractService
         parent::__construct($entityManager);
     }
 
-    public function hasAnswers(Question $question, Phase $phase = null): bool
+    public function hasAnswers(Question $question): bool
     {
-        $criteria = ['question' => $question];
-        if ($phase instanceof Phase) {
-            $criteria['phase'] = $phase;
-        }
-        return ($this->entityManager->getRepository(Answer::class)->count($criteria) > 0);
+        return ($this->entityManager->getRepository(Question::class)->hasAnswers($question));
+    }
+
+    public function getSortedAnswers(Questionnaire $questionnaire): array
+    {
+        return $this->entityManager->getRepository(Questionnaire::class)->getSortedAnswers($questionnaire);
     }
 }

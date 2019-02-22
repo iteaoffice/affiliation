@@ -159,12 +159,12 @@ return [
             FormService::class,
             TranslatorInterface::class
         ],
-        Controller\Question\CategoryManagerController::class => [
+        Controller\Questionnaire\CategoryManagerController::class => [
             Service\AffiliationQuestionService::class,
             Service\FormService::class,
             TranslatorInterface::class
         ],
-        Controller\Question\QuestionManagerController::class => [
+        Controller\Questionnaire\QuestionManagerController::class => [
             Service\AffiliationQuestionService::class,
             Service\FormService::class,
             TranslatorInterface::class

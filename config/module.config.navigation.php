@@ -345,27 +345,27 @@ return [
                 'pages' => [
                     'question-list' => [
                         'label' => _("txt-nav-affiliation-question-list"),
-                        'route' => 'zfcadmin/affiliation/question/list',
+                        'route' => 'zfcadmin/affiliation/questionnaire/question/list',
                         'pages' => [
                             'view-question' => [
-                                'route'   => 'zfcadmin/affiliation/question/view',
+                                'route'   => 'zfcadmin/affiliation/questionnaire/question/view',
                                 'visible' => false,
                                 'params'  => [
                                     'entities'   => [
-                                        'id' => Affiliation\Entity\Question\Question::class,
+                                        'id' => Affiliation\Entity\Questionnaire\Question::class,
                                     ],
                                     'invokables' => [
-                                        Affiliation\Navigation\Invokable\Question\QuestionLabel::class,
+                                        Affiliation\Navigation\Invokable\Questionnaire\QuestionLabel::class,
                                     ],
                                 ],
                                 'pages'   => [
                                     'edit-question' => [
                                         'label'   => _('txt-edit'),
-                                        'route'   => 'zfcadmin/affiliation/question/edit',
+                                        'route'   => 'zfcadmin/affiliation/questionnaire/question/edit',
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => Affiliation\Entity\Question\Question::class,
+                                                'id' => Affiliation\Entity\Questionnaire\Question::class,
                                             ],
                                         ],
                                     ],
@@ -373,34 +373,34 @@ return [
                             ],
                             'new-question'  => [
                                 'label'   => _('txt-new-question'),
-                                'route'   => 'zfcadmin/affiliation/question/new',
+                                'route'   => 'zfcadmin/affiliation/questionnaire/question/new',
                                 'visible' => false,
                             ],
                         ],
                     ],
                     'question-category-list' => [
                         'label' => _("txt-nav-affiliation-question-category-list"),
-                        'route' => 'zfcadmin/affiliation/question/category/list',
+                        'route' => 'zfcadmin/affiliation/questionnaire/category/list',
                         'pages' => [
                             'view-question-category' => [
-                                'route'   => 'zfcadmin/affiliation/question/category/view',
+                                'route'   => 'zfcadmin/affiliation/questionnaire/category/view',
                                 'visible' => false,
                                 'params'  => [
                                     'entities'   => [
-                                        'id' => Affiliation\Entity\Question\Category::class,
+                                        'id' => Affiliation\Entity\Questionnaire\Category::class,
                                     ],
                                     'invokables' => [
-                                        Affiliation\Navigation\Invokable\Question\CategoryLabel::class,
+                                        Affiliation\Navigation\Invokable\Questionnaire\CategoryLabel::class,
                                     ],
                                 ],
                                 'pages'   => [
                                     'edit-question-category' => [
                                         'label'   => _('txt-edit'),
-                                        'route'   => 'zfcadmin/affiliation/question/category/edit',
+                                        'route'   => 'zfcadmin/affiliation/questionnaire/category/edit',
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => Affiliation\Entity\Question\Category::class,
+                                                'id' => Affiliation\Entity\Questionnaire\Category::class,
                                             ],
                                         ],
                                     ],
@@ -408,7 +408,7 @@ return [
                             ],
                             'new-question-category'  => [
                                 'label'   => _('txt-new-question-category'),
-                                'route'   => 'zfcadmin/affiliation/question/category/new',
+                                'route'   => 'zfcadmin/affiliation/questionnaire/category/new',
                                 'visible' => false,
                             ],
                         ],

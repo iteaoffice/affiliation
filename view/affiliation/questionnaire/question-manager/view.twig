@@ -1,0 +1,32 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-affiliation-question-%s")|format(question)) %}
+
+<h1>{{ translate("txt-affiliation-question-%s")|format(question) }} {{ affiliationQuestionLink(question,'edit','button') }}</h1>
+
+<dl class="dl-horizontal">
+    <dt>{{ translate("txt-question-id") }}</dt>
+    <dd>{{ question.id }}</dd>
+    <dt>{{ translate("txt-category") }}</dt>
+    <dd>{{ affiliationQuestionCategoryLink(question.category, 'view', 'name') }}</dd>
+    <dt>{{ translate("txt-question") }}</dt>
+    <dd>{{ question.question }}</dd>
+    {% if question.helpBlock is not empty %}
+    <dt>{{ translate("txt-help-block") }}</dt>
+    <dd>{{ question.helpBlock }}</dd>
+    {% endif %}
+    {% if question.placeholder is not empty %}
+    <dt>{{ translate("txt-placeholder") }}</dt>
+    <dd><code>{{ question.placeholder }}</code></dd>
+    {% endif %}
+    <dt>{{ translate("txt-input-type") }}</dt>
+    <dd>{{ translate(question.getInputTypeTemplates()[question.inputType]) }}</dd>
+    {% if question.values is not empty %}
+        <dt>{{ translate("txt-values") }}</dt>
+        <dd><code>{{ question.values }}</code></dd>
+    {% endif %}
+    <dt>{{ translate("txt-required") }}</dt>
+    <dd>{% if question.required %}{{ translate("txt-yes") }}{% else %}{{ translate("txt-no") }}{% endif %}</dd>
+    <dt>{{ translate("txt-enabled") }}</dt>
+    <dd>{% if question.enabled %}{{ translate("txt-yes") }}{% else %}{{ translate("txt-no") }}{% endif %}</dd>
+</dl>

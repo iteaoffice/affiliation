@@ -141,35 +141,35 @@ return [
                     'assertion' => DoaAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/list',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/question/list',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/view',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/question/view',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/new',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/question/new',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/edit',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/question/edit',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/category/list',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/category/list',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/category/view',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/category/view',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/category/new',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/category/new',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/question/category/edit',
+                    'route'     => 'zfcadmin/affiliation/questionnaire/category/edit',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
                 [

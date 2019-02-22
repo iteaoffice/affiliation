@@ -26,3 +26,4 @@ _("txt-not-self-funded");
 _("txt-affiliation-description");
 _("txt-affiliation-description-explanation");
 _("txt-input-type-numeric");
+_("txt-input-type-date");

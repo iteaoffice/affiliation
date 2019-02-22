@@ -397,33 +397,41 @@ class Affiliation extends AbstractEntity
      * @var \Invoice\Entity\Method
      */
     private $invoiceMethod;
+    /**
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\Answer", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @Annotation\Exclude();
+     *
+     * @var \Affiliation\Entity\Questionnaire\Answer[]|Collections\Collection
+     */
+    private $answers;
 
     /**
      * Class constructor.
      */
     public function __construct()
     {
-        $this->ictOrganisation = new Collections\ArrayCollection();
-        $this->description = new Collections\ArrayCollection();
-        $this->invoice = new Collections\ArrayCollection();
-        $this->log = new Collections\ArrayCollection();
-        $this->version = new Collections\ArrayCollection();
-        $this->contractVersion = new Collections\ArrayCollection();
-        $this->contract = new Collections\ArrayCollection();
-        $this->associate = new Collections\ArrayCollection();
-        $this->funding = new Collections\ArrayCollection();
-        $this->cost = new Collections\ArrayCollection();
-        $this->contractCost = new Collections\ArrayCollection();
-        $this->funded = new Collections\ArrayCollection();
-        $this->effort = new Collections\ArrayCollection();
-        $this->spent = new Collections\ArrayCollection();
-        $this->doaReminder = new Collections\ArrayCollection();
-        $this->loiReminder = new Collections\ArrayCollection();
-        $this->achievement = new Collections\ArrayCollection();
+        $this->ictOrganisation          = new Collections\ArrayCollection();
+        $this->description              = new Collections\ArrayCollection();
+        $this->invoice                  = new Collections\ArrayCollection();
+        $this->log                      = new Collections\ArrayCollection();
+        $this->version                  = new Collections\ArrayCollection();
+        $this->contractVersion          = new Collections\ArrayCollection();
+        $this->contract                 = new Collections\ArrayCollection();
+        $this->associate                = new Collections\ArrayCollection();
+        $this->funding                  = new Collections\ArrayCollection();
+        $this->cost                     = new Collections\ArrayCollection();
+        $this->contractCost             = new Collections\ArrayCollection();
+        $this->funded                   = new Collections\ArrayCollection();
+        $this->effort                   = new Collections\ArrayCollection();
+        $this->spent                    = new Collections\ArrayCollection();
+        $this->doaReminder              = new Collections\ArrayCollection();
+        $this->loiReminder              = new Collections\ArrayCollection();
+        $this->achievement              = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changeRequestCostChange = new Collections\ArrayCollection();
-        $this->changeRequestCountry = new Collections\ArrayCollection();
-        $this->projectLog = new Collections\ArrayCollection();
+        $this->changeRequestCostChange  = new Collections\ArrayCollection();
+        $this->changeRequestCountry     = new Collections\ArrayCollection();
+        $this->projectLog               = new Collections\ArrayCollection();
+        $this->answers                  = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -1174,6 +1182,24 @@ class Affiliation extends AbstractEntity
     {
         $this->invoiceMethod = $invoiceMethod;
 
+        return $this;
+    }
+
+    /**
+     * @return Questionnaire\Answer[]|Collections\Collection
+     */
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
+
+    /**
+     * @param Questionnaire\Answer[]|Collections\Collection $answers
+     * @return Affiliation
+     */
+    public function setAnswers($answers)
+    {
+        $this->answers = $answers;
         return $this;
     }
 }
