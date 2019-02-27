@@ -14,14 +14,14 @@ namespace Affiliation\Entity\Questionnaire;
 
 use Affiliation\Entity\AbstractEntity;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Iterables\Collection;
 use Zend\Form\Annotation;
 
 /**
  * @ORM\Table(name="affiliation_questionnaire_question_questionnaire")
- * @ORM\Entity(repositoryClass="Gedmo\Sortable\Entity\Repository\SortableRepository")
+ * @ORM\Entity(repositoryClass="Affiliation\Repository\Questionnaire\QuestionnaireQuestionRepository")
  */
 class QuestionnaireQuestion extends AbstractEntity
 {

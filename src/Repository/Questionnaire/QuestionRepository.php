@@ -44,6 +44,9 @@ final class QuestionRepository extends EntityRepository
             case 'id':
                 $queryBuilder->addOrderBy('q.id', $direction);
                 break;
+            case 'question':
+                $queryBuilder->addOrderBy('q.question', $direction);
+                break;
             case 'category':
                 $queryBuilder->addOrderBy('c.category', $direction);
                 break;
@@ -61,6 +64,8 @@ final class QuestionRepository extends EntityRepository
         $queryBuilder->from(Question::class, 'q');
         $queryBuilder->innerJoin('q.questionnaireQuestions', 'qq');
         $queryBuilder->innerJoin('qq.answers', 'a');
+        $queryBuilder->where($queryBuilder->expr()->eq('q', ':question'));
+        $queryBuilder->setParameter('question', $question);
 
         return ((int) $queryBuilder->getQuery()->getSingleScalarResult() > 0);
     }

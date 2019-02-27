@@ -343,6 +343,41 @@ return [
             ],
             'config'       => [
                 'pages' => [
+                    'questionnaire-list' => [
+                        'label' => _("txt-nav-affiliation-questionnaire-list"),
+                        'route' => 'zfcadmin/affiliation/questionnaire/list',
+                        'pages' => [
+                            'view-questionnaire' => [
+                                'route'   => 'zfcadmin/affiliation/questionnaire/view',
+                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => Affiliation\Entity\Questionnaire\Questionnaire::class,
+                                    ],
+                                    'invokables' => [
+                                        Affiliation\Navigation\Invokable\Questionnaire\QuestionnaireLabel::class,
+                                    ],
+                                ],
+                                'pages'   => [
+                                    'edit-questionnaire' => [
+                                        'label'   => _('txt-edit'),
+                                        'route'   => 'zfcadmin/affiliation/questionnaire/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Affiliation\Entity\Questionnaire\Questionnaire::class,
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'new-questionnaire'  => [
+                                'label'   => _('txt-new-questionnaire'),
+                                'route'   => 'zfcadmin/affiliation/questionnaire/new',
+                                'visible' => false,
+                            ],
+                        ],
+                    ],
                     'question-list' => [
                         'label' => _("txt-nav-affiliation-question-list"),
                         'route' => 'zfcadmin/affiliation/questionnaire/question/list',

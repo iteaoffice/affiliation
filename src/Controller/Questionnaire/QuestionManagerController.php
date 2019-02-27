@@ -14,7 +14,7 @@ namespace Affiliation\Controller\Questionnaire;
 
 use Affiliation\Controller\AffiliationAbstractController;
 use Affiliation\Entity\Questionnaire\Question;
-use Affiliation\Form\Questionnaire\QuestionFilter;
+use Affiliation\Form\Questionnaire\QuestionnaireFilter;
 use Affiliation\Service\AffiliationQuestionService;
 use Affiliation\Service\FormService;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
@@ -66,7 +66,7 @@ final class QuestionManagerController extends AffiliationAbstractController
         $paginator->setCurrentPageNumber($page);
         $paginator->setPageRange(\ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage()));
 
-        $form = new QuestionFilter();
+        $form = new QuestionnaireFilter();
         $form->setData(['filter' => $filterPlugin->getFilter()]);
 
         return new ViewModel([

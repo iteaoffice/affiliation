@@ -14,6 +14,8 @@ namespace Affiliation\Controller\Questionnaire;
 
 use Affiliation\Controller\AffiliationAbstractController;
 use Affiliation\Entity\Questionnaire\Category;
+use Affiliation\Entity\Questionnaire\Question;
+use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Form\Questionnaire\QuestionnaireFilter;
 use Affiliation\Service\AffiliationQuestionService;
 use Affiliation\Service\FormService;
@@ -25,10 +27,10 @@ use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 /**
- * Class CategoryManagerController
- * @package Affiliation\Controller\Question
+ * Class QuestionnaireManagerController
+ * @package Affiliation\Controller\Questionnaire
  */
-final class CategoryManagerController extends AffiliationAbstractController
+final class QuestionnaireManagerController extends AffiliationAbstractController
 {
     /**
      * @var AffiliationQuestionService
@@ -59,7 +61,7 @@ final class CategoryManagerController extends AffiliationAbstractController
     {
         $page         = $this->params()->fromRoute('page', 1);
         $filterPlugin = $this->getAffiliationFilter();
-        $query        = $this->affiliationQuestionService->findFiltered(Category::class, $filterPlugin->getFilter());
+        $query        = $this->affiliationQuestionService->findFiltered(Questionnaire::class, $filterPlugin->getFilter());
 
         $paginator = new Paginator(new PaginatorAdapter(new ORMPaginator($query, false)));
         $paginator::setDefaultItemCountPerPage(($page === 'all') ? PHP_INT_MAX : 20);
@@ -80,14 +82,18 @@ final class CategoryManagerController extends AffiliationAbstractController
 
     public function viewAction()
     {
-        $category = $this->affiliationQuestionService->find(Category::class, (int)$this->params('id'));
+        /** @var Questionnaire $questionnaire */
+        $questionnaire = $this->affiliationQuestionService->find(
+            Questionnaire::class,
+            (int)$this->params('id')
+        );
 
-        if ($category === null) {
+        if ($questionnaire === null) {
             return $this->notFoundAction();
         }
 
         return new ViewModel([
-            'category' => $category
+            'questionnaire' => $questionnaire
         ]);
     }
 
@@ -96,17 +102,17 @@ final class CategoryManagerController extends AffiliationAbstractController
         /** @var Request $request */
         $request = $this->getRequest();
         $data    = $request->getPost()->toArray();
-        $form    = $this->formService->prepare(new Category(), $data);
+        $form    = $this->formService->prepare(new Question(), $data);
         $form->remove('delete');
 
         if ($request->isPost()) {
             if (!isset($data['cancel']) && $form->isValid()) {
-                /** @var Category $category */
-                $category = $form->getData();
+                /** @var Question $question */
+                $question = $form->getData();
 
-                $this->affiliationQuestionService->save($category);
+                $this->affiliationQuestionService->save($question);
             }
-            return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
+            return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/question/list');
         }
 
         return new ViewModel([
@@ -116,45 +122,55 @@ final class CategoryManagerController extends AffiliationAbstractController
 
     public function editAction()
     {
-        /** @var Category $category */
-        $category = $this->affiliationQuestionService->find(Category::class, (int)$this->params('id'));
+        /** @var Questionnaire $questionnaire */
+        $questionnaire = $this->affiliationQuestionService->find(
+            Questionnaire::class,
+            (int)$this->params('id')
+        );
 
-        if ($category === null) {
+        if ($questionnaire === null) {
             return $this->notFoundAction();
         }
 
         /** @var Request $request */
         $request = $this->getRequest();
         $data    = $request->getPost()->toArray();
-        $form    = $this->formService->prepare($category, $data);
-        if ($category->getQuestions()->count() > 0) {
-            $form->remove('delete');
+        // Set to empty array to allow removing all questions
+        if ($request->isPost()
+            && !isset($data['affiliation_entity_questionnaire_questionnaire']['questionnaireQuestions']))
+        {
+            $data['affiliation_entity_questionnaire_questionnaire']['questionnaireQuestions'] = [];
         }
+        $form = $this->formService->prepare($questionnaire, $data);
 
         if ($request->isPost()) {
             if (isset($data['cancel'])) {
-                return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/list');
             }
 
             if (isset($data['delete'])) {
-                $this->affiliationQuestionService->delete($category);
-                return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
+                $this->affiliationQuestionService->delete($questionnaire);
+                return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/list');
             }
 
             if ($form->isValid()) {
-                /** @var Category $category */
-                $category = $form->getData();
-                $this->affiliationQuestionService->save($category);
+                /** @var Questionnaire $questionnaire */
+                $questionnaire = $form->getData();
+                foreach ($questionnaire->getQuestionnaireQuestions() as $questionnaireQuestion) {
+                    $questionnaireQuestion->setQuestionnaire($questionnaire);
+                }
+                $this->affiliationQuestionService->save($questionnaire);
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation/questionnaire/category/view',
-                    ['id' => $category->getId()]
+                    'zfcadmin/affiliation/questionnaire/view',
+                    ['id' => $questionnaire->getId()]
                 );
             }
         }
 
         return new ViewModel([
-            'form'     => $form,
-            'category' => $category
+            'form'          => $form,
+            'questionnaire' => $questionnaire,
+            'categories'    => $this->affiliationQuestionService->findBy(Category::class, [], ['sequence' => 'ASC'])
         ]);
     }
 }

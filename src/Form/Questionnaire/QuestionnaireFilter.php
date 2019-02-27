@@ -23,10 +23,10 @@ use Zend\Form\Fieldset;
 use Zend\Form\Form;
 
 /**
- * Class QuestionFilter
+ * Class QuestionnaireFilter
  * @package Affiliation\Form\Question
  */
-class QuestionFilter extends Form
+class QuestionnaireFilter extends Form
 {
     /**
      * CategoryFilter constructor.
