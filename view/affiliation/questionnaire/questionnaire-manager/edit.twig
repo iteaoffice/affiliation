@@ -1,0 +1,7 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-edit-questionnaire-%s")|format(questionnaire)) %}
+
+<h1>{{ translate("txt-edit-questionnaire-%s")|format(questionnaire) }}</h1>
+
+{% include 'affiliation/partial/form/questionnaire/questionnaire' with {'edit':true}%}

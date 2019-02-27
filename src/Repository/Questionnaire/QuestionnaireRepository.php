@@ -12,10 +12,11 @@ declare(strict_types=1);
 
 namespace Affiliation\Repository\Questionnaire;
 
+use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
-use Affiliation\Entity\Questionnaire\QuestionnaireQuestion;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * Class QuestionnaireRepository
@@ -23,20 +24,52 @@ use Doctrine\ORM\EntityRepository;
  */
 final class QuestionnaireRepository extends EntityRepository
 {
-    public function getSortedAnswers(Questionnaire $questionnaire): array
+    public function findFiltered(array $filter = []): QueryBuilder
     {
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
-        $queryBuilder->select('a', 'qq', 'q');
-        $queryBuilder->from(QuestionnaireQuestion::class, 'qq');
-        $queryBuilder->innerJoin('qq.question', 'q');
-        $queryBuilder->innerJoin('q.category', 'c');
+        $queryBuilder->select('q', 'p', 'qq');
+        $queryBuilder->from(Questionnaire::class, 'q');
+        $queryBuilder->innerJoin('q.phase', 'p');
+        $queryBuilder->innerJoin('q.questionnaireQuestions', 'qq');
+
+        $direction = 'ASC';
+        if (isset($filter['direction']) && \in_array(\strtoupper($filter['direction']), ['ASC', 'DESC'])) {
+            $direction = \strtoupper($filter['direction']);
+        }
+
+        // Filter on the name
+        if (\array_key_exists('search', $filter)) {
+            $queryBuilder->andWhere($queryBuilder->expr()->like('q.questionnaire', ':like'));
+            $queryBuilder->setParameter('like', \sprintf("%%%s%%", $filter['search']));
+        }
+
+        switch ($filter['order']) {
+            case 'id':
+                $queryBuilder->addOrderBy('q.id', $direction);
+                break;
+            case 'questionnaire':
+                $queryBuilder->addOrderBy('q.questionnaire', $direction);
+                break;
+            case 'phase':
+                $queryBuilder->addOrderBy('p.phase', $direction);
+                break;
+            default:
+                $queryBuilder->addOrderBy('q.id', $direction);
+        }
+
+        return $queryBuilder;
+    }
+
+    public function hasAnswers(Question $question): bool
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder->select('COUNT(a.id)');
+        $queryBuilder->from(Question::class, 'q');
+        $queryBuilder->innerJoin('q.questionnaireQuestions', 'qq');
         $queryBuilder->innerJoin('qq.answers', 'a');
-        $queryBuilder->where($queryBuilder->expr()->eq('qq.questionnaire', ':questionnaire'));
-        $queryBuilder->orderBy('c.sequence', Criteria::ASC);
-        $queryBuilder->addOrderBy('qq.sequence', Criteria::ASC);
+        $queryBuilder->where($queryBuilder->expr()->eq('q', ':question'));
+        $queryBuilder->setParameter('question', $question);
 
-        $queryBuilder->setParameter('questionnaire', $questionnaire);
-
-        return $queryBuilder->getQuery()->getResult();
+        return ((int) $queryBuilder->getQuery()->getSingleScalarResult() > 0);
     }
 }

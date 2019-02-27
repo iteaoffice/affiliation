@@ -25,9 +25,8 @@ use Zend\InputFilter\CollectionInputFilter;
 use Zend\InputFilter\InputFilter;
 
 /**
- * Class Report
- *
- * @package Project\Form\Evaluation
+ * Class QuestionnaireForm
+ * @package Affiliation\Form\Questionnaire
  */
 class QuestionnaireForm extends Form
 {
@@ -72,7 +71,8 @@ class QuestionnaireForm extends Form
 
         /** @var Answer $answer */
         foreach ($affiliationQuestionService->getSortedAnswers($questionnaire) as $answer) {
-            $question = $answer->getQuestionnaireQuestion()->getQuestion();
+            $question    = $answer->getQuestionnaireQuestion()->getQuestion();
+            $placeholder = $question->getPlaceholder();
 
             $answerFieldset = new Fieldset($question->getId());
             $answerFieldset->setHydrator($doctrineHydrator);
@@ -85,29 +85,26 @@ class QuestionnaireForm extends Form
 
             switch ($question->getInputType()) {
                 case Question::INPUT_TYPE_BOOL:
-                    $answerFieldset->add(
-                        [
-                            'type'       => Element\Radio::class,
-                            'name'       => 'value',
-                            'attributes' => [
-                                'value' => $answer->getValue()
-                            ],
-                            'options'    => \array_merge(
-                                $optionTemplate,
-                                [
-                                    'value_options' => [
-                                        'Yes' => _('txt-yes'),
-                                        'No'  => _('txt-no'),
-                                    ],
-                                ]
-                            ),
-                        ]
-                    );
+                    $answerFieldset->add([
+                        'type'       => Element\Radio::class,
+                        'name'       => 'value',
+                        'attributes' => [
+                            'value' => $answer->getValue()
+                        ],
+                        'options'    => \array_merge(
+                            $optionTemplate,
+                            [
+                                'value_options' => [
+                                    'Yes' => _('txt-yes'),
+                                    'No'  => _('txt-no'),
+                                ],
+                            ]
+                        ),
+                    ]);
                     break;
 
                 case Question::INPUT_TYPE_TEXT:
-                    $placeholder         = $question->getPlaceholder();
-                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $question->getPlaceholder()]);
+                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
                     $attributes['value'] = $answer->getValue();
                     $answerFieldset->add([
                         'type'       => Element\Textarea::class,
@@ -131,14 +128,38 @@ class QuestionnaireForm extends Form
                     ]);
                     break;
 
+                case Question::INPUT_TYPE_NUMERIC:
+                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
+                    $attributes['value'] = $answer->getValue();
+                    $attributes['min']   = 0;
+                    $attributes['step']  = 1;
+                    $answerFieldset->add([
+                        'type'       => Element\Number::class,
+                        'name'       => 'value',
+                        'attributes' => $attributes,
+                        'options'    => $optionTemplate,
+                    ]);
+                    break;
+
+                case Question::INPUT_TYPE_DATE:
+                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
+                    $attributes['value'] = $answer->getValue();
+                    $answerFieldset->add([
+                        'type'       => Element\Date::class,
+                        'name'       => 'value',
+                        'attributes' => $attributes,
+                        'options'    => $optionTemplate,
+                    ]);
+                    break;
+
                 case Question::INPUT_TYPE_STRING:
                 default:
+                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
+                    $attributes['value'] = $answer->getValue();
                     $answerFieldset->add([
                         'type'       => Element\Text::class,
                         'name'       => 'value',
-                        'attributes' => [
-                            'value' => $answer->getValue()
-                        ],
+                        'attributes' => $attributes,
                         'options'    => $optionTemplate
                     ]);
             }
@@ -149,26 +170,22 @@ class QuestionnaireForm extends Form
         // Add the answer collection to the form
         $this->add($answerCollection);
 
-        $this->add(
-            [
-                'type'       => Element\Submit::class,
-                'name'       => 'cancel',
-                'attributes' => [
-                    'class' => 'btn btn-warning',
-                    'value' => _('txt-cancel'),
-                ],
-            ]
-        );
+        $this->add([
+            'type'       => Element\Submit::class,
+            'name'       => 'cancel',
+            'attributes' => [
+                'class' => 'btn btn-warning',
+                'value' => _('txt-cancel'),
+            ],
+        ]);
 
-        $this->add(
-            [
-                'type'       => Element\Submit::class,
-                'name'       => 'submit',
-                'attributes' => [
-                    'class' => 'btn btn-primary',
-                    'value' => _('txt-submit'),
-                ],
-            ]
-        );
+        $this->add([
+            'type'       => Element\Submit::class,
+            'name'       => 'submit',
+            'attributes' => [
+                'class' => 'btn btn-primary',
+                'value' => _('txt-submit'),
+            ],
+        ]);
     }
 }

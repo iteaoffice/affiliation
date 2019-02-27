@@ -169,6 +169,11 @@ return [
             Service\FormService::class,
             TranslatorInterface::class
         ],
+        Controller\Questionnaire\QuestionnaireManagerController::class => [
+            Service\AffiliationQuestionService::class,
+            Service\FormService::class,
+            TranslatorInterface::class
+        ],
         Controller\Plugin\RenderPaymentSheet::class    => [
             AffiliationService::class,
             Options\ModuleOptions::class,

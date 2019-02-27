@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Affiliation;
 
 use Affiliation\Controller;
+use Zend\Router\Http\Segment;
 
 return [
     'router' => [
@@ -332,17 +333,55 @@ return [
                                 ],
                             ],
                             'questionnaire' => [
-                                'type'          => 'Segment',
+                                'type'          => Segment::class,
                                 'options'       => [
                                     'route'    => '/questionnaire',
                                     'defaults' => [
+                                        'controller' => Controller\Questionnaire\QuestionnaireManagerController::class,
                                         'action'     => 'list',
                                     ],
                                 ],
                                 'may_terminate' => false,
                                 'child_routes'  => [
+                                    'list'     => [
+                                        'type'     => Segment::class,
+                                        'options'  => [
+                                            'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                            'defaults' => [
+                                                'action'     => 'list',
+                                            ],
+                                        ],
+                                    ],
+                                    'view'     => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/view/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'view',
+
+                                            ],
+                                        ],
+                                    ],
+                                    'edit'     => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/edit/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'edit',
+                                            ],
+                                        ],
+                                    ],
+                                    'new'      => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/new.html',
+                                            'defaults' => [
+                                                'action' => 'new',
+                                            ],
+                                        ],
+                                    ],
                                     'question'           => [
-                                        'type'          => 'Segment',
+                                        'type'          => Segment::class,
                                         'options'       => [
                                             'route'    => '/question',
                                             'defaults' => [
@@ -353,7 +392,7 @@ return [
                                         'may_terminate' => false,
                                         'child_routes'  => [
                                             'list'     => [
-                                                'type'     => 'Segment',
+                                                'type'     => Segment::class,
                                                 'priority' => 1000,
                                                 'options'  => [
                                                     'route'    => '/list[/f-:encodedFilter][/page-:page].html',
@@ -363,7 +402,7 @@ return [
                                                 ],
                                             ],
                                             'view'     => [
-                                                'type'    => 'Segment',
+                                                'type'    => Segment::class,
                                                 'options' => [
                                                     'route'    => '/view/[:id].html',
                                                     'defaults' => [
@@ -373,7 +412,7 @@ return [
                                                 ],
                                             ],
                                             'edit'     => [
-                                                'type'    => 'Segment',
+                                                'type'    => Segment::class,
                                                 'options' => [
                                                     'route'    => '/edit/[:id].html',
                                                     'defaults' => [
@@ -382,7 +421,7 @@ return [
                                                 ],
                                             ],
                                             'new'      => [
-                                                'type'    => 'Segment',
+                                                'type'    => Segment::class,
                                                 'options' => [
                                                     'route'    => '/new.html',
                                                     'defaults' => [
@@ -393,7 +432,7 @@ return [
                                         ],
                                     ],
                                     'category'           => [
-                                        'type'          => 'Segment',
+                                        'type'          => Segment::class,
                                         'options'       => [
                                             'route'    => '/category',
                                             'defaults' => [
@@ -404,7 +443,7 @@ return [
                                         'may_terminate' => false,
                                         'child_routes'  => [
                                             'list'     => [
-                                                'type'     => 'Segment',
+                                                'type'     => Segment::class,
                                                 'priority' => 1000,
                                                 'options'  => [
                                                     'route'    => '/list[/f-:encodedFilter][/page-:page].html',
@@ -414,7 +453,7 @@ return [
                                                 ],
                                             ],
                                             'view'     => [
-                                                'type'    => 'Segment',
+                                                'type'    => Segment::class,
                                                 'options' => [
                                                     'route'    => '/view/[:id].html',
                                                     'defaults' => [
@@ -424,7 +463,7 @@ return [
                                                 ],
                                             ],
                                             'edit'     => [
-                                                'type'    => 'Segment',
+                                                'type'    => Segment::class,
                                                 'options' => [
                                                     'route'    => '/edit/[:id].html',
                                                     'defaults' => [
@@ -433,7 +472,7 @@ return [
                                                 ],
                                             ],
                                             'new'      => [
-                                                'type'    => 'Segment',
+                                                'type'    => Segment::class,
                                                 'options' => [
                                                     'route'    => '/new.html',
                                                     'defaults' => [

@@ -167,6 +167,11 @@ abstract class AbstractService
         return $this->entityManager->getRepository($entity)->findOneBy([$column => $name]);
     }
 
+    public function findBy(string $entity, array $criteria, array $orderBy = null, $limit = null, $offset = null): ?array
+    {
+        return $this->entityManager->getRepository($entity)->findBy($criteria, $orderBy, $limit, $offset);
+    }
+
     public function save(Entity\AbstractEntity $entity): Entity\AbstractEntity
     {
         if (!$this->entityManager->contains($entity)) {

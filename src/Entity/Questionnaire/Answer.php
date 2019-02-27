@@ -25,7 +25,7 @@ use Zend\Form\Annotation;
 
 /**
  * @ORM\Table(name="affiliation_questionnaire_answer")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Affiliation\Repository\Questionnaire\AnswerRepository")
  */
 class Answer extends AbstractEntity
 {

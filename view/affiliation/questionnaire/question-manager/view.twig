@@ -11,6 +11,12 @@
     <dd>{{ affiliationQuestionCategoryLink(question.category, 'view', 'name') }}</dd>
     <dt>{{ translate("txt-question") }}</dt>
     <dd>{{ question.question }}</dd>
+    {% if question.questionnaireQuestions is not empty %}
+        <dt>{{ translate("txt-questionnaire") }}</dt>
+        {% for questionnaireQuestion in question.questionnaireQuestions %}
+            <dd>{{ affiliationQuestionnaireLink(questionnaireQuestion.questionnaire, 'view', 'name') }}</dd>
+        {% endfor %}
+    {% endif %}
     {% if question.helpBlock is not empty %}
     <dt>{{ translate("txt-help-block") }}</dt>
     <dd>{{ question.helpBlock }}</dd>

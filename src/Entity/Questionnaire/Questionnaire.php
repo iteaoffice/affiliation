@@ -37,11 +37,11 @@ class Questionnaire extends AbstractEntity
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Questionnaire\Phase", cascade={"persist"}, inversedBy="questions")
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Questionnaire\Phase", cascade={"persist"}, inversedBy="questionnaires")
      * @ORM\JoinColumn(name="phase_id", referencedColumnName="phase_id")
      * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
      * @Annotation\Options({
-     *     "target_class":"Affiliation\Entity\Question\Phase",
+     *     "target_class":"Affiliation\Entity\Questionnaire\Phase",
      *     "help-block":"txt-questionnaire-phase-help-block",
      *     "label":"txt-phase"
      * })
@@ -63,7 +63,8 @@ class Questionnaire extends AbstractEntity
     private $questionnaire;
 
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\QuestionnaireQuestion", cascade={"persist", "remove"}, mappedBy="questionnaires", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\QuestionnaireQuestion", cascade={"persist", "remove"}, mappedBy="questionnaire", orphanRemoval=true)
+     * @ORM\OrderBy({"sequence"="ASC"})
      * @Annotation\ComposedObject({
      *     "target_object":"Affiliation\Entity\Questionnaire\QuestionnaireQuestion",
      *     "is_collection":"true"

@@ -18,6 +18,7 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity\AbstractEntity;
 use Doctrine\ORM\EntityManager;
+use Zend\Form\Element;
 use Zend\Form\Form;
 
 /**
@@ -62,7 +63,14 @@ class CreateObject extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type' => Element\Csrf::class,
+                'name' => 'csrf',
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => Element\Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
@@ -72,7 +80,7 @@ class CreateObject extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Element\Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",
@@ -82,7 +90,7 @@ class CreateObject extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Element\Submit::class,
                 'name'       => 'delete',
                 'attributes' => [
                     'class' => "btn btn-danger",
@@ -92,7 +100,7 @@ class CreateObject extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Element\Submit::class,
                 'name'       => 'restore',
                 'attributes' => [
                     'class' => "btn btn-info",

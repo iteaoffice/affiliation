@@ -17,8 +17,8 @@ use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\View\Helper\LinkAbstract;
 
 /**
- * Class CategoryLink
- * @package Affiliation\View\Helper\Question
+ * Class QuestionLink
+ * @package Affiliation\View\Helper\Questionnaire
  */
 class QuestionLink extends LinkAbstract
 {
@@ -36,11 +36,11 @@ class QuestionLink extends LinkAbstract
         Question $question = null,
         string   $action = 'view',
         string   $show = 'name',
-        int      $length = 30
+        int      $length = null
     ): string
     {
         $this->question = $question ?? new Question();
-        $this->label    = (\strlen((string) $this->question->getQuestion()) > ($length+3))
+        $this->label    = (($length !== null) && (\strlen((string) $this->question->getQuestion()) > ($length+3)))
             ? \substr((string) $this->question->getQuestion(),0, $length) . '...'
             : (string) $this->question->getQuestion();
         $this->setAction($action);

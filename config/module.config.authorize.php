@@ -141,6 +141,22 @@ return [
                     'assertion' => DoaAssertion::class,
                 ],
                 [
+                    'route'     => 'zfcadmin/affiliation/questionnaire/list',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/questionnaire/view',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/questionnaire/new',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/questionnaire/edit',
+                    'roles'     => [Access::ACCESS_OFFICE],
+                ],
+                [
                     'route'     => 'zfcadmin/affiliation/questionnaire/question/list',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],
