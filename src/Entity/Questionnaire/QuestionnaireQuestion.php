@@ -14,9 +14,9 @@ namespace Affiliation\Entity\Questionnaire;
 
 use Affiliation\Entity\AbstractEntity;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Iterables\Collection;
 use Zend\Form\Annotation;
 
 /**
@@ -112,7 +112,7 @@ class QuestionnaireQuestion extends AbstractEntity
 
     public function __toString(): string
     {
-        return \sprintf('%d: %s', (int) $this->sequence, (string) $this->question->getQuestion());
+        return \sprintf('%d: %s', (int)$this->sequence, (string)$this->question->getQuestion());
     }
 
     /**
@@ -162,7 +162,7 @@ class QuestionnaireQuestion extends AbstractEntity
         return $this;
     }
 
-    public function getAnswers(): Collection
+    public function getAnswers(): ?Collection
     {
         return $this->answers;
     }

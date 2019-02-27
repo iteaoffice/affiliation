@@ -163,7 +163,7 @@ class Question extends AbstractEntity
     private $enabled = true;
 
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\QuestionnaireQuestion", cascade={"persist","delete"}, mappedBy="question")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\QuestionnaireQuestion", cascade={"persist","remove"}, mappedBy="question")
      * @Annotation\Exclude()
      *
      * @var QuestionnaireQuestion[]|Collection
