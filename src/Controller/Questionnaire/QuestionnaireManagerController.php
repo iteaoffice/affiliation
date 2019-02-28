@@ -137,8 +137,7 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
         $data    = $request->getPost()->toArray();
         // Set to empty array to allow removing all questions
         if ($request->isPost()
-            && !isset($data['affiliation_entity_questionnaire_questionnaire']['questionnaireQuestions']))
-        {
+            && !isset($data['affiliation_entity_questionnaire_questionnaire']['questionnaireQuestions'])) {
             $data['affiliation_entity_questionnaire_questionnaire']['questionnaireQuestions'] = [];
         }
         $form = $this->formService->prepare($questionnaire, $data);

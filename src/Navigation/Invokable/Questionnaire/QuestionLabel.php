@@ -39,7 +39,7 @@ class QuestionLabel extends AbstractNavigationInvokable
             $question = $this->getEntities()->get(Question::class);
             $page->setParams(\array_merge($page->getParams(), ['id' => $question->getId()]));
             $label = (\strlen($question->getQuestion()) > 33)
-                ? \substr($question->getQuestion(),0,30) . '...'
+                ? \substr($question->getQuestion(), 0, 30) . '...'
                 : $question->getQuestion();
         } else {
             $label = $this->translator->translate('txt-nav-view');

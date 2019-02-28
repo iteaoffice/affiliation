@@ -39,7 +39,7 @@ class QuestionnaireLabel extends AbstractNavigationInvokable
             $questionnaire = $this->getEntities()->get(Questionnaire::class);
             $page->setParams(\array_merge($page->getParams(), ['id' => $questionnaire->getId()]));
             $label = (\strlen($questionnaire->getQuestionnaire()) > 33)
-                ? \substr($questionnaire->getQuestionnaire(),0,30) . '...'
+                ? \substr($questionnaire->getQuestionnaire(), 0, 30) . '...'
                 : $questionnaire->getQuestionnaire();
         } else {
             $label = $this->translator->translate('txt-nav-view');

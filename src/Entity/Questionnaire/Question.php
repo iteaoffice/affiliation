@@ -370,5 +370,4 @@ class Question extends AbstractEntity
         $this->questionnaireQuestions = $questionnaireQuestions;
         return $this;
     }
-
 }

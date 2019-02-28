@@ -37,11 +37,10 @@ class QuestionLink extends LinkAbstract
         string   $action = 'view',
         string   $show = 'name',
         int      $length = null
-    ): string
-    {
+    ): string {
         $this->question = $question ?? new Question();
         $this->label    = (($length !== null) && (\strlen((string) $this->question->getQuestion()) > ($length+3)))
-            ? \substr((string) $this->question->getQuestion(),0, $length) . '...'
+            ? \substr((string) $this->question->getQuestion(), 0, $length) . '...'
             : (string) $this->question->getQuestion();
         $this->setAction($action);
         $this->setShow($show);

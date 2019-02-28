@@ -31,8 +31,7 @@ class CategoryLink extends LinkAbstract
         Category $category = null,
         string   $action = 'view',
         string   $show = 'name'
-    ): string
-    {
+    ): string {
         $this->category = $category ?? new Category();
         $this->setAction($action);
         $this->setShow($show);

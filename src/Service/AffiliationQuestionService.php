@@ -26,7 +26,6 @@ use Doctrine\ORM\EntityManager;
  */
 class AffiliationQuestionService extends AbstractService
 {
-
     public function __construct(
         EntityManager $entityManager
     ) {

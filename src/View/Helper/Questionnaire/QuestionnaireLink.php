@@ -32,8 +32,7 @@ class QuestionnaireLink extends LinkAbstract
         Questionnaire $questionnaire = null,
         string        $action = 'view',
         string        $show = 'name'
-    ): string
-    {
+    ): string {
         $this->questionnaire = $questionnaire ?? new Questionnaire();
         $this->setAction($action);
         $this->setShow($show);
