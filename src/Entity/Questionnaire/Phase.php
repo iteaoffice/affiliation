@@ -51,7 +51,6 @@ class Phase extends AbstractEntity
 
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\Questionnaire", cascade={"persist"}, mappedBy="phase")
-     * @ORM\OrderBy({"sequence" = "ASC"})
      * @Annotation\Exclude()
      *
      * @var Questionnaire[]|Collection
