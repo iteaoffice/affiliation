@@ -137,7 +137,9 @@
                 <dt>{{ translate("txt-letter-of-intent") }}</dt>
                 <dd>
                     {% if not affiliationService.hasLoi(affiliation) %}
-                        {{ loiLink(null,'submit','text', affiliation) }}
+                        {% set loiLinkText = loiLink(null,'submit','text', affiliation) %}
+
+                        {{ loiLinkText|default(translate("txt-no-loi-uploaded-yet"))|raw }}
                     {% elseif affiliation.loi.dateApproved is null %}
                         {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
                         format(affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
