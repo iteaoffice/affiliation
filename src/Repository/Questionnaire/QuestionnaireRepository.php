@@ -30,7 +30,7 @@ final class QuestionnaireRepository extends EntityRepository
         $queryBuilder->select('q', 'p', 'qq');
         $queryBuilder->from(Questionnaire::class, 'q');
         $queryBuilder->innerJoin('q.phase', 'p');
-        $queryBuilder->innerJoin('q.questionnaireQuestions', 'qq');
+        $queryBuilder->leftJoin('q.questionnaireQuestions', 'qq');
 
         $direction = 'ASC';
         if (isset($filter['direction']) && \in_array(\strtoupper($filter['direction']), ['ASC', 'DESC'])) {
@@ -60,15 +60,15 @@ final class QuestionnaireRepository extends EntityRepository
         return $queryBuilder;
     }
 
-    public function hasAnswers(Question $question): bool
+    public function hasAnswers(Questionnaire $questionnaire): bool
     {
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
         $queryBuilder->select('COUNT(a.id)');
-        $queryBuilder->from(Question::class, 'q');
+        $queryBuilder->from(Questionnaire::class, 'q');
         $queryBuilder->innerJoin('q.questionnaireQuestions', 'qq');
         $queryBuilder->innerJoin('qq.answers', 'a');
-        $queryBuilder->where($queryBuilder->expr()->eq('q', ':question'));
-        $queryBuilder->setParameter('question', $question);
+        $queryBuilder->where($queryBuilder->expr()->eq('q', ':questionnaire'));
+        $queryBuilder->setParameter('questionnaire', $questionnaire);
 
         return ((int) $queryBuilder->getQuery()->getSingleScalarResult() > 0);
     }

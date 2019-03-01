@@ -69,7 +69,7 @@ return [
             'ControllerPluginManager',
             TranslatorInterface::class
         ],
-        Service\AffiliationQuestionService::class      => [
+        Service\QuestionnaireService::class      => [
             EntityManager::class,
         ],
         Service\DoaService::class                      => [
@@ -160,17 +160,17 @@ return [
             TranslatorInterface::class
         ],
         Controller\Questionnaire\CategoryManagerController::class => [
-            Service\AffiliationQuestionService::class,
+            Service\QuestionnaireService::class,
             Service\FormService::class,
             TranslatorInterface::class
         ],
         Controller\Questionnaire\QuestionManagerController::class => [
-            Service\AffiliationQuestionService::class,
+            Service\QuestionnaireService::class,
             Service\FormService::class,
             TranslatorInterface::class
         ],
         Controller\Questionnaire\QuestionnaireManagerController::class => [
-            Service\AffiliationQuestionService::class,
+            Service\QuestionnaireService::class,
             Service\FormService::class,
             TranslatorInterface::class
         ],

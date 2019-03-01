@@ -59,7 +59,6 @@ final class FormService
 
         $form = $this->getForm($classNameOrEntity, $options);
         $form->setData($data);
-
         return $form;
     }
 

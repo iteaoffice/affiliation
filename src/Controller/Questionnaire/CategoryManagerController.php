@@ -15,8 +15,8 @@ namespace Affiliation\Controller\Questionnaire;
 use Affiliation\Controller\AffiliationAbstractController;
 use Affiliation\Entity\Questionnaire\Category;
 use Affiliation\Form\Questionnaire\QuestionnaireFilter;
-use Affiliation\Service\AffiliationQuestionService;
 use Affiliation\Service\FormService;
+use Affiliation\Service\QuestionnaireService;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as PaginatorAdapter;
 use Zend\Http\Request;
@@ -31,9 +31,9 @@ use Zend\View\Model\ViewModel;
 final class CategoryManagerController extends AffiliationAbstractController
 {
     /**
-     * @var AffiliationQuestionService
+     * @var QuestionnaireService
      */
-    private $affiliationQuestionService;
+    private $questionnaireService;
 
     /**
      * @var FormService
@@ -46,20 +46,20 @@ final class CategoryManagerController extends AffiliationAbstractController
     private $translator;
 
     public function __construct(
-        AffiliationQuestionService $affiliationQuestionService,
-        FormService                $formService,
-        TranslatorInterface        $translator
+        QuestionnaireService $questionnaireService,
+        FormService          $formService,
+        TranslatorInterface  $translator
     ) {
-        $this->affiliationQuestionService = $affiliationQuestionService;
-        $this->formService                = $formService;
-        $this->translator                 = $translator;
+        $this->questionnaireService = $questionnaireService;
+        $this->formService          = $formService;
+        $this->translator           = $translator;
     }
 
     public function listAction()
     {
         $page         = $this->params()->fromRoute('page', 1);
         $filterPlugin = $this->getAffiliationFilter();
-        $query        = $this->affiliationQuestionService->findFiltered(Category::class, $filterPlugin->getFilter());
+        $query        = $this->questionnaireService->findFiltered(Category::class, $filterPlugin->getFilter());
 
         $paginator = new Paginator(new PaginatorAdapter(new ORMPaginator($query, false)));
         $paginator::setDefaultItemCountPerPage(($page === 'all') ? PHP_INT_MAX : 20);
@@ -80,7 +80,7 @@ final class CategoryManagerController extends AffiliationAbstractController
 
     public function viewAction()
     {
-        $category = $this->affiliationQuestionService->find(Category::class, (int)$this->params('id'));
+        $category = $this->questionnaireService->find(Category::class, (int)$this->params('id'));
 
         if ($category === null) {
             return $this->notFoundAction();
@@ -103,8 +103,10 @@ final class CategoryManagerController extends AffiliationAbstractController
             if (!isset($data['cancel']) && $form->isValid()) {
                 /** @var Category $category */
                 $category = $form->getData();
-
-                $this->affiliationQuestionService->save($category);
+                $this->questionnaireService->save($category);
+                $this->flashMessenger()->addSuccessMessage(
+                    $this->translator->translate('txt-question-category-has-successfully-been-created')
+                );
             }
             return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
         }
@@ -117,7 +119,7 @@ final class CategoryManagerController extends AffiliationAbstractController
     public function editAction()
     {
         /** @var Category $category */
-        $category = $this->affiliationQuestionService->find(Category::class, (int)$this->params('id'));
+        $category = $this->questionnaireService->find(Category::class, (int)$this->params('id'));
 
         if ($category === null) {
             return $this->notFoundAction();
@@ -137,14 +139,20 @@ final class CategoryManagerController extends AffiliationAbstractController
             }
 
             if (isset($data['delete'])) {
-                $this->affiliationQuestionService->delete($category);
+                $this->questionnaireService->delete($category);
+                $this->flashMessenger()->addSuccessMessage(
+                    $this->translator->translate('txt-question-category-has-successfully-been-removed')
+                );
                 return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
             }
 
             if ($form->isValid()) {
                 /** @var Category $category */
                 $category = $form->getData();
-                $this->affiliationQuestionService->save($category);
+                $this->questionnaireService->save($category);
+                $this->flashMessenger()->addSuccessMessage(
+                    $this->translator->translate('txt-question-category-has-successfully-been-updated')
+                );
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/questionnaire/category/view',
                     ['id' => $category->getId()]

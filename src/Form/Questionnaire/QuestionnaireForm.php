@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Form\Questionnaire;
 
+use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Answer;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
@@ -32,6 +33,7 @@ class QuestionnaireForm extends Form
 {
     public function __construct(
         Questionnaire              $questionnaire,
+        Affiliation                $affiliation,
         AffiliationQuestionService $affiliationQuestionService,
         EntityManager              $entityManager
     ) {
@@ -70,7 +72,7 @@ class QuestionnaireForm extends Form
         $answerCollection->setAllowRemove(false);
 
         /** @var Answer $answer */
-        foreach ($affiliationQuestionService->getSortedAnswers($questionnaire) as $answer) {
+        foreach ($affiliationQuestionService->getSortedAnswers($questionnaire, $affiliation) as $answer) {
             $question    = $answer->getQuestionnaireQuestion()->getQuestion();
             $placeholder = $question->getPlaceholder();
 

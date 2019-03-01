@@ -154,11 +154,12 @@
                     {% elseif affiliation.doa.dateApproved is null %}
                         {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
                         format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
-                        {{ doaLink(affiliation.doa,'replace','icon') }}
                         {{ doaLink(affiliation.doa,'download','icon') }}
+                        {{ doaLink(affiliation.doa,'edit-admin','icon') }}
                     {% else %}
                         {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date)|raw }}
                         {{ doaLink(affiliation.doa,'download','icon') }}
+                        {{ doaLink(affiliation.doa,'edit-admin','icon') }}
                     {% endif %}
                 </dd>
             {% endif %}

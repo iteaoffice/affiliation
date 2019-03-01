@@ -73,8 +73,7 @@ class Questionnaire extends AbstractEntity
      *     "allow_add":"true",
      *     "allow_remove":"true",
      *     "count":0,
-     *     "label":"txt-questions",
-     *     "help-block":"txt-questionnaire-questions-help-block"
+     *     "label":"txt-questions"
      * })
      *
      * @var QuestionnaireQuestion[]|Collection
@@ -156,5 +155,19 @@ class Questionnaire extends AbstractEntity
     {
         $this->questionnaireQuestions = $questionnaireQuestions;
         return $this;
+    }
+
+    public function addQuestionnaireQuestions(Collection $questionnaireQuestions): void
+    {
+        foreach ($questionnaireQuestions as $questionnaireQuestion) {
+            $this->questionnaireQuestions->add($questionnaireQuestion);
+        }
+    }
+
+    public function removeQuestionnaireQuestions(Collection $questionnaireQuestions): void
+    {
+        foreach ($questionnaireQuestions as $questionnaireQuestion) {
+            $this->questionnaireQuestions->removeElement($questionnaireQuestion);
+        }
     }
 }

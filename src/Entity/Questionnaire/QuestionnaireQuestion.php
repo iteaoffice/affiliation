@@ -22,6 +22,7 @@ use Zend\Form\Annotation;
 /**
  * @ORM\Table(name="affiliation_questionnaire_question_questionnaire")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Questionnaire\QuestionnaireQuestionRepository")
+ * @Annotation\Instance("Affiliation\Entity\Questionnaire\QuestionnaireQuestion")
  */
 class QuestionnaireQuestion extends AbstractEntity
 {
@@ -51,13 +52,7 @@ class QuestionnaireQuestion extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Questionnaire\Questionnaire", cascade={"persist"}, inversedBy="questionnaireQuestions")
      * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="questionnaire_id", nullable=false)
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
-     * @Annotation\Options({
-     *     "target_class":"Affiliation\Entity\Questionnaire\Questionnaire",
-     *     "help-block":"txt-questionnaire-help-block",
-     *     "label":"txt-questionnaire",
-     *     "inline":true
-     * })
+     * @Annotation\Type("\Zend\Form\Element\Hidden")
      * @Gedmo\SortableGroup
      *
      * @var Questionnaire

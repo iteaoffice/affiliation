@@ -14,17 +14,17 @@ namespace Affiliation\Service;
 
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Answer;
-use Affiliation\Entity\Questionnaire\Category;
+use Affiliation\Entity\Questionnaire\Phase;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Entity\Questionnaire\QuestionnaireQuestion;
 use Doctrine\ORM\EntityManager;
 
 /**
- * Class AffiliationQuestionService
+ * Class QuestionnaireService
  * @package Affiliation\Service
  */
-class AffiliationQuestionService extends AbstractService
+class QuestionnaireService extends AbstractService
 {
     public function __construct(
         EntityManager $entityManager
@@ -32,9 +32,14 @@ class AffiliationQuestionService extends AbstractService
         parent::__construct($entityManager);
     }
 
-    public function hasAnswers(Question $question): bool
+    public function questionHasAnswers(Question $question): bool
     {
         return ($this->entityManager->getRepository(Question::class)->hasAnswers($question));
+    }
+
+    public function hasAnswers(Questionnaire $questionnaire): bool
+    {
+        return ($this->entityManager->getRepository(Questionnaire::class)->hasAnswers($questionnaire));
     }
 
     public function getSortedAnswers(Questionnaire $questionnaire, Affiliation $affiliation): array
@@ -90,5 +95,20 @@ class AffiliationQuestionService extends AbstractService
         }
 
         return ($answerCount === 0) ? 0.0 : \round((($answerCount / $questionCount) * 100));
+    }
+
+    public function getAvailableQuestionnaires(Affiliation $affiliation): array
+    {
+        $availableQuestionnaires = [];
+        $now = new \DateTime();
+        if ($now >= $affiliation->getDateCreated()) {
+            /** @var Phase $startPhase */
+            $startPhase = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_START);
+            $availableQuestionnaires += $startPhase->getQuestionnaires()->toArray();
+        }
+        $finalReviewPlanned = false;
+        $lastProjectCalendar = $affiliation->getProject()->getProjectCalendar()->last();
+
+        return $availableQuestionnaires;
     }
 }

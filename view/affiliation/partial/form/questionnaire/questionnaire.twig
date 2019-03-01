@@ -42,6 +42,7 @@
                         <td><span class="ui-icon ui-icon-arrowthick-2-n-s d-inline-block"></span> <span class="sequence">{{ fieldset.get('sequence').getValue() }}</span>
                         <input class="sequence" type="hidden" name="{{ fieldset.get('sequence').getAttribute('name') }}" value="{{ fieldset.get('sequence').getValue() }}"></td>
                         <td><input type="hidden" name="{{ fieldset.get('question').getAttribute('name') }}" value="{{ questionnaireFieldset.get('questionnaireQuestions').object[key].question.id }}">
+                            <input type="hidden" name="{{ fieldset.get('questionnaire').getAttribute('name') }}" value="{{ questionnaire.id }}">
                             {{ affiliationQuestionLink(questionnaireFieldset.get('questionnaireQuestions').object[key].question, 'view') }}
                         </td>
                         <td><button title="{{ translate("txt-remove") }}" type="button" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></button></td>
@@ -102,6 +103,7 @@
                     <input class="sequence" type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][sequence]" value="">
                 </td>
                 <td><input type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][question]" value="__id__">
+                    <input type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][questionnaire]" value="{{ questionnaire.id }}">
                     __question__
                 </td>
                 <td><button title="{{ translate("txt-remove") }}" type="button" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></button></td>
