@@ -249,8 +249,6 @@ final class LoiController extends AffiliationAbstractController
         $renderProjectLoi = $this->renderLoi()->renderProjectLoi($programLoi);
 
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
@@ -280,8 +278,6 @@ final class LoiController extends AffiliationAbstractController
 
         $response->setContent(\stream_get_contents($object));
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
             ->addHeaderLine(
                 'Content-Disposition',
                 'attachment; filename="' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '"'

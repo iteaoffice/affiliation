@@ -239,8 +239,7 @@ final class DoaController extends AffiliationAbstractController
         $programDoa->setAffiliation($affiliation);
         $renderProjectDoa = $this->renderDoa()->renderProjectDoa($programDoa);
 
-        $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
+        $response->getHeaders()
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
@@ -271,8 +270,8 @@ final class DoaController extends AffiliationAbstractController
         $object = $doa->getObject()->first()->getObject();
 
         $response->setContent(stream_get_contents($object));
-        $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')->addHeaderLine(
+        $response->getHeaders()
+            ->addHeaderLine(
                 'Content-Disposition',
                 'attachment; filename="' . $doa->parseFileName() . '.' . $doa->getContentType()->getExtension() . '"'
             )

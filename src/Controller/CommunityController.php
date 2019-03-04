@@ -206,8 +206,7 @@ final class CommunityController extends AffiliationAbstractController
             null !== $this->params('contract')
         );
 
-        $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
+        $response->getHeaders()
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
