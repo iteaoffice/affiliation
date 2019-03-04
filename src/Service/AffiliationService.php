@@ -669,6 +669,10 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         switch ($invoiceMethod) {
             case Method::METHOD_FUNDING:
             case Method::METHOD_FUNDING_MEMBER:
+                if (null === $affiliation->getParentOrganisation()) {
+                    return 0;
+                }
+
                 return $this->parseContributionBase($affiliation, $version, null, $year, false)
                     * $this->parseContributionFee(
                         $affiliation,

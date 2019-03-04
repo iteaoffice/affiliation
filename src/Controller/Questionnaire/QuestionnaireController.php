@@ -65,11 +65,9 @@ final class QuestionnaireController extends AffiliationAbstractController
 
     public function newAction()
     {
-
     }
 
     public function editAction()
     {
-
     }
 }
