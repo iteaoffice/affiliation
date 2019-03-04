@@ -45,11 +45,6 @@ class QuestionnaireLink extends LinkAbstract
         return $this->createLink();
     }
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
     public function parseAction(): void
     {
         switch ($this->getAction()) {

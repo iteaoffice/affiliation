@@ -168,6 +168,7 @@ abstract class LinkAbstract extends AbstractViewHelper
                         break;
                     case 'add-associate':
                     case 'add-associate-admin':
+                    case 'new':
                         $this->addLinkContent('<i class="fa fa-plus"></i>');
                         break;
                     case 'manage-associate':
