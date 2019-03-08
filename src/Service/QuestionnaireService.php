@@ -18,7 +18,10 @@ use Affiliation\Entity\Questionnaire\Phase;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Entity\Questionnaire\QuestionnaireQuestion;
+use Project\Entity\Calendar\Calendar as ProjectCalendar;
+use Contact\Entity\Contact;
 use Doctrine\ORM\EntityManager;
+use Project\Entity\Project;
 
 /**
  * Class QuestionnaireService
@@ -76,12 +79,12 @@ class QuestionnaireService extends AbstractService
         return $this->entityManager->getRepository(Answer::class)->getSorted($questionnaire, $affiliation);
     }
 
-    public function parseCompletedPercentage(Affiliation $affiliation, Questionnaire $questionnaire = null): float
+    public function parseCompletedPercentage(Questionnaire $questionnaire, Affiliation $affiliation): int
     {
-        if ($questionnaire === null) {
-            return 0.0;
-        }
         $questionCount = \count($questionnaire->getQuestionnaireQuestions());
+        if ($questionCount === 0) { // Prevent division by zero
+            return 100;
+        }
         $answers       = $this->entityManager->getRepository(Answer::class)
             ->getSorted($questionnaire, $affiliation);
         $answerCount   = 0;
@@ -94,21 +97,64 @@ class QuestionnaireService extends AbstractService
             }
         }
 
-        return ($answerCount === 0) ? 0.0 : \round((($answerCount / $questionCount) * 100));
+        return ($answerCount === 0) ? 0 : (int) \round((($answerCount / $questionCount) * 100));
     }
 
     public function getAvailableQuestionnaires(Affiliation $affiliation): array
     {
         $availableQuestionnaires = [];
-        $now = new \DateTime();
+        $now                     = new \DateTime();
         if ($now >= $affiliation->getDateCreated()) {
             /** @var Phase $startPhase */
             $startPhase = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_START);
             $availableQuestionnaires += $startPhase->getQuestionnaires()->toArray();
         }
-        $finalReviewPlanned = false;
+        /** @var ProjectCalendar $lastProjectCalendar */
         $lastProjectCalendar = $affiliation->getProject()->getProjectCalendar()->last();
+        // Last calendar item is a final review
+        if ($lastProjectCalendar && \preg_match('/final/i', $lastProjectCalendar->getCalendar()->getCalendar())) {
+            /** @var Phase $startPhase */
+            $endPhase = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_END);
+            $availableQuestionnaires += $endPhase->getQuestionnaires()->toArray();
+        }
 
         return $availableQuestionnaires;
+    }
+
+    public function getStartDate(Questionnaire $questionnaire, Affiliation $affiliation): ?\DateTime
+    {
+        switch ($questionnaire->getPhase()->getId()) {
+            case Phase::PHASE_PROJECT_START:
+                return $affiliation->getDateCreated();
+
+            case Phase::PHASE_PROJECT_END:
+                /** @var ProjectCalendar $lastProjectCalendar */
+                $lastProjectCalendar = $affiliation->getProject()->getProjectCalendar()->last();
+                // There is a final project review. Take that as reference date for the project end
+                if ($lastProjectCalendar && \preg_match('/final/i', $lastProjectCalendar->getCalendar()->getCalendar())) {
+                    $startDate = clone $lastProjectCalendar->getCalendar()->getDateEnd();
+                    return $startDate->sub(new \DateInterval('P3M'));
+                }
+        }
+        return null;
+    }
+
+    public function getEndDate(Questionnaire $questionnaire, Affiliation $affiliation): ?\DateTime
+    {
+        switch ($questionnaire->getPhase()->getId()) {
+            case Phase::PHASE_PROJECT_START:
+                $endDate = clone $affiliation->getDateCreated();
+                return $endDate->add(new \DateInterval('P3M'));
+
+            case Phase::PHASE_PROJECT_END:
+                /** @var ProjectCalendar $lastProjectCalendar */
+                $lastProjectCalendar = $affiliation->getProject()->getProjectCalendar()->last();
+                // There is a final project review. Take that as reference date for the project end
+                if ($lastProjectCalendar && \preg_match('/final/i', $lastProjectCalendar->getCalendar()->getCalendar())) {
+                    $endDate = clone $lastProjectCalendar->getCalendar()->getDateEnd();
+                    return $endDate->add(new \DateInterval('P1M'));
+                }
+        }
+        return null;
     }
 }

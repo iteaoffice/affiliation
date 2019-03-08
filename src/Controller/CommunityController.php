@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Affiliation\Controller;
 
 use Affiliation\Service\AffiliationService;
+use Affiliation\Service\QuestionnaireService;
 use Application\Service\AssertionService;
 use Contact\Service\ContactService;
 use Invoice\Options\ModuleOptions;
@@ -88,35 +89,41 @@ final class CommunityController extends AffiliationAbstractController
      * @var AssertionService
      */
     private $assertionService;
+    /**
+     * @var QuestionnaireService
+     */
+    private $questionnaireService;
 
     public function __construct(
-        AffiliationService $affiliationService,
-        ProjectService $projectService,
-        VersionService $versionService,
-        ContactService $contactService,
-        OrganisationService $organisationService,
-        ReportService $reportService,
-        ContractService $contractService,
-        WorkpackageService $workpackageService,
-        InvoiceService $invoiceService,
-        ParentService $parentService,
-        CallService $callService,
-        ModuleOptions $invoiceModuleOptions,
-        AssertionService $assertionService
+        AffiliationService   $affiliationService,
+        ProjectService       $projectService,
+        VersionService       $versionService,
+        ContactService       $contactService,
+        OrganisationService  $organisationService,
+        ReportService        $reportService,
+        ContractService      $contractService,
+        WorkpackageService   $workpackageService,
+        InvoiceService       $invoiceService,
+        ParentService        $parentService,
+        CallService          $callService,
+        ModuleOptions        $invoiceModuleOptions,
+        AssertionService     $assertionService,
+        QuestionnaireService $questionnaireService
     ) {
-        $this->affiliationService = $affiliationService;
-        $this->projectService = $projectService;
-        $this->versionService = $versionService;
-        $this->contactService = $contactService;
-        $this->organisationService = $organisationService;
-        $this->reportService = $reportService;
-        $this->contractService = $contractService;
-        $this->workpackageService = $workpackageService;
-        $this->invoiceService = $invoiceService;
-        $this->parentService = $parentService;
-        $this->callService = $callService;
+        $this->affiliationService   = $affiliationService;
+        $this->projectService       = $projectService;
+        $this->versionService       = $versionService;
+        $this->contactService       = $contactService;
+        $this->organisationService  = $organisationService;
+        $this->reportService        = $reportService;
+        $this->contractService      = $contractService;
+        $this->workpackageService   = $workpackageService;
+        $this->invoiceService       = $invoiceService;
+        $this->parentService        = $parentService;
+        $this->callService          = $callService;
         $this->invoiceModuleOptions = $invoiceModuleOptions;
-        $this->assertionService = $assertionService;
+        $this->assertionService     = $assertionService;
+        $this->questionnaireService = $questionnaireService;
     }
 
 
@@ -131,34 +138,30 @@ final class CommunityController extends AffiliationAbstractController
         $this->assertionService->addResource($affiliation->getProject(), Project::class);
         $hasProjectEditRights = $this->isAllowed($affiliation->getProject(), 'edit-community');
 
-        return new ViewModel(
-            [
-                'affiliationService'    => $this->affiliationService,
-                'affiliation'           => $affiliation,
-                'contactsInAffiliation' => $this->contactService->findContactsInAffiliation($affiliation),
-                'projectService'        => $this->projectService,
-                'contractService'       => $this->contractService,
-                'workpackageService'    => $this->workpackageService,
-                'latestVersion'         => $this->projectService->getLatestProjectVersion(
-                    $affiliation->getProject()
-                ),
-                'contractVersion'       => $this->contractService->findLatestContractVersionByAffiliation(
-                    $affiliation
-                ),
-                'versionType'           => $this->projectService->getNextMode(
-                    $affiliation->getProject()
-                )->getVersionType(),
-                'hasProjectEditRights'  => $hasProjectEditRights,
-                'reportService'         => $this->reportService,
-                'versionService'        => $this->versionService,
-                'invoiceService'        => $this->invoiceService,
-                'contactService'        => $this->contactService,
-                'organisationService'   => $this->organisationService,
-                'parentService'         => $this->parentService,
-                'callService'           => $this->callService,
-                'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent()
-            ]
-        );
+        $params = [
+            'affiliationService'    => $this->affiliationService,
+            'affiliation'           => $affiliation,
+            'contactsInAffiliation' => $this->contactService->findContactsInAffiliation($affiliation),
+            'projectService'        => $this->projectService,
+            'contractService'       => $this->contractService,
+            'workpackageService'    => $this->workpackageService,
+            'latestVersion'         => $this->projectService->getLatestProjectVersion($affiliation->getProject()),
+            'contractVersion'       => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
+            'versionType'           => $this->projectService->getNextMode($affiliation->getProject())->getVersionType(),
+            'hasProjectEditRights'  => $hasProjectEditRights,
+            'reportService'         => $this->reportService,
+            'versionService'        => $this->versionService,
+            'invoiceService'        => $this->invoiceService,
+            'contactService'        => $this->contactService,
+            'organisationService'   => $this->organisationService,
+            'parentService'         => $this->parentService,
+            'callService'           => $this->callService,
+            'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
+        ];
+        //if ($this->isAllowed($affiliation, 'questionnaire')) {
+            $params['questionnaires'] = $this->questionnaireService->getAvailableQuestionnaires($affiliation);
+        //}
+        return new ViewModel($params);
     }
 
     public function paymentSheetAction(): ViewModel

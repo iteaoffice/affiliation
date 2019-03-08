@@ -48,11 +48,10 @@ final class Affiliation extends AbstractAssertion
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-
         $this->affiliationService = $container->get(AffiliationService::class);
-        $this->projectService = $container->get(ProjectService::class);
-        $this->reportService = $container->get(ReportService::class);
-        $this->projectAssertion = $container->get(Project::class);
+        $this->projectService     = $container->get(ProjectService::class);
+        $this->reportService      = $container->get(ReportService::class);
+        $this->projectAssertion   = $container->get(Project::class);
     }
 
     public function assert(
@@ -64,10 +63,9 @@ final class Affiliation extends AbstractAssertion
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$affiliation instanceof AffiliationEntity && null !== $id) {
+        if (!($affiliation instanceof AffiliationEntity) && (null !== $id)) {
             $affiliation = $this->affiliationService->findAffiliationById((int)$id);
         }
-
 
         switch ($this->getPrivilege()) {
             case 'view-community':
@@ -75,7 +73,7 @@ final class Affiliation extends AbstractAssertion
                     return true;
                 }
 
-                //whe the person has view rights on the project, the affiliation can also be viewed
+                // When the person has view rights on the project, the affiliation can also be viewed
                 return $this->projectAssertion->assert($acl, $role, $affiliation->getProject(), 'view-community');
             case 'add-associate':
             case 'manage-associate':
@@ -98,22 +96,22 @@ final class Affiliation extends AbstractAssertion
                 return false;
             case 'update-effort-spent':
                 return true;
-                //Block access to an already closed report
+                // Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
-            if (null !== $reportId) {
-                //Find the corresponding report
-                $report = $this->reportService->findReportById((int) $reportId);
-                if (null === $report || $this->reportService->isFinal($report)) {
+                if (null !== $reportId) {
+                    //Find the corresponding report
+                    $report = $this->reportService->findReportById((int) $reportId);
+                    if (null === $report || $this->reportService->isFinal($report)) {
+                        return false;
+                    }
+                }
+
+                if ($this->projectService->isStopped($affiliation->getProject())) {
                     return false;
                 }
-            }
-
-            if ($this->projectService->isStopped($affiliation->getProject())) {
-                return false;
-            }
-            if ($this->contactService->contactHasPermit($this->contact, 'edit', $affiliation)) {
-                return true;
-            }
+                if ($this->contactService->contactHasPermit($this->contact, 'edit', $affiliation)) {
+                    return true;
+                }
 
                 break;
             case 'edit-financial':
@@ -126,7 +124,11 @@ final class Affiliation extends AbstractAssertion
                 }
 
                 break;
-
+            case 'questionnaire':
+                return ( // Technical contact + office can access the questionnaires
+                    ($this->contact->getId() === $affiliation->getContact()->getId())
+                    || $this->rolesHaveAccess(Access::ACCESS_OFFICE)
+                );
             case 'view-admin':
             case 'edit-admin':
             case 'add-associate-admin':

@@ -19,10 +19,7 @@ namespace Affiliation;
 
 use Admin\Service\AdminService;
 use Affiliation\Search\Service\AffiliationSearchService;
-use Affiliation\Service\AffiliationService;
-use Affiliation\Service\DoaService;
-use Affiliation\Service\FormService;
-use Affiliation\Service\LoiService;
+use Affiliation\Service;
 use Application\Service\AssertionService;
 use Contact\Service\ContactService;
 use Contact\Service\SelectionContactService;
@@ -79,7 +76,7 @@ return [
             EntityManager::class
         ],
         Controller\AffiliationManagerController::class => [
-            AffiliationService::class,
+            Service\AffiliationService::class,
             AffiliationSearchService::class,
             TranslatorInterface::class,
             ProjectService::class,
@@ -95,7 +92,7 @@ return [
             EntityManager::class
         ],
         Controller\CommunityController::class          => [
-            AffiliationService::class,
+            Service\AffiliationService::class,
             ProjectService::class,
             VersionService::class,
             ContactService::class,
@@ -107,28 +104,29 @@ return [
             ParentService::class,
             CallService::class,
             ModuleOptions::class,
-            AssertionService::class
+            AssertionService::class,
+            Service\QuestionnaireService::class
         ],
         Controller\DoaController::class                => [
-            AffiliationService::class,
+            Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
             TranslatorInterface::class
         ],
         Controller\DoaManagerController::class         => [
-            DoaService::class,
-            AffiliationService::class,
+            Service\DoaService::class,
+            Service\AffiliationService::class,
             ContactService::class,
             ProjectService::class,
             GeneralService::class,
             EmailService::class,
             DeeplinkService::class,
-            FormService::class,
+            Service\FormService::class,
             EntityManager::class,
             TranslatorInterface::class
         ],
         Controller\EditController::class               => [
-            AffiliationService::class,
+            Service\AffiliationService::class,
             ProjectService::class,
             VersionService::class,
             ContactService::class,
@@ -137,26 +135,26 @@ return [
             ReportService::class,
             ContractService::class,
             WorkpackageService::class,
-            FormService::class,
+            Service\FormService::class,
             EntityManager::class,
             TranslatorInterface::class
         ],
         Controller\LoiController::class                => [
-            LoiService::class,
-            AffiliationService::class,
+            Service\LoiService::class,
+            Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
             TranslatorInterface::class
         ],
         Controller\LoiManagerController::class         => [
-            LoiService::class,
+            Service\LoiService::class,
             ContactService::class,
-            AffiliationService::class,
+            Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
             EmailService::class,
             EntityManager::class,
-            FormService::class,
+            Service\FormService::class,
             TranslatorInterface::class
         ],
         Controller\Questionnaire\CategoryManagerController::class => [
@@ -175,7 +173,7 @@ return [
             TranslatorInterface::class
         ],
         Controller\Plugin\RenderPaymentSheet::class    => [
-            AffiliationService::class,
+            Service\AffiliationService::class,
             Options\ModuleOptions::class,
             ProjectService::class,
             VersionService::class,
@@ -203,11 +201,14 @@ return [
             ProjectService::class,
             ContractService::class,
             InvoiceService::class,
-            AffiliationService::class,
+            Service\AffiliationService::class,
             ContactService::class,
             OrganisationService::class,
             VersionService::class,
             TwigRenderer::class,
+        ],
+        View\Helper\Questionnaire\QuestionnaireHelper::class => [
+            Service\QuestionnaireService::class,
         ]
     ]
 ];
