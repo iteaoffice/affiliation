@@ -26,7 +26,7 @@ use Zend\Form\Annotation;
 class Loi extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="loi_id", type="integer", nullable=false)
+     * @ORM\Column(name="loi_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -69,7 +69,7 @@ class Loi extends AbstractEntity
      */
     private $contentType;
     /**
-     * @ORM\Column(name="size", type="integer", nullable=false)
+     * @ORM\Column(name="size", type="integer", options={"unsigned":true})
      *
      * @var integer
      */

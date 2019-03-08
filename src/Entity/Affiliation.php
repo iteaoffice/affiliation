@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Organisation\Service\OrganisationService;
 use Zend\Form\Annotation;
-use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
  * Entity for the Affiliation.
@@ -41,7 +40,7 @@ class Affiliation extends AbstractEntity
             self::SELF_FUNDED     => 'txt-self-funded',
         ];
     /**
-     * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
@@ -66,7 +65,7 @@ class Affiliation extends AbstractEntity
      */
     private $note;
     /**
-     * @ORM\Column(name="value_chain", type="string", length=60, nullable=true)
+     * @ORM\Column(name="value_chain", type="string", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-value-chain"})
      *
@@ -183,31 +182,6 @@ class Affiliation extends AbstractEntity
      * @var \Project\Entity\Project
      */
     private $project;
-    /**
-     * @ORM\ManyToMany(targetEntity="Organisation\Entity\IctOrganisation", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\OrderBy=({"Organisation"="ASC"})
-     * @ORM\JoinTable(name="affiliation_ict_organisation",
-     *    joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
-     *    inverseJoinColumns={@ORM\JoinColumn(name="ict_id", referencedColumnName="ict_id")}
-     * )
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntityMultiCheckbox")
-     * @Annotation\Options({
-     *      "target_class":"Organisation\Entity\IctOrganisation",
-     *      "find_method":{
-     *          "name":"findBy",
-     *          "params": {
-     *              "criteria":{},
-     *              "orderBy":{
-     *                  "organisation":"ASC"}
-     *              }
-     *          }
-     *      }
-     * )
-     * @Annotation\Attributes({"label":"txt-ict-organisation"})
-     *
-     * @var \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
-     */
-    private $ictOrganisation;
     /**
      * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -405,33 +379,29 @@ class Affiliation extends AbstractEntity
      */
     private $answers;
 
-    /**
-     * Class constructor.
-     */
     public function __construct()
     {
-        $this->ictOrganisation          = new Collections\ArrayCollection();
-        $this->description              = new Collections\ArrayCollection();
-        $this->invoice                  = new Collections\ArrayCollection();
-        $this->log                      = new Collections\ArrayCollection();
-        $this->version                  = new Collections\ArrayCollection();
-        $this->contractVersion          = new Collections\ArrayCollection();
-        $this->contract                 = new Collections\ArrayCollection();
-        $this->associate                = new Collections\ArrayCollection();
-        $this->funding                  = new Collections\ArrayCollection();
-        $this->cost                     = new Collections\ArrayCollection();
-        $this->contractCost             = new Collections\ArrayCollection();
-        $this->funded                   = new Collections\ArrayCollection();
-        $this->effort                   = new Collections\ArrayCollection();
-        $this->spent                    = new Collections\ArrayCollection();
-        $this->doaReminder              = new Collections\ArrayCollection();
-        $this->loiReminder              = new Collections\ArrayCollection();
-        $this->achievement              = new Collections\ArrayCollection();
+        $this->description = new Collections\ArrayCollection();
+        $this->invoice = new Collections\ArrayCollection();
+        $this->log = new Collections\ArrayCollection();
+        $this->version = new Collections\ArrayCollection();
+        $this->contractVersion = new Collections\ArrayCollection();
+        $this->contract = new Collections\ArrayCollection();
+        $this->associate = new Collections\ArrayCollection();
+        $this->funding = new Collections\ArrayCollection();
+        $this->cost = new Collections\ArrayCollection();
+        $this->contractCost = new Collections\ArrayCollection();
+        $this->funded = new Collections\ArrayCollection();
+        $this->effort = new Collections\ArrayCollection();
+        $this->spent = new Collections\ArrayCollection();
+        $this->doaReminder = new Collections\ArrayCollection();
+        $this->loiReminder = new Collections\ArrayCollection();
+        $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changeRequestCostChange  = new Collections\ArrayCollection();
-        $this->changeRequestCountry     = new Collections\ArrayCollection();
-        $this->projectLog               = new Collections\ArrayCollection();
-        $this->answers                  = new Collections\ArrayCollection();
+        $this->changeRequestCostChange = new Collections\ArrayCollection();
+        $this->changeRequestCountry = new Collections\ArrayCollection();
+        $this->projectLog = new Collections\ArrayCollection();
+        $this->answers = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -469,26 +439,6 @@ class Affiliation extends AbstractEntity
     }
 
     /**
-     * @return null|\Organisation\Entity\Parent\Organisation
-     */
-    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
-    {
-        return $this->parentOrganisation;
-    }
-
-    /**
-     * @param null|\Organisation\Entity\Parent\Organisation $parentOrganisation
-     *
-     * @return Affiliation
-     */
-    public function setParentOrganisation($parentOrganisation): Affiliation
-    {
-        $this->parentOrganisation = $parentOrganisation;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getBranch()
@@ -512,6 +462,18 @@ class Affiliation extends AbstractEntity
     public function setOrganisation($organisation)
     {
         $this->organisation = $organisation;
+    }
+
+    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
+    {
+        return $this->parentOrganisation;
+    }
+
+    public function setParentOrganisation($parentOrganisation): Affiliation
+    {
+        $this->parentOrganisation = $parentOrganisation;
+
+        return $this;
     }
 
     public function isActive(): bool
@@ -643,49 +605,21 @@ class Affiliation extends AbstractEntity
         $this->financial = $financial;
     }
 
-    /**
-     * @return \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
-     */
-    public function getIctOrganisation()
-    {
-        return $this->ictOrganisation;
-    }
-
-    /**
-     * @param \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection() $ictOrganisation
-     */
-    public function setIctOrganisation($ictOrganisation)
-    {
-        $this->ictOrganisation = $ictOrganisation;
-    }
-
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
-     */
     public function getInvoice()
     {
         return $this->invoice;
     }
 
-    /**
-     * @param \Affiliation\Entity\Invoice[]|Collections\ArrayCollection() $invoice
-     */
     public function setInvoice($invoice)
     {
         $this->invoice = $invoice;
@@ -994,7 +928,7 @@ class Affiliation extends AbstractEntity
     }
 
     /**
-     * @param  Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
+     * @param Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
      *
      * @return Affiliation
      */
@@ -1195,6 +1129,7 @@ class Affiliation extends AbstractEntity
 
     /**
      * @param Questionnaire\Answer[]|Collections\Collection $answers
+     *
      * @return Affiliation
      */
     public function setAnswers($answers)
