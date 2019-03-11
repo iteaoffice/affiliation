@@ -31,7 +31,7 @@ class Version extends AbstractEntity
     /**
      * @var integer
      *
-     * @ORM\Column(name="affiliation_version_id", type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_version_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */

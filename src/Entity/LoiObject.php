@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
 class LoiObject extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="object_id", type="integer", nullable=false)
+     * @ORM\Column(name="object_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -38,9 +38,7 @@ class LoiObject extends AbstractEntity
     private $object;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Loi", cascade="persist", inversedBy="object")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="loi_id", referencedColumnName="loi_id")
-     * })
+     * @ORM\JoinColumn(name="loi_id", referencedColumnName="loi_id", nullable=false)
      *
      * @var \Affiliation\Entity\Loi
      */

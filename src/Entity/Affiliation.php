@@ -41,7 +41,7 @@ class Affiliation extends AbstractEntity
             self::SELF_FUNDED     => 'txt-self-funded',
         ];
     /**
-     * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
@@ -66,7 +66,7 @@ class Affiliation extends AbstractEntity
      */
     private $note;
     /**
-     * @ORM\Column(name="value_chain", type="string", length=60, nullable=true)
+     * @ORM\Column(name="value_chain", type="string", length=255, nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-value-chain"})
      *
@@ -74,7 +74,7 @@ class Affiliation extends AbstractEntity
      */
     private $valueChain;
     /**
-     * @ORM\Column(name="market_access", type="string", nullable=true)
+     * @ORM\Column(name="market_access", type="text", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-market-access"})
      *
@@ -82,7 +82,7 @@ class Affiliation extends AbstractEntity
      */
     private $marketAccess;
     /**
-     * @ORM\Column(name="strategic_importance", type="string", nullable=true)
+     * @ORM\Column(name="strategic_importance", type="text", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-strategic-importance"})
      *
@@ -90,7 +90,7 @@ class Affiliation extends AbstractEntity
      */
     private $strategicImportance;
     /**
-     * @ORM\Column(name="main_contribution", type="string", nullable=true)
+     * @ORM\Column(name="main_contribution", type="text", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-main-contribution"})
      *
@@ -183,31 +183,6 @@ class Affiliation extends AbstractEntity
      * @var \Project\Entity\Project
      */
     private $project;
-    /**
-     * @ORM\ManyToMany(targetEntity="Organisation\Entity\IctOrganisation", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\OrderBy=({"Organisation"="ASC"})
-     * @ORM\JoinTable(name="affiliation_ict_organisation",
-     *    joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
-     *    inverseJoinColumns={@ORM\JoinColumn(name="ict_id", referencedColumnName="ict_id")}
-     * )
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntityMultiCheckbox")
-     * @Annotation\Options({
-     *      "target_class":"Organisation\Entity\IctOrganisation",
-     *      "find_method":{
-     *          "name":"findBy",
-     *          "params": {
-     *              "criteria":{},
-     *              "orderBy":{
-     *                  "organisation":"ASC"}
-     *              }
-     *          }
-     *      }
-     * )
-     * @Annotation\Attributes({"label":"txt-ict-organisation"})
-     *
-     * @var \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
-     */
-    private $ictOrganisation;
     /**
      * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -405,12 +380,8 @@ class Affiliation extends AbstractEntity
      */
     private $answers;
 
-    /**
-     * Class constructor.
-     */
     public function __construct()
     {
-        $this->ictOrganisation          = new Collections\ArrayCollection();
         $this->description              = new Collections\ArrayCollection();
         $this->invoice                  = new Collections\ArrayCollection();
         $this->log                      = new Collections\ArrayCollection();
@@ -641,22 +612,6 @@ class Affiliation extends AbstractEntity
     public function setFinancial($financial)
     {
         $this->financial = $financial;
-    }
-
-    /**
-     * @return \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
-     */
-    public function getIctOrganisation()
-    {
-        return $this->ictOrganisation;
-    }
-
-    /**
-     * @param \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection() $ictOrganisation
-     */
-    public function setIctOrganisation($ictOrganisation)
-    {
-        $this->ictOrganisation = $ictOrganisation;
     }
 
     /**
