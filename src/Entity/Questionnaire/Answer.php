@@ -30,7 +30,7 @@ use Zend\Form\Annotation;
 class Answer extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="answer_id", length=10, type="integer", options={"unsigned"=true}, nullable=false)
+     * @ORM\Column(name="answer_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()

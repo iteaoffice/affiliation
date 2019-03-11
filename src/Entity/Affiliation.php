@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Organisation\Service\OrganisationService;
 use Zend\Form\Annotation;
-use Zend\Permissions\Acl\Resource\ResourceInterface;
 
 /**
  * Entity for the Affiliation.
@@ -399,10 +398,10 @@ class Affiliation extends AbstractEntity
         $this->loiReminder              = new Collections\ArrayCollection();
         $this->achievement              = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changeRequestCostChange  = new Collections\ArrayCollection();
-        $this->changeRequestCountry     = new Collections\ArrayCollection();
-        $this->projectLog               = new Collections\ArrayCollection();
-        $this->answers                  = new Collections\ArrayCollection();
+        $this->changeRequestCostChange = new Collections\ArrayCollection();
+        $this->changeRequestCountry = new Collections\ArrayCollection();
+        $this->projectLog = new Collections\ArrayCollection();
+        $this->answers = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -440,26 +439,6 @@ class Affiliation extends AbstractEntity
     }
 
     /**
-     * @return null|\Organisation\Entity\Parent\Organisation
-     */
-    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
-    {
-        return $this->parentOrganisation;
-    }
-
-    /**
-     * @param null|\Organisation\Entity\Parent\Organisation $parentOrganisation
-     *
-     * @return Affiliation
-     */
-    public function setParentOrganisation($parentOrganisation): Affiliation
-    {
-        $this->parentOrganisation = $parentOrganisation;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getBranch()
@@ -483,6 +462,18 @@ class Affiliation extends AbstractEntity
     public function setOrganisation($organisation)
     {
         $this->organisation = $organisation;
+    }
+
+    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
+    {
+        return $this->parentOrganisation;
+    }
+
+    public function setParentOrganisation($parentOrganisation): Affiliation
+    {
+        $this->parentOrganisation = $parentOrganisation;
+
+        return $this;
     }
 
     public function isActive(): bool
@@ -614,33 +605,21 @@ class Affiliation extends AbstractEntity
         $this->financial = $financial;
     }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
-     */
     public function getInvoice()
     {
         return $this->invoice;
     }
 
-    /**
-     * @param \Affiliation\Entity\Invoice[]|Collections\ArrayCollection() $invoice
-     */
     public function setInvoice($invoice)
     {
         $this->invoice = $invoice;
@@ -949,7 +928,7 @@ class Affiliation extends AbstractEntity
     }
 
     /**
-     * @param  Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
+     * @param Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
      *
      * @return Affiliation
      */
@@ -1150,6 +1129,7 @@ class Affiliation extends AbstractEntity
 
     /**
      * @param Questionnaire\Answer[]|Collections\Collection $answers
+     *
      * @return Affiliation
      */
     public function setAnswers($answers)

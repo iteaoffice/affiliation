@@ -27,7 +27,7 @@ use Zend\Form\Annotation;
 class QuestionnaireQuestion extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="question_questionnaire_id", type="integer", length=10, options={"unsigned"=true}, nullable=false)
+     * @ORM\Column(name="question_questionnaire_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
@@ -37,7 +37,7 @@ class QuestionnaireQuestion extends AbstractEntity
     private $id;
 
     /**
-     * @ORM\Column(name="sequence", length=10, options={"unsigned"=true}, type="integer", nullable=false)
+     * @ORM\Column(name="sequence", type="integer", options={"unsigned":true})
      * @Annotation\Type("\Zend\Form\Element\Number")
      * @Annotation\Options({
      *     "label":"txt-sequence",

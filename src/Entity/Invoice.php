@@ -29,7 +29,7 @@ use Zend\Form\Annotation;
 class Invoice extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="affiliation_invoice_id",type="integer",options={"unsigned":true})
+     * @ORM\Column(name="affiliation_invoice_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -37,7 +37,7 @@ class Invoice extends AbstractEntity
      */
     private $id;
     /**
-     * @ORM\Column(name="period", type="integer", nullable=false)
+     * @ORM\Column(name="period", type="integer", options={"unsigned":true})
      * @Annotation\Type("\Zend\Form\Element\Number")
      * @Annotation\Options({"label":"txt-affiliation-invoice-period-label","help-block":"txt-affiliation-invoice-period-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-period-placeholder"})
@@ -46,7 +46,7 @@ class Invoice extends AbstractEntity
      */
     private $period;
     /**
-     * @ORM\Column(name="year", type="integer", nullable=false)
+     * @ORM\Column(name="year", type="integer", options={"unsigned":true})
      * @Annotation\Type("\Zend\Form\Element\Number")
      * @Annotation\Options({"label":"txt-affiliation-invoice-year-label","help-block":"txt-affiliation-invoice-year-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-year-placeholder"})

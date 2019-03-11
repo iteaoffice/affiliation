@@ -51,27 +51,21 @@ class LoiReminder extends AbstractEntity
     private $dateCreated;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="loiReminder")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var \Affiliation\Entity\Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="loiReminderReceiver")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="receiver_id", referencedColumnName="contact_id", nullable=true)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $receiver;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="loiReminderSender")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="sender_id", referencedColumnName="contact_id", nullable=true)
-     * })
      *
      * @var \Contact\Entity\Contact
      */

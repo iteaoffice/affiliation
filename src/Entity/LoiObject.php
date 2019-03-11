@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
 class LoiObject extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="object_id",type="integer",options={"unsigned":true})
+     * @ORM\Column(name="object_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -44,74 +44,46 @@ class LoiObject extends AbstractEntity
      */
     private $loi;
 
-    /**
-     * Magic Getter.
-     *
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
     }
 
-    /**
-     * Magic Setter.
-     *
-     * @param $property
-     * @param $value
-     *
-     * @return void;
-     */
     public function __set($property, $value)
     {
         $this->$property = $value;
     }
 
-    /**
-     * @return int
-     */
+    public function __isset($property)
+    {
+        return isset($this->$property);
+    }
+
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return \Affiliation\Entity\Loi
-     */
     public function getLoi()
     {
         return $this->loi;
     }
 
-    /**
-     * @param \Affiliation\Entity\Loi $loi
-     */
     public function setLoi($loi)
     {
         $this->loi = $loi;
     }
 
-    /**
-     * @return resource
-     */
     public function getObject()
     {
         return $this->object;
     }
 
-    /**
-     * @param string $object
-     */
     public function setObject($object)
     {
         $this->object = $object;

@@ -98,20 +98,20 @@ final class Affiliation extends AbstractAssertion
                 return true;
                 // Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
-                if (null !== $reportId) {
-                    //Find the corresponding report
-                    $report = $this->reportService->findReportById((int) $reportId);
-                    if (null === $report || $this->reportService->isFinal($report)) {
-                        return false;
-                    }
-                }
-
-                if ($this->projectService->isStopped($affiliation->getProject())) {
+            if (null !== $reportId) {
+                //Find the corresponding report
+                $report = $this->reportService->findReportById((int) $reportId);
+                if (null === $report || $this->reportService->isFinal($report)) {
                     return false;
                 }
-                if ($this->contactService->contactHasPermit($this->contact, 'edit', $affiliation)) {
-                    return true;
-                }
+            }
+
+            if ($this->projectService->isStopped($affiliation->getProject())) {
+                return false;
+            }
+            if ($this->contactService->contactHasPermit($this->contact, 'edit', $affiliation)) {
+                return true;
+            }
 
                 break;
             case 'edit-financial':

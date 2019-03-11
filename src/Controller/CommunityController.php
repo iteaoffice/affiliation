@@ -159,7 +159,7 @@ final class CommunityController extends AffiliationAbstractController
             'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
         ];
         //if ($this->isAllowed($affiliation, 'questionnaire')) {
-            $params['questionnaires'] = $this->questionnaireService->getAvailableQuestionnaires($affiliation);
+        $params['questionnaires'] = $this->questionnaireService->getAvailableQuestionnaires($affiliation);
         //}
         return new ViewModel($params);
     }

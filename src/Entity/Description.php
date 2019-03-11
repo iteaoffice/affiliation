@@ -94,22 +94,14 @@ class Description extends AbstractEntity
 
     public function __toString(): string
     {
-        return $this->getDescription();
+        return (string) $this->description;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     *
-     * @return Description
-     */
     public function setDescription($description)
     {
         $this->description = $description;
@@ -131,19 +123,11 @@ class Description extends AbstractEntity
         }
     }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Description
-     */
     public function setId($id)
     {
         $this->id = $id;
@@ -151,19 +135,11 @@ class Description extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Affiliation[]|Collections\ArrayCollection
-     */
     public function getAffiliation()
     {
         return $this->affiliation;
     }
 
-    /**
-     * @param Affiliation[]|Collections\ArrayCollection $affiliation
-     *
-     * @return Description
-     */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
@@ -171,19 +147,11 @@ class Description extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getContact()
     {
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     *
-     * @return Description
-     */
     public function setContact($contact)
     {
         $this->contact = $contact;

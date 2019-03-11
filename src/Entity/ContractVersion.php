@@ -31,7 +31,7 @@ class ContractVersion extends AbstractEntity
     /**
      * @var integer
      *
-     * @ORM\Column(name="affiliation_contract_version_id",type="integer",options={"unsigned":true})
+     * @ORM\Column(name="affiliation_contract_version_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
@@ -91,19 +91,11 @@ class ContractVersion extends AbstractEntity
         );
     }
 
-    /**
-     * @return Affiliation
-     */
     public function getAffiliation(): Affiliation
     {
         return $this->affiliation;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return ContractVersion
-     */
     public function setAffiliation(Affiliation $affiliation): ContractVersion
     {
         $this->affiliation = $affiliation;
@@ -111,19 +103,11 @@ class ContractVersion extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Project\Entity\Contract\Version
-     */
     public function getVersion(): \Project\Entity\Contract\Version
     {
         return $this->version;
     }
 
-    /**
-     * @param \Project\Entity\Contract\Version $version
-     *
-     * @return ContractVersion
-     */
     public function setVersion(\Project\Entity\Contract\Version $version): ContractVersion
     {
         $this->version = $version;
@@ -131,19 +115,11 @@ class ContractVersion extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return ContractVersion
-     */
     public function setId(int $id): ContractVersion
     {
         $this->id = $id;
@@ -151,19 +127,11 @@ class ContractVersion extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|\Project\Entity\Cost\Version[]
-     */
     public function getCostVersion()
     {
         return $this->costVersion;
     }
 
-    /**
-     * @param ArrayCollection|\Project\Entity\Cost\Version[] $costVersion
-     *
-     * @return ContractVersion
-     */
     public function setCostVersion($costVersion): ContractVersion
     {
         $this->costVersion = $costVersion;

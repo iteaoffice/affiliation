@@ -129,7 +129,7 @@ class Doa extends AbstractEntity
 
     public function __toString(): string
     {
-        return sprintf("Doa: %s", $this->id);
+        return sprintf('Doa: %s', $this->id);
     }
 
     public function parseFileName(): string

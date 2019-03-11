@@ -32,7 +32,7 @@ class Phase extends AbstractEntity
     public const PHASE_PROJECT_END   = 2;
 
     /**
-     * @ORM\Column(name="phase_id", type="integer", length=10, options={"unsigned"=true}, nullable=false)
+     * @ORM\Column(name="phase_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
