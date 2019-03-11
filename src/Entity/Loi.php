@@ -18,8 +18,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
 
 /**
- * ProjectLoi.
- *
  * @ORM\Table(name="project_loi")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Loi")
  */
@@ -62,14 +60,14 @@ class Loi extends AbstractEntity
     private $approver;
     /**
      * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="loi")
-     * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=false)
+     * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=true)
      * @Annotation\Exclude()
      *
      * @var \General\Entity\ContentType
      */
     private $contentType;
     /**
-     * @ORM\Column(name="size", type="integer", options={"unsigned":true})
+     * @ORM\Column(name="size", type="integer", options={"unsigned":true}, nullable=true)
      *
      * @var integer
      */

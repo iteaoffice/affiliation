@@ -82,6 +82,5 @@ class QuestionnaireHelper extends AbstractHelper
         $label = $percentage . '%';
 
         return \sprintf($template, $style, $percentage, $percentage, $label);
-
     }
 }

@@ -73,7 +73,7 @@ class Affiliation extends AbstractEntity
      */
     private $valueChain;
     /**
-     * @ORM\Column(name="market_access", type="string", nullable=true)
+     * @ORM\Column(name="market_access", type="text", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-market-access"})
      *
@@ -81,7 +81,7 @@ class Affiliation extends AbstractEntity
      */
     private $marketAccess;
     /**
-     * @ORM\Column(name="strategic_importance", type="string", nullable=true)
+     * @ORM\Column(name="strategic_importance", type="text", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-strategic-importance"})
      *
@@ -89,7 +89,7 @@ class Affiliation extends AbstractEntity
      */
     private $strategicImportance;
     /**
-     * @ORM\Column(name="main_contribution", type="string", nullable=true)
+     * @ORM\Column(name="main_contribution", type="text", nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-main-contribution"})
      *
@@ -131,9 +131,7 @@ class Affiliation extends AbstractEntity
     private $dateSelfFunded;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * })
      * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
      * @Annotation\Options({
      *      "target_class":"Contact\Entity\Contact",
@@ -154,9 +152,7 @@ class Affiliation extends AbstractEntity
     private $contact;
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
-     * })
      * @Annotation\Exclude()
      *
      * @var \Organisation\Entity\Organisation
@@ -164,9 +160,7 @@ class Affiliation extends AbstractEntity
     private $organisation;
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Parent\Organisation", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="parent_organisation_id", referencedColumnName="parent_organisation_id", nullable=true)
-     * })
      * @Annotation\Exclude()
      *
      * @var \Organisation\Entity\Parent\Organisation|null
@@ -174,9 +168,7 @@ class Affiliation extends AbstractEntity
     private $parentOrganisation;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Project", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="project_id", referencedColumnName="project_id", nullable=true)
-     * })
      * @Annotation\Exclude()
      *
      * @var \Project\Entity\Project
@@ -573,33 +565,21 @@ class Affiliation extends AbstractEntity
         $this->dateSelfFunded = $dateSelfFunded;
     }
 
-    /**
-     * @return \Affiliation\Entity\Description[]|Collections\ArrayCollection()
-     */
     public function getDescription()
     {
         return $this->description;
     }
 
-    /**
-     * @param \Affiliation\Entity\Description[]|Collections\ArrayCollection() $description
-     */
     public function setDescription($description)
     {
         $this->description = $description;
     }
 
-    /**
-     * @return \Affiliation\Entity\Financial
-     */
     public function getFinancial()
     {
         return $this->financial;
     }
 
-    /**
-     * @param \Affiliation\Entity\Financial $financial
-     */
     public function setFinancial($financial)
     {
         $this->financial = $financial;

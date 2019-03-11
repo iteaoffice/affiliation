@@ -15,8 +15,6 @@ namespace Affiliation\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ProjectLoiObject.
- *
  * @ORM\Table(name="project_loi_object")
  * @ORM\Entity
  */

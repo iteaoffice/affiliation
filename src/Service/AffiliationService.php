@@ -1640,23 +1640,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                 ->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation());
         }
         /**
-         * Go over the organisation and join the clusters and grab all its affiliations
-         */
-        foreach ($organisation->getCluster() as $cluster) {
-            foreach ($cluster->getMember() as $clusterMember) {
-                foreach ($clusterMember->getAffiliation() as $affiliation) {
-                    $options[$affiliation->getOrganisation()->getCountry()
-                        ->getCountry()][$affiliation->getOrganisation()
-                        ->getId()][$affiliation->getBranch()]
-                        = $this->organisationService
-                        ->parseOrganisationWithBranch(
-                            $affiliation->getBranch(),
-                            $affiliation->getOrganisation()
-                        );
-                }
-            }
-        }
-        /**
          * Go over the contact and grab all its affiliations
          */
         foreach ($contact->getAffiliation() as $affiliation) {
@@ -1695,25 +1678,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                         ->getBranch(),
                         $contact->getContactOrganisation()->getOrganisation()
                     );
-            }
-            /**
-             * Go over the clusters
-             */
-            foreach ($organisation->getContactOrganisation() as $contactOrganisation) {
-                foreach ($contactOrganisation->getOrganisation()->getCluster() as $cluster) {
-                    foreach ($cluster->getMember() as $clusterMember) {
-                        foreach ($clusterMember->getAffiliation() as $affiliation) {
-                            $options[$affiliation->getOrganisation()->getCountry()
-                                ->getCountry()][$affiliation->getOrganisation()
-                                ->getId()][$affiliation->getBranch()]
-                                = $this->organisationService
-                                ->parseOrganisationWithBranch(
-                                    $affiliation->getBranch(),
-                                    $affiliation->getOrganisation()
-                                );
-                        }
-                    }
-                }
             }
         }
 
