@@ -26,7 +26,7 @@ use Zend\Form\Annotation;
 class Doa extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="doa_id", type="integer", options={"unsigned":true})
+     * @ORM\Column(name="doa_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
@@ -129,7 +129,7 @@ class Doa extends AbstractEntity
 
     public function __toString(): string
     {
-        return sprintf("Doa: %s", $this->id);
+        return sprintf('Doa: %s', $this->id);
     }
 
     public function parseFileName(): string

@@ -29,7 +29,7 @@ use Zend\Form\Annotation;
 class DoaReminder extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="reminder_id", type="integer", options={"unsigned":true})
+     * @ORM\Column(name="reminder_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
@@ -103,39 +103,22 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail()
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     *
-     * @return DoaReminder
-     */
     public function setEmail($email)
     {
         $this->email = $email;
 
         return $this;
     }
-
-    /**
-     * @return \DateTime
-     */
     public function getDateCreated()
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param \DateTime $dateCreated
-     *
-     * @return DoaReminder
-     */
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
@@ -143,19 +126,11 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Affiliation
-     */
     public function getAffiliation()
     {
         return $this->affiliation;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return DoaReminder
-     */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
@@ -163,19 +138,11 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getReceiver()
     {
         return $this->receiver;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $receiver
-     *
-     * @return DoaReminder
-     */
     public function setReceiver($receiver)
     {
         $this->receiver = $receiver;
@@ -183,9 +150,6 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getSender()
     {
         return $this->sender;

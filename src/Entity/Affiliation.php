@@ -40,7 +40,7 @@ class Affiliation extends AbstractEntity
             self::SELF_FUNDED     => 'txt-self-funded',
         ];
     /**
-     * @ORM\Column(name="affiliation_id", type="integer", options={"unsigned":true})
+     * @ORM\Column(name="affiliation_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
@@ -65,7 +65,7 @@ class Affiliation extends AbstractEntity
      */
     private $note;
     /**
-     * @ORM\Column(name="value_chain", type="string", nullable=true)
+     * @ORM\Column(name="value_chain", type="string", length=255, nullable=true)
      * @Annotation\Type("\Zend\Form\Element\Text")
      * @Annotation\Options({"label":"txt-value-chain"})
      *
@@ -373,22 +373,22 @@ class Affiliation extends AbstractEntity
 
     public function __construct()
     {
-        $this->description = new Collections\ArrayCollection();
-        $this->invoice = new Collections\ArrayCollection();
-        $this->log = new Collections\ArrayCollection();
-        $this->version = new Collections\ArrayCollection();
-        $this->contractVersion = new Collections\ArrayCollection();
-        $this->contract = new Collections\ArrayCollection();
-        $this->associate = new Collections\ArrayCollection();
-        $this->funding = new Collections\ArrayCollection();
-        $this->cost = new Collections\ArrayCollection();
-        $this->contractCost = new Collections\ArrayCollection();
-        $this->funded = new Collections\ArrayCollection();
-        $this->effort = new Collections\ArrayCollection();
-        $this->spent = new Collections\ArrayCollection();
-        $this->doaReminder = new Collections\ArrayCollection();
-        $this->loiReminder = new Collections\ArrayCollection();
-        $this->achievement = new Collections\ArrayCollection();
+        $this->description              = new Collections\ArrayCollection();
+        $this->invoice                  = new Collections\ArrayCollection();
+        $this->log                      = new Collections\ArrayCollection();
+        $this->version                  = new Collections\ArrayCollection();
+        $this->contractVersion          = new Collections\ArrayCollection();
+        $this->contract                 = new Collections\ArrayCollection();
+        $this->associate                = new Collections\ArrayCollection();
+        $this->funding                  = new Collections\ArrayCollection();
+        $this->cost                     = new Collections\ArrayCollection();
+        $this->contractCost             = new Collections\ArrayCollection();
+        $this->funded                   = new Collections\ArrayCollection();
+        $this->effort                   = new Collections\ArrayCollection();
+        $this->spent                    = new Collections\ArrayCollection();
+        $this->doaReminder              = new Collections\ArrayCollection();
+        $this->loiReminder              = new Collections\ArrayCollection();
+        $this->achievement              = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
         $this->changeRequestCostChange = new Collections\ArrayCollection();
         $this->changeRequestCountry = new Collections\ArrayCollection();

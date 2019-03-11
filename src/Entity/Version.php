@@ -38,27 +38,21 @@ class Version extends AbstractEntity
     private $id;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="version")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliationVersion")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * })
      *
      * @var \Contact\Entity\Contact
      */
     private $contact;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="affiliationVersion")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
-     * })
      *
      * @var \Project\Entity\Version\Version
      */
@@ -82,9 +76,6 @@ class Version extends AbstractEntity
      */
     private $fundingVersion;
 
-    /**
-     * Version constructor.
-     */
     public function __construct()
     {
         $this->costVersion = new ArrayCollection();
@@ -117,19 +108,11 @@ class Version extends AbstractEntity
         );
     }
 
-    /**
-     * @return Affiliation
-     */
     public function getAffiliation()
     {
         return $this->affiliation;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Version
-     */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
@@ -137,19 +120,11 @@ class Version extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Project\Entity\Version\Version
-     */
     public function getVersion()
     {
         return $this->version;
     }
 
-    /**
-     * @param \Project\Entity\Version\Version $version
-     *
-     * @return Version
-     */
     public function setVersion($version)
     {
         $this->version = $version;
@@ -157,19 +132,11 @@ class Version extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Version
-     */
     public function setId($id)
     {
         $this->id = $id;
@@ -177,19 +144,11 @@ class Version extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getContact()
     {
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     *
-     * @return Version
-     */
     public function setContact($contact)
     {
         $this->contact = $contact;
