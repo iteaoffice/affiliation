@@ -106,7 +106,7 @@ class Affiliation extends AbstractEntity
      */
     private $selfFunded;
     /**
-     * @ORM\Column(name="date_created", type="datetime", nullable=false)
+     * @ORM\Column(name="date_created", type="datetime", nullable=true)
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
      *

@@ -1374,10 +1374,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         $affiliation->addAssociate($contact);
         $this->save($affiliation);
 
-        $this->refreshAccessRolesByContact($contact);
-
         // Send an email to the invitee
-
         $this->emailService->setWebInfo("/project/add_associate:associate");
         $this->emailService->addTo($contact);
 

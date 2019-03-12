@@ -23,6 +23,7 @@ use Admin\Repository\Permit\Role;
 use Affiliation\Entity;
 use Contact\Entity\Contact;
 use Contact\Service\SelectionContactService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
@@ -246,43 +247,5 @@ abstract class AbstractService
     public function refresh(Entity\AbstractEntity $abstractEntity): void
     {
         $this->entityManager->refresh($abstractEntity);
-    }
-
-    public function refreshAccessRolesByContact(Contact $contact): object
-    {
-        $repository = $this->entityManager->getRepository(Access::class);
-
-        //Delete first all the access roles which are dynamically created
-        $repository->removeRolesViaSelectionByContact($contact);
-
-        //Everyone is user, so we add it default
-        $userAccessRole = $repository->findOneBy(['access' => Access::ACCESS_USER,]);
-
-        $roles = $contact->getAccess();
-
-        /** Add the user access role if not set yet */
-        if (!$roles->contains($userAccessRole)) {
-            $roles->add($userAccessRole);
-        }
-
-        /** Add the dymamic roles $access */
-        foreach ($this->findAll(Access::class) as $access) {
-            /**
-             * @var $access Access
-             */
-            if (!$roles->contains($access)
-                && $this->selectionContactService->contactInSelection(
-                    $contact,
-                    $access->getSelection()
-                )
-            ) {
-                $roles->add($access);
-            }
-        };
-
-        $this->entityManager->persist($contact);
-        $this->entityManager->flush();
-
-        return $roles;
     }
 }
