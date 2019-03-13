@@ -114,7 +114,7 @@ class Question extends AbstractEntity
     private $placeholder;
 
     /**
-     * @ORM\Column(name="input_type", type="smallint", length=5, nullable=false)
+     * @ORM\Column(name="input_type", type="smallint", length=5, options={"unsigned"=true}, nullable=false)
      * @Annotation\Type("Zend\Form\Element\Radio")
      * @Annotation\Attributes({"array":"inputTypeTemplates"})
      * @Annotation\Options({
@@ -139,7 +139,7 @@ class Question extends AbstractEntity
     private $values;
 
     /**
-     * @ORM\Column(name="is_required", type="boolean", length=1, nullable=false)
+     * @ORM\Column(name="is_required", type="boolean", length=1, options={"unsigned"=true}, nullable=false)
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({
      *     "label":"txt-required",
@@ -151,7 +151,7 @@ class Question extends AbstractEntity
     private $required = true;
 
     /**
-     * @ORM\Column(name="is_enabled", type="boolean", length=1, nullable=false)
+     * @ORM\Column(name="is_enabled", type="boolean", length=1, options={"unsigned"=true}, nullable=false)
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({
      *     "label":"txt-enabled",

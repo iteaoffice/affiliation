@@ -50,19 +50,9 @@ class QuestionnaireHelper extends AbstractHelper
         return $this->questionnaireService->getEndDate($questionnaire, $affiliation);
     }
 
-    /*
-     * Checks whether a questionnaire is editable purely based on the current state of the project/affiliation.
-     * Whether the user has rights (Technical Contact or Office) should be checked via the Affiliation assertion class.
-     */
-    public function isEditable(Questionnaire $questionnaire, Affiliation $affiliation): bool
+    public function isOpen(Questionnaire $questionnaire, Affiliation $affiliation): bool
     {
-        $now       = new \DateTime();
-        $startDate = $this->getStartDate($questionnaire, $affiliation);
-        $endDate   = $this->getEndDate($questionnaire, $affiliation);
-        return (
-            (($startDate !== null) && ($now >= $startDate))
-            && (($endDate === null) || ($now <= $endDate))
-        );
+        return $this->questionnaireService->isOpen($questionnaire, $affiliation);
     }
 
     public function parseCompletedPercentage(Questionnaire $questionnaire, Affiliation $affiliation): string

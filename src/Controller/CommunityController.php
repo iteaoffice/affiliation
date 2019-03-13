@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Controller;
 
+use Affiliation\Acl\Assertion\Affiliation;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\QuestionnaireService;
 use Application\Service\AssertionService;
@@ -158,9 +159,11 @@ final class CommunityController extends AffiliationAbstractController
             'callService'           => $this->callService,
             'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
         ];
-        //if ($this->isAllowed($affiliation, 'questionnaire')) {
-        $params['questionnaires'] = $this->questionnaireService->getAvailableQuestionnaires($affiliation);
-        //}
+
+        $this->assertionService->addResource($affiliation, Affiliation::class);
+        if ($this->isAllowed($affiliation, 'list-questionnaire')) {
+            $params['questionnaires'] = $this->questionnaireService->getAvailableQuestionnaires($affiliation);
+        }
         return new ViewModel($params);
     }
 
@@ -173,7 +176,7 @@ final class CommunityController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $year = (int)$this->params('year');
+        $year   = (int)$this->params('year');
         $period = (int)$this->params('period');
 
         return new ViewModel(

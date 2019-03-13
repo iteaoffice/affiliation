@@ -33,6 +33,7 @@ $config = [
             Controller\Questionnaire\CategoryManagerController::class      => ConfigAbstractFactory::class,
             Controller\Questionnaire\QuestionManagerController::class      => ConfigAbstractFactory::class,
             Controller\Questionnaire\QuestionnaireManagerController::class => ConfigAbstractFactory::class,
+            Controller\Questionnaire\QuestionnaireController::class        => ConfigAbstractFactory::class,
         ],
     ],
     'service_manager'    => [
@@ -49,6 +50,7 @@ $config = [
             Acl\Assertion\Affiliation::class                             => Factory\InvokableFactory::class,
             Acl\Assertion\Doa::class                                     => Factory\InvokableFactory::class,
             Acl\Assertion\Loi::class                                     => Factory\InvokableFactory::class,
+            Acl\Assertion\QuestionnaireAssertion::class                  => Factory\InvokableFactory::class,
             Navigation\Invokable\AffiliationLabel::class                 => Factory\InvokableFactory::class,
             Navigation\Invokable\DoaLabel::class                         => Factory\InvokableFactory::class,
             Navigation\Invokable\LoiLabel::class                         => Factory\InvokableFactory::class,

@@ -15,7 +15,13 @@
         <tbody>
         {% for questionnaire in questionnaires %}
             <tr>
-                <td>{{ questionnaire.questionnaire }}</td>
+                <td>
+                    {% if not questionnaireHelper().isOpen(questionnaire, affiliation) %}
+                        <i class="fa fa-lock"></i>
+                    {% endif %}
+                    {{ affiliationQuestionnaireLink(questionnaire, 'view-community', 'name', affiliation) }}
+                    {{ affiliationQuestionnaireLink(questionnaire, 'edit-community', 'icon', affiliation) }}
+                </td>
                 <td>{{ questionnaire.phase.phase }}</td>
                 <td>{{ questionnaire.questionnaireQuestions|length }}</td>
                 <td>{{ questionnaireHelper().getStartDate(questionnaire, affiliation)|string_date }}</td>

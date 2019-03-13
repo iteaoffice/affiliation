@@ -63,6 +63,18 @@ class Questionnaire extends AbstractEntity
     private $questionnaire;
 
     /**
+     * @ORM\Column(name="description", type="text", length=65535, nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Textarea")
+     * @Annotation\Options({
+     *     "label":"txt-description",
+     *     "help-block":"txt-description-help-block"
+     * })
+     *
+     * @var string
+     */
+    private $description;
+
+    /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\QuestionnaireQuestion", cascade={"persist", "remove"}, mappedBy="questionnaire", orphanRemoval=true)
      * @ORM\OrderBy({"sequence"="ASC"})
      * @Annotation\ComposedObject({
@@ -143,6 +155,17 @@ class Questionnaire extends AbstractEntity
     public function setQuestionnaire(string $questionnaire): Questionnaire
     {
         $this->questionnaire = $questionnaire;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): Questionnaire
+    {
+        $this->description = $description;
         return $this;
     }
 

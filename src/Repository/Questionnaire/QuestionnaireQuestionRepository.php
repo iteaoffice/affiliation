@@ -29,7 +29,7 @@ final class QuestionnaireQuestionRepository extends SortableRepository
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
         $queryBuilder->select('qq', 'q', 'qc');
         $queryBuilder->from(QuestionnaireQuestion::class, 'qq');
-        $queryBuilder->innerJoin('q.question', 'q');
+        $queryBuilder->innerJoin('qq.question', 'q');
         $queryBuilder->innerJoin('q.category', 'qc');
         $queryBuilder->where($queryBuilder->expr()->eq('qq.questionnaire', ':questionnaire'));
         $queryBuilder->andWhere($queryBuilder->expr()->eq('q.enabled', 1));

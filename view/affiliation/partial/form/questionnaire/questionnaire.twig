@@ -8,8 +8,9 @@
 
 {% set questionnaireFieldset = form.get('affiliation_entity_questionnaire_questionnaire') %}
 
-{{ ztbformelement(questionnaireFieldset.get('questionnaire')) }}
 {{ ztbformelement(questionnaireFieldset.get('phase')) }}
+{{ ztbformelement(questionnaireFieldset.get('questionnaire')) }}
+{{ ztbformelement(questionnaireFieldset.get('description')) }}
 
 {% if edit %}
     <h2>{{ translate("txt-questions") }}</h2>

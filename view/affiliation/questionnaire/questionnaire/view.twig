@@ -1,0 +1,28 @@
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-affiliation-questionnaire-%s")|format(questionnaire)) %}
+
+<h1>{{ questionnaire.questionnaire }}</h1>
+{% if questionnaire.description is not empty %}
+    <p>{{ questionnaire.description }}</p>
+{% endif %}
+<hr>
+{% for answer in answers %}
+    {% set currentCategory = answer.questionnaireQuestion.question.category.category %}
+    {% if currentCategory != activeCategory %}
+        <h2>{{ currentCategory }}</h2>
+        {% set activeCategory = currentCategory %}
+
+    {% endif %}
+    <p><strong>{{ loop.index }}. {{ answer.questionnaireQuestion.question.question }}</strong></p>
+    {% if answer.value is not null %}
+        <p>{{ answer.value }}</p>
+    {% elseif not answer.questionnaireQuestion.question.required %}
+        <p>({{ translate('txt-not-applicable') }})</p>
+    {% else %}
+        {{ ztbalert().info(translate('txt-no-answer-provided'))|raw }}
+    {% endif %}
+{% endfor %}
+
+<hr>
+{{ affiliationQuestionnaireLink(questionnaire, 'edit-community', 'button', affiliation) }}

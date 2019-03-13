@@ -33,10 +33,10 @@ use Zend\InputFilter\InputFilter;
 class QuestionnaireForm extends Form
 {
     public function __construct(
-        Questionnaire $questionnaire,
-        Affiliation $affiliation,
+        Questionnaire        $questionnaire,
+        Affiliation          $affiliation,
         QuestionnaireService $affiliationQuestionService,
-        EntityManager $entityManager
+        EntityManager        $entityManager
     ) {
         parent::__construct($questionnaire->get('underscore_entity_name'));
         $this->setAttributes(
@@ -47,10 +47,7 @@ class QuestionnaireForm extends Form
                 'action' => ''
             ]
         );
-        $this->setUseAsBaseFieldset(true);
         $doctrineHydrator = new DoctrineHydrator($entityManager);
-        $this->setHydrator($doctrineHydrator);
-        $this->bind($questionnaire);
 
         // Setup input filters
         $answerFilter = new InputFilter();
@@ -68,17 +65,18 @@ class QuestionnaireForm extends Form
         $answersFilter = new CollectionInputFilter();
         $answersFilter->setInputFilter($answerFilter);
         $questionnaireFilter = new InputFilter();
-        $questionnaireFilter->add($answersFilter, 'questionnaire-answers');
+        $questionnaireFilter->add($answersFilter, 'answers');
         $this->setInputFilter($questionnaireFilter);
 
-        $answerCollection = new Element\Collection('questionnaire-answers');
+        $answerCollection = new Element\Collection('answers');
+        $answerCollection->setUseAsBaseFieldset(true);
         $answerCollection->setCreateNewObjects(false);
         $answerCollection->setAllowAdd(false);
         $answerCollection->setAllowRemove(false);
 
         /** @var Answer $answer */
         foreach ($affiliationQuestionService->getSortedAnswers($questionnaire, $affiliation) as $answer) {
-            $question = $answer->getQuestionnaireQuestion()->getQuestion();
+            $question    = $answer->getQuestionnaireQuestion()->getQuestion();
             $placeholder = $question->getPlaceholder();
 
             $answerFieldset = new Fieldset($question->getId());
@@ -144,8 +142,8 @@ class QuestionnaireForm extends Form
                 case Question::INPUT_TYPE_NUMERIC:
                     $attributes = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
                     $attributes['value'] = $answer->getValue();
-                    $attributes['min'] = 0;
-                    $attributes['step'] = 1;
+                    $attributes['min']   = 0;
+                    $attributes['step']  = 1;
                     $answerFieldset->add(
                         [
                             'type'       => Element\Number::class,
@@ -161,7 +159,7 @@ class QuestionnaireForm extends Form
                     $attributes['value'] = $answer->getValue();
                     $answerFieldset->add(
                         [
-                            'type'       => Element\Date::class,
+                            'type'       => Element\Text::class,//Element\Date::class,
                             'name'       => 'value',
                             'attributes' => $attributes,
                             'options'    => $optionTemplate,

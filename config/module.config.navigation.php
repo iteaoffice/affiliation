@@ -160,6 +160,32 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
+                                    'view-questionnaire' => [
+                                        'label'   => _('txt-view-questionnaire'),
+                                        'route'   => 'community/affiliation/questionnaire/view',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                            ],
+                                            'routeParam' => [
+                                                'id' => 'affiliationId',
+                                            ],
+                                        ],
+                                    ],
+                                    'edit-questionnaire' => [
+                                        'label'   => _('txt-edit-questionnaire'),
+                                        'route'   => 'community/affiliation/questionnaire/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                            ],
+                                            'routeParam' => [
+                                                'id' => 'affiliationId',
+                                            ],
+                                        ],
+                                    ],
                                 ],
                             ],
                         ],

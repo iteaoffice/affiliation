@@ -13,9 +13,12 @@ declare(strict_types=1);
 namespace Affiliation\Controller\Questionnaire;
 
 use Affiliation\Controller\AffiliationAbstractController;
+use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Questionnaire;
-use Affiliation\Service\FormService;
+use Affiliation\Form\Questionnaire\QuestionnaireForm;
 use Affiliation\Service\QuestionnaireService;
+use Doctrine\ORM\EntityManager;
+use Zend\Http\Request;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\View\Model\ViewModel;
 
@@ -31,9 +34,9 @@ final class QuestionnaireController extends AffiliationAbstractController
     private $questionnaireService;
 
     /**
-     * @var FormService
+     * @var EntityManager
      */
-    private $formService;
+    private $entityManager;
 
     /**
      * @var TranslatorInterface
@@ -42,32 +45,81 @@ final class QuestionnaireController extends AffiliationAbstractController
 
     public function __construct(
         QuestionnaireService $questionnaireService,
-        FormService          $formService,
+        EntityManager        $entityManager,
         TranslatorInterface  $translator
     ) {
         $this->questionnaireService = $questionnaireService;
-        $this->formService          = $formService;
+        $this->entityManager        = $entityManager;
         $this->translator           = $translator;
     }
 
     public function viewAction()
     {
+        /** @var Questionnaire $questionnaire */
         $questionnaire = $this->questionnaireService->find(Questionnaire::class, (int)$this->params('id'));
+        /** @var Affiliation $affiliation */
+        $affiliation   = $this->questionnaireService->find(
+            Affiliation::class,
+            (int)$this->params('affiliationId')
+        );
 
-        if ($questionnaire === null) {
+        if ($questionnaire === null || $affiliation === null) {
             return $this->notFoundAction();
         }
 
         return new ViewModel([
-            'questionnaire' => $questionnaire
+            'questionnaire' => $questionnaire,
+            'affiliation'   => $affiliation,
+            'answers'       => $this->questionnaireService->getSortedAnswers($questionnaire, $affiliation)
         ]);
-    }
-
-    public function newAction()
-    {
     }
 
     public function editAction()
     {
+        /** @var Request $request */
+        $request = $this->getRequest();
+        /** @var Questionnaire $questionnaire */
+        $questionnaire = $this->questionnaireService->find(Questionnaire::class, (int)$this->params('id'));
+        /** @var Affiliation $affiliation */
+        $affiliation   = $this->questionnaireService->find(
+            Affiliation::class,
+            (int)$this->params('affiliationId')
+        );
+
+        if ($questionnaire === null || $affiliation === null) {
+            return $this->notFoundAction();
+        }
+
+        $form = new QuestionnaireForm(
+            $questionnaire,
+            $affiliation,
+            $this->questionnaireService,
+            $this->entityManager
+        );
+
+        if ($request->isPost()) {
+            $data = $request->getPost()->toArray();
+            $form->setData($data);
+
+            if (!isset($data['cancel']) && $form->isValid()) {
+                // isValid already hydrated the answer objects, so we only need to flush the entity manager
+                $this->entityManager->flush();
+
+                $this->flashMessenger()->addSuccessMessage(
+                    $this->translator->translate('txt-the-answers-have-been-saved-successfully')
+                );
+            }
+
+            return $this->redirect()->toRoute(
+                'community/affiliation/questionnaire/view',
+                ['affiliationId' => $affiliation->getId(), 'id' => $questionnaire->getId()]
+            );
+        }
+
+        return new ViewModel([
+            'form'          => $form,
+            'questionnaire' => $questionnaire,
+            'answers'       => $this->questionnaireService->getSortedAnswers($questionnaire, $affiliation)
+        ]);
     }
 }

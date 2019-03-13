@@ -248,6 +248,39 @@ return [
                                     ],
                                 ],
                             ],
+                            'questionnaire'     => [
+                                'type'         => 'Segment',
+                                'options'      => [
+                                    'route'    => '/questionnaire',
+                                    'defaults' => [
+                                        'controller' => Controller\Questionnaire\QuestionnaireController::class,
+                                        'action'     => 'view',
+                                    ],
+                                ],
+                                'may_terminate' => false,
+                                'child_routes' => [
+                                    'view'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/view[/:affiliationId]/q-[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'view',
+                                                'privilege' => 'view-community',
+                                            ],
+                                        ],
+                                    ],
+                                    'edit'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/edit[/:affiliationId]/q-[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'edit',
+                                                'privilege' => 'edit-community',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],

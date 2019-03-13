@@ -69,7 +69,7 @@
             <a class="nav-link" href="#payment-sheet" data-toggle="tab" role="tab">{{ translate("txt-payment-sheet") }}</a>
         </li>
     {% endif %}
-    {% if isAllowed(affiliation,'questionnaire') %}
+    {% if isAllowed(affiliation,'list-questionnaire') %}
     <li class="nav-item">
         <a class="nav-link" href="#questionnaires" data-toggle="tab" role="tab">{{ translate("txt-questionnaires") }}</a>
     </li>
@@ -110,10 +110,10 @@
             {% include 'affiliation/community/tab/payment-sheet' %}
         </div>
     {% endif %}
-    {% if isAllowed(affiliation,'questionnaire') %}
-    <!--<div class="tab-pane" role="tabpanel" id="questionnaires">
+    {% if isAllowed(affiliation,'list-questionnaire') %}
+    <div class="tab-pane" role="tabpanel" id="questionnaires">
         {% include 'affiliation/community/tab/questionnaires' %}
-    </div>-->
+    </div>
     {% endif %}
 </div>
 

@@ -196,7 +196,7 @@ class Answer extends AbstractEntity
         return $this->value;
     }
 
-    public function setValue(string $value): Answer
+    public function setValue(?string $value): Answer
     {
         $this->value = $value;
         return $this;

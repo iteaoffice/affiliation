@@ -163,9 +163,6 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
                     'zfcadmin/affiliation/questionnaire/view',
                     ['id' => $questionnaire->getId()]
                 );
-            } else {
-                var_dump($form->getMessages());
-                die();
             }
         }
 

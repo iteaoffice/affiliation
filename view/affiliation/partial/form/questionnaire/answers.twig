@@ -1,0 +1,22 @@
+{% do form.prepare() %}
+
+{{ form().openTag(form)|raw }}
+
+{% set activeCategory = '' %}
+{% for fieldset in form.get('answers').getFieldsets() %}
+    {% set currentCategory = fieldset.getObject().questionnaireQuestion.question.category.category %}
+    {% if currentCategory != activeCategory %}
+        <h2>{{ currentCategory }}</h2>
+        {% set activeCategory = currentCategory %}
+    {% endif %}
+    {{ ztbformelement(fieldset.get('value')) }}
+{% endfor %}
+<hr>
+<div class="form-group row">
+    <div class="col-sm-12">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace Affiliation\View\Helper\Questionnaire;
 
-use Affiliation\Entity\Questionnaire\Question;
+use Affiliation\Acl\Assertion\QuestionnaireAssertion;
+use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\View\Helper\LinkAbstract;
 
@@ -30,17 +31,24 @@ class QuestionnaireLink extends LinkAbstract
 
     public function __invoke(
         Questionnaire $questionnaire = null,
-        string        $action = 'view',
-        string        $show = 'name'
+        string        $action        = 'view-community',
+        string        $show          = 'name',
+        Affiliation   $affiliation   = null
     ): string {
         $this->questionnaire = $questionnaire ?? new Questionnaire();
+        $this->affiliation   = $affiliation ?? new Affiliation();
         $this->setAction($action);
         $this->setShow($show);
         $this->addRouterParam('id', $this->questionnaire->getId());
+        $this->addRouterParam('affiliationId', $this->affiliation->getId());
 
         $this->setShowOptions([
             'name' => $this->questionnaire->getQuestionnaire()
         ]);
+
+        if (!$this->hasAccess($this->affiliation, QuestionnaireAssertion::class, $this->getAction())) {
+            return '';
+        }
 
         return $this->createLink();
     }
@@ -48,18 +56,26 @@ class QuestionnaireLink extends LinkAbstract
     public function parseAction(): void
     {
         switch ($this->getAction()) {
-            case 'view':
+            case 'view-community':
+                $this->setRouter('community/affiliation/questionnaire/view');
+                $this->setText($this->translator->translate("txt-view-answers"));
+                break;
+            case 'edit-community':
+                $this->setRouter('community/affiliation/questionnaire/edit');
+                $this->setText($this->translator->translate("txt-update-answers"));
+                break;
+            case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/view');
                 $this->setText(\sprintf(
                     $this->translator->translate("txt-view-questionnaire-%s"),
                     $this->questionnaire->getQuestionnaire()
                 ));
                 break;
-            case 'new':
+            case 'new-admin':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/new');
                 $this->setText($this->translator->translate("txt-new-questionnaire"));
                 break;
-            case 'edit':
+            case 'edit-admin':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/edit');
                 $this->setText(\sprintf(
                     $this->translator->translate("txt-edit-questionnaire-%s"),

@@ -19,9 +19,7 @@ use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Entity\Questionnaire\QuestionnaireQuestion;
 use Project\Entity\Calendar\Calendar as ProjectCalendar;
-use Contact\Entity\Contact;
 use Doctrine\ORM\EntityManager;
-use Project\Entity\Project;
 
 /**
  * Class QuestionnaireService
@@ -156,5 +154,20 @@ class QuestionnaireService extends AbstractService
                 }
         }
         return null;
+    }
+
+    /*
+     * Checks whether a questionnaire is open purely based on the current state of the project/affiliation.
+     * Whether the user has rights (Technical Contact or Office) should be checked via the Questionnaire assertion class.
+     */
+    public function isOpen(Questionnaire $questionnaire, Affiliation $affiliation): bool
+    {
+        $now       = new \DateTime();
+        $startDate = $this->getStartDate($questionnaire, $affiliation);
+        $endDate   = $this->getEndDate($questionnaire, $affiliation);
+        return (
+            (($startDate !== null) && ($now >= $startDate))
+            && (($endDate === null) || ($now <= $endDate))
+        );
     }
 }
