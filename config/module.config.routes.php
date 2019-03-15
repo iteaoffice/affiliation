@@ -279,6 +279,16 @@ return [
                                             ],
                                         ],
                                     ],
+                                    'list'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/list.html',
+                                            'defaults' => [
+                                                'action'    => 'list',
+                                                'privilege' => 'list-personal',
+                                            ],
+                                        ],
+                                    ],
                                 ],
                             ],
                         ],

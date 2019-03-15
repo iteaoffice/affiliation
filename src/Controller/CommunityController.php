@@ -12,7 +12,8 @@ declare(strict_types=1);
 
 namespace Affiliation\Controller;
 
-use Affiliation\Acl\Assertion\Affiliation;
+use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
+use Affiliation\Entity\Affiliation;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\QuestionnaireService;
 use Application\Service\AssertionService;
@@ -160,7 +161,7 @@ final class CommunityController extends AffiliationAbstractController
             'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
         ];
 
-        $this->assertionService->addResource($affiliation, Affiliation::class);
+        $this->assertionService->addResource($affiliation, AffiliationAssertion::class);
         if ($this->isAllowed($affiliation, 'list-questionnaire')) {
             $params['questionnaires'] = $this->questionnaireService->getAvailableQuestionnaires($affiliation);
         }
@@ -212,6 +213,7 @@ final class CommunityController extends AffiliationAbstractController
             null !== $this->params('contract')
         );
 
+        $pdfData = $renderPaymentSheet->getPDFData();
         $response->getHeaders()
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
@@ -224,8 +226,8 @@ final class CommunityController extends AffiliationAbstractController
                 ) . '"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
-            ->addHeaderLine('Content-Length', \strlen($renderPaymentSheet->getPDFData()));
-        $response->setContent($renderPaymentSheet->getPDFData());
+            ->addHeaderLine('Content-Length', \strlen($pdfData));
+        $response->setContent($pdfData);
 
         return $response;
     }

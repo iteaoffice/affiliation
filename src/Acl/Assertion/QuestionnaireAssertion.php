@@ -72,6 +72,8 @@ final class QuestionnaireAssertion extends AbstractAssertion
         );
 
         switch ($this->getPrivilege()) {
+            case 'list-personal':
+                return $this->hasContact();
             case 'list-community':
             case 'view-community':
                 // Only technical contact can access the questionnaires

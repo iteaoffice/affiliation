@@ -173,6 +173,7 @@ return [
             TranslatorInterface::class
         ],
         Controller\Questionnaire\QuestionnaireController::class => [
+            Service\AffiliationService::class,
             Service\QuestionnaireService::class,
             EntityManager::class,
             TranslatorInterface::class

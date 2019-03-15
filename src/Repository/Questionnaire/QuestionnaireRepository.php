@@ -12,9 +12,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Repository\Questionnaire;
 
-use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 

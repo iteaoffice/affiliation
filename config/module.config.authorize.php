@@ -289,6 +289,11 @@ return [
                     'roles'     => [Access::ACCESS_USER],
                     'assertion' => QuestionnaireAssertion::class,
                 ],
+                [
+                    'route'     => 'community/affiliation/questionnaire/list',
+                    'roles'     => [Access::ACCESS_USER],
+                    'assertion' => QuestionnaireAssertion::class,
+                ],
             ],
         ],
     ],

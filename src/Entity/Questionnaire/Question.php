@@ -27,17 +27,17 @@ use Zend\Form\Annotation;
 class Question extends AbstractEntity
 {
     /** Input type is Yes/No */
-    public const INPUT_TYPE_BOOL = 1;
+    public const INPUT_TYPE_BOOL    = 1;
     /** Input type is a single line textfield */
-    public const INPUT_TYPE_STRING = 2;
+    public const INPUT_TYPE_STRING  = 2;
     /** Input type is a multi-line textarea */
-    public const INPUT_TYPE_TEXT = 3;
+    public const INPUT_TYPE_TEXT    = 3;
     /** Input type is select box */
-    public const INPUT_TYPE_SELECT = 4;
+    public const INPUT_TYPE_SELECT  = 4;
     /** Input type is a number */
     public const INPUT_TYPE_NUMERIC = 5;
     /** Input type is a date */
-    public const INPUT_TYPE_DATE = 6;
+    public const INPUT_TYPE_DATE    = 6;
 
     /**
      * Templates for the input types.

@@ -16,6 +16,7 @@ use Affiliation\Controller\AffiliationAbstractController;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Form\Questionnaire\QuestionnaireForm;
+use Affiliation\Service\AffiliationService;
 use Affiliation\Service\QuestionnaireService;
 use Doctrine\ORM\EntityManager;
 use Zend\Http\Request;
@@ -28,6 +29,10 @@ use Zend\View\Model\ViewModel;
  */
 final class QuestionnaireController extends AffiliationAbstractController
 {
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
     /**
      * @var QuestionnaireService
      */
@@ -44,13 +49,34 @@ final class QuestionnaireController extends AffiliationAbstractController
     private $translator;
 
     public function __construct(
+        AffiliationService   $affiliationService,
         QuestionnaireService $questionnaireService,
         EntityManager        $entityManager,
         TranslatorInterface  $translator
     ) {
+        $this->affiliationService   = $affiliationService;
         $this->questionnaireService = $questionnaireService;
         $this->entityManager        = $entityManager;
         $this->translator           = $translator;
+    }
+
+    public function listAction()
+    {
+        $affiliations = $this->affiliationService->findBy(Affiliation::class, ['contact' => $this->identity()]);
+
+        $affiliations = [$this->affiliationService->findAffiliationById(20417)];
+
+        $affiliationList = [];
+        foreach ($affiliations as $affiliation) {
+            $affiliationList[] = [
+                'affiliation'    => $affiliation,
+                'questionnaires' => $this->questionnaireService->getAvailableQuestionnaires($affiliation)
+            ];
+        }
+
+        return new ViewModel([
+            'affiliations' => $affiliationList
+        ]);
     }
 
     public function viewAction()

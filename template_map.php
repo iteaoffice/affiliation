@@ -3,6 +3,7 @@
 return array(
     'affiliation/questionnaire/questionnaire/view'               => __DIR__ . '//view/affiliation/questionnaire/questionnaire/view.twig',
     'affiliation/questionnaire/questionnaire/edit'               => __DIR__ . '//view/affiliation/questionnaire/questionnaire/edit.twig',
+    'affiliation/questionnaire/questionnaire/list'               => __DIR__ . '//view/affiliation/questionnaire/questionnaire/list.twig',
     'affiliation/questionnaire/questionnaire-manager/view'       => __DIR__ . '//view/affiliation/questionnaire/questionnaire-manager/view.twig',
     'affiliation/questionnaire/questionnaire-manager/new'        => __DIR__ . '//view/affiliation/questionnaire/questionnaire-manager/new.twig',
     'affiliation/questionnaire/questionnaire-manager/list'       => __DIR__ . '//view/affiliation/questionnaire/questionnaire-manager/list.twig',

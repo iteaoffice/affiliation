@@ -28,7 +28,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      Identity|Contact identity()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
- * @method      Plugin\RenderPaymentSheet renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
+ * @method      Plugin\AffiliationPdf renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
  * @method      Plugin\RenderDoa renderDoa()
  * @method      Plugin\RenderLoi renderLoi()
  * @method      Plugin\GetFilter getAffiliationFilter()

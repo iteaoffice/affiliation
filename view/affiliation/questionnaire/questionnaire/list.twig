@@ -1,0 +1,40 @@
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-questionnaires")) %}
+
+<h1>{{ translate("txt-questionnaires") }}</h1>
+
+{% for affiliationData in affiliations if affiliationData.questionnaires|length > 0 %}
+    <h2>{{ affiliationData.affiliation.project.parseFullName() }}</h2>
+    <table class="table table-hover table-striped table-sm">
+        <thead>
+        <tr>
+            <th>{{ translate("txt-questionnaire") }}</th>
+            <th>{{ translate("txt-phase") }}</th>
+            <th>{{ translate("txt-questions") }}</th>
+            <th>{{ translate("txt-open-date") }}</th>
+            <th>{{ translate("txt-close-date") }}</th>
+            <th>{{ translate("txt-completed") }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for questionnaire in affiliationData.questionnaires %}
+            <tr>
+                <td>
+                    {% if not questionnaireHelper().isOpen(questionnaire, affiliationData.affiliation) %}
+                        <i class="fa fa-lock"></i>
+                    {% endif %}
+                    {{ affiliationQuestionnaireLink(questionnaire, 'view-community', 'name', affiliationData.affiliation) }}
+                    {{ affiliationQuestionnaireLink(questionnaire, 'edit-community', 'icon', affiliationData.affiliation) }}
+                </td>
+                <td>{{ questionnaire.phase.phase }}</td>
+                <td>{{ questionnaire.questionnaireQuestions|length }}</td>
+                <td>{{ questionnaireHelper().getStartDate(questionnaire, affiliationData.affiliation)|string_date }}</td>
+                <td>{{ questionnaireHelper().getEndDate(questionnaire, affiliationData.affiliation)|string_date }}</td>
+                <td>{{ questionnaireHelper().parseCompletedPercentage(questionnaire, affiliationData.affiliation)|raw }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {{ ztbalert().info(translate("txt-no-affiliation-questionnaires-could-be-found"))|raw }}
+{% endfor %}
