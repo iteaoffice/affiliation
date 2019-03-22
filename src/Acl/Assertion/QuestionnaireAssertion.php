@@ -72,7 +72,7 @@ final class QuestionnaireAssertion extends AbstractAssertion
         );
 
         switch ($this->getPrivilege()) {
-            case 'list-personal':
+            case 'overview':
                 return $this->hasContact();
             case 'list-community':
             case 'view-community':

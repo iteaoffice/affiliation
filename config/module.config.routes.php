@@ -279,13 +279,13 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'list'  => [
+                                    'overview'  => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/list.html',
+                                            'route'    => '/overview.html',
                                             'defaults' => [
-                                                'action'    => 'list',
-                                                'privilege' => 'list-personal',
+                                                'action'    => 'overview',
+                                                'privilege' => 'overview',
                                             ],
                                         ],
                                     ],

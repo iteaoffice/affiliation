@@ -18,6 +18,7 @@ use Affiliation\Entity\Questionnaire\Phase;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Entity\Questionnaire\QuestionnaireQuestion;
+use Contact\Entity\Contact;
 use Project\Entity\Calendar\Calendar as ProjectCalendar;
 use Doctrine\ORM\EntityManager;
 
@@ -169,5 +170,20 @@ class QuestionnaireService extends AbstractService
             (($startDate !== null) && ($now >= $startDate))
             && (($endDate === null) || ($now <= $endDate))
         );
+    }
+
+    public function hasPendingQuestionnaires(Contact $contact): bool
+    {
+        foreach ($contact->getAffiliation() as $affiliation) {
+            foreach ($this->getAvailableQuestionnaires($affiliation) as $questionnaire) {
+                if ($this->isOpen($questionnaire, $affiliation)
+                    && ($this->parseCompletedPercentage($questionnaire, $affiliation) < 100)
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

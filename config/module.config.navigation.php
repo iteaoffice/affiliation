@@ -11,7 +11,7 @@
 $communityNavigation = [
     'project' => [
         'pages' => [
-            'project-basics' => [
+            'project-basics'         => [
                 'pages' => [
                     'project-partners' => [
                         'pages' => [
@@ -191,6 +191,10 @@ $communityNavigation = [
                         ],
                     ],
                 ],
+            ],
+            'questionnaire-overview' => [
+                'label' => _("txt-questionnaire-overview"),
+                'route' => 'community/affiliation/questionnaire/overview',
             ],
         ],
     ],

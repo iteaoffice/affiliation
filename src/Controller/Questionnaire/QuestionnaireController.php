@@ -37,12 +37,10 @@ final class QuestionnaireController extends AffiliationAbstractController
      * @var QuestionnaireService
      */
     private $questionnaireService;
-
     /**
      * @var EntityManager
      */
     private $entityManager;
-
     /**
      * @var TranslatorInterface
      */
@@ -60,11 +58,9 @@ final class QuestionnaireController extends AffiliationAbstractController
         $this->translator           = $translator;
     }
 
-    public function listAction()
+    public function overviewAction()
     {
         $affiliations = $this->affiliationService->findBy(Affiliation::class, ['contact' => $this->identity()]);
-
-        $affiliations = [$this->affiliationService->findAffiliationById(20417)];
 
         $affiliationList = [];
         foreach ($affiliations as $affiliation) {

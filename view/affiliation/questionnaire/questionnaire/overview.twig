@@ -1,7 +1,7 @@
 {% do headTitle().append(translate("txt-affiliation")) %}
 {% do headTitle().append(translate("txt-questionnaires")) %}
 
-<h1>{{ translate("txt-questionnaires") }}</h1>
+<h1>{{ translate("txt-questionnaire-overview") }}</h1>
 
 {% for affiliationData in affiliations if affiliationData.questionnaires|length > 0 %}
     <h2>{{ affiliationData.affiliation.project.parseFullName() }}</h2>

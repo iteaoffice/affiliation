@@ -290,7 +290,7 @@ return [
                     'assertion' => QuestionnaireAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/questionnaire/list',
+                    'route'     => 'community/affiliation/questionnaire/overview',
                     'roles'     => [Access::ACCESS_USER],
                     'assertion' => QuestionnaireAssertion::class,
                 ],

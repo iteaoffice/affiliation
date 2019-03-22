@@ -56,6 +56,12 @@ class QuestionnaireLink extends LinkAbstract
     public function parseAction(): void
     {
         switch ($this->getAction()) {
+            case 'overview':
+                $this->setRouter('community/affiliation/questionnaire/overview');
+                $this->setShowOptions([
+                    'notification' => $this->translator->translate('txt-questionnaires-pending')
+                ]);
+                break;
             case 'view-community':
                 $this->setRouter('community/affiliation/questionnaire/view');
                 $this->setText($this->translator->translate("txt-view-answers"));
