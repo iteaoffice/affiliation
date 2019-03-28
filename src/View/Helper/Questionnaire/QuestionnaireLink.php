@@ -31,9 +31,9 @@ class QuestionnaireLink extends LinkAbstract
 
     public function __invoke(
         Questionnaire $questionnaire = null,
-        string        $action        = 'view-community',
-        string        $show          = 'name',
-        Affiliation   $affiliation   = null
+        string        $action = 'view-community',
+        string        $show = 'name',
+        Affiliation   $affiliation = null
     ): string {
         $this->questionnaire = $questionnaire ?? new Questionnaire();
         $this->affiliation   = $affiliation ?? new Affiliation();

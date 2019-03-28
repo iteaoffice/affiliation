@@ -43,6 +43,8 @@ _("txt-phase");
 _("txt-questionnaire-phase-help-block");
 _("txt-questionnaire");
 _("txt-questionnaire-help-block");
+_("txt-description");
+_("txt-description-help-block");
 _("txt-affiliation-invoice-period-label");
 _("txt-affiliation-invoice-period-help-block");
 _("txt-affiliation-invoice-period-placeholder");

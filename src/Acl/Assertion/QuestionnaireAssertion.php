@@ -50,9 +50,8 @@ final class QuestionnaireAssertion extends AbstractAssertion
         Acl               $acl,
         RoleInterface     $role = null,
         ResourceInterface $affiliation = null,
-                          $privilege = null
-    ): bool
-    {
+        $privilege = null
+    ): bool {
         $this->setPrivilege($privilege);
 
         // Office always has access
