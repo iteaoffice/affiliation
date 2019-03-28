@@ -14,6 +14,7 @@ namespace Affiliation\Repository;
 
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
@@ -346,7 +347,7 @@ final class Affiliation extends EntityRepository
         int $which
     ): int {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('COUNT(affiliation_entity_affiliation) amount');
+        $qb->select('COUNT(affiliation_entity_affiliation.id) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
         $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
         $qb->andWhere('organisation_entity_organisation.country = ?2');
@@ -376,7 +377,6 @@ final class Affiliation extends EntityRepository
 
         $qb->setParameter(5, $version);
 
-        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
         $qb->addGroupBy('affiliation_entity_affiliation.project');
 
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
