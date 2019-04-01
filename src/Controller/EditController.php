@@ -770,9 +770,9 @@ final class EditController extends AffiliationAbstractController
         }
 
         $description = new Description();
-        if (!$affiliation->getDescription()->isEmpty()) {
+        if ($affiliation->hasDescription()) {
             /** @var Description $description */
-            $description = $affiliation->getDescription()->first();
+            $description = $affiliation->getDescription();
         }
 
         $data = $this->getRequest()->getPost()->toArray();
@@ -790,7 +790,7 @@ final class EditController extends AffiliationAbstractController
 
                 /** @var Description $description */
                 $description = $form->getData();
-                $description->setAffiliation([$affiliation]);
+                $description->setAffiliation($affiliation);
                 $description->setContact($this->identity());
                 $this->affiliationService->save($description);
 

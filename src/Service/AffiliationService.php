@@ -311,11 +311,10 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         );
         $affiliationDocument->setField('is_active', $affiliation->isActive());
 
-        $descriptionMerged = '';
-        foreach ($affiliation->getDescription() as $description) {
-            $descriptionMerged .= $description->getDescription() . "\n\n";
+        if ($affiliation->hasDescription()) {
+            $affiliationDocument->setField('description', $affiliation->getDescription()->getDescription());
         }
-        $affiliationDocument->setField('description', $descriptionMerged);
+
         $affiliationDocument->setField('branch', $affiliation->getBranch());
         $affiliationDocument->setField('value_chain', $affiliation->getValueChain());
         $affiliationDocument->setField('market_access', $affiliation->getMarketAccess());

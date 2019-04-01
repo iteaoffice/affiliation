@@ -1,4 +1,5 @@
 <?php
+_("txt-affiliation-description-placeholder");
 _("txt-affiliation-description");
 _("txt-affiliation-description-explanation");
 _("txt-branch");
@@ -10,7 +11,7 @@ _("txt-main-contribution");
 _("txt-self-funded");
 _("txt-date-end");
 _("txt-date-self-funded");
-_("txt-project-leader");
+_("txt-technical-contact");
 _("txt-associates");
 _("txt-not-self-funded");
 _("txt-date-signed");

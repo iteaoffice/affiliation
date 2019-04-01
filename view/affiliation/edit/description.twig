@@ -1,16 +1,14 @@
 {% do headTitle().append(translate("txt-edit-affiliation-description-%s-in-%s")|format(
-affiliation.parseBranchedName(),
-affiliation.project.parseFullName()
-)) %}
-
-<h1>{{ translate("txt-edit-affiliation-description-%s-in-%s")|format(
     affiliation.parseBranchedName(),
     affiliation.project.parseFullName()
+    )) %}
+
+<h1>{{ translate("txt-edit-affiliation-description-%s-in-%s")|format(
+        affiliation.parseBranchedName(),
+        affiliation.project.parseFullName()
     ) }}</h1>
 
 {% do form.prepare() %}
-{% do form.setAttribute('class','form-horizontal') %}
-
 {{ form().openTag(form)|raw }}
 
 
@@ -37,6 +35,15 @@ affiliation.project.parseFullName()
         <p class="form-control-static form-control-plaintext">{{ affiliation.organisation.country }}</p>
     </div>
 </div>
+
+{% if affiliation.organisation.hasDescription() %}
+    <div class="form-group row">
+        <div class="col-sm-9 offset-sm-3">
+            <strong>{{ translate("txt-current-company-description-introduction") }}</strong>
+            <p class="form-control-static form-control-plaintext">{{ affiliation.organisation.description|striptags }}</p>
+        </div>
+    </div>
+{% endif %}
 
 {{ ztbformelement(form.get('affiliation_entity_description').get('description')) }}
 {{ ztbformelement(form.get('csrf')) }}

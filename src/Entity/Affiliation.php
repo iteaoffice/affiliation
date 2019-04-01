@@ -16,18 +16,16 @@ use Contact\Entity\Contact;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Invoice\Entity\Method;
+use Organisation\Entity\Parent\Organisation;
 use Organisation\Service\OrganisationService;
 use Zend\Form\Annotation;
 
 /**
- * Entity for the Affiliation.
- *
  * @ORM\Table(name="affiliation")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Affiliation")
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation")
- *
- * @category    Affiliation
  */
 class Affiliation extends AbstractEntity
 {
@@ -39,6 +37,7 @@ class Affiliation extends AbstractEntity
             self::NOT_SELF_FUNDED => 'txt-not-self-funded',
             self::SELF_FUNDED     => 'txt-self-funded',
         ];
+
     /**
      * @ORM\Column(name="affiliation_id",type="integer",options={"unsigned":true})
      * @ORM\Id
@@ -145,7 +144,7 @@ class Affiliation extends AbstractEntity
      *          }
      *      }
      * )
-     * @Annotation\Attributes({"label":"txt-project-leader"})
+     * @Annotation\Attributes({"label":"txt-technical-contact"})
      *
      * @var \Contact\Entity\Contact
      */
@@ -175,10 +174,10 @@ class Affiliation extends AbstractEntity
      */
     private $project;
     /**
-     * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Description[]|Collections\ArrayCollection()
+     * @var \Affiliation\Entity\Description|null
      */
     private $description;
     /**
@@ -373,22 +372,21 @@ class Affiliation extends AbstractEntity
 
     public function __construct()
     {
-        $this->description              = new Collections\ArrayCollection();
-        $this->invoice                  = new Collections\ArrayCollection();
-        $this->log                      = new Collections\ArrayCollection();
-        $this->version                  = new Collections\ArrayCollection();
-        $this->contractVersion          = new Collections\ArrayCollection();
-        $this->contract                 = new Collections\ArrayCollection();
-        $this->associate                = new Collections\ArrayCollection();
-        $this->funding                  = new Collections\ArrayCollection();
-        $this->cost                     = new Collections\ArrayCollection();
-        $this->contractCost             = new Collections\ArrayCollection();
-        $this->funded                   = new Collections\ArrayCollection();
-        $this->effort                   = new Collections\ArrayCollection();
-        $this->spent                    = new Collections\ArrayCollection();
-        $this->doaReminder              = new Collections\ArrayCollection();
-        $this->loiReminder              = new Collections\ArrayCollection();
-        $this->achievement              = new Collections\ArrayCollection();
+        $this->invoice = new Collections\ArrayCollection();
+        $this->log = new Collections\ArrayCollection();
+        $this->version = new Collections\ArrayCollection();
+        $this->contractVersion = new Collections\ArrayCollection();
+        $this->contract = new Collections\ArrayCollection();
+        $this->associate = new Collections\ArrayCollection();
+        $this->funding = new Collections\ArrayCollection();
+        $this->cost = new Collections\ArrayCollection();
+        $this->contractCost = new Collections\ArrayCollection();
+        $this->funded = new Collections\ArrayCollection();
+        $this->effort = new Collections\ArrayCollection();
+        $this->spent = new Collections\ArrayCollection();
+        $this->doaReminder = new Collections\ArrayCollection();
+        $this->loiReminder = new Collections\ArrayCollection();
+        $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
         $this->changeRequestCostChange = new Collections\ArrayCollection();
         $this->changeRequestCountry = new Collections\ArrayCollection();
@@ -438,9 +436,6 @@ class Affiliation extends AbstractEntity
         return $this->branch;
     }
 
-    /**
-     * @param string $branch
-     */
     public function setBranch($branch)
     {
         $this->branch = $branch;
@@ -456,7 +451,7 @@ class Affiliation extends AbstractEntity
         $this->organisation = $organisation;
     }
 
-    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
+    public function getParentOrganisation(): ?Organisation
     {
         return $this->parentOrganisation;
     }
@@ -478,94 +473,69 @@ class Affiliation extends AbstractEntity
         return null !== $this->financial;
     }
 
+    public function hasDescription(): bool
+    {
+        return null !== $this->description;
+    }
+
     public function isSelfFunded(): bool
     {
         return null === $this->dateSelfFunded;
     }
 
-    /**
-     * @param Contact $contact
-     */
-    public function addAssociate(Contact $contact)
+    public function addAssociate(Contact $contact): void
     {
         if (!$this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
 
-    /**
-     * @param Contact $contact
-     */
-    public function removeAssociate(Contact $contact)
+    public function removeAssociate(Contact $contact): void
     {
         $this->associate->removeElement($contact);
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getContact()
     {
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     */
     public function setContact($contact)
     {
         $this->contact = $contact;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getDateCreated()
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param \DateTime $dateCreated
-     */
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getDateEnd()
     {
         return $this->dateEnd;
     }
 
-    /**
-     * @param \DateTime $dateEnd
-     */
     public function setDateEnd($dateEnd)
     {
         $this->dateEnd = $dateEnd;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getDateSelfFunded()
     {
         return $this->dateSelfFunded;
     }
 
-    /**
-     * @param \DateTime $dateSelfFunded
-     */
     public function setDateSelfFunded($dateSelfFunded)
     {
         $this->dateSelfFunded = $dateSelfFunded;
     }
 
-    public function getDescription()
+    public function getDescription(): ?Description
     {
         return $this->description;
     }
@@ -575,7 +545,7 @@ class Affiliation extends AbstractEntity
         $this->description = $description;
     }
 
-    public function getFinancial()
+    public function getFinancial(): ?Financial
     {
         return $this->financial;
     }
@@ -605,59 +575,36 @@ class Affiliation extends AbstractEntity
         $this->invoice = $invoice;
     }
 
-    /**
-     * @return \Affiliation\Entity\Log[]|Collections\ArrayCollection()
-     */
     public function getLog()
     {
         return $this->log;
     }
 
-    /**
-     * @param \Affiliation\Entity\Log[]|Collections\ArrayCollection() $log
-     */
     public function setLog($log)
     {
         $this->log = $log;
     }
 
-    /**
-     * @return string
-     */
     public function getNote()
     {
         return $this->note;
     }
 
-    /**
-     * @param string $note
-     */
     public function setNote($note)
     {
         $this->note = $note;
     }
 
-    /**
-     * @return \Project\Entity\Project
-     */
     public function getProject()
     {
         return $this->project;
     }
 
-    /**
-     * @param \Project\Entity\Project $project
-     */
     public function setProject($project)
     {
         $this->project = $project;
     }
 
-    /**
-     * @param bool|true $textual
-     *
-     * @return int
-     */
     public function getSelfFunded(bool $textual = false)
     {
         if ($textual) {
@@ -667,251 +614,174 @@ class Affiliation extends AbstractEntity
         return $this->selfFunded;
     }
 
-    /**
-     * @param int $selfFunded
-     */
     public function setSelfFunded($selfFunded)
     {
         $this->selfFunded = $selfFunded;
     }
 
-    /**
-     * @return string
-     */
     public function getValueChain()
     {
         return $this->valueChain;
     }
 
-    /**
-     * @param string $valueChain
-     */
     public function setValueChain($valueChain)
     {
         $this->valueChain = $valueChain;
     }
 
-    /**
-     * @return \Affiliation\Entity\Version[]|Collections\ArrayCollection()
-     */
     public function getVersion()
     {
         return $this->version;
     }
 
-    /**
-     * @param \Affiliation\Entity\Version[]|Collections\ArrayCollection() $version
-     */
     public function setVersion($version)
     {
         $this->version = $version;
     }
 
-    /**
-     * @return \Contact\Entity\Contact[]|Collections\ArrayCollection()
-     */
     public function getAssociate()
     {
         return $this->associate;
     }
 
-    /**
-     * @param \Contact\Entity\Contact[]|Collections\ArrayCollection() $associate
-     */
     public function setAssociate($associate)
     {
         $this->associate = $associate;
     }
 
-    /**
-     * @return \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
-     */
     public function getCost()
     {
         return $this->cost;
     }
 
-    /**
-     * @param \Project\Entity\Cost\Cost[]|Collections\ArrayCollection() $cost
-     */
     public function setCost($cost)
     {
         $this->cost = $cost;
     }
 
-    /**
-     * @return \Project\Entity\Funding\Funding[]|Collections\ArrayCollection()
-     */
     public function getFunding()
     {
         return $this->funding;
     }
 
-    /**
-     * @param \Project\Entity\Funding\Funding[]|Collections\ArrayCollection() $funding
-     */
     public function setFunding($funding)
     {
         $this->funding = $funding;
     }
 
-    /**
-     * @return \Project\Entity\Effort\Spent[]|Collections\ArrayCollection()
-     */
     public function getSpent()
     {
         return $this->spent;
     }
 
-    /**
-     * @param \Project\Entity\Effort\Spent[]|Collections\ArrayCollection() $spent
-     */
-    public function setSpent($spent)
+    public function setSpent($spent): Affiliation
     {
         $this->spent = $spent;
+
+        return $this;
     }
 
-    /**
-     * @return \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
-     */
     public function getEffort()
     {
         return $this->effort;
     }
 
-    /**
-     * @param \Project\Entity\Effort\Effort[]|Collections\ArrayCollection() $effort
-     */
-    public function setEffort($effort)
+    public function setEffort($effort): Affiliation
     {
         $this->effort = $effort;
+
+        return $this;
     }
 
-    /**
-     * @return \Affiliation\Entity\Loi
-     */
     public function getLoi()
     {
         return $this->loi;
     }
 
-    /**
-     * @param \Affiliation\Entity\Loi $loi
-     */
-    public function setLoi($loi)
+    public function setLoi($loi): Affiliation
     {
         $this->loi = $loi;
+
+        return $this;
     }
 
-    /**
-     * @return Doa
-     */
     public function getDoa()
     {
         return $this->doa;
     }
 
-    /**
-     * @param Doa $doa
-     */
-    public function setDoa($doa)
+    public function setDoa($doa): Affiliation
     {
         $this->doa = $doa;
+
+        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getMainContribution()
+    public function getMainContribution(): ?string
     {
         return $this->mainContribution;
     }
 
-    /**
-     * @param string $mainContribution
-     */
-    public function setMainContribution($mainContribution)
+    public function setMainContribution($mainContribution): Affiliation
     {
         $this->mainContribution = $mainContribution;
+
+        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getMarketAccess()
+    public function getMarketAccess(): ?string
     {
         return $this->marketAccess;
     }
 
-    /**
-     * @param string $marketAccess
-     */
-    public function setMarketAccess($marketAccess)
+    public function setMarketAccess($marketAccess): Affiliation
     {
         $this->marketAccess = $marketAccess;
+
+        return $this;
     }
 
-    /**
-     * @return DoaReminder[]|Collections\ArrayCollection
-     */
     public function getDoaReminder()
     {
         return $this->doaReminder;
     }
 
-    /**
-     * @param DoaReminder[]|Collections\ArrayCollection $doaReminder
-     */
-    public function setDoaReminder($doaReminder)
+    public function setDoaReminder($doaReminder): Affiliation
     {
         $this->doaReminder = $doaReminder;
+
+        return $this;
     }
 
-    /**
-     * @return DoaReminder[]|Collections\ArrayCollection
-     */
     public function getLoiReminder()
     {
         return $this->loiReminder;
     }
 
-    /**
-     * @param DoaReminder[]|Collections\ArrayCollection $loiReminder
-     */
-    public function setLoiReminder($loiReminder)
+    public function setLoiReminder($loiReminder): Affiliation
     {
         $this->loiReminder = $loiReminder;
+
+        return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Achievement[]
-     */
     public function getAchievement()
     {
         return $this->achievement;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Achievement[] $achievement
-     */
-    public function setAchievement($achievement)
+    public function setAchievement($achievement): Affiliation
     {
         $this->achievement = $achievement;
+
+        return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[]
-     */
     public function getProjectReportEffortSpent()
     {
         return $this->projectReportEffortSpent;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
-     *
-     * @return Affiliation
-     */
     public function setProjectReportEffortSpent($projectReportEffortSpent): Affiliation
     {
         $this->projectReportEffortSpent = $projectReportEffortSpent;
@@ -919,39 +789,23 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\ChangeRequest\CostChange[]
-     */
     public function getChangeRequestCostChange()
     {
         return $this->changeRequestCostChange;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\ChangeRequest\CostChange[] $changerequestCostChange
-     *
-     * @return Affiliation
-     */
-    public function setChangeRequestCostChange($changerequestCostChange): Affiliation
+    public function setChangeRequestCostChange($changeRequestCostChange): Affiliation
     {
-        $this->changeRequestCostChange = $changerequestCostChange;
+        $this->changeRequestCostChange = $changeRequestCostChange;
 
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[]
-     */
     public function getChangeRequestCountry()
     {
         return $this->changeRequestCountry;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[] $changerequestCountry
-     *
-     * @return Affiliation
-     */
     public function setChangeRequestCountry($changerequestCountry): Affiliation
     {
         $this->changeRequestCountry = $changerequestCountry;
@@ -959,59 +813,35 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Log[]
-     */
     public function getProjectLog()
     {
         return $this->projectLog;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Log[] $projectLog
-     *
-     * @return Affiliation
-     */
-    public function setProjectLog($projectLog)
+    public function setProjectLog($projectLog): Affiliation
     {
         $this->projectLog = $projectLog;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getStrategicImportance()
+    public function getStrategicImportance(): ?string
     {
         return $this->strategicImportance;
     }
 
-    /**
-     * @param string $strategicImportance
-     *
-     * @return Affiliation
-     */
-    public function setStrategicImportance($strategicImportance)
+    public function setStrategicImportance($strategicImportance): Affiliation
     {
         $this->strategicImportance = $strategicImportance;
 
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Funding\Funded[]
-     */
     public function getFunded()
     {
         return $this->funded;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Funding\Funded[] $funded
-     *
-     * @return Affiliation
-     */
     public function setFunded($funded): Affiliation
     {
         $this->funded = $funded;
@@ -1019,19 +849,11 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Contract[]
-     */
     public function getContract()
     {
         return $this->contract;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Contract[] $contract
-     *
-     * @return Affiliation
-     */
     public function setContract($contract): Affiliation
     {
         $this->contract = $contract;
@@ -1039,19 +861,11 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return ContractVersion[]|Collections\ArrayCollection
-     */
     public function getContractVersion()
     {
         return $this->contractVersion;
     }
 
-    /**
-     * @param ContractVersion[]|Collections\ArrayCollection $contractVersion
-     *
-     * @return Affiliation
-     */
     public function setContractVersion($contractVersion): Affiliation
     {
         $this->contractVersion = $contractVersion;
@@ -1059,19 +873,11 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Contract\Cost[]
-     */
     public function getContractCost()
     {
         return $this->contractCost;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Contract\Cost[] $contractCost
-     *
-     * @return Affiliation
-     */
     public function setContractCost($contractCost): Affiliation
     {
         $this->contractCost = $contractCost;
@@ -1079,40 +885,24 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Invoice\Entity\Method
-     */
-    public function getInvoiceMethod(): ?\Invoice\Entity\Method
+    public function getInvoiceMethod(): ?Method
     {
         return $this->invoiceMethod;
     }
 
-    /**
-     * @param \Invoice\Entity\Method $invoiceMethod
-     *
-     * @return Affiliation
-     */
-    public function setInvoiceMethod(?\Invoice\Entity\Method $invoiceMethod): Affiliation
+    public function setInvoiceMethod(?Method $invoiceMethod): Affiliation
     {
         $this->invoiceMethod = $invoiceMethod;
 
         return $this;
     }
 
-    /**
-     * @return Questionnaire\Answer[]|Collections\Collection
-     */
     public function getAnswers()
     {
         return $this->answers;
     }
 
-    /**
-     * @param Questionnaire\Answer[]|Collections\Collection $answers
-     *
-     * @return Affiliation
-     */
-    public function setAnswers($answers)
+    public function setAnswers($answers): Affiliation
     {
         $this->answers = $answers;
         return $this;

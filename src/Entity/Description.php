@@ -12,19 +12,17 @@ declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
-use Doctrine\Common\Collections;
+use Contact\Entity\Contact;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Zend\Form\Annotation;
 
 /**
- * Entity for the Affiliation.
- *
- * @ORM\Table(name="description")
+ * @ORM\Table(name="affiliation_description")
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_description")
- *
- * @category    Affiliation
  */
 class Description extends AbstractEntity
 {
@@ -38,44 +36,45 @@ class Description extends AbstractEntity
      */
     private $id;
     /**
-     * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Affiliation", inversedBy="description", cascade={"persist"})
-     * @ORM\OrderBy=({"Description"="ASC"})
-     * @ORM\JoinTable(name="affiliation_description",
-     *    joinColumns={@ORM\JoinColumn(name="description_id", referencedColumnName="description_id")},
-     *    inverseJoinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")}
-     * )
-     * @Annotation\Exclude()
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="description", cascade={"persist"})
+     * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      *
-     * @var \Affiliation\Entity\Affiliation[]|Collections\ArrayCollection()
+     * @var Affiliation
      */
     private $affiliation;
     /**
      * @ORM\Column(name="description", type="text", nullable=false)
      * @Annotation\Type("\Zend\Form\Element\Textarea")
-     * @Annotation\Attributes({"rows":"12"})
      * @Annotation\Options({"label":"txt-affiliation-description","help-block":"txt-affiliation-description-explanation"})
+     * @Annotation\Attributes({"placeholder":"txt-affiliation-description-placeholder","rows":"12"})
      *
      * @var string
      */
     private $description;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliationDescription", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=true)
-     * })
      * @Annotation\Exclude()
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $contact;
-
     /**
-     * Class constructor.
+     * @ORM\Column(name="date_created", type="datetime", nullable=false)
+     * @Gedmo\Timestampable(on="create")
+     * @Annotation\Exclude()
+     *
+     * @var DateTime
      */
-    public function __construct()
-    {
-        $this->affiliation = new Collections\ArrayCollection();
-    }
+    private $dateCreated;
+    /**
+     * @ORM\Column(name="date_updated", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
+     * @Annotation\Exclude()
+     *
+     * @var DateTime
+     */
+    private $dateUpdated;
 
     public function __get($property)
     {
@@ -94,33 +93,7 @@ class Description extends AbstractEntity
 
     public function __toString(): string
     {
-        return (string) $this->description;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function addAffiliation(Collections\Collection $affiliationCollection)
-    {
-        foreach ($affiliationCollection as $affiliation) {
-            $this->affiliation->add($affiliation);
-        }
-    }
-
-    public function removeAffiliation(Collections\Collection $affiliationCollection)
-    {
-        foreach ($affiliationCollection as $single) {
-            $this->affiliation->removeElement($single);
-        }
+        return (string)$this->description;
     }
 
     public function getId()
@@ -128,34 +101,64 @@ class Description extends AbstractEntity
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): Description
     {
         $this->id = $id;
-
         return $this;
     }
 
-    public function getAffiliation()
+    public function getAffiliation(): ?Affiliation
     {
         return $this->affiliation;
     }
 
-    public function setAffiliation($affiliation)
+    public function setAffiliation(Affiliation $affiliation): Description
     {
         $this->affiliation = $affiliation;
-
         return $this;
     }
 
-    public function getContact()
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): Description
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
 
-    public function setContact($contact)
+    public function setContact(?Contact $contact): Description
     {
         $this->contact = $contact;
+        return $this;
+    }
 
+    public function getDateCreated(): ?DateTime
+    {
+        return $this->dateCreated;
+    }
+
+    public function setDateCreated(DateTime $dateCreated): Description
+    {
+        $this->dateCreated = $dateCreated;
+        return $this;
+    }
+
+    public function getDateUpdated(): ?DateTime
+    {
+        return $this->dateUpdated;
+    }
+
+    public function setDateUpdated(DateTime $dateUpdated): Description
+    {
+        $this->dateUpdated = $dateUpdated;
         return $this;
     }
 }
