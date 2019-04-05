@@ -139,7 +139,7 @@ class Question extends AbstractEntity
     private $values;
 
     /**
-     * @ORM\Column(name="is_required", type="boolean", length=1, options={"unsigned"=true}, nullable=false)
+     * @ORM\Column(name="is_required", type="boolean", length=1, nullable=false)
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({
      *     "label":"txt-required",
@@ -151,7 +151,7 @@ class Question extends AbstractEntity
     private $required = true;
 
     /**
-     * @ORM\Column(name="is_enabled", type="boolean", length=1, options={"unsigned"=true}, nullable=false)
+     * @ORM\Column(name="is_enabled", type="boolean", length=1, nullable=false)
      * @Annotation\Type("Zend\Form\Element\Checkbox")
      * @Annotation\Options({
      *     "label":"txt-enabled",
