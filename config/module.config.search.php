@@ -18,11 +18,9 @@ return [
             'affiliation_affiliation' => [
                 'endpoint' => [
                     'server' => [
-                        'host'     => '10.213.157.15',
+                        'host'     => 'search',
                         'port'     => '8983',
-                        'path'     => '/solr/affiliation',
-                        'username' => 'jvdheide',
-                        'password' => 'jvdheide1',
+                        'path'     => '/solr/affiliation'
                     ],
                 ],
             ],

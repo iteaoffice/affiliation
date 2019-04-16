@@ -40,7 +40,6 @@ class Phase extends AbstractEntity
      * @var integer
      */
     private $id;
-
     /**
      * @ORM\Column(name="phase", type="string", length=55, nullable=false)
      * @Annotation\Exclude()
@@ -48,7 +47,6 @@ class Phase extends AbstractEntity
      * @var string
      */
     private $phase;
-
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\Questionnaire", cascade={"persist"}, mappedBy="phase")
      * @Annotation\Exclude()
@@ -63,11 +61,6 @@ class Phase extends AbstractEntity
         $this->questionnaires = new ArrayCollection();
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __get($property)
     {
         return $this->$property;
