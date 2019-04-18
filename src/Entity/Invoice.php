@@ -65,7 +65,7 @@ class Invoice extends AbstractEntity
      * @Annotation\Options({"label":"txt-affiliation-invoice-amount-invoiced-label","help-block":"txt-affiliation-invoice-amount-invoiced-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-amount-invoiced-placeholder"})
      *
-     * @var float
+     * @var string
      */
     private $amountInvoiced;
     /**
@@ -122,19 +122,11 @@ class Invoice extends AbstractEntity
         return (string)$this->getInvoice();
     }
 
-    /**
-     * @return \Invoice\Entity\Invoice
-     */
     public function getInvoice(): ?\Invoice\Entity\Invoice
     {
         return $this->invoice;
     }
 
-    /**
-     * @param \Invoice\Entity\Invoice $invoice
-     *
-     * @return Invoice
-     */
     public function setInvoice($invoice): ?Invoice
     {
         $this->invoice = $invoice;
@@ -194,7 +186,7 @@ class Invoice extends AbstractEntity
 
     public function getAmountInvoiced(): ?float
     {
-        return $this->amountInvoiced;
+        return (float) $this->amountInvoiced;
     }
 
     public function setAmountInvoiced($amountInvoiced): ?Invoice
