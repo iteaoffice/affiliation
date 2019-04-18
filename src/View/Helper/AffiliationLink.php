@@ -17,11 +17,11 @@ use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Entity\Affiliation;
 
 /**
- * Create a link to an affiliation.
+ * Class AffiliationLink
  *
- * @category    Affiliation
+ * @package Affiliation\View\Helper
  */
-class AffiliationLink extends LinkAbstract
+final class AffiliationLink extends LinkAbstract
 {
     public function __invoke(
         Affiliation $affiliation,
@@ -48,7 +48,7 @@ class AffiliationLink extends LinkAbstract
                 'name'                => $this->getAffiliation(),
                 'organisation'        => $this->getAffiliation()->getOrganisation()->getOrganisation(),
                 'parent-organisation' =>
-                    \is_null($this->getAffiliation()->getParentOrganisation())
+                    null === $this->getAffiliation()->getParentOrganisation()
                         ? 'Parent not known'
                         : $this->getAffiliation()->getParentOrganisation()->getOrganisation(),
                 'organisation-branch' => $this->getAffiliation()->parseBranchedName(),
@@ -67,11 +67,6 @@ class AffiliationLink extends LinkAbstract
         return $this->createLink();
     }
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
     public function parseAction(): void
     {
         switch ($this->getAction()) {

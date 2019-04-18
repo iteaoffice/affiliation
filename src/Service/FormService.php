@@ -19,6 +19,7 @@ namespace Affiliation\Service;
 use Affiliation\Entity\AbstractEntity;
 use Affiliation\Form\CreateObject;
 use Doctrine\ORM\EntityManager;
+use Interop\Container\ContainerInterface;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -31,7 +32,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 final class FormService
 {
     /**
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     private $serviceLocator;
     /**
@@ -39,7 +40,7 @@ final class FormService
      */
     private $entityManager;
 
-    public function __construct(ServiceLocatorInterface $serviceLocator, EntityManager $entityManager)
+    public function __construct(ContainerInterface $serviceLocator, EntityManager $entityManager)
     {
         $this->serviceLocator = $serviceLocator;
         $this->entityManager = $entityManager;

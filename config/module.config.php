@@ -46,7 +46,6 @@ $config = [
             InputFilter\AffiliationFilter::class                         => Factory\InputFilterFactory::class,
             InputFilter\DescriptionFilter::class                         => Factory\InputFilterFactory::class,
             Options\ModuleOptions::class                                 => Factory\ModuleOptionsFactory::class,
-            Search\Service\AffiliationSearchService::class               => ConfigAbstractFactory::class,
             Acl\Assertion\Affiliation::class                             => Factory\InvokableFactory::class,
             Acl\Assertion\Doa::class                                     => Factory\InvokableFactory::class,
             Acl\Assertion\Loi::class                                     => Factory\InvokableFactory::class,

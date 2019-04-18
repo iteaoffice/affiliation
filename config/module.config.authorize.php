@@ -24,10 +24,6 @@ return [
              */
             'BjyAuthorize\Guard\Route' => [
                 [
-                    'route'     => 'zfcadmin/affiliation/list',
-                    'roles'     => [Access::ACCESS_OFFICE],
-                ],
-                [
                     'route'     => 'zfcadmin/affiliation/list-csv',
                     'roles'     => [Access::ACCESS_OFFICE],
                 ],

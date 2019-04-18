@@ -30,26 +30,6 @@ return [
                         ],
                         'may_terminate' => false,
                         'child_routes'  => [
-                            'list'                       => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
-                                    'defaults' => [
-                                        'format' => 'html',
-                                        'action' => 'list',
-                                    ],
-                                ],
-                            ],
-                            'list-csv'                   => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/list[/f-:encodedFilter].csv',
-                                    'defaults' => [
-                                        'format' => 'csv',
-                                        'action' => 'list',
-                                    ],
-                                ],
-                            ],
                             'view'                       => [
                                 'type'    => 'Segment',
                                 'options' => [

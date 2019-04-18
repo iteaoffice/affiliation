@@ -57,10 +57,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
      */
     private $affiliationService;
     /**
-     * @var AffiliationSearchService
-     */
-    private $searchService;
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -111,7 +107,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
 
     public function __construct(
         AffiliationService $affiliationService,
-        AffiliationSearchService $searchService,
         TranslatorInterface $translator,
         ProjectService $projectService,
         VersionService $versionService,
@@ -126,7 +121,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
         EntityManager $entityManager
     ) {
         $this->affiliationService = $affiliationService;
-        $this->searchService = $searchService;
         $this->translator = $translator;
         $this->projectService = $projectService;
         $this->versionService = $versionService;
@@ -139,130 +133,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
         $this->callService = $callService;
         $this->assertionService = $assertionService;
         $this->entityManager = $entityManager;
-    }
-
-
-    public function listAction()
-    {
-        /** @var Request $request */
-        $request      = $this->getRequest();
-        $requestQuery = $request->getQuery()->toArray();
-        $data         = \array_merge(
-            [
-                'order'     => '',
-                'direction' => '',
-                'query'     => '',
-                'facet'     => [],
-                'fields'    => []
-            ],
-            $requestQuery
-        );
-        $searchFieldValues = [
-            'description'          => $this->translator->translate('txt-affiliation-description'),
-            'main_contribution'    => $this->translator->translate('txt-main-contribution'),
-            'market_access'        => $this->translator->translate('txt-market-access'),
-            'value_chain'          => $this->translator->translate('txt-value-chain'),
-            'strategic_importance' => $this->translator->translate('txt-strategic-importance'),
-            'project'              => $this->translator->translate('txt-project'),
-            'organisation'         => $this->translator->translate('txt-organisation'),
-        ];
-        // Set all fields enabled by default
-        if (empty($requestQuery)) {
-            $data['fields'] = array_keys($searchFieldValues);
-        }
-
-        if ($request->isGet()) {
-            $this->searchService->setSearch($data['query'], $data['fields'], $data['order'], $data['direction']);
-            if (isset($data['facet'])) {
-                foreach ($data['facet'] as $facetField => $values) {
-                    $quotedValues = [];
-                    foreach ($values as $value) {
-                        $quotedValues[] = sprintf('"%s"', $value);
-                    }
-
-                    $this->searchService->addFilterQuery(
-                        $facetField,
-                        implode(' ' . SolariumQuery::QUERY_OPERATOR_OR . ' ', $quotedValues)
-                    );
-                }
-            }
-        }
-
-        switch ($this->params('format', 'html')) {
-            // Csv export
-            case 'csv':
-                return $this->csvExport(
-                    $this->searchService,
-                    [
-                        'organisation_country',
-                        'organisation_type',
-                        'organisation',
-                        'project_number',
-                        'project',
-                        'project_program',
-                        'project_call',
-                        'contact',
-                    ]
-                );
-
-            // Default paginated html view
-            default:
-                $form = new SearchResult($searchFieldValues);
-
-                // Set facet data in the form
-                if ($request->isGet()) {
-                    $form->setFacetLabels(
-                        [
-                            'is_active'                  => $this->translator->translate('txt-active'),
-                            'organisation_country_group' => $this->translator->translate('txt-country'),
-                        ]
-                    );
-                    $form->addSearchResults(
-                        $this->searchService->getQuery()->getFacetSet(),
-                        $this->searchService->getResultSet()->getFacetSet()
-                    );
-                    $form->setData($data);
-                }
-
-                $viewParams = [
-                    'fullArguments' => http_build_query($data),
-                    'form'          => $form,
-                    'order'         => $data['order'],
-                    'direction'     => $data['direction'],
-                    'query'         => $data['query'],
-                ];
-
-                // Remove order and direction from the GET params to prevent duplication
-                $filteredData = array_filter(
-                    $data,
-                    function ($key) {
-                        return !\in_array($key, ['order', 'direction'], true);
-                    },
-                    ARRAY_FILTER_USE_KEY
-                );
-                $viewParams['arguments'] = http_build_query($filteredData);
-
-                $page = $this->params('page', 1);
-                $paginator = new Paginator(
-                    new SolariumPaginator($this->searchService->getSolrClient(), $this->searchService->getQuery())
-                );
-                $paginator::setDefaultItemCountPerPage(($page === 'all') ? 1000 : 20);
-                $paginator->setCurrentPageNumber($page);
-                $paginator->setPageRange(
-                    ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage())
-                );
-                $viewParams['paginator'] = $paginator;
-                $viewParams['highlighting'] = $paginator->getCurrentItems()->getHighlighting();
-                $viewParams['highlightingFields'] = [
-                    'description'          => $this->translator->translate('txt-description'),
-                    'main_contribution'    => $this->translator->translate('txt-main-contribution'),
-                    'market_access'        => $this->translator->translate('txt-market-access'),
-                    'value_chain'          => $this->translator->translate('txt-value-chain'),
-                    'strategic_importance' => $this->translator->translate('txt-strategic-importance')
-                ];
-
-                return new ViewModel($viewParams);
-        }
     }
 
     public function viewAction(): ViewModel

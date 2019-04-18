@@ -12,13 +12,11 @@ declare(strict_types=1);
 
 namespace Affiliation\Service;
 
-use Affiliation\Entity\AbstractEntity;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice;
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
 use Affiliation\Repository;
-use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\ValueObject\PaymentSheetPeriod;
 use Contact\Controller\Plugin\ContactActions;
 use Contact\Entity\Contact;
@@ -53,26 +51,20 @@ use Project\Entity\Version\Version;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use Search\Service\AbstractSearchService;
-use Search\Service\SearchUpdateInterface;
-use Solarium\Client;
-use Solarium\Core\Query\AbstractQuery;
-use Solarium\QueryType\Update\Query\Document\Document;
+use function round;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Controller\PluginManager;
 use Zend\Validator\File\MimeType;
 use Zend\View\HelperPluginManager;
+use function ksort;
 
 /**
  * Class AffiliationService
  *
  * @package Affiliation\Service
  */
-class AffiliationService extends AbstractService implements SearchUpdateInterface
+class AffiliationService extends AbstractService
 {
-    /**
-     * Constant to determine which affiliations must be taken from the database.
-     */
     public const WHICH_ALL = 1;
     public const WHICH_ONLY_ACTIVE = 2;
     public const WHICH_ONLY_INACTIVE = 3;
@@ -81,10 +73,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     public const AFFILIATION_DEACTIVATE = 'deacivate';
     public const AFFILIATION_REACTIVATE = 'reactivate';
 
-    /**
-     * @var AffiliationSearchService
-     */
-    private $affiliationSearchService;
     /**
      * @var GeneralService
      */
@@ -141,7 +129,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     public function __construct(
         EntityManager $entityManager,
         SelectionContactService $selectionContactService,
-        AffiliationSearchService $affiliationSearchService,
         GeneralService $generalService,
         ProjectService $projectService,
         InvoiceService $invoiceService,
@@ -158,7 +145,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     ) {
         parent::__construct($entityManager, $selectionContactService);
 
-        $this->affiliationSearchService = $affiliationSearchService;
         $this->generalService = $generalService;
         $this->projectService = $projectService;
         $this->invoiceService = $invoiceService;
@@ -264,86 +250,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         $this->save($loiObject);
 
         return $loiObject->getLoi();
-    }
-
-    public function save(AbstractEntity $abstractEntity): AbstractEntity
-    {
-        parent::save($abstractEntity);
-
-        if ($abstractEntity instanceof Affiliation) {
-            $this->updateEntityInSearchEngine($abstractEntity);
-        }
-
-        return $abstractEntity;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function updateEntityInSearchEngine($affiliation): void
-    {
-        $document = $this->prepareSearchUpdate($affiliation);
-
-        $this->affiliationSearchService->executeUpdateDocument($document);
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return AbstractQuery
-     */
-    public function prepareSearchUpdate($affiliation): AbstractQuery
-    {
-        $client = new Client();
-
-        $update = $client->createUpdate();
-        $project = $affiliation->getProject();
-        $contact = $affiliation->getContact();
-
-        /** @var Document $affiliationDocument */
-        $affiliationDocument = $update->createDocument();
-
-        $affiliationDocument->setField('id', $affiliation->getResourceId());
-        $affiliationDocument->setField('affiliation_id', $affiliation->getId());
-        $affiliationDocument->setField(
-            'date_created',
-            $affiliation->getDateCreated()->format(AbstractSearchService::DATE_SOLR)
-        );
-        $affiliationDocument->setField('is_active', $affiliation->isActive());
-
-        if ($affiliation->hasDescription()) {
-            $affiliationDocument->setField('description', $affiliation->getDescription()->getDescription());
-        }
-
-        $affiliationDocument->setField('branch', $affiliation->getBranch());
-        $affiliationDocument->setField('value_chain', $affiliation->getValueChain());
-        $affiliationDocument->setField('market_access', $affiliation->getMarketAccess());
-        $affiliationDocument->setField('main_contribution', $affiliation->getMainContribution());
-        $affiliationDocument->setField('strategic_importance', $affiliation->getStrategicImportance());
-
-        // Organisation
-        $affiliationDocument->setField('organisation', (string)$affiliation->getOrganisation());
-        $affiliationDocument->setField('organisation_id', $affiliation->getOrganisation()->getId());
-        $affiliationDocument->setField('organisation_type', (string)$affiliation->getOrganisation()->getType());
-        $affiliationDocument->setField('organisation_country', (string)$affiliation->getOrganisation()->getCountry());
-
-        // Project
-        $affiliationDocument->setField('project', $project->getProject());
-        $affiliationDocument->setField('project_id', $project->getId());
-        $affiliationDocument->setField('project_number', $project->getNumber());
-        $affiliationDocument->setField('project_title', $project->getTitle());
-        $affiliationDocument->setField('project_status', $this->projectService->parseStatus($project));
-        $affiliationDocument->setField('project_call', $project->getCall()->shortName());
-        $affiliationDocument->setField('project_call_id', $project->getCall()->getId());
-        $affiliationDocument->setField('project_program', (string)$project->getCall()->getProgram());
-
-        // Contact
-        $affiliationDocument->setField('contact', $contact->parseFullName());
-        $affiliationDocument->setField('contact_id', $contact->getId());
-
-        $update->addDocument($affiliationDocument);
-
-        return $update;
     }
 
     public function submitLoi(Contact $contact, Affiliation $affiliation): Loi
@@ -477,15 +383,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         return new ArrayCollection($affiliations);
     }
 
-    public function delete(AbstractEntity $abstractEntity): void
-    {
-        if ($abstractEntity instanceof Affiliation) {
-            $this->affiliationSearchService->deleteDocument($abstractEntity);
-        }
-
-        parent::delete($abstractEntity);
-    }
-
     public function getFinancialContact(Affiliation $affiliation): ?Contact
     {
         if (null === $affiliation->getFinancial()) {
@@ -593,7 +490,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         int $year
     ): ArrayCollection {
         return $affiliation->getInvoice()->filter(
-            function (Invoice $invoice) use ($period, $year) {
+            static function (Invoice $invoice) use ($period, $year) {
                 return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
             }
         );
@@ -1186,7 +1083,8 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                     $currency,
                     $invoicePeriod
                 );
-                $line->lineTotal = \round($contribution, 2);
+                $line->lineTotal =
+                    round($contribution, 2);
 
                 $lines[] = $line;
             }
@@ -1489,7 +1387,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             $result[$country->getCountry()] = $country;
         }
 
-        \ksort($result);
+        ksort($result);
 
         return $result;
     }
@@ -1678,18 +1576,5 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         }
 
         return $options;
-    }
-
-    public function updateCollectionInSearchEngine(bool $clearIndex = false): void
-    {
-        $affiliations = $this->findAll(Affiliation::class);
-        $collection = [];
-
-        /** @var Affiliation $press */
-        foreach ($affiliations as $affiliation) {
-            $collection[] = $this->prepareSearchUpdate($affiliation);
-        }
-
-        $this->affiliationSearchService->updateIndexWithCollection($collection, $clearIndex);
     }
 }

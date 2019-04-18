@@ -45,13 +45,9 @@ use ZfcTwig\View\TwigRenderer;
 return [
     ConfigAbstractFactory::class => [
         // Controller plugins
-        Search\Service\AffiliationSearchService::class => [
-            'Config'
-        ],
         Service\AffiliationService::class              => [
             EntityManager::class,
             SelectionContactService::class,
-            Search\Service\AffiliationSearchService::class,
             GeneralService::class,
             ProjectService::class,
             InvoiceService::class,
@@ -77,7 +73,6 @@ return [
         ],
         Controller\AffiliationManagerController::class => [
             Service\AffiliationService::class,
-            AffiliationSearchService::class,
             TranslatorInterface::class,
             ProjectService::class,
             VersionService::class,
