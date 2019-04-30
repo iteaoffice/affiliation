@@ -26,6 +26,7 @@ use Affiliation\Service\AffiliationService;
 use Affiliation\Service\FormService;
 use Affiliation\Service\LoiService;
 use Contact\Service\ContactService;
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as PaginatorAdapter;
@@ -38,6 +39,8 @@ use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
+use function file_get_contents;
+use function sprintf;
 
 /**
  * Class LoiManagerController
@@ -202,7 +205,7 @@ final class LoiManagerController extends AffiliationAbstractController
                 $this->loiService->save($loiReminder);
 
                 $this->flashMessenger()->addSuccessMessage(
-                    \sprintf(
+                    sprintf(
                         $this->translator->translate(
                             'txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s'
                         ),
@@ -260,12 +263,12 @@ final class LoiManagerController extends AffiliationAbstractController
 
         $form = $this->formService->prepare($loi, $data);
 
-        //Get contacts in an organisation
-        $contacts = $this->contactService->findContactsInAffiliation($loi->getAffiliation());
-        $form->get('affiliation_entity_loi')->get('contact')->setValueOptions(
-            $this->contactService
-                ->toFormValueOptions($contacts['contacts'])
-        );
+
+        $form->get('affiliation_entity_loi')->get('contact')->injectContact($loi->getContact());
+        if (null !== $loi->getApprover()) {
+            $form->get('affiliation_entity_loi')->get('approver')->injectContact($loi->getApprover());
+        }
+
 
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
@@ -303,12 +306,12 @@ final class LoiManagerController extends AffiliationAbstractController
                      */
                     if (!$loi->getObject()->isEmpty()) {
                         $loi->getObject()->first()->setObject(
-                            \file_get_contents($fileData['affiliation_entity_loi']['file']['tmp_name'])
+                            file_get_contents($fileData['affiliation_entity_loi']['file']['tmp_name'])
                         );
                     } else {
                         $loiObject = new LoiObject();
                         $loiObject->setObject(
-                            \file_get_contents($fileData['affiliation_entity_loi']['file']['tmp_name'])
+                            file_get_contents($fileData['affiliation_entity_loi']['file']['tmp_name'])
                         );
                         $loiObject->setLoi($loi);
                         $this->loiService->save($loiObject);
@@ -326,6 +329,11 @@ final class LoiManagerController extends AffiliationAbstractController
                     );
                 }
 
+                //Remove the approver when we have no approved date
+                if (null === $loi->getDateApproved()) {
+                    $loi->setApprover(null);
+                }
+
                 $this->loiService->save($loi);
 
                 $this->flashMessenger()->addSuccessMessage(
@@ -339,6 +347,8 @@ final class LoiManagerController extends AffiliationAbstractController
                 );
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/loi/view', ['id' => $loi->getId()]);
+            } else {
+                var_dump($form->getInputFilter()->getMessages());
             }
         }
 
@@ -365,7 +375,7 @@ final class LoiManagerController extends AffiliationAbstractController
             );
         }
 
-        if (!\DateTime::createFromFormat('Y-m-d', $dateSigned)) {
+        if (!DateTime::createFromFormat('Y-m-d', $dateSigned)) {
             return new JsonModel(
                 [
                     'result' => 'error',
@@ -380,8 +390,8 @@ final class LoiManagerController extends AffiliationAbstractController
         $loi = $this->affiliationService->find(Loi::class, (int)$loi);
         $loi->setContact($this->contactService->findContactById((int)$contact));
         $loi->setApprover($this->identity());
-        $loi->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
-        $loi->setDateApproved(new \DateTime());
+        $loi->setDateSigned(DateTime::createFromFormat('Y-m-d', $dateSigned));
+        $loi->setDateApproved(new DateTime());
         $this->loiService->save($loi);
 
         return new JsonModel(

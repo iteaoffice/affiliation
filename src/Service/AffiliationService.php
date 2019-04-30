@@ -51,12 +51,12 @@ use Project\Entity\Version\Version;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use function round;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Controller\PluginManager;
 use Zend\Validator\File\MimeType;
 use Zend\View\HelperPluginManager;
 use function ksort;
+use function round;
 
 /**
  * Class AffiliationService
@@ -926,20 +926,17 @@ class AffiliationService extends AbstractService
         //Sum the invoiced amount of all invoices for this affiliation
         foreach ($affiliation->getInvoice() as $invoice) {
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
-            if (null !== $invoice->getInvoice()->getDayBookNumber()) {
-                if (null !== $period) {
-                    //When we have a period, we also take the period fo the current year into account
-                    if ($invoice->getYear() < $year
-                        || ($invoice->getPeriod() < $period
-                            && $invoice->getYear() === $year)
-                    ) {
-                        $contributionPaid += $invoice->getAmountInvoiced();
-                    }
-                } else {
-                    //We have no period, so only count the invoices of the last year
-                    if ($invoice->getYear() < $year) {
-                        $contributionPaid += $invoice->getAmountInvoiced();
-                    }
+            if (null !== $period) {
+                //When we have a period, we also take the period fo the current year into account
+                if ($invoice->getYear() < $year
+                    || ($invoice->getPeriod() < $period
+                        && $invoice->getYear() === $year)
+                ) {
+                    $contributionPaid += $invoice->getAmountInvoiced();
+                }
+            } else {
+                if ($invoice->getYear() < $year) {
+                    $contributionPaid += $invoice->getAmountInvoiced();
                 }
             }
         }
@@ -1083,8 +1080,7 @@ class AffiliationService extends AbstractService
                     $currency,
                     $invoicePeriod
                 );
-                $line->lineTotal =
-                    round($contribution, 2);
+                $line->lineTotal = round($contribution, 2);
 
                 $lines[] = $line;
             }

@@ -105,7 +105,9 @@
             <td>
                 {{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch,affiliation.financial.organisation) }}
                 <br>
-                {{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName() }}<br>
+                {% if not affiliation.financial.organisation.financial.hasOmitContact %}
+                    {{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName() }}<br>
+                {% endif %}
                 {{ financialAddress }}<br>
                 {{ financialAddress.zipCode }} {{ financialAddress.city }}<br>
                 {{ financialAddress.country|upper }}
@@ -376,7 +378,7 @@
                 <tr>
                     <td></td>
                     <td colspan="2" class="text-right">{{ translate("txt-total-excl-vat") }}</td>
-                    <th colspan="4" >{{ affiliationInvoice.amountInvoiced|currency_decimal() }}</th>
+                    <th colspan="4">{{ affiliationInvoice.amountInvoiced|currency_decimal() }}</th>
                 </tr>
             {% endfor %}
             </tbody>

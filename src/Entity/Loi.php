@@ -12,9 +12,12 @@ declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
+use Contact\Entity\Contact;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use General\Entity\ContentType;
 use Zend\Form\Annotation;
 
 /**
@@ -37,7 +40,7 @@ class Loi extends AbstractEntity
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateSigned;
     /**
@@ -45,17 +48,19 @@ class Loi extends AbstractEntity
      * @Annotation\Type("\Zend\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
+     * @Annotation\Options({"help-block":"txt-affiliation-loi-date-approved-help-block"})
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateApproved;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="loiApprover")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="approve_contact_id", referencedColumnName="contact_id")
-     * })
+     * @Annotation\Type("\Contact\Form\Element\Contact")
+     * @Annotation\Attributes({"label":"txt-affiliation-loi-approver-label"})
+     * @Annotation\Options({"help-block":"txt-affiliation-loi-approver-help-block"})
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $approver;
     /**
@@ -63,7 +68,7 @@ class Loi extends AbstractEntity
      * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=true)
      * @Annotation\Exclude()
      *
-     * @var \General\Entity\ContentType
+     * @var ContentType
      */
     private $contentType;
     /**
@@ -76,7 +81,7 @@ class Loi extends AbstractEntity
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist","remove"}, mappedBy="loi")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\LoiObject[]|ArrayCollection
+     * @var LoiObject[]|ArrayCollection
      */
     private $object;
     /**
@@ -84,7 +89,7 @@ class Loi extends AbstractEntity
      * @Gedmo\Timestampable(on="update")
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateUpdated;
     /**
@@ -92,22 +97,24 @@ class Loi extends AbstractEntity
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateCreated;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="loi")
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      *
-     * @var \Affiliation\Entity\Affiliation
+     * @var Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="loi")
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * @Annotation\Exclude()
+     * @Annotation\Type("\Contact\Form\Element\Contact")
+     * @Annotation\Attributes({"label":"txt-affiliation-loi-contact-label"})
+     * @Annotation\Options({"help-block":"txt-affiliation-loi-contact-help-block"})
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $contact;
 
@@ -131,6 +138,11 @@ class Loi extends AbstractEntity
         return isset($this->$property);
     }
 
+    public function hasObject(): bool
+    {
+        return !$this->object->isEmpty();
+    }
+
     public function __toString(): string
     {
         return sprintf('Loi: %s', $this->id);
@@ -146,186 +158,114 @@ class Loi extends AbstractEntity
         return $this->affiliation;
     }
 
-    public function setAffiliation($affiliation)
+    public function setAffiliation($affiliation): Loi
     {
         $this->affiliation = $affiliation;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Loi
-     */
-    public function setId($id)
+    public function setId($id): Loi
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateSigned()
+    public function getDateSigned(): ?DateTime
     {
         return $this->dateSigned;
     }
 
-    /**
-     * @param \DateTime $dateSigned
-     *
-     * @return Loi
-     */
-    public function setDateSigned($dateSigned)
+    public function setDateSigned($dateSigned): Loi
     {
         $this->dateSigned = $dateSigned;
 
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateApproved()
+    public function getDateApproved(): ?DateTime
     {
         return $this->dateApproved;
     }
 
-    /**
-     * @param \DateTime $dateApproved
-     *
-     * @return Loi
-     */
-    public function setDateApproved($dateApproved)
+    public function setDateApproved($dateApproved): Loi
     {
         $this->dateApproved = $dateApproved;
 
         return $this;
     }
 
-    /**
-     * @return \General\Entity\ContentType
-     */
-    public function getContentType()
+    public function getContentType(): ?ContentType
     {
         return $this->contentType;
     }
 
-    /**
-     * @param \General\Entity\ContentType $contentType
-     *
-     * @return Loi
-     */
-    public function setContentType($contentType)
+    public function setContentType($contentType): Loi
     {
         $this->contentType = $contentType;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getSize()
     {
         return $this->size;
     }
 
-    /**
-     * @param int $size
-     *
-     * @return Loi
-     */
-    public function setSize($size)
+    public function setSize($size): Loi
     {
         $this->size = $size;
 
         return $this;
     }
 
-    /**
-     * @return LoiObject[]|ArrayCollection
-     */
     public function getObject()
     {
         return $this->object;
     }
 
-    /**
-     * @param LoiObject[]|ArrayCollection $object
-     *
-     * @return Loi
-     */
-    public function setObject($object)
+    public function setObject($object): Loi
     {
         $this->object = $object;
 
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateUpdated()
+    public function getDateUpdated(): ?DateTime
     {
         return $this->dateUpdated;
     }
 
-    /**
-     * @param \DateTime $dateUpdated
-     *
-     * @return Loi
-     */
-    public function setDateUpdated($dateUpdated)
+    public function setDateUpdated($dateUpdated): Loi
     {
         $this->dateUpdated = $dateUpdated;
 
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateCreated()
+    public function getDateCreated(): ?DateTime
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param \DateTime $dateCreated
-     *
-     * @return Loi
-     */
-    public function setDateCreated($dateCreated)
+    public function setDateCreated($dateCreated): Loi
     {
         $this->dateCreated = $dateCreated;
 
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     *
-     * @return Loi
-     */
     public function setContact($contact)
     {
         $this->contact = $contact;
@@ -333,20 +273,12 @@ class Loi extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getApprover(): ?\Contact\Entity\Contact
+    public function getApprover(): ?Contact
     {
         return $this->approver;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $approver
-     *
-     * @return Loi
-     */
-    public function setApprover(\Contact\Entity\Contact $approver): Loi
+    public function setApprover(?Contact $approver): Loi
     {
         $this->approver = $approver;
 

@@ -1,16 +1,16 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-edit-loi-%s-in-%s")|format(
-loi.affiliation.parseBranchedName(),
-loi.affiliation.project
-)) %}
-
-{% do headLink().appendStylesheet(
-'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
-) %}
-
-<h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
     loi.affiliation.parseBranchedName(),
     loi.affiliation.project
+    )) %}
+
+{% do headLink().appendStylesheet(
+    '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
+    ) %}
+
+<h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
+        loi.affiliation.parseBranchedName(),
+        loi.affiliation.project
     ) }}</h1>
 
 {% do form.prepare() %}
@@ -34,26 +34,25 @@ loi.affiliation.project
     </div>
 </div>
 
-{#{{ ztbformelement(form.get('contact')) }}#}
-
 {% set loiForm = form.get('affiliation_entity_loi') %}
 
 {{ ztbformelement(loiForm.get('dateSigned')) }}
 {{ ztbformelement(loiForm.get('dateApproved')) }}
+{{ contactformelement(loiForm.get('approver')) }}
 {{ contactformelement(loiForm.get('contact')) }}
 
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">{{ translate("txt-download-current-loi") }}</label>
+{% if loi.hasObject() %}
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label">{{ translate("txt-download-current-loi") }}</label>
 
-    <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ loiLink(loi,'download','text') }}</p>
+        <div class="col-sm-9">
+            <p class="form-control-static form-control-plaintext">{{ loiLink(loi,'download','text') }}</p>
+        </div>
     </div>
-</div>
+{% endif %}
 
 {{ ztbformelement(loiForm.get('file')) }}
-
-<hr>
-
+{{ formelement(form.get('csrf')) }}
 
 <div class="form-group row">
     <div class="offset-sm-3 col-sm-9">

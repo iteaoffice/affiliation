@@ -12,18 +12,17 @@ declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
+use Contact\Entity\Contact;
 use Doctrine\ORM\Mapping as ORM;
+use Organisation\Entity\Organisation;
 use Zend\Form\Annotation;
+use function sprintf;
 
 /**
- * Entity for the Affiliation.
- *
  * @ORM\Table(name="affiliation_financial")
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_financial")
- *
- * @category    Affiliation
  */
 class Financial extends AbstractEntity
 {
@@ -42,24 +41,24 @@ class Financial extends AbstractEntity
      */
     private $branch;
     /**
-     * @ORM\OneToOne(targetEntity="\Affiliation\Entity\Affiliation", inversedBy="financial", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="financial", cascade={"persist"})
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      *
-     * @var \Affiliation\Entity\Affiliation
+     * @var Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="financial", cascade={"persist"})
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $contact;
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliationFinancial", cascade={"persist"})
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
      *
-     * @var \Organisation\Entity\Organisation
+     * @var Organisation
      */
     private $organisation;
     /**
@@ -71,7 +70,7 @@ class Financial extends AbstractEntity
 
     public function __toString(): string
     {
-        return \sprintf("%s financial", $this->affiliation);
+        return sprintf("%s financial", $this->affiliation);
     }
 
     public function __get($property)
@@ -126,7 +125,7 @@ class Financial extends AbstractEntity
     }
 
     /**
-     * @return \Contact\Entity\Contact
+     * @return Contact
      */
     public function getContact()
     {

@@ -16,10 +16,10 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice as AffiliationInvoice;
 use Affiliation\Options\ModuleOptions;
 use Affiliation\Service\AffiliationService;
-use function array_key_exists;
 use Contact\Service\ContactService;
 use General\Entity\Currency;
 use General\Entity\ExchangeRate;
+use InvalidArgumentException;
 use Invoice\Entity\Invoice;
 use Invoice\Entity\Method;
 use Invoice\Service\InvoiceService;
@@ -30,8 +30,12 @@ use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use function array_key_exists;
 use function count;
+use function implode;
 use function sprintf;
+use function strtoupper;
+use function trim;
 
 /**
  * Class RenderPaymentSheet
@@ -111,7 +115,7 @@ final class RenderPaymentSheet extends AbstractPlugin
         $latestVersion = $this->projectService->getLatestProjectVersion($project);
 
         if (null === $latestVersion) {
-            throw new \InvalidArgumentException('No latest version could be found, no payment sheet can be created');
+            throw new InvalidArgumentException('No latest version could be found, no payment sheet can be created');
         }
 
         $financialContact = $this->affiliationService->getFinancialContact($affiliation);
@@ -264,7 +268,7 @@ final class RenderPaymentSheet extends AbstractPlugin
         $partnersDetails = [
             [
                 $this->translator->translate('txt-name'),
-                \trim($this->contactService->parseAttention($contact) . ' ' . $contact->parseFullName()),
+                trim($this->contactService->parseAttention($contact) . ' ' . $contact->parseFullName()),
             ],
             [
                 $this->translator->translate('txt-email'),
@@ -309,7 +313,7 @@ final class RenderPaymentSheet extends AbstractPlugin
             $financialDetails = [
                 [
                     $this->translator->translate('txt-name'),
-                    \trim(
+                    trim(
                         $this->contactService->parseAttention($financialContact) . ' '
                         . $financialContact->parseFullName()
                     ),
@@ -324,21 +328,30 @@ final class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translator->translate('txt-billing-address'),
-                    null !== $financialAddress ? sprintf(
-                        '%s \n %s\n%s\n%s %s\n%s',
-                        $this->organisationService->parseOrganisationWithBranch(
-                            $affiliation->getFinancial()
-                                ->getBranch(),
-                            $affiliation->getFinancial()->getOrganisation()
-                        ),
-                        \trim(
-                            $this->contactService->parseAttention($financialContact) . ' '
-                            . $financialContact->parseFullName()
-                        ),
-                        $financialAddress->getAddress(),
-                        $financialAddress->getZipCode(),
-                        $financialAddress->getCity(),
-                        \strtoupper($financialAddress->getCountry()->getCountry())
+                    null !== $financialAddress ? trim(
+                        sprintf(
+                            '
+%s
+%s
+%s
+%s %s
+%s',
+                            $this->organisationService->parseOrganisationWithBranch(
+                                $affiliation->getFinancial()
+                                    ->getBranch(),
+                                $affiliation->getFinancial()->getOrganisation()
+                            ),
+                            ($affiliation->getFinancial()->getOrganisation()->getFinancial()->hasOmitContact()
+                                ? ''
+                                : trim(
+                                    $this->contactService->parseAttention($financialContact) . ' '
+                                    . $financialContact->parseFullName()
+                                )),
+                            $financialAddress->getAddress(),
+                            $financialAddress->getZipCode(),
+                            $financialAddress->getCity(),
+                            strtoupper($financialAddress->getCountry()->getCountry())
+                        )
                     ) : 'No billing address could be found',
                 ],
                 [
@@ -737,7 +750,7 @@ final class RenderPaymentSheet extends AbstractPlugin
 
                     $years = '';
                     foreach ($affiliationInvoice->getYears() as $invoiceYear => $invoicePeriod) {
-                        $years .= sprintf('%d (%s) ', $invoiceYear, \implode(', ', $invoicePeriod));
+                        $years .= sprintf('%d (%s) ', $invoiceYear, implode(', ', $invoicePeriod));
                     }
 
                     $header = [
