@@ -6,15 +6,13 @@
     format(affiliation.organisation, project)|raw }}</h1>
 
 {% do form.prepare() %}
-{% do form.setAttribute('class','form-horizontal') %}
-
 {{ form().openTag(form)|raw }}
 
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">{{ translate("txt-project") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community','name') }}
+        <p class="form-control-plaintext">{{ projectLink(affiliation.project,'view-community','name') }}
             ({{ project.call.program }})</p>
     </div>
 </div>
@@ -23,7 +21,7 @@
     <label class="col-sm-3 col-form-label">{{ translate("txt-organisation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ affiliation.organisation }}</p>
+        <p class="form-control-plaintext">{{ affiliation.organisation }}</p>
     </div>
 </div>
 
@@ -31,7 +29,7 @@
     <label class="col-sm-3 col-form-label">{{ translate("txt-download-doa") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ translate("txt-download-doa-link-text") }}</p>
+        <p class="form-control-plaintext">{{ translate("txt-download-doa-link-text") }}</p>
     </div>
 </div>
 

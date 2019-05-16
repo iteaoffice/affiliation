@@ -28,15 +28,9 @@ use Zend\Form\Form;
  */
 class CreateObject extends Form
 {
-    /**
-     * CreateObject constructor.
-     *
-     * @param EntityManager  $entityManager
-     * @param AbstractEntity $object
-     */
     public function __construct(EntityManager $entityManager, AbstractEntity $object)
     {
-        parent::__construct($object->get("underscore_entity_name"));
+        parent::__construct($object->get('underscore_entity_name'));
 
         /**
          * There is an option to drag the fieldset from the serviceManager,
@@ -73,8 +67,8 @@ class CreateObject extends Form
                 'type'       => Element\Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-submit"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-submit'),
                 ],
             ]
         );
@@ -83,8 +77,8 @@ class CreateObject extends Form
                 'type'       => Element\Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
@@ -93,8 +87,8 @@ class CreateObject extends Form
                 'type'       => Element\Submit::class,
                 'name'       => 'delete',
                 'attributes' => [
-                    'class' => "btn btn-danger",
-                    'value' => _("txt-delete"),
+                    'class' => 'btn btn-danger',
+                    'value' => _('txt-delete'),
                 ],
             ]
         );
@@ -103,8 +97,8 @@ class CreateObject extends Form
                 'type'       => Element\Submit::class,
                 'name'       => 'restore',
                 'attributes' => [
-                    'class' => "btn btn-info",
-                    'value' => _("txt-restore"),
+                    'class' => 'btn btn-info',
+                    'value' => _('txt-restore'),
                 ],
             ]
         );

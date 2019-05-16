@@ -10,7 +10,6 @@ affiliation.project
     ) }}</h1>
 
 {% do form.prepare() %}
-
 {{ form().openTag(form)|raw }}
 
 
@@ -18,7 +17,7 @@ affiliation.project
     <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
+        <p class="form-control-plaintext">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
@@ -26,7 +25,7 @@ affiliation.project
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -39,7 +38,7 @@ affiliation.project
     <label class="col-sm-3 col-form-label">{{ translate("txt-sender") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ webInfo.sender }} {{ webInfoLink(webInfo,'edit','icon') }}</p>
+        <p class="form-control-plaintext">{{ webInfo.sender }} {{ webInfoLink(webInfo,'edit','icon') }}</p>
     </div>
 </div>
 

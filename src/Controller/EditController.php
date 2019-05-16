@@ -301,6 +301,8 @@ final class EditController extends AffiliationAbstractController
                         'id' => $affiliation->getId(),
                     ]
                 );
+            } else {
+                var_dump($form->getInputFilter()->getMessages());
             }
         }
 
@@ -1010,7 +1012,7 @@ final class EditController extends AffiliationAbstractController
             foreach ($formData['costPerAffiliationAndYear'][$affiliation->getId()] as $year => $costValue) {
                 $cost = $this->projectService->findCostByAffiliationAndYear($affiliation, $year);
 
-                $setCostValue = (float) \str_replace(',', '.', $costValue['cost']);
+                $setCostValue = (float)\str_replace(',', '.', $costValue['cost']);
 
                 if (null !== $cost && $setCostValue === 0.0) {
                     $this->projectService->delete($cost);
@@ -1051,7 +1053,7 @@ final class EditController extends AffiliationAbstractController
                             $year
                         );
 
-                    $setEffortValue = (float) \str_replace(',', '.', $effortValue['effort']);
+                    $setEffortValue = (float)\str_replace(',', '.', $effortValue['effort']);
 
                     if (null !== $effort && $setEffortValue === 0.0) {
                         $this->projectService->delete($effort);

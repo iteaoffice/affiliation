@@ -24,19 +24,22 @@ use Zend\Form\Fieldset;
 use Zend\Form\Form;
 use Zend\InputFilter\CollectionInputFilter;
 use Zend\InputFilter\InputFilter;
+use Zend\Json\Json;
+use function array_merge;
+use function nl2br;
 
 /**
  * Class QuestionnaireForm
  *
  * @package Affiliation\Form\Questionnaire
  */
-class QuestionnaireForm extends Form
+final class QuestionnaireForm extends Form
 {
     public function __construct(
-        Questionnaire        $questionnaire,
-        Affiliation          $affiliation,
+        Questionnaire $questionnaire,
+        Affiliation $affiliation,
         QuestionnaireService $affiliationQuestionService,
-        EntityManager        $entityManager
+        EntityManager $entityManager
     ) {
         parent::__construct($questionnaire->get('underscore_entity_name'));
         $this->setAttributes(
@@ -76,7 +79,7 @@ class QuestionnaireForm extends Form
 
         /** @var Answer $answer */
         foreach ($affiliationQuestionService->getSortedAnswers($questionnaire, $affiliation) as $answer) {
-            $question    = $answer->getQuestionnaireQuestion()->getQuestion();
+            $question = $answer->getQuestionnaireQuestion()->getQuestion();
             $placeholder = $question->getPlaceholder();
 
             $answerFieldset = new Fieldset($question->getId());
@@ -85,7 +88,7 @@ class QuestionnaireForm extends Form
 
             $optionTemplate = [
                 'label'      => $question->getQuestion(),
-                'help-block' => \nl2br((string)$question->getHelpBlock()),
+                'help-block' => nl2br((string)$question->getHelpBlock()),
             ];
 
             switch ($question->getInputType()) {
@@ -97,7 +100,7 @@ class QuestionnaireForm extends Form
                             'attributes' => [
                                 'value' => $answer->getValue()
                             ],
-                            'options'    => \array_merge(
+                            'options'    => array_merge(
                                 $optionTemplate,
                                 [
                                     'value_options' => [
@@ -131,9 +134,9 @@ class QuestionnaireForm extends Form
                             'attributes' => [
                                 'value' => $answer->getValue()
                             ],
-                            'options'    => \array_merge(
+                            'options'    => array_merge(
                                 $optionTemplate,
-                                ['value_options' => \json_decode($question->getValues(), true)]
+                                ['value_options' => Json::decode($question->getValues(), true)]
                             ),
                         ]
                     );
@@ -142,8 +145,8 @@ class QuestionnaireForm extends Form
                 case Question::INPUT_TYPE_NUMERIC:
                     $attributes = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
                     $attributes['value'] = $answer->getValue();
-                    $attributes['min']   = 0;
-                    $attributes['step']  = 1;
+                    $attributes['min'] = 0;
+                    $attributes['step'] = 1;
                     $answerFieldset->add(
                         [
                             'type'       => Element\Number::class,

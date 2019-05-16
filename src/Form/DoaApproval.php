@@ -13,6 +13,9 @@ namespace Affiliation\Form;
 
 use Contact\Service\ContactService;
 use Doctrine\Common\Collections\ArrayCollection;
+use Zend\Form\Element\Date;
+use Zend\Form\Element\Select;
+use Zend\Form\Element\Submit;
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -22,7 +25,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
  *
  * @package Affiliation\Form
  */
-class DoaApproval extends Form implements InputFilterProviderInterface
+final class DoaApproval extends Form implements InputFilterProviderInterface
 {
     public function __construct(ArrayCollection $doaList, ContactService $contactService)
     {
@@ -31,20 +34,17 @@ class DoaApproval extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-        /*
-         * Create a fieldSet per DOA (and affiliation)
-         */
         foreach ($doaList as $doa) {
             $affiliationFieldset = new Fieldset('affiliation_' . $doa->getAffiliation()->getId());
 
             $contacts = $contactService->findContactsInAffiliation($doa->getAffiliation());
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Select',
+                    'type'       => Select::class,
                     'name'       => 'contact',
                     'options'    => [
                         'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
-                        'label'         => _("txt-contact-name"),
+                        'label'         => _('txt-contact-name'),
                     ],
                     'attributes' => [
                         'class'    => 'form-control',
@@ -56,7 +56,7 @@ class DoaApproval extends Form implements InputFilterProviderInterface
 
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Date',
+                    'type'       => Date::class,
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',
@@ -71,21 +71,21 @@ class DoaApproval extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );

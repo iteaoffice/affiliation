@@ -9,7 +9,6 @@ affiliation.project.parseFullName()
     ) }}</h1>
 
 {% do form.prepare() %}
-
 {{ form().openTag(form)|raw }}
 
 
@@ -17,7 +16,7 @@ affiliation.project.parseFullName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
+        <p class="form-control-plaintext">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
     </div>
 </div>
 
@@ -25,7 +24,7 @@ affiliation.project.parseFullName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-community','organisation-branch') }}</p>
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community','organisation-branch') }}</p>
     </div>
 </div>
 
@@ -33,7 +32,7 @@ affiliation.project.parseFullName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-organisation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ affiliation.organisation }}</p>
+        <p class="form-control-plaintext">{{ affiliation.organisation }}</p>
     </div>
 </div>
 
@@ -41,7 +40,7 @@ affiliation.project.parseFullName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-country") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ affiliation.organisation.country }}</p>
+        <p class="form-control-plaintext">{{ affiliation.organisation.country }}</p>
     </div>
 </div>
 

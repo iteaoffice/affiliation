@@ -1,6 +1,4 @@
 {% do form.prepare() %}
-{% do form.setAttribute('class','form-horizontal') %}
-
 {{ form().openTag(form)|raw }}
 
 {% set affiliation = form.get('affiliation_entity_affiliation') %}

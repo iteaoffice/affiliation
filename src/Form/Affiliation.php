@@ -13,21 +13,23 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
+use Zend\Form\Element\Radio;
+use Zend\Form\Element\Select;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Text;
+use Zend\Form\Element\Textarea;
 use Zend\Form\Form;
+use Zend\InputFilter\InputFilterProviderInterface;
+use function asort;
+use function sprintf;
 
 /**
  * Class Affiliation
  *
  * @package Affiliation\Form
  */
-class Affiliation extends Form
+final class Affiliation extends Form implements InputFilterProviderInterface
 {
-    /**
-     * Affiliation constructor.
-     *
-     * @param Entity\Affiliation $affiliation
-     * @param AffiliationService $affiliationService
-     */
     public function __construct(Entity\Affiliation $affiliation, AffiliationService $affiliationService)
     {
         parent::__construct();
@@ -40,7 +42,7 @@ class Affiliation extends Form
             $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
                 foreach ($branchAndName as $branch => $organisationWithBranch) {
-                    $groupOptions[sprintf("%s|%s", $organisationId, $branch)] = $organisationWithBranch;
+                    $groupOptions[sprintf('%s|%s', $organisationId, $branch)] = $organisationWithBranch;
                 }
             }
             $affiliationValueOptions[$country] = [
@@ -64,11 +66,11 @@ class Affiliation extends Form
         $financialContactValueOptions = $technicalContactValueOptions;
         $organisation = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $otherAffiliation) {
-            if (null !== $otherAffiliation->getFinancial()) {
-                if (null === $otherAffiliation->getFinancial()->getContact()->getDateEnd()) {
-                    $financialContactValueOptions[$otherAffiliation->getFinancial()->getContact()->getId()]
-                        = $otherAffiliation->getFinancial()->getContact()->getFormName();
-                }
+            if ((null !== $otherAffiliation->getFinancial())
+                && null === $otherAffiliation->getFinancial()->getContact()->getDateEnd()
+            ) {
+                $financialContactValueOptions[$otherAffiliation->getFinancial()->getContact()->getId()]
+                    = $otherAffiliation->getFinancial()->getContact()->getFormName();
             }
         }
 
@@ -76,11 +78,11 @@ class Affiliation extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Select',
+                'type'       => Select::class,
                 'name'       => 'affiliation',
                 'options'    => [
                     'value_options' => $affiliationValueOptions,
-                    'label'         => _("txt-change-affiliation"),
+                    'label'         => _('txt-change-affiliation'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -89,11 +91,11 @@ class Affiliation extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Select',
+                'type'       => Select::class,
                 'name'       => 'technical',
                 'options'    => [
                     'value_options' => $technicalContactValueOptions,
-                    'label'         => _("txt-technical-contact"),
+                    'label'         => _('txt-technical-contact'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -102,11 +104,11 @@ class Affiliation extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Select',
+                'type'       => Select::class,
                 'name'       => 'financial',
                 'options'    => [
                     'value_options' => $financialContactValueOptions,
-                    'label'         => _("txt-financial-contact"),
+                    'label'         => _('txt-financial-contact'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -115,11 +117,11 @@ class Affiliation extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'valueChain',
                 'options'    => [
-                    'label'      => _("txt-position-on-value-chain"),
-                    'help-block' => _("txt-position-on-value-chain-inline-help"),
+                    'label'      => _('txt-position-on-value-chain'),
+                    'help-block' => _('txt-position-on-value-chain-inline-help'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -128,11 +130,11 @@ class Affiliation extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'mainContribution',
                 'options'    => [
-                    'label'      => _("txt-main-contributions-and-added-value"),
-                    'help-block' => _("txt--main-contribution-for-the-project-inline-help"),
+                    'label'      => _('txt-main-contributions-and-added-value'),
+                    'help-block' => _('txt--main-contribution-for-the-project-inline-help'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -141,11 +143,11 @@ class Affiliation extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'strategicImportance',
                 'options'    => [
-                    'label'      => _("txt-strategic-importance"),
-                    'help-block' => _("txt-strategic-importance-inline-help"),
+                    'label'      => _('txt-strategic-importance'),
+                    'help-block' => _('txt-strategic-importance-inline-help'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -154,11 +156,11 @@ class Affiliation extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'marketAccess',
                 'options'    => [
-                    'label'      => _("txt-market-access"),
-                    'help-block' => _("txt-market-access-inline-help"),
+                    'label'      => _('txt-market-access'),
+                    'help-block' => _('txt-market-access-inline-help'),
                 ],
                 'attributes' => [
                     'cols'  => 8,
@@ -168,54 +170,82 @@ class Affiliation extends Form
         );
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Radio',
+                'type'    => Radio::class,
                 'name'    => 'selfFunded',
                 'options' => [
                     'value_options' => Entity\Affiliation::getSelfFundedTemplates(),
-                    'label'         => _("txt-self-funded"),
-                    'help-block'    => _("txt-self-funded-inline-help"),
+                    'label'         => _('txt-self-funded'),
+                    'help-block'    => _('txt-self-funded-inline-help'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'deactivate',
                 'attributes' => [
-                    'class' => "btn btn-danger",
-                    'value' => sprintf(_("Deactivate %s"), $affiliation->parseBranchedName()),
+                    'class' => 'btn btn-danger',
+                    'value' => sprintf(_('Deactivate %s'), $affiliation->parseBranchedName()),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'reactivate',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => sprintf(_("Reactivate %s"), $affiliation->parseBranchedName()),
+                    'class' => 'btn btn-warning',
+                    'value' => sprintf(_('Reactivate %s'), $affiliation->parseBranchedName()),
                 ],
             ]
         );
+    }
+
+    public function getInputFilterSpecification(): array
+    {
+        return [
+            'valueChain'  => [
+                'required'   => false,
+                'validators' => [
+                    [
+                        'name'    => 'StringLength',
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 0,
+                            'max'      => 255,
+                        ],
+                    ],
+                ],
+            ],
+            'affiliation' => [
+                'required' => true,
+            ],
+            'technical'   => [
+                'required' => true,
+            ],
+            'financial'   => [
+                'required' => true,
+            ]
+        ];
     }
 }

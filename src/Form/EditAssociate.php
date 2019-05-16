@@ -15,19 +15,17 @@ use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Select;
+use Contact\Form\Element\Contact;
 
 /**
  * Class EditAssociate
  *
  * @package Affiliation\Form
  */
-class EditAssociate extends Form implements InputFilterProviderInterface
+final class EditAssociate extends Form implements InputFilterProviderInterface
 {
-    /**
-     * EditAssociate constructor.
-     * @param Affiliation $affiliation
-     * @param ContactService $contactService
-     */
     public function __construct(Affiliation $affiliation, ContactService $contactService)
     {
         parent::__construct();
@@ -40,10 +38,10 @@ class EditAssociate extends Form implements InputFilterProviderInterface
 
         foreach ($affiliation->getProject()->getAffiliation() as $otherAffiliation) {
             $affiliations[$otherAffiliation->getId()] = sprintf(
-                "%s (%s) %s",
+                '%s (%s) %s',
                 $otherAffiliation->getOrganisation()->getOrganisation(),
                 $otherAffiliation->getOrganisation()->getCountry(),
-                \is_null($otherAffiliation->getDateEnd()) ? '' : ' (deactivated)'
+                $otherAffiliation->getDateEnd() === null ? '' : ' (deactivated)'
             );
         }
 
@@ -56,11 +54,11 @@ class EditAssociate extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Contact\Form\Element\Contact',
+                'type'       => Contact::class,
                 'name'       => 'contact',
                 'options'    => [
                     'value_options' => $contacts,
-                    'label'         => _("txt-contact-name"),
+                    'label'         => _('txt-contact-name'),
                 ],
                 'attributes' => [
                     'class'    => 'form-control',
@@ -71,11 +69,11 @@ class EditAssociate extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Select',
+                'type'    => Select::class,
                 'name'    => 'affiliation',
                 'options' => [
                     'value_options' => $affiliations,
-                    'label'         => _("txt-partner-name"),
+                    'label'         => _('txt-partner-name'),
                 ],
             ]
         );
@@ -83,42 +81,36 @@ class EditAssociate extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'delete',
                 'attributes' => [
-                    'class' => "btn btn-danger",
-                    'value' => _("txt-delete"),
+                    'class' => 'btn btn-danger',
+                    'value' => _('txt-delete'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [

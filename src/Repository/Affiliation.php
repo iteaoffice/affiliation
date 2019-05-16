@@ -83,7 +83,7 @@ final class Affiliation extends EntityRepository
                 $queryBuilder->andWhere($queryBuilder->expr()->isNotNull('affiliation_entity_affiliation.dateEnd'));
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
 
         switch ($criterion) {
@@ -98,7 +98,7 @@ final class Affiliation extends EntityRepository
                 $queryBuilder = $parentRepository->limitFreeRiders($queryBuilder, $project->getCall()->getProgram());
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
+                throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
         }
 
 

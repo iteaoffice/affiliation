@@ -25,6 +25,8 @@ use Project\Service\WorkpackageService;
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Csrf;
 
 /**
  * Class CostAndEffort
@@ -73,14 +75,14 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Csrf',
+                'type' => Csrf::class,
                 'name' => 'csrf',
             ]
         );
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => "btn btn-primary",
@@ -90,7 +92,7 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => "btn btn-warning",

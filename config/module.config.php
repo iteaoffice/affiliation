@@ -1,12 +1,4 @@
 <?php
-/**
- * ITEA Office copyright message placeholder
- *
- * @category    Affiliation
- * @package     Config
- * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
- */
 
 use Affiliation\Acl;
 use Affiliation\Controller;
@@ -17,8 +9,20 @@ use Affiliation\Options;
 use Affiliation\Search;
 use Affiliation\Service;
 use Affiliation\View;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Gedmo\Sluggable\SluggableListener;
+use Gedmo\Timestampable\TimestampableListener;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\Stdlib;
+
+/**
+ * ITEA Office copyright message placeholder
+ *
+ * @category    Affiliation
+ * @package     Config
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ */
 
 $config = [
     'controllers'        => [
@@ -106,7 +110,7 @@ $config = [
     'doctrine'           => [
         'driver'       => [
             'affiliation_annotation_driver' => [
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'class' => AnnotationDriver::class,
                 'paths' => [
                     __DIR__ . '/../src/Entity/',
                 ],
@@ -120,8 +124,8 @@ $config = [
         'eventmanager' => [
             'orm_default' => [
                 'subscribers' => [
-                    'Gedmo\Timestampable\TimestampableListener',
-                    'Gedmo\Sluggable\SluggableListener',
+                    TimestampableListener::class,
+                    SluggableListener::class,
                 ],
             ],
         ],

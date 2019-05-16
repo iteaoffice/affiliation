@@ -478,7 +478,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                     $this->affiliationService->save($financial);
                 }
 
-                $this->flashMessenger()->setNamespace('success')->addMessage(
+                $this->flashMessenger()->addSuccessMessage(
                     \sprintf(
                         $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
                         $affiliation

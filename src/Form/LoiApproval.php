@@ -13,6 +13,9 @@ namespace Affiliation\Form;
 
 use Contact\Service\ContactService;
 use Doctrine\Common\Collections\ArrayCollection;
+use Zend\Form\Element\Date;
+use Zend\Form\Element\Select;
+use Zend\Form\Element\Submit;
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -22,7 +25,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
  *
  * @package Affiliation\Form
  */
-class LoiApproval extends Form implements InputFilterProviderInterface
+final class LoiApproval extends Form implements InputFilterProviderInterface
 {
     public function __construct(ArrayCollection $lois, ContactService $contactService)
     {
@@ -31,20 +34,17 @@ class LoiApproval extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-        /*
-         * Create a fieldSet per LOI (and affiliation)
-         */
         foreach ($lois as $loi) {
             $affiliationFieldset = new Fieldset('affiliation_' . $loi->getAffiliation()->getId());
 
             $contacts = $contactService->findContactsInAffiliation($loi->getAffiliation());
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Select',
+                    'type'       => Select::class,
                     'name'       => 'contact',
                     'options'    => [
                         'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
-                        'label'         => _("txt-contact-name"),
+                        'label'         => _('txt-contact-name'),
                     ],
                     'attributes' => [
                         'class'    => 'form-control',
@@ -56,7 +56,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
 
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Date',
+                    'type'       => Date::class,
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',
@@ -71,32 +71,26 @@ class LoiApproval extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [];

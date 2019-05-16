@@ -9,26 +9,24 @@
  */
 declare(strict_types=1);
 
-declare(strict_types=1);
 
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use function asort;
 use Doctrine\ORM\EntityManager;
 use Organisation\Entity\Financial as FinancialOrganisation;
 use Zend\Form\Form;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Radio;
+use General\Entity\Country;
+use DoctrineORMModule\Form\Element\EntitySelect;
+use Zend\Form\Element\Text;
+use Zend\Form\Element\Textarea;
+use Zend\Form\Element\Select;
 
-/**
- * Class Financial
- * @package Affiliation\Form
- */
-class Financial extends Form
+final class Financial extends Form
 {
-    /**
-     * Financial constructor.
-     * @param Affiliation $affiliation
-     * @param EntityManager $entityManager
-     */
     public function __construct(Affiliation $affiliation, EntityManager $entityManager)
     {
         parent::__construct();
@@ -38,10 +36,10 @@ class Financial extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'organisation',
                 'options'    => [
-                    'label' => _("txt-organisation-name"),
+                    'label' => _('txt-organisation-name'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -51,13 +49,13 @@ class Financial extends Form
 
         $this->add(
             [
-                'type'       => 'DoctrineORMModule\Form\Element\EntitySelect',
+                'type'       => EntitySelect::class,
                 'name'       => 'registeredCountry',
                 'options'    => [
-                    'target_class'   => "General\Entity\Country",
+                    'target_class'   => Country::class,
                     'object_manager' => $entityManager,
-                    "find_method"    => [
-                        "name"   => "findForForm",
+                    'find_method'    => [
+                        'name'   => 'findForForm',
                         'params' => [
                             'criteria' => [],
                             'orderBy'  => [],
@@ -66,34 +64,34 @@ class Financial extends Form
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                    'label' => _("txt-registered-country"),
+                    'label' => _('txt-registered-country'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'vat',
                 'options'    => [
-                    'label' => _("txt-vat-number"),
+                    'label' => _('txt-vat-number'),
                 ],
                 'attributes' => [
                     'class'       => 'form-control',
-                    'placeholder' => _("txt-financial-vat-number-placeholder"),
+                    'placeholder' => _('txt-financial-vat-number-placeholder'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'attention',
                 'options'    => [
-                    'label'      => _("txt-attention"),
-                    'help-block' => _("txt-financial-attention-form-element-explanation"),
+                    'label'      => _('txt-attention'),
+                    'help-block' => _('txt-financial-attention-form-element-explanation'),
                 ],
                 'attributes' => [
                     'class'       => 'form-control',
-                    'placeholder' => _("txt-financial-attention-placeholder"),
+                    'placeholder' => _('txt-financial-attention-placeholder'),
                 ],
             ]
         );
@@ -121,10 +119,10 @@ class Financial extends Form
         /**
          * Add all the financial contacts form other projects
          */
-        foreach ($organisation->getAffiliation() as $affiliation) {
-            if (!\is_null($affiliation->getFinancial())) {
-                $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
-                    = $affiliation->getFinancial()->getContact()->getFormName();
+        foreach ($organisation->getAffiliation() as $otherAffiliation) {
+            if ($otherAffiliation->getFinancial() !== null) {
+                $financialContactValueOptions[$otherAffiliation->getFinancial()->getContact()->getId()]
+                    = $otherAffiliation->getFinancial()->getContact()->getFormName();
             }
         }
 
@@ -132,11 +130,11 @@ class Financial extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Select',
+                'type'       => Select::class,
                 'name'       => 'contact',
                 'options'    => [
                     'value_options' => $financialContactValueOptions,
-                    'label'         => _("txt-financial-contact"),
+                    'label'         => _('txt-financial-contact'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -146,11 +144,11 @@ class Financial extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Radio',
+                'type'       => Radio::class,
                 'name'       => 'omitContact',
                 'options'    => [
                     'value_options' => FinancialOrganisation::getOmitContactTemplates(),
-                    'label'         => _("txt-omit-contact"),
+                    'label'         => _('txt-omit-contact'),
                 ],
                 'attributes' => [
 
@@ -159,52 +157,52 @@ class Financial extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'address',
                 'options'    => [
-                    'label' => _("txt-address"),
+                    'label' => _('txt-address'),
                 ],
                 'attributes' => [
                     'class'       => 'form-control',
-                    'placeholder' => _("txt-address-placeholder"),
+                    'placeholder' => _('txt-address-placeholder'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'zipCode',
                 'options'    => [
-                    'label' => _("txt-zip-code"),
+                    'label' => _('txt-zip-code'),
                 ],
                 'attributes' => [
                     'class'       => 'form-control',
-                    'placeholder' => _("txt-zip-code-placeholder"),
+                    'placeholder' => _('txt-zip-code-placeholder'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'city',
                 'options'    => [
-                    'label' => _("txt-city"),
+                    'label' => _('txt-city'),
                 ],
                 'attributes' => [
                     'class'       => 'form-control',
-                    'placeholder' => _("txt-city-placeholder"),
+                    'placeholder' => _('txt-city-placeholder'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'DoctrineORMModule\Form\Element\EntitySelect',
+                'type'       => EntitySelect::class,
                 'name'       => 'country',
                 'options'    => [
-                    'target_class'   => "General\Entity\Country",
+                    'target_class'   => Country::class,
                     'object_manager' => $entityManager,
-                    "find_method"    => [
-                        "name"   => "findForForm",
+                    'find_method'    => [
+                        'name'   => 'findForForm',
                         'params' => [
                             'criteria' => [],
                             'orderBy'  => [],
@@ -213,17 +211,17 @@ class Financial extends Form
                 ],
                 'attributes' => [
                     'class' => 'form-control',
-                    'label' => _("txt-country"),
+                    'label' => _('txt-country'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Radio',
+                'type'       => Radio::class,
                 'name'       => 'preferredDelivery',
                 'options'    => [
                     'value_options' => FinancialOrganisation::getEmailTemplates(),
-                    'label'         => _("txt-preferred-delivery"),
+                    'label'         => _('txt-preferred-delivery'),
                 ],
                 'attributes' => [
                 ],
@@ -231,21 +229,21 @@ class Financial extends Form
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );

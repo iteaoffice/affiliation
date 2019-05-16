@@ -14,7 +14,6 @@ doa.affiliation.project.parseFullname()
     ) }}</h1>
 
 {% do form.prepare() %}
-
 {{ form().openTag(form)|raw }}
 
 
@@ -22,7 +21,7 @@ doa.affiliation.project.parseFullname()
     <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ projectLink(doa.affiliation.project,'view-admin', 'name') }}</p>
+        <p class="form-control-plaintext">{{ projectLink(doa.affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
@@ -30,7 +29,7 @@ doa.affiliation.project.parseFullname()
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ affiliationLink(doa.affiliation,'view-community') }}</p>
+        <p class="form-control-plaintext">{{ affiliationLink(doa.affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -46,7 +45,7 @@ doa.affiliation.project.parseFullname()
     <label class="col-sm-3 col-form-label">{{ translate("txt-download-current-doa") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ doaLink(doa,'download','text') }}</p>
+        <p class="form-control-plaintext">{{ doaLink(doa,'download','text') }}</p>
     </div>
 </div>
 

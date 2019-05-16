@@ -24,11 +24,8 @@ use Zend\InputFilter\InputFilter;
  *
  * @package Affiliation\InputFilter
  */
-class AffiliationFilter extends InputFilter
+final class AffiliationFilter extends InputFilter
 {
-    /**
-     * AffiliationFilter constructor.
-     */
     public function __construct()
     {
         $inputFilter = new InputFilter();
@@ -60,8 +57,18 @@ class AffiliationFilter extends InputFilter
         );
         $inputFilter->add(
             [
-                'name'     => 'valueChain',
-                'required' => false,
+                'name'       => 'valueChain',
+                'required'   => false,
+                'validators' => [
+                    [
+                        'name'    => 'StringLength',
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 0,
+                            'max'      => 255,
+                        ],
+                    ],
+                ],
             ]
         );
         $inputFilter->add(
@@ -100,7 +107,6 @@ class AffiliationFilter extends InputFilter
                 'required' => true,
             ]
         );
-
 
         $this->add($inputFilter, 'affiliation_entity_affiliation');
     }

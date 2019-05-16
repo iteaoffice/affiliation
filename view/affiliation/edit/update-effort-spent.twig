@@ -10,8 +10,6 @@ report.parseName()
     ) }}</h1>
 
 {% do form.prepare() %}
-{% do form.setAttribute('class','form-horizontal') %}
-
 {{ form().openTag(form)|raw }}
 
 
@@ -19,7 +17,7 @@ report.parseName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
+        <p class="form-control-plaintext">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
     </div>
 </div>
 
@@ -27,7 +25,7 @@ report.parseName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
     </div>
 </div>
 
@@ -35,7 +33,7 @@ report.parseName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-report") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ reportLink(report,'report-community', 'name') }}</p>
+        <p class="form-control-plaintext">{{ reportLink(report,'report-community', 'name') }}</p>
     </div>
 </div>
 
@@ -47,7 +45,7 @@ report.parseName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-planned-effort") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-static form-control-plaintext">{{ totalPlannedEffort }} [{{ translate("txt-py") }}]</p>
+        <p class="form-control-plaintext">{{ totalPlannedEffort }} [{{ translate("txt-py") }}]</p>
     </div>
 </div>
 
@@ -60,9 +58,9 @@ report.parseName()
 
     <div class="col-sm-9">
         {% for achievement in affiliation.achievement %}
-            <p class="form-control-static form-control-plaintext">{{ achievementLink(achievement,'view-community', 'name') }}</p>
+            <p class="form-control-plaintext">{{ achievementLink(achievement,'view-community', 'name') }}</p>
         {% else %}
-            <p class="form-control-static form-control-plaintext"><i
+            <p class="form-control-plaintext"><i
                         class="fa fa-exclamation-circle text-warning warning"></i> {{ translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()) }}
             </p>
         {% endfor %}

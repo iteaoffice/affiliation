@@ -24,13 +24,11 @@ use Zend\Form\Form;
 
 /**
  * Class QuestionnaireFilter
+ *
  * @package Affiliation\Form\Question
  */
-class QuestionnaireFilter extends Form
+final class QuestionnaireFilter extends Form
 {
-    /**
-     * CategoryFilter constructor.
-     */
     public function __construct()
     {
         parent::__construct();

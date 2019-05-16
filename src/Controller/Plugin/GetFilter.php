@@ -20,9 +20,14 @@ namespace Affiliation\Controller\Plugin;
 
 use Doctrine\Common\Collections\Criteria;
 use Zend\Http\Request;
+use Zend\Json\Json;
 use Zend\Mvc\Application;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\ServiceManager\ServiceManager;
+use function base64_decode;
+use function base64_encode;
+use function http_build_query;
+use function urldecode;
 
 /**
  * Class GetFilter
@@ -50,13 +55,13 @@ final class GetFilter extends AbstractPlugin
         $filter = [];
         /** @var Application $application */
         $application = $this->serviceManager->get('application');
-        $encodedFilter = \urldecode((string)$application->getMvcEvent()->getRouteMatch()->getParam('encodedFilter'));
+        $encodedFilter = urldecode((string)$application->getMvcEvent()->getRouteMatch()->getParam('encodedFilter'));
         /** @var Request $request */
         $request = $application->getMvcEvent()->getRequest();
 
-        if (!empty($encodedFilter)) {
+        if (!empty($encodedFilter) && !empty($base64decodedFilter = base64_decode($encodedFilter))) {
             // Take the filter from the URL
-            $filter = (array)\json_decode(\base64_decode($encodedFilter));
+            $filter = (array)Json::decode($base64decodedFilter);
         }
 
         $order = $request->getQuery('order');
@@ -106,7 +111,7 @@ final class GetFilter extends AbstractPlugin
             unset($filterCopy[$param]);
         }
 
-        return \http_build_query(['filter' => $filterCopy, 'submit' => 'true']);
+        return http_build_query(['filter' => $filterCopy, 'submit' => 'true']);
     }
 
     public function getOrder(): string
@@ -121,6 +126,6 @@ final class GetFilter extends AbstractPlugin
 
     public function getHash(): string
     {
-        return \base64_encode(\json_encode($this->filter));
+        return base64_encode(Json::encode($this->filter));
     }
 }

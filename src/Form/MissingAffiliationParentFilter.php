@@ -19,17 +19,16 @@ namespace Affiliation\Form;
 
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Text;
 
 /**
  * Class MissingAffiliationParentFilter
  *
  * @package Affiliation\Form
  */
-class MissingAffiliationParentFilter extends Form
+final class MissingAffiliationParentFilter extends Form
 {
-    /**
-     * MissingAffiliationParentFilter constructor.
-     */
     public function __construct()
     {
         parent::__construct();
@@ -40,7 +39,7 @@ class MissingAffiliationParentFilter extends Form
 
         $filterFieldset->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'search',
                 'attributes' => [
                     'class'       => 'form-control',
@@ -53,7 +52,7 @@ class MissingAffiliationParentFilter extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
                     'id'    => 'submit',
@@ -65,7 +64,7 @@ class MissingAffiliationParentFilter extends Form
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'clear',
                 'attributes' => [
                     'id'    => 'cancel',

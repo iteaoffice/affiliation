@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Affiliation\Form;
 
+use Zend\Form\Element\File;
+use Zend\Form\Element\Submit;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Validator\File\Extension;
@@ -21,7 +23,7 @@ use Zend\Validator\File\Size;
  *
  * @package Affiliation\Form
  */
-class UploadLoi extends Form implements InputFilterProviderInterface
+final class UploadLoi extends Form implements InputFilterProviderInterface
 {
     public function __construct()
     {
@@ -32,42 +34,36 @@ class UploadLoi extends Form implements InputFilterProviderInterface
         $this->setAttribute('enctype', 'multipart/form-data');
         $this->add(
             [
-                'type'    => '\Zend\Form\Element\File',
+                'type'    => File::class,
                 'name'    => 'file',
                 'options' => [
-                    "label"      => "txt-file",
-                    "help-block" => _("txt-a-signed-loi-is-required"),
+                    'label'      => 'txt-file',
+                    'help-block' => _('txt-a-signed-loi-is-required'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-upload-loi"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-upload-loi'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [

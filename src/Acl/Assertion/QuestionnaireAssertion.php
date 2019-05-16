@@ -39,13 +39,6 @@ final class QuestionnaireAssertion extends AbstractAssertion
         $this->questionnaireService = $container->get(QuestionnaireService::class);
     }
 
-    /**
-     * @param Acl $acl
-     * @param RoleInterface|null $role
-     * @param ResourceInterface|AffiliationEntity|null $affiliation
-     * @param null $privilege
-     * @return bool
-     */
     public function assert(
         Acl               $acl,
         RoleInterface     $role = null,
