@@ -22,15 +22,29 @@ use Affiliation\Repository;
 use Affiliation\Service\AffiliationService;
 use Contact\Entity\Contact;
 use Contact\Entity\ContactOrganisation;
+use Contact\Service\ContactService;
+use Contact\Service\SelectionContactService;
+use Deeplink\Service\DeeplinkService;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use General\Service\EmailService;
+use General\Service\GeneralService;
+use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
 use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
+use Organisation\Service\OrganisationService;
+use Organisation\Service\ParentService;
 use Project\Entity\Project;
+use Project\Service\ContractService;
+use Project\Service\ProjectService;
+use Project\Service\VersionService;
 use Testing\Util\AbstractServiceTest;
+use Zend\I18n\Translator\TranslatorInterface;
+use Zend\Mvc\Controller\PluginManager;
+use Zend\View\HelperPluginManager;
 
 /**
  * Class AffiliationServiceTest
@@ -39,15 +53,8 @@ use Testing\Util\AbstractServiceTest;
  */
 class AffiliationServiceTest extends AbstractServiceTest
 {
-    public function testCanCreateService()
+    public function testFindAffiliationBId(): void
     {
-        $service = new AffiliationService();
-        $this->assertInstanceOf(AffiliationService::class, $service);
-    }
-
-    public function testFindAffiliationBId()
-    {
-        $service = new AffiliationService();
         $affiliationId = 1;
 
         // Create a dummy project entity
@@ -63,19 +70,54 @@ class AffiliationServiceTest extends AbstractServiceTest
         $affiliationRepositoryMock->expects($this->once())
             ->method('find')
             ->with($this->identicalTo($affiliationId))
-            ->will($this->returnValue($affiliation));
+            ->willReturn($affiliation);
 
         // Mock the entity manager + affiliation repository
         /** @var EntityManager $entityManagerMock */
         $entityManagerMock = $this->getEntityManagerMock(Entity\Affiliation::class, $affiliationRepositoryMock);
-        $service->setEntityManager($entityManagerMock);
 
-        $this->assertEquals($affiliation, $service->findAffiliationById((int) $affiliationId));
+        $service = new AffiliationService(
+            $entityManagerMock,
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
+
+        $this->assertEquals($affiliation, $service->findAffiliationById((int)$affiliationId));
     }
 
-    public function testIsSelfFunded()
+
+    public function testIsSelfFunded(): void
     {
-        $service = new AffiliationService();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
+
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->isSelfFunded($affiliation));
@@ -92,9 +134,26 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertTrue($service->isSelfFunded($selfFundedAffiliation));
     }
 
-    public function testIsActiveInVersion()
+    public function testIsActiveInVersion(): void
     {
-        $service = new AffiliationService();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
+
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->isActiveInVersion($affiliation));
@@ -105,22 +164,26 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertTrue($service->isActiveInVersion($isActiveAffiliation));
     }
 
-    public function testIsActive()
+    public function testHasDoa(): void
     {
-        $service = new AffiliationService();
-        $activeAffiliation = new Entity\Affiliation();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
 
-        $this->assertTrue($service->isActive($activeAffiliation));
-
-        $inActiveAffiliation = new Entity\Affiliation();
-        $inActiveAffiliation->setDateEnd(new \DateTime());
-
-        $this->assertFalse($service->isActive($inActiveAffiliation));
-    }
-
-    public function testHasDoa()
-    {
-        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->hasDoa($affiliation));
@@ -134,9 +197,26 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertTrue($service->hasDoa($isActiveAffiliation));
     }
 
-    public function testHasLoi()
+    public function testHasLoi(): void
     {
-        $service = new AffiliationService();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
+
         $affiliation = new Entity\Affiliation();
 
         $this->assertFalse($service->hasLoi($affiliation));
@@ -150,21 +230,37 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertTrue($service->hasLoi($isActiveAffiliation));
     }
 
-    public function testFindNotValidatedSelfFundedAffiliation()
+    public function testFindNotValidatedSelfFundedAffiliation(): void
     {
-        $service = new AffiliationService();
         $affiliationRepositoryMock = $this->getMockBuilder(Repository\Affiliation::class)
             ->disableOriginalConstructor()
             ->setMethods(['findNotValidatedSelfFundedAffiliation'])
             ->getMock();
         $affiliationRepositoryMock->expects($this->once())
             ->method('findNotValidatedSelfFundedAffiliation')
-            ->will($this->returnValue([new Entity\Affiliation()]));
+            ->willReturn([new Entity\Affiliation()]);
 
         // Mock the entity manager + affiliation repository
         /** @var EntityManager $entityManagerMock */
         $entityManagerMock = $this->getEntityManagerMock(Entity\Affiliation::class, $affiliationRepositoryMock);
-        $service->setEntityManager($entityManagerMock);
+
+        $service = new AffiliationService(
+            $entityManagerMock,
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
 
         $results = $service->findNotValidatedSelfFundedAffiliation();
 
@@ -172,10 +268,8 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertInstanceOf(Entity\Affiliation::class, reset($results));
     }
 
-    public function testFindMissingAffiliationParent()
+    public function testFindMissingAffiliationParent(): void
     {
-        $service = new AffiliationService();
-
         $entityManagerConfig = new Configuration();
         $entityManagerMock1 = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
@@ -183,7 +277,7 @@ class AffiliationServiceTest extends AbstractServiceTest
             ->getMock();
         $entityManagerMock1->expects($this->exactly(2))
             ->method('getConfiguration')
-            ->will($this->returnValue($entityManagerConfig));
+            ->willReturn($entityManagerConfig);
 
         /** @var EntityManager $entityManagerMock1 */
         $query = new Query($entityManagerMock1);
@@ -194,20 +288,55 @@ class AffiliationServiceTest extends AbstractServiceTest
             ->getMock();
         $affiliationRepositoryMock->expects($this->once())
             ->method('findMissingAffiliationParent')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
 
         // Mock the entity manager + affiliation repository
         /** @var EntityManager $entityManagerMock */
         $entityManagerMock2 = $this->getEntityManagerMock(Entity\Affiliation::class, $affiliationRepositoryMock);
-        $service->setEntityManager($entityManagerMock2);
+
+        $service = new AffiliationService(
+            $entityManagerMock2,
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
+
 
         $result = $service->findMissingAffiliationParent();
         $this->assertSame($query, $result);
     }
 
-    public function testFindOrganisationFinancial()
+    public function testFindOrganisationFinancial(): void
     {
-        $service = new AffiliationService();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
+
         $affiliation = new Entity\Affiliation();
         $organisation = new Organisation();
         $affiliation->setOrganisation($organisation);
@@ -264,14 +393,29 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertEquals($vatNumber, $service->parseVatNumber($affiliation));
     }
 
-    public function testCanFindFinancialContact()
+    public function testCanFindFinancialContact(): void
     {
-        $service = new AffiliationService();
-        $affiliation = new Entity\Affiliation();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
 
+        $affiliation = new Entity\Affiliation();
         $this->assertNull($service->getFinancialContact($affiliation));
 
-        $service = new AffiliationService();
         $affiliation = new Entity\Affiliation();
         $financial = new Entity\Financial();
         $contact = new Contact();
@@ -281,9 +425,25 @@ class AffiliationServiceTest extends AbstractServiceTest
         $this->assertEquals($contact, $service->getFinancialContact($affiliation));
     }
 
-    public function testCanCreateInvoices()
+    public function testCanCreateInvoices(): void
     {
-        $service = new AffiliationService();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
         $affiliation = new Entity\Affiliation();
 
         $organisation = new Organisation();
@@ -293,12 +453,28 @@ class AffiliationServiceTest extends AbstractServiceTest
 
         $affiliation->setOrganisation($organisation);
 
-        $this->assertTrue(is_array($service->canCreateInvoice($affiliation)));
+        $this->assertIsArray($service->canCreateInvoice($affiliation));
     }
 
-    public function testFindAffiliationByProjectAndContactAndWhich()
+    public function testFindAffiliationByProjectAndContactAndWhich(): void
     {
-        $service = new AffiliationService();
+        $service = new AffiliationService(
+            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
+        );
 
         $project = new Project();
         $contact = new Contact();
@@ -317,8 +493,12 @@ class AffiliationServiceTest extends AbstractServiceTest
         $project->getAffiliation()->add($affiliation2);
 
         $this->assertEquals($affiliation1, $service->findAffiliationByProjectAndContactAndWhich($project, $contact));
-        $this->assertEquals($affiliation2, $service->findAffiliationByProjectAndContactAndWhich($project, $contact,
-            AffiliationService::WHICH_ONLY_INACTIVE));
+        $this->assertEquals(
+            $affiliation2, $service->findAffiliationByProjectAndContactAndWhich(
+            $project, $contact,
+            AffiliationService::WHICH_ONLY_INACTIVE
+        )
+        );
 
     }
 }

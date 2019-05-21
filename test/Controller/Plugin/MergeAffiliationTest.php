@@ -12,17 +12,17 @@ declare(strict_types=1);
 
 namespace AffiliationTest\Controller\Plugin;
 
-use Admin\Service\AdminService;
 use Affiliation\Controller\Plugin\MergeAffiliation;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Invoice;
 use Affiliation\Entity\Log as AffiliationLog;
 use Affiliation\Entity\Version as AffiliationVersion;
 use Contact\Entity\Contact;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Project\Entity\Achievement;
 use Project\Entity\ChangeRequest\CostChange;
 use Project\Entity\Cost\Cost;
@@ -35,6 +35,7 @@ use Project\Entity\Report\EffortSpent;
 use Project\Entity\Version\Version as ProjectVersion;
 use Project\Entity\Workpackage\Workpackage;
 use Testing\Util\AbstractServiceTest;
+use function count;
 
 /**
  * Class MergeAffiliationTest
@@ -59,7 +60,6 @@ class MergeAffiliationTest extends AbstractServiceTest
     {
         $this->mainAffiliation = $this->createMainAffiliation();
         $this->otherAffiliation = $this->createOtherAffiliation();
-        $this->mergeAffiliation = new MergeAffiliation();
     }
 
     /**
@@ -75,8 +75,8 @@ class MergeAffiliationTest extends AbstractServiceTest
         $costMatched = new Cost();
         $costMatched->setId(1);
         $costMatched->setCosts(10);
-        $costMatched->setDateStart(new \DateTime('2014-01-01'));
-        $costMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $costMatched->setDateStart(new DateTime('2014-01-01'));
+        $costMatched->setDateEnd(new DateTime('2014-12-31'));
 
         // Init effort
         $workpackageMatched = new Workpackage();
@@ -86,15 +86,15 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortMatched->setId(1);
         $effortMatched->setWorkpackage($workpackageMatched);
         $effortMatched->setEffort(0.5);
-        $effortMatched->setDateStart(new \DateTime('2014-01-01'));
-        $effortMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $effortMatched->setDateStart(new DateTime('2014-01-01'));
+        $effortMatched->setDateEnd(new DateTime('2014-12-31'));
 
         $effortSpentMatched = new Spent();
         $effortSpentMatched->setId(1);
         $effortSpentMatched->setWorkpackage($workpackageMatched);
         $effortSpentMatched->setEffort(0.4);
-        $effortSpentMatched->setDateStart(new \DateTime('2014-01-01'));
-        $effortSpentMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $effortSpentMatched->setDateStart(new DateTime('2014-01-01'));
+        $effortSpentMatched->setDateEnd(new DateTime('2014-12-31'));
 
         // Create affiliation
         $affiliation = new Affiliation();
@@ -108,16 +108,16 @@ class MergeAffiliationTest extends AbstractServiceTest
         $affiliationCostVersionMatched = new CostVersion();
         $affiliationCostVersionMatched->setId(1);
         $affiliationCostVersionMatched->setCosts(15.00);
-        $affiliationCostVersionMatched->setDateStart(new \DateTime('2014-01-01'));
-        $affiliationCostVersionMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $affiliationCostVersionMatched->setDateStart(new DateTime('2014-01-01'));
+        $affiliationCostVersionMatched->setDateEnd(new DateTime('2014-12-31'));
 
         // Init effort version
         $affiliationEffortVersionMatched = new EffortVersion();
         $affiliationEffortVersionMatched->setId(1);
         $affiliationEffortVersionMatched->setWorkpackage($workpackageMatched);
         $affiliationEffortVersionMatched->setEffort(0.30);
-        $affiliationEffortVersionMatched->setDateStart(new \DateTime('2014-01-01'));
-        $affiliationEffortVersionMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $affiliationEffortVersionMatched->setDateStart(new DateTime('2014-01-01'));
+        $affiliationEffortVersionMatched->setDateEnd(new DateTime('2014-12-31'));
 
         // Create main affiliation
         $affiliation = new Affiliation();
@@ -158,14 +158,14 @@ class MergeAffiliationTest extends AbstractServiceTest
         $costMatched = new Cost();
         $costMatched->setId(2);
         $costMatched->setCosts(20.00);
-        $costMatched->setDateStart(new \DateTime('2014-01-01'));
-        $costMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $costMatched->setDateStart(new DateTime('2014-01-01'));
+        $costMatched->setDateEnd(new DateTime('2014-12-31'));
 
         $costNew = new Cost();
         $costNew->setId(3);
         $costNew->setCosts(40.00);
-        $costNew->setDateStart(new \DateTime('2015-01-01'));
-        $costNew->setDateEnd(new \DateTime('2015-12-31'));
+        $costNew->setDateStart(new DateTime('2015-01-01'));
+        $costNew->setDateEnd(new DateTime('2015-12-31'));
 
         // Init effort
         $workpackageMatched = new Workpackage();
@@ -175,15 +175,15 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortMatched->setId(2);
         $effortMatched->setWorkpackage($workpackageMatched);
         $effortMatched->setEffort(1.00);
-        $effortMatched->setDateStart(new \DateTime('2014-01-01'));
-        $effortMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $effortMatched->setDateStart(new DateTime('2014-01-01'));
+        $effortMatched->setDateEnd(new DateTime('2014-12-31'));
 
         $effortSpentMatched = new Spent();
         $effortSpentMatched->setId(2);
         $effortSpentMatched->setWorkpackage($workpackageMatched);
         $effortSpentMatched->setEffort(0.60);
-        $effortSpentMatched->setDateStart(new \DateTime('2014-01-01'));
-        $effortSpentMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $effortSpentMatched->setDateStart(new DateTime('2014-01-01'));
+        $effortSpentMatched->setDateEnd(new DateTime('2014-12-31'));
 
         $workpackageNew = new Workpackage();
         $workpackageNew->setId(2);
@@ -192,15 +192,15 @@ class MergeAffiliationTest extends AbstractServiceTest
         $effortNew->setId(3);
         $effortNew->setWorkpackage($workpackageNew);
         $effortNew->setEffort(1.00);
-        $effortNew->setDateStart(new \DateTime('2015-01-01'));
-        $effortNew->setDateEnd(new \DateTime('2015-12-31'));
+        $effortNew->setDateStart(new DateTime('2015-01-01'));
+        $effortNew->setDateEnd(new DateTime('2015-12-31'));
 
         $effortSpentNew = new Spent();
         $effortSpentNew->setId(3);
         $effortSpentNew->setWorkpackage($workpackageNew);
         $effortSpentNew->setEffort(0.10);
-        $effortSpentNew->setDateStart(new \DateTime('2015-01-01'));
-        $effortSpentNew->setDateEnd(new \DateTime('2015-12-31'));
+        $effortSpentNew->setDateStart(new DateTime('2015-01-01'));
+        $effortSpentNew->setDateEnd(new DateTime('2015-12-31'));
 
         // Init versions
         $versionContact = new Contact();
@@ -215,42 +215,42 @@ class MergeAffiliationTest extends AbstractServiceTest
         $affiliationCostVersionMatched = new CostVersion();
         $affiliationCostVersionMatched->setId(2);
         $affiliationCostVersionMatched->setCosts(20.00);
-        $affiliationCostVersionMatched->setDateStart(new \DateTime('2014-01-01'));
-        $affiliationCostVersionMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $affiliationCostVersionMatched->setDateStart(new DateTime('2014-01-01'));
+        $affiliationCostVersionMatched->setDateEnd(new DateTime('2014-12-31'));
 
         $affiliationCostVersionNew1 = new CostVersion();
         $affiliationCostVersionNew1->setId(3);
         $affiliationCostVersionNew1->setCosts(30.00);
-        $affiliationCostVersionNew1->setDateStart(new \DateTime('2015-01-01'));
-        $affiliationCostVersionNew1->setDateEnd(new \DateTime('2015-12-31'));
+        $affiliationCostVersionNew1->setDateStart(new DateTime('2015-01-01'));
+        $affiliationCostVersionNew1->setDateEnd(new DateTime('2015-12-31'));
 
         $affiliationCostVersionNew2 = new CostVersion();
         $affiliationCostVersionNew2->setId(4);
         $affiliationCostVersionNew2->setCosts(40.00);
-        $affiliationCostVersionNew2->setDateStart(new \DateTime('2016-01-01'));
-        $affiliationCostVersionNew2->setDateEnd(new \DateTime('2016-12-31'));
+        $affiliationCostVersionNew2->setDateStart(new DateTime('2016-01-01'));
+        $affiliationCostVersionNew2->setDateEnd(new DateTime('2016-12-31'));
 
         // Effort versions
         $affiliationEffortVersionMatched = new EffortVersion();
         $affiliationEffortVersionMatched->setId(2);
         $affiliationEffortVersionMatched->setWorkpackage($workpackageMatched);
         $affiliationEffortVersionMatched->setEffort(0.10);
-        $affiliationEffortVersionMatched->setDateStart(new \DateTime('2014-01-01'));
-        $affiliationEffortVersionMatched->setDateEnd(new \DateTime('2014-12-31'));
+        $affiliationEffortVersionMatched->setDateStart(new DateTime('2014-01-01'));
+        $affiliationEffortVersionMatched->setDateEnd(new DateTime('2014-12-31'));
 
         $affiliationEffortVersionNew1 = new EffortVersion();
         $affiliationEffortVersionNew1->setId(3);
         $affiliationEffortVersionNew1->setWorkpackage($workpackageMatched);
         $affiliationEffortVersionNew1->setEffort(0.20);
-        $affiliationEffortVersionNew1->setDateStart(new \DateTime('2015-01-01'));
-        $affiliationEffortVersionNew1->setDateEnd(new \DateTime('2015-12-31'));
+        $affiliationEffortVersionNew1->setDateStart(new DateTime('2015-01-01'));
+        $affiliationEffortVersionNew1->setDateEnd(new DateTime('2015-12-31'));
 
         $affiliationEffortVersionNew2 = new EffortVersion();
         $affiliationEffortVersionNew2->setId(4);
         $affiliationEffortVersionNew2->setWorkpackage($workpackageNew);
         $affiliationEffortVersionNew2->setEffort(0.40);
-        $affiliationEffortVersionNew2->setDateStart(new \DateTime('2016-01-01'));
-        $affiliationEffortVersionNew2->setDateEnd(new \DateTime('2016-12-31'));
+        $affiliationEffortVersionNew2->setDateStart(new DateTime('2016-01-01'));
+        $affiliationEffortVersionNew2->setDateEnd(new DateTime('2016-12-31'));
 
         // Matched affiliation version with same project version as main affiliation
         $affiliationVersionMatched = new AffiliationVersion();
@@ -258,14 +258,22 @@ class MergeAffiliationTest extends AbstractServiceTest
         $affiliationVersionMatched->setAffiliation($affiliation);
         $affiliationVersionMatched->setVersion($projectVersionAlsoInMainAffiliation);
         $affiliationVersionMatched->setContact($versionContact);
-        $affiliationVersionMatched->setCostVersion(new ArrayCollection([
-            $affiliationCostVersionMatched,
-            $affiliationCostVersionNew1,
-        ]));
-        $affiliationVersionMatched->setEffortVersion(new ArrayCollection([
-            $affiliationEffortVersionMatched,
-            $affiliationEffortVersionNew1,
-        ]));
+        $affiliationVersionMatched->setCostVersion(
+            new ArrayCollection(
+                [
+                    $affiliationCostVersionMatched,
+                    $affiliationCostVersionNew1,
+                ]
+            )
+        );
+        $affiliationVersionMatched->setEffortVersion(
+            new ArrayCollection(
+                [
+                    $affiliationEffortVersionMatched,
+                    $affiliationEffortVersionNew1,
+                ]
+            )
+        );
 
         // A new affiliation version
         $affiliationVersionNew = new AffiliationVersion();
@@ -331,12 +339,14 @@ class MergeAffiliationTest extends AbstractServiceTest
      * Test merging of entities that are not affected by the chosen merge strategy
      *
      */
-    public function testMergeAffiliationGeneral()
+    public function testMergeAffiliationGeneral(): void
     {
-        $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
-        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
-        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
+
+        $mergeAffiliation = new MergeAffiliation(
+            $this->getAdminServiceMock(), $this->setUpEntityManagerMock($strategy)
+        );
+
 
         // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
@@ -389,7 +399,7 @@ class MergeAffiliationTest extends AbstractServiceTest
      * Set up the entity manager mock object with expectations depending on the chosen merge strategy.
      *
      * @param integer $strategy
-     * @param bool $throwException
+     * @param bool    $throwException
      *
      * @return EntityManager|MockObject
      */
@@ -455,7 +465,7 @@ class MergeAffiliationTest extends AbstractServiceTest
                 break;
         }
 
-        $entityManagerMock->expects($this->exactly(\count($params)))
+        $entityManagerMock->expects($this->exactly(count($params)))
             ->method('persist')
             ->withConsecutive(...$params);
 
@@ -468,7 +478,7 @@ class MergeAffiliationTest extends AbstractServiceTest
             [$this->identicalTo($this->otherAffiliation->getVersion()->first())],
             [$this->identicalTo($this->otherAffiliation)],
         ];
-        $entityManagerMock->expects($this->exactly(\count($params)))
+        $entityManagerMock->expects($this->exactly(count($params)))
             ->method('remove')
             ->withConsecutive(...$params);
 
@@ -478,39 +488,18 @@ class MergeAffiliationTest extends AbstractServiceTest
     }
 
     /**
-     * Set up the admin service mock object.
-     *
-     * @return AdminService|MockObject
-     */
-    private function setUpAdminServiceMock()
-    {
-        $adminServiceMock = $this->getMockBuilder(AdminService::class)->disableOriginalConstructor()
-            ->setMethods(['flushPermitsByEntityAndId'])
-            ->getMock();
-
-        $adminServiceMock->expects($this->exactly(1))
-            ->method('flushPermitsByEntityAndId')
-            ->with(
-                $this->identicalTo($this->mainAffiliation),
-                $this->identicalTo($this->mainAffiliation->getId())
-            )
-            ->will($this->returnValue(true));
-
-        return $adminServiceMock;
-    }
-
-    /**
      * Test merging two affiliations using the SUM of cost and effort from both affiliations
      *
      * @covers \Affiliation\Controller\Plugin\MergeAffiliation
      */
-    public function testMergeAffiliationSum()
+    public function testMergeAffiliationSum(): void
     {
         $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_SUM;
-        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
-        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
 
+        $mergeAffiliation = new MergeAffiliation(
+            $this->getAdminServiceMock(), $this->setUpEntityManagerMock($strategy)
+        );
         // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
         $this->assertEquals(true, $response['success']);
@@ -581,12 +570,13 @@ class MergeAffiliationTest extends AbstractServiceTest
      *
      * @covers \Affiliation\Controller\Plugin\MergeAffiliation
      */
-    public function testMergeAffiliationUseMain()
+    public function testMergeAffiliationUseMain(): void
     {
-        $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
-        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
-        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
+
+        $mergeAffiliation = new MergeAffiliation(
+            $this->getAdminServiceMock(), $this->setUpEntityManagerMock($strategy)
+        );
 
         // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
@@ -660,12 +650,13 @@ class MergeAffiliationTest extends AbstractServiceTest
      *
      * @covers \Affiliation\Controller\Plugin\MergeAffiliation
      */
-    public function testMergeAffiliationUseOther()
+    public function testMergeAffiliationUseOther(): void
     {
-        $mergeAffiliation = $this->mergeAffiliation;
         $strategy = MergeAffiliation::STRATEGY_USE_OTHER;
-        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy));
-        $mergeAffiliation->setAdminService($this->setUpAdminServiceMock());
+
+        $mergeAffiliation = new MergeAffiliation(
+            $this->getAdminServiceMock(), $this->setUpEntityManagerMock($strategy)
+        );
 
         // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
@@ -739,11 +730,14 @@ class MergeAffiliationTest extends AbstractServiceTest
      *
      * @covers \Affiliation\Controller\Plugin\MergeAffiliation::__invoke
      */
-    public function testMergeAffiliationException()
+    public function testMergeAffiliationException(): void
     {
-        $mergeAffiliation = $this->mergeAffiliation;
+
         $strategy = MergeAffiliation::STRATEGY_USE_MAIN;
-        $mergeAffiliation->setEntityManager($this->setUpEntityManagerMock($strategy, true));
+
+        $mergeAffiliation = new MergeAffiliation(
+            $this->getAdminServiceMock(), $this->setUpEntityManagerMock($strategy, true)
+        );
 
         // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);

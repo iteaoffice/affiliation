@@ -61,7 +61,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="success">
+        <tr class="table-success">
             <td>
                 {{ translate("txt-main") }}:
             </td>
@@ -89,7 +89,7 @@
             {% for affiliationVersion in affiliation.version %}
                 {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
             {% endfor %}
-            <tr {% if merge == affiliation.id %}class="info"{% endif %}>
+            <tr {% if merge == affiliation.id %}class="table-info"{% endif %}>
                 <td>
                     {% if merge != affiliation.id %}
                         <input type="radio" name="merge" value="{{ affiliation.id }}">

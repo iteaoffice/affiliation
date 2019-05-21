@@ -10,7 +10,7 @@
 
     <table class="table table-hover table-striped table-sm">
         <thead>
-        <tr class="success">
+        <tr class="table-success">
             <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
             {% for year in years %}
                 <th>{% if year in projectYears %}{{ year }}{% else %}<span
@@ -58,7 +58,7 @@
 
         </tbody>
         <thead>
-        <tr class="success">
+        <tr class="table-success">
             <th colspan="2">{{ translate("txt-effort") }} [{{ translate("txt-py") }}]</th>
             {% for year in years %}
                 <th>{% if year in projectYears %}{{ year }}{% else %}<span
@@ -111,7 +111,7 @@
 
     <table class="table table-hover table-striped table-sm">
         <thead>
-        <tr class="success">
+        <tr class="table-success">
             <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
             {% for year in years %}
                 <th>{% if year in projectYears %}{{ year }}{% else %}<span
@@ -183,7 +183,7 @@
 
         </tbody>
         <thead>
-        <tr class="success">
+        <tr class="table-success">
             <th colspan="2">{{ translate("txt-effort") }} [{{ translate("txt-py") }}]</th>
             {% for year in years %}
                 <th>{% if year in projectYears %}{{ year }}{% else %}<span

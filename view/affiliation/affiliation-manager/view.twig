@@ -574,7 +574,7 @@
                             report) %}
                     {% endif %}
 
-                    <tr {% if report.dateFinal %}class="success"{% endif %}>
+                    <tr {% if report.dateFinal %}class="table-success"{% endif %}>
                         <td>{{ reportLink(report,'report-admin', 'name') }}</td>
                         <td>{{ contactLink(report.contact,'view-admin','name') }}</td>
                         <td>{{ totalPlannedEffort|parse_effort }} [{{ translate("txt-py") }}]</td>

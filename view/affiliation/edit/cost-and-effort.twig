@@ -51,7 +51,7 @@
     {% set useContract = affiliationService.useActiveContract(affiliation) %}
     {% set contractVersion = contractService.findLatestContractVersionByAffiliation(affiliation) %}
 
-    <tr class="success">
+    <tr class="table-success">
         <th>{{ translate("txt-costs") }} {% if useContract %}({{ translate("txt-from-contract") }}){% else %}[k&euro;]{% endif %}</th>
         {% for year in yearRange %}
             <th>{{ year }}
@@ -125,7 +125,7 @@
         </td>
     </tr>
 
-    <tr class="success">
+    <tr class="table-success">
         <th>{{ translate("txt-effort") }} [PY]</th>
         {% for year in yearRange %}
             <th>{{ year }}         </th>

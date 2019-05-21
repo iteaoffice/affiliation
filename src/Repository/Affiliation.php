@@ -31,7 +31,7 @@ use Project\Entity\Version\Version;
  *
  * @package Affiliation\Repository
  */
-final class Affiliation extends EntityRepository
+/*final*/ class Affiliation extends EntityRepository
 {
     public function findAffiliationByProjectAndWhich(Project $project, int $which): array
     {

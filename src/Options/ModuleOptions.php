@@ -18,7 +18,7 @@ use Zend\Stdlib\AbstractOptions;
  *
  * @package Affiliation\Options
  */
-final class ModuleOptions extends AbstractOptions implements AffiliationOptionsInterface
+class ModuleOptions extends AbstractOptions implements AffiliationOptionsInterface
 {
     protected $doaTemplate = '';
     protected $loiTemplate = '';
