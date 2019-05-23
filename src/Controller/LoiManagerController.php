@@ -347,8 +347,6 @@ final class LoiManagerController extends AffiliationAbstractController
                 );
 
                 return $this->redirect()->toRoute('zfcadmin/affiliation/loi/view', ['id' => $loi->getId()]);
-            } else {
-                var_dump($form->getInputFilter()->getMessages());
             }
         }
 

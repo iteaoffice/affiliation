@@ -301,8 +301,6 @@ final class EditController extends AffiliationAbstractController
                         'id' => $affiliation->getId(),
                     ]
                 );
-            } else {
-                var_dump($form->getInputFilter()->getMessages());
             }
         }
 
@@ -975,9 +973,9 @@ final class EditController extends AffiliationAbstractController
             foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
                 $effortPerWorkpackageAndYear
                     = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                        $workpackage,
-                        $affiliation
-                    );
+                    $workpackage,
+                    $affiliation
+                );
                 if (!\array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }
