@@ -23,7 +23,6 @@ use Admin\Repository\Permit\Role;
 use Affiliation\Entity;
 use Contact\Entity\Contact;
 use Contact\Service\SelectionContactService;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
@@ -168,8 +167,13 @@ abstract class AbstractService
         return $this->entityManager->getRepository($entity)->findOneBy([$column => $name]);
     }
 
-    public function findBy(string $entity, array $criteria, array $orderBy = null, $limit = null, $offset = null): ?array
-    {
+    public function findBy(
+        string $entity,
+        array $criteria,
+        array $orderBy = null,
+        $limit = null,
+        $offset = null
+    ): ?array {
         return $this->entityManager->getRepository($entity)->findBy($criteria, $orderBy, $limit, $offset);
     }
 
