@@ -100,15 +100,18 @@ final class CategoryManagerController extends AffiliationAbstractController
         $form->remove('delete');
 
         if ($request->isPost()) {
-            if (!isset($data['cancel']) && $form->isValid()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
+            }
+            if ($form->isValid()) {
                 /** @var Category $category */
                 $category = $form->getData();
                 $this->questionnaireService->save($category);
                 $this->flashMessenger()->addSuccessMessage(
                     $this->translator->translate('txt-question-category-has-successfully-been-created')
                 );
+                return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
             }
-            return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/category/list');
         }
 
         return new ViewModel([
