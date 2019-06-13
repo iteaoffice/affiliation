@@ -31,7 +31,7 @@
         {% set question = questionnaireQuestion.question %}
         <tr>
             <td>{{ questionnaireQuestion.sequence }}</td>
-            <td>{{ affiliationQuestionLink(question, 'view-admin', 'name', 50) }}</td>
+            <td>{{ affiliationQuestionLink(question, 'view', 'name', 50) }}</td>
             <td>{{ affiliationQuestionCategoryLink(question.category, 'view', 'name') }}</td>
             <td>{{ translate(question.getInputTypeTemplates()[question.inputType]) }}</td>
             <td>{% if question.required %}{{ translate("txt-yes") }}{% else %}{{ translate("txt-no") }}{% endif %}</td>

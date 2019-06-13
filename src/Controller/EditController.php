@@ -973,9 +973,9 @@ final class EditController extends AffiliationAbstractController
             foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
                 $effortPerWorkpackageAndYear
                     = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                    $workpackage,
-                    $affiliation
-                );
+                        $workpackage,
+                        $affiliation
+                    );
                 if (!\array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }

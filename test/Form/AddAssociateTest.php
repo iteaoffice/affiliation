@@ -36,7 +36,7 @@ class AddAssociateTest extends AbstractFormTest
     /**
      * Set up basic properties
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->affiliation = new Affiliation();
         $organisation = new Organisation();

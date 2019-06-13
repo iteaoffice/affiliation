@@ -222,35 +222,6 @@ final class DoaController extends AffiliationAbstractController
         );
     }
 
-    public function renderAction(): Response
-    {
-        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
-
-        /** @var Response $response */
-        $response = $this->getResponse();
-
-        if (null === $affiliation) {
-            return $response->setStatusCode(Response::STATUS_CODE_404);
-        }
-
-        //Create an empty Doa object
-        $programDoa = new Doa();
-        $programDoa->setContact($this->identity());
-        $programDoa->setAffiliation($affiliation);
-        $renderProjectDoa = $this->renderDoa()->renderProjectDoa($programDoa);
-
-        $response->getHeaders()
-            ->addHeaderLine('Pragma: public')
-            ->addHeaderLine(
-                'Content-Disposition',
-                'attachment; filename="' . $programDoa->parseFileName() . '.pdf"'
-            )
-            ->addHeaderLine('Content-Type: application/pdf')
-            ->addHeaderLine('Content-Length', \strlen($renderProjectDoa->getPDFData()));
-        $response->setContent($renderProjectDoa->getPDFData());
-
-        return $response;
-    }
 
     public function downloadAction(): Response
     {

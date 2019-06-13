@@ -32,7 +32,7 @@ class ModuleTest extends AbstractServiceTest
         $module = new Module();
         $config = $module->getConfig();
 
-        $this->assertInternalType('array', $config);
+        $this->assertIsArray($config);
         $this->assertArrayHasKey('service_manager', $config);
         $this->assertArrayHasKey(ConfigAbstractFactory::class, $config);
     }

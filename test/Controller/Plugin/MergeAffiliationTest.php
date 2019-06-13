@@ -56,7 +56,7 @@ class MergeAffiliationTest extends AbstractServiceTest
     /**
      * Set up basic properties
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->mainAffiliation = $this->createMainAffiliation();
         $this->otherAffiliation = $this->createOtherAffiliation();

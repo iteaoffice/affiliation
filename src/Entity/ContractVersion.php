@@ -14,17 +14,15 @@ namespace Affiliation\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Project\Entity\Contract\CostVersion;
 use Zend\Form\Annotation;
+use function sprintf;
 
 /**
- * Entity for the Affiliation.
- *
  * @ORM\Table(name="affiliation_contract_version")
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_contract_version")
- *
- * @category    Affiliation
  */
 class ContractVersion extends AbstractEntity
 {
@@ -38,18 +36,14 @@ class ContractVersion extends AbstractEntity
     private $id;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="contractVersion")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="affiliationVersion", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
-     * })
      *
      * @var \Project\Entity\Contract\Version
      */
@@ -57,7 +51,7 @@ class ContractVersion extends AbstractEntity
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Contract\CostVersion", cascade={"persist","remove"},  mappedBy="affiliationVersion")
      *
-     * @var \Project\Entity\Contract\CostVersion[]|ArrayCollection
+     * @var CostVersion[]|ArrayCollection
      */
     private $costVersion;
 
@@ -83,7 +77,7 @@ class ContractVersion extends AbstractEntity
 
     public function __toString(): string
     {
-        return \sprintf(
+        return sprintf(
             '%s in %s (%s)',
             $this->getAffiliation()->getOrganisation(),
             $this->getAffiliation()->getProject(),

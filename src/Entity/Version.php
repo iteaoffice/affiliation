@@ -12,13 +12,13 @@ declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
+use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation;
+use function sprintf;
 
 /**
- * Entity for the Affiliation.
- *
  * @ORM\Table(name="affiliation_version")
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
@@ -47,7 +47,7 @@ class Version extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliationVersion")
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $contact;
     /**
@@ -100,7 +100,7 @@ class Version extends AbstractEntity
 
     public function __toString(): string
     {
-        return \sprintf(
+        return sprintf(
             '%s in %s (%s)',
             $this->getAffiliation()->getOrganisation(),
             $this->getAffiliation()->getProject(),
