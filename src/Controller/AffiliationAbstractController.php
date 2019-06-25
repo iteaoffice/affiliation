@@ -14,6 +14,9 @@ namespace Affiliation\Controller;
 use Affiliation\Controller\Plugin;
 use Affiliation\Entity\Affiliation;
 use Contact\Entity\Contact;
+use Project\Controller\Plugin\Checklist;
+use Project\Entity\Project;
+use Project\Entity\Version\Type;
 use Search\Service\AbstractSearchService;
 use Zend\Http\Response;
 use Zend\Mvc\Controller\AbstractActionController;
@@ -22,12 +25,11 @@ use Zend\Mvc\Plugin\Identity\Identity;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 /**
- * @category    Affiliation
- *
  * @method      ZfcUserAuthentication zfcUserAuthentication()
  * @method      Identity|Contact identity()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
+ * @method      Checklist checklist(Project $project, Type $versionType)
  * @method      Plugin\AffiliationPdf renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
  * @method      Plugin\RenderDoa renderDoa()
  * @method      Plugin\RenderLoi renderLoi()

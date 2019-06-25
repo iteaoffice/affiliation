@@ -72,58 +72,58 @@ final class AffiliationLink extends LinkAbstract
         switch ($this->getAction()) {
             case 'view-community':
                 $this->setRouter('community/affiliation/affiliation');
-                $this->setText(sprintf($this->translator->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-view-affiliation-%s'), $this->getAffiliation()));
                 break;
             case 'edit-community':
                 $this->setRouter('community/affiliation/edit/affiliation');
-                $this->setText(sprintf($this->translator->translate("txt-edit-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-edit-affiliation-%s'), $this->getAffiliation()));
                 break;
             case 'edit-financial':
                 $this->setRouter('community/affiliation/edit/financial');
-                $this->setText(sprintf($this->translator->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-edit-financial-affiliation-%s'), $this->getAffiliation()));
                 break;
             case 'add-associate':
                 $this->setRouter('community/affiliation/edit/add-associate');
-                $this->setText(sprintf($this->translator->translate("txt-add-associate")));
+                $this->setText(sprintf($this->translator->translate('txt-add-associate')));
                 break;
             case 'manage-associate':
                 $this->setRouter('community/affiliation/edit/manage-associate');
-                $this->setText(sprintf($this->translator->translate("txt-manage-associates")));
+                $this->setText(sprintf($this->translator->translate('txt-manage-associates')));
                 break;
             case 'edit-cost-and-effort':
                 $this->setRouter('community/affiliation/edit/cost-and-effort');
-                $this->setText(sprintf($this->translator->translate("txt-edit-cost-and-effort-of-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-edit-cost-and-effort-of-%s'), $this->getAffiliation()));
                 break;
             case 'add-associate-admin':
                 $this->setRouter('zfcadmin/affiliation/add-associate');
-                $this->setText(sprintf($this->translator->translate("txt-add-associate")));
+                $this->setText(sprintf($this->translator->translate('txt-add-associate')));
                 break;
             case 'edit-description':
                 $this->setRouter('community/affiliation/edit/description');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-edit-description-affiliation-%s"),
+                        $this->translator->translate('txt-edit-description-affiliation-%s'),
                         $this->getAffiliation()
                     )
                 );
                 break;
             case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation/view');
-                $this->setText(sprintf($this->translator->translate("txt-view-affiliation-in-admin-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-view-affiliation-in-admin-%s'), $this->getAffiliation()));
                 break;
             case 'edit-admin':
                 $this->setRouter('zfcadmin/affiliation/edit');
-                $this->setText(sprintf($this->translator->translate("txt-edit-affiliation-in-admin-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-edit-affiliation-in-admin-%s'), $this->getAffiliation()));
                 break;
             case 'merge-admin':
                 $this->setRouter('zfcadmin/affiliation/merge');
-                $this->setText(sprintf($this->translator->translate("txt-merge-affiliation-in-admin-%s"), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-merge-affiliation-in-admin-%s'), $this->getAffiliation()));
                 break;
             case 'payment-sheet':
                 $this->setRouter('community/affiliation/payment-sheet');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->translator->translate('txt-show-payment-sheet-of-affiliation-%s-for-%s-%s'),
                         $this->getAffiliation(),
                         $this->getYear(),
                         $this->getPeriod()
@@ -135,7 +135,9 @@ final class AffiliationLink extends LinkAbstract
                 $this->addRouterParam('contract', 'contract');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-show-contract-based-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->translator->translate(
+                            'txt-show-contract-based-payment-sheet-of-affiliation-%s-for-%s-%s'
+                        ),
                         $this->getAffiliation(),
                         $this->getYear(),
                         $this->getPeriod()
@@ -146,7 +148,7 @@ final class AffiliationLink extends LinkAbstract
                 $this->setRouter('community/affiliation/payment-sheet-pdf');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->translator->translate('txt-download-payment-sheet-of-affiliation-%s-for-%s-%s'),
                         $this->getAffiliation(),
                         $this->getYear(),
                         $this->getPeriod()
@@ -158,7 +160,7 @@ final class AffiliationLink extends LinkAbstract
                 $this->addRouterParam('contract', 'contract');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-download-contract-payment-sheet-of-affiliation-%s-for-%s-%s"),
+                        $this->translator->translate('txt-download-contract-payment-sheet-of-affiliation-%s-for-%s-%s'),
                         $this->getAffiliation(),
                         $this->getYear(),
                         $this->getPeriod()
@@ -166,7 +168,7 @@ final class AffiliationLink extends LinkAbstract
                 );
                 break;
             default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+                throw new \Exception(sprintf('%s is an incorrect action for %s', $this->getAction(), __CLASS__));
         }
     }
 }

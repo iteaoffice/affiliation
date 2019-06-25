@@ -1,0 +1,9 @@
+{% if checklist.getSingleAffiliationErrors(affiliation) %}
+    <h2>{{ translate("txt-partner-checklist") }}</h2>
+
+    <ul class="list-group">
+        {% for error in checklist.getSingleAffiliationErrors(affiliation).getErrors() %}
+            {{ error|raw }}
+        {% endfor %}
+    </ul>
+{% endif %}

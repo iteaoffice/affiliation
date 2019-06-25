@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Affiliation\Controller;
 
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
-use Affiliation\Entity\Affiliation;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\QuestionnaireService;
 use Application\Service\AssertionService;
@@ -97,34 +96,34 @@ final class CommunityController extends AffiliationAbstractController
     private $questionnaireService;
 
     public function __construct(
-        AffiliationService   $affiliationService,
-        ProjectService       $projectService,
-        VersionService       $versionService,
-        ContactService       $contactService,
-        OrganisationService  $organisationService,
-        ReportService        $reportService,
-        ContractService      $contractService,
-        WorkpackageService   $workpackageService,
-        InvoiceService       $invoiceService,
-        ParentService        $parentService,
-        CallService          $callService,
-        ModuleOptions        $invoiceModuleOptions,
-        AssertionService     $assertionService,
+        AffiliationService $affiliationService,
+        ProjectService $projectService,
+        VersionService $versionService,
+        ContactService $contactService,
+        OrganisationService $organisationService,
+        ReportService $reportService,
+        ContractService $contractService,
+        WorkpackageService $workpackageService,
+        InvoiceService $invoiceService,
+        ParentService $parentService,
+        CallService $callService,
+        ModuleOptions $invoiceModuleOptions,
+        AssertionService $assertionService,
         QuestionnaireService $questionnaireService
     ) {
-        $this->affiliationService   = $affiliationService;
-        $this->projectService       = $projectService;
-        $this->versionService       = $versionService;
-        $this->contactService       = $contactService;
-        $this->organisationService  = $organisationService;
-        $this->reportService        = $reportService;
-        $this->contractService      = $contractService;
-        $this->workpackageService   = $workpackageService;
-        $this->invoiceService       = $invoiceService;
-        $this->parentService        = $parentService;
-        $this->callService          = $callService;
+        $this->affiliationService = $affiliationService;
+        $this->projectService = $projectService;
+        $this->versionService = $versionService;
+        $this->contactService = $contactService;
+        $this->organisationService = $organisationService;
+        $this->reportService = $reportService;
+        $this->contractService = $contractService;
+        $this->workpackageService = $workpackageService;
+        $this->invoiceService = $invoiceService;
+        $this->parentService = $parentService;
+        $this->callService = $callService;
         $this->invoiceModuleOptions = $invoiceModuleOptions;
-        $this->assertionService     = $assertionService;
+        $this->assertionService = $assertionService;
         $this->questionnaireService = $questionnaireService;
     }
 
@@ -139,6 +138,14 @@ final class CommunityController extends AffiliationAbstractController
 
         $this->assertionService->addResource($affiliation->getProject(), Project::class);
         $hasProjectEditRights = $this->isAllowed($affiliation->getProject(), 'edit-community');
+
+        /*
+         * Create the checklist already now, since we need it in every method
+         */
+        $checklist = $this->checklist(
+            $affiliation->getProject(),
+            $this->callService->getCallStatus($affiliation->getProject()->getCall())->getVersionType()
+        );
 
         $params = [
             'affiliationService'    => $this->affiliationService,
@@ -159,6 +166,8 @@ final class CommunityController extends AffiliationAbstractController
             'parentService'         => $this->parentService,
             'callService'           => $this->callService,
             'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
+            'checklist'             => $checklist,
+            'project'               => $affiliation->getProject()
         ];
 
         $this->assertionService->addResource($affiliation, AffiliationAssertion::class);
@@ -177,7 +186,7 @@ final class CommunityController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $year   = (int)$this->params('year');
+        $year = (int)$this->params('year');
         $period = (int)$this->params('period');
 
         return new ViewModel(

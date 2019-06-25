@@ -66,5 +66,6 @@ return array(
     'affiliation/partial/form/questionnaire/answers'             => __DIR__ . '//view/affiliation/partial/form/questionnaire/answers.twig',
     'affiliation/partial/form/questionnaire/questionnaire'       => __DIR__ . '//view/affiliation/partial/form/questionnaire/questionnaire.twig',
     'affiliation/partial/form/affiliation'                       => __DIR__ . '//view/affiliation/partial/form/affiliation.twig',
+    'affiliation/partial/checklist'                              => __DIR__ . '//view/affiliation/partial/checklist.twig',
     'affiliation/partial/payment-sheet'                          => __DIR__ . '//view/affiliation/partial/payment-sheet.twig',
 );
