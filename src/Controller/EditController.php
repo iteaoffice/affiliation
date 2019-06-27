@@ -826,10 +826,6 @@ final class EditController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return \Zend\Http\Response|ViewModel
-     *
-     */
     public function updateEffortSpentAction()
     {
         $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
