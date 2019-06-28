@@ -1,5 +1,5 @@
 {% if checklist.getSingleAffiliationErrors(affiliation) %}
-    <h2>{{ translate("txt-partner-checklist") }}</h2>
+    <h2>{{ translate("txt-%s-checklist")|format(affiliation) }}</h2>
 
     <ul class="list-group">
         {% for error in checklist.getSingleAffiliationErrors(affiliation).getErrors() %}

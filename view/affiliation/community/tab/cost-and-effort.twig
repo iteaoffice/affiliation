@@ -151,7 +151,7 @@
                             <a id="cost_{{ year }}"
                                href="#" class="affiliation workpackage" data-type="text"
                                data-pk="{{ affiliation.id }},{{ year }}"
-                               data-url="{{ url('json/update-cost') }}"
+                               data-url="{{ url('json/project/update-cost') }}"
                                data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost_edit }}</a>
                         {% else %}
                             <i class="fa pull-left"></i>
@@ -232,7 +232,7 @@
                         <a id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
                            href="#" class="workpackage" data-type="text"
                            data-pk="{{ affiliation.id }},{{ workpackage.id }},{{ year }}"
-                           data-url="{{ url('json/update-effort') }}"
+                           data-url="{{ url('json/project/update-effort') }}"
                            data-title="{{ translate("txt-update-effort") }}">{{ effortInCurrentYear|parse_effort }}</a>
                     {% else %}
                         <i class="fa pull-left"></i>

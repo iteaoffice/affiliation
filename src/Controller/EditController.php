@@ -144,6 +144,9 @@ final class EditController extends AffiliationAbstractController
             $affiliation->getBranch()
         );
         $formData['technical'] = $affiliation->getContact()->getId();
+        if (null !== $affiliation->getCommunication()) {
+            $formData['communication'] = $affiliation->getCommunication()->getId();
+        }
         $formData['valueChain'] = $affiliation->getValueChain();
         $formData['marketAccess'] = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();
@@ -257,6 +260,7 @@ final class EditController extends AffiliationAbstractController
                 $organisation = $this->organisationService->findOrganisationById((int)$organisationId);
                 $affiliation->setOrganisation($organisation);
                 $affiliation->setContact($this->contactService->findContactById((int)$formData['technical']));
+                $affiliation->setCommunication($this->contactService->findContactById((int)$formData['communication']));
                 $affiliation->setBranch($branch);
                 $this->affiliationService->save($affiliation);
                 $affiliation->setValueChain($formData['valueChain']);
@@ -971,7 +975,7 @@ final class EditController extends AffiliationAbstractController
                     = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
                         $workpackage,
                         $affiliation
-                    );
+                );
                 if (!\array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }

@@ -192,6 +192,13 @@ final class QuestionnaireForm extends Form
 
         $this->add(
             [
+                'type' => Element\Csrf::class,
+                'name' => 'csrf',
+            ]
+        );
+
+        $this->add(
+            [
                 'type'       => Element\Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [

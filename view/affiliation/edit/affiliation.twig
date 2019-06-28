@@ -1,11 +1,11 @@
 {% do headTitle().append(translate("txt-edit-affiliation-%s-in-%s")|format(
-affiliation.parseBranchedName(),
-affiliation.project.parseFullName()
-)) %}
-
-<h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
     affiliation.parseBranchedName(),
     affiliation.project.parseFullName()
+    )) %}
+
+<h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
+        affiliation.parseBranchedName(),
+        affiliation.project.parseFullName()
     ) }}</h1>
 
 {% do form.prepare() %}
@@ -47,6 +47,7 @@ affiliation.project.parseFullName()
 {{ ztbformelement(form.get('affiliation')) }}
 {{ ztbformelement(form.get('technical')) }}
 {{ ztbformelement(form.get('financial')) }}
+{{ ztbformelement(form.get('communication')) }}
 {{ ztbformelement(form.get('valueChain')) }}
 {{ ztbformelement(form.get('mainContribution')) }}
 {{ ztbformelement(form.get('strategicImportance')) }}
@@ -74,7 +75,6 @@ affiliation.project.parseFullName()
         {% endif %}
     </div>
 </div>
-
 
 
 {{ form().closeTag()|raw }}

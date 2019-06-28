@@ -322,7 +322,7 @@
                 <li role="presentation" class="nav-item">
 
                 <a href="#{{ paymentSheetPeriod.id }}" aria-controls="home" role="tab"
-                   class="nav-link  {% if loop.last or paymentSheetPeriod.active %}active{% endif %}"
+                   class="nav-link  {% if paymentSheetPeriod.active or (loop.last and paymentSheetPeriod.active) %}active{% endif %}"
                    data-toggle="tab">{{ paymentSheetPeriod.label }}</a></li>
             {% endfor %}
         </ul>
@@ -476,7 +476,7 @@
                         <a id="cost_{{ year }}"
                            href="#" class="cost" data-type="text"
                            data-pk="{{ affiliation.id }},{{ year }}"
-                           data-url="{{ url('json/update-cost') }}"
+                           data-url="{{ url('json/project/update-cost') }}"
                            data-title="{{ translate("txt-update-costs") }}">{{ yearTotal|parse_cost_edit }}</a>
                     </td>
                 {% endfor %}

@@ -13,23 +13,23 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use Contact\Form\Element\Contact;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use Invoice\Entity\Method;
 use Organisation\Entity\OParent;
+use Organisation\Form\Element\Organisation;
 use Organisation\Service\ParentService;
+use Zend\Form\Element\Checkbox;
+use Zend\Form\Element\Date;
+use Zend\Form\Element\Email;
 use Zend\Form\Element\Radio;
 use Zend\Form\Element\Select;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Text;
+use Zend\Form\Element\Textarea;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Form\Element\Submit;
-use Zend\Form\Element\Email;
-use Organisation\Form\Element\Organisation;
-use Zend\Form\Element\Text;
-use Contact\Form\Element\Contact;
-use Zend\Form\Element\Textarea;
-use Zend\Form\Element\Date;
-use Zend\Form\Element\Checkbox;
 
 /**
  * Class AdminAffiliation
@@ -274,7 +274,21 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
                 'type'       => Contact::class,
                 'name'       => 'financialContact',
                 'options'    => [
-                    'label' => _('txt-financial-contact'),
+                    'label'      => _('txt-financial-contact'),
+                    'help-block' => _('txt-financial-contact-help-block'),
+                ],
+                'attributes' => [
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => Contact::class,
+                'name'       => 'communicationContact',
+                'options'    => [
+                    'label'      => _('txt-communication-contact'),
+                    'help-block' => _('txt-communication-contact-help-block'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',

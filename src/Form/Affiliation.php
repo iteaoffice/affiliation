@@ -67,14 +67,23 @@ final class Affiliation extends Form implements InputFilterProviderInterface
         $organisation = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $otherAffiliation) {
             if ((null !== $otherAffiliation->getFinancial())
-                && null === $otherAffiliation->getFinancial()->getContact()->getDateEnd()
+                && null === $otherAffiliation->getFinancial()->getContact()->isActive()
             ) {
                 $financialContactValueOptions[$otherAffiliation->getFinancial()->getContact()->getId()]
                     = $otherAffiliation->getFinancial()->getContact()->getFormName();
             }
         }
-
         asort($financialContactValueOptions);
+        $communicationContactValueOptions = $financialContactValueOptions;
+        $organisation = $affiliation->getOrganisation();
+        foreach ($organisation->getAffiliation() as $otherAffiliation) {
+            if ((null !== $otherAffiliation->getCommunication())
+                && null === $otherAffiliation->getCommunication()->isActive()
+            ) {
+                $communicationContactValueOptions[$otherAffiliation->getCommunication()->getId()]
+                    = $otherAffiliation->getCommunication()->getFormName();
+            }
+        }
 
         $this->add(
             [
@@ -83,6 +92,7 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                 'options'    => [
                     'value_options' => $affiliationValueOptions,
                     'label'         => _('txt-change-affiliation'),
+                    'help-block'    => _('txt-change-affiliation-help-block'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -96,8 +106,10 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                 'options'    => [
                     'value_options' => $technicalContactValueOptions,
                     'label'         => _('txt-technical-contact'),
+                    'help-block'    => _('txt-technical-contact-help-block'),
                 ],
                 'attributes' => [
+
                     'class' => 'form-control',
                 ],
             ]
@@ -107,10 +119,27 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                 'type'       => Select::class,
                 'name'       => 'financial',
                 'options'    => [
-                    'value_options' => $financialContactValueOptions,
+                    'value_options' => $technicalContactValueOptions,
                     'label'         => _('txt-financial-contact'),
+                    'help-block'    => _('txt-financial-contact-help-block'),
                 ],
                 'attributes' => [
+
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => Select::class,
+                'name'       => 'communication',
+                'options'    => [
+                    'value_options' => $communicationContactValueOptions,
+                    'label'         => _('txt-communication-contact-label'),
+                    'help-block'    => _('txt-communication-contact-help-block'),
+                ],
+                'attributes' => [
+
                     'class' => 'form-control',
                 ],
             ]
