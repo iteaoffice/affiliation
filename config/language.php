@@ -12,6 +12,7 @@ _("txt-self-funded");
 _("txt-date-end");
 _("txt-date-self-funded");
 _("txt-technical-contact");
+_("txt-affiliation-communication-contact-label");
 _("txt-associates");
 _("txt-not-self-funded");
 _("txt-date-signed");
