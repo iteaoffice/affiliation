@@ -84,6 +84,12 @@
             <dd>{{ projectLink(project,'view-admin', 'name') }}
                 {{ projectLink(project,'view-community', 'icon') }}
             </dd>
+            <dt>{{ translate("txt-project-leader") }}</dt>
+            <dd>{{ contactLink(project.contact,'view-admin','name') }} <a
+                        href="mailto:{{ project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+            </dd>
+
+
             <dt>{{ translate("txt-program-call") }}</dt>
             <dd>{{ callLink(project.call,'view-admin','name') }}</dd>
             <dt>{{ translate("txt-status") }}</dt>
@@ -91,10 +97,7 @@
 
             <dt>{{ translate("txt-self-funded-affiliation-status") }}</dt>
             <dd>{{ translate(affiliation.getSelfFunded(true)) }}</dd>
-            <dt>{{ translate("txt-project-leader") }}</dt>
-            <dd>{{ contactLink(project.contact,'view-admin','name') }} <a
-                        href="mailto:{{ project.contact.email }}"><i class="fa fa-envelope-o"></i></a>
-            </dd>
+
 
             {% if affiliationService.isSelfFunded(affiliation) %}
                 <dt>{{ translate("txt-self-funded") }}</dt>
@@ -185,10 +188,19 @@
                     {% endif %}
                 </dd>
             {% endif %}
+
             <dt>{{ translate("txt-technical-contact") }}</dt>
             <dd>{{ contactLink(affiliation.contact,'view-admin','name') }} <a
                         href="mailto:{{ affiliation.contact.email }}"><i
                             class="fa fa-envelope-o"></i></a></dd>
+            {% if affiliation.communicationContactName %}
+                <dt>{{ translate("txt-communication-contact") }}</dt>
+                <dd>{{ affiliation.communicationContactName }} {% if affiliation.communicationContactEmail %} <a
+                            href="mailto:{{ affiliation.communicationContactEmail }}"><i
+                            class="fa fa-envelope-o"></i> {{ affiliation.communicationContactEmail }}</a>{% endif %}</dd>
+            {% endif %}
+
+
             {% if affiliation.financial %}
                 <dt>{{ translate("txt-financial-contact") }}</dt>
                 <dd>{{ contactLink(affiliation.financial.contact,'view-admin','name') }} <a
@@ -321,9 +333,9 @@
             {% for paymentSheetPeriod in affiliationService.parsePaymentSheetPeriods(affiliation) %}
                 <li role="presentation" class="nav-item">
 
-                <a href="#{{ paymentSheetPeriod.id }}" aria-controls="home" role="tab"
-                   class="nav-link  {% if paymentSheetPeriod.active or (loop.last and paymentSheetPeriod.active) %}active{% endif %}"
-                   data-toggle="tab">{{ paymentSheetPeriod.label }}</a></li>
+                    <a href="#{{ paymentSheetPeriod.id }}" aria-controls="home" role="tab"
+                       class="nav-link  {% if paymentSheetPeriod.active or (loop.last and paymentSheetPeriod.active) %}active{% endif %}"
+                       data-toggle="tab">{{ paymentSheetPeriod.label }}</a></li>
             {% endfor %}
         </ul>
 
@@ -492,7 +504,7 @@
                               data-type="text"
                               data-params="{'type': 'funding_national'}"
                               data-pk="{{ affiliation.id }}"
-                              data-url="{{ url('json/update-funded') }}"
+                              data-url="{{ url('json/project/update-funded') }}"
                               data-title="{{ translate("txt-update-funding-eu") }}">{{ projectService.findTotalFundingNationalByAffiliation(affiliation) }}
                     </a>
                 </td>
@@ -508,7 +520,7 @@
                               data-type="text"
                               data-params="{'type': 'funding_eu'}"
                               data-pk="{{ affiliation.id }}"
-                              data-url="{{ url('json/update-funded') }}"
+                              data-url="{{ url('json/project/update-funded') }}"
                               data-title="{{ translate("txt-update-funding-eu") }}">{{ projectService.findTotalFundingEuByAffiliation(affiliation) }}
                     </a>
                 </td>

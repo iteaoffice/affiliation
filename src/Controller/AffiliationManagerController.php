@@ -239,7 +239,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
             $affiliation->getBranch()
         );
         $formData['contact'] = $affiliation->getContact()->getId();
-        $formData['communication'] = $affiliation->getCommunication()->getId();
+        $formData['communicationContactName'] = $affiliation->getCommunicationContactName();
+        $formData['communicationContactEmail'] = $affiliation->getCommunicationContactEmail();
         $formData['branch'] = $affiliation->getBranch();
         $formData['valueChain'] = $affiliation->getValueChain();
         $formData['marketAccess'] = $affiliation->getMarketAccess();
@@ -288,7 +289,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
         $form->setData($formData);
 
         $form->get('contact')->injectContact($affiliation->getContact());
-        $form->get('communication')->injectContact($affiliation->getCommunication());
         $form->get('organisation')->injectOrganisation($affiliation->getOrganisation());
         if (null !== $affiliation->getFinancial()) {
             $form->get('financialOrganisation')->injectOrganisation($affiliation->getFinancial()->getOrganisation());
@@ -353,7 +353,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $organisation = $this->organisationService
                     ->findOrganisationById((int)$formData['organisation']);
                 $contact = $this->contactService->findContactById((int)$formData['contact']);
-                $communication = $this->contactService->findContactById((int)$formData['communication']);
 
                 switch (true) {
                     case !empty($formData['parentOrganisationLike']):
@@ -433,7 +432,9 @@ final class AffiliationManagerController extends AffiliationAbstractController
 
                 // Update the affiliation based on the form information
                 $affiliation->setContact($contact);
-                $affiliation->setCommunication($communication);
+
+                $affiliation->setCommunicationContactName($formData['communicationContactName']);
+                $affiliation->setCommunicationContactEmail($formData['communicationContactEmail']);
 
                 $affiliation->setBranch($formData['branch']);
                 if (empty($formData['dateSelfFunded'])) {

@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace Affiliation\Service;
 
 use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Doa;
+use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\Invoice;
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
@@ -23,6 +25,7 @@ use Contact\Entity\Contact;
 use Contact\Entity\ContactOrganisation;
 use Contact\Service\ContactService;
 use Contact\Service\SelectionContactService;
+use DateTime;
 use Deeplink\Service\DeeplinkService;
 use Deeplink\View\Helper\DeeplinkLink;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,6 +35,7 @@ use General\Entity\Country;
 use General\Entity\Currency;
 use General\Service\EmailService;
 use General\Service\GeneralService;
+use InvalidArgumentException;
 use Invoice\Entity\Method;
 use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
@@ -51,12 +55,18 @@ use Project\Entity\Version\Version;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
+use stdClass;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Controller\PluginManager;
 use Zend\Validator\File\MimeType;
 use Zend\View\HelperPluginManager;
+use function array_pop;
+use function count;
+use function in_array;
 use function ksort;
+use function number_format;
 use function round;
+use function sprintf;
 
 /**
  * Class AffiliationService
@@ -257,8 +267,8 @@ class AffiliationService extends AbstractService
         $loi = new Loi();
         $loi->setContact($contact);
         $loi->setApprover($contact);
-        $loi->setDateSigned(new \DateTime());
-        $loi->setDateApproved(new \DateTime());
+        $loi->setDateSigned(new DateTime());
+        $loi->setDateApproved(new DateTime());
         $loi->setAffiliation($affiliation);
 
         $this->save($loi);
@@ -266,12 +276,45 @@ class AffiliationService extends AbstractService
         return $loi;
     }
 
+    public function uploadDoa(array $file, Contact $contact, Affiliation $affiliation): Doa
+    {
+        $doaObject = new DoaObject();
+        $doaObject->setObject(file_get_contents($file['tmp_name']));
+        $doa = new Doa();
+        $doa->setContact($contact);
+        $doa->setAffiliation($affiliation);
+        $doa->setSize($file['size']);
+
+        $fileTypeValidator = new MimeType();
+        $fileTypeValidator->isValid($file);
+        $doa->setContentType($this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type));
+
+        $doaObject->setDoa($doa);
+        $this->save($doaObject);
+
+        return $doaObject->getDoa();
+    }
+
+    public function submitDoa(Contact $contact, Affiliation $affiliation): Doa
+    {
+        $doa = new Doa();
+        $doa->setContact($contact);
+        $doa->setApprover($contact);
+        $doa->setDateSigned(new DateTime());
+        $doa->setDateApproved(new DateTime());
+        $doa->setAffiliation($affiliation);
+
+        $this->save($doa);
+
+        return $doa;
+    }
+
     /**
      * @return Affiliation[]
      */
     public function findNotValidatedSelfFundedAffiliation(): array
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findNotValidatedSelfFundedAffiliation();
@@ -279,7 +322,7 @@ class AffiliationService extends AbstractService
 
     public function findMissingAffiliationParent(): Query
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findMissingAffiliationParent();
@@ -372,11 +415,11 @@ class AffiliationService extends AbstractService
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
 
-        if (\count($affiliations) === 0) {
+        if (count($affiliations) === 0) {
             $affiliations = [];
         }
 
@@ -418,7 +461,7 @@ class AffiliationService extends AbstractService
                 break;
             case null !== $method && null !== $affiliation->getInvoiceMethod()
                 && $affiliation->getInvoiceMethod()->getId() !== $method->getId():
-                $errors[] = \sprintf(
+                $errors[] = sprintf(
                     'Invoice method is already set to %s, so invoice on %s cannot be created',
                     $affiliation->getInvoiceMethod()->getMethod(),
                     $method->getMethod()
@@ -628,7 +671,7 @@ class AffiliationService extends AbstractService
         switch ($invoiceMethod) {
             case Method::METHOD_PERCENTAGE:
                 if (null === $version) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'The contract version cannot be null for parsing the contribution base'
                     );
                 }
@@ -643,7 +686,7 @@ class AffiliationService extends AbstractService
                 break;
             case Method::METHOD_PERCENTAGE_CONTRACT:
                 if (null === $contractVersion) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'The contract version cannot be null for parsing the contribution base'
                     );
                 }
@@ -692,7 +735,7 @@ class AffiliationService extends AbstractService
                 return $fee->getContribution();
             case Method::METHOD_FUNDING_MEMBER:
                 if (null === $parent) {
-                    throw new \InvalidArgumentException('Invoice cannot be funding when no parent is known');
+                    throw new InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
                 $invoiceFactor = $this->parentService->parseInvoiceFactor(
@@ -721,7 +764,7 @@ class AffiliationService extends AbstractService
 
             case Method::METHOD_FUNDING:
                 if (null === $parent) {
-                    throw new \InvalidArgumentException('Invoice cannot be funding when no parent is known');
+                    throw new InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
                 //Funding PENTA === 1.5 %
@@ -739,7 +782,7 @@ class AffiliationService extends AbstractService
                 return 0;
 
             default:
-                throw new \InvalidArgumentException(sprintf('Unknown contribution fee in %s', __FUNCTION__));
+                throw new InvalidArgumentException(sprintf('Unknown contribution fee in %s', __FUNCTION__));
         }
     }
 
@@ -831,7 +874,7 @@ class AffiliationService extends AbstractService
     ): float {
         //Based on the invoice method we will only have a balance when we are working with percentage
         $invoiceMethod = $this->parseInvoiceMethod($affiliation);
-        if (\in_array($invoiceMethod, [Method::METHOD_FUNDING, Method::METHOD_FUNDING_MEMBER], true)) {
+        if (in_array($invoiceMethod, [Method::METHOD_FUNDING, Method::METHOD_FUNDING_MEMBER], true)) {
             return 0;
         }
 
@@ -907,13 +950,12 @@ class AffiliationService extends AbstractService
         int $period = null
     ): float {
         switch (true) {
-            case !$this->isFundedInYear($affiliation, $projectYear):
-                return (float)0;
             case null === $period || $projectYear < $year:
                 return (float)1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
                 return (float)1 - $this->parseContributionFactor($affiliation, $year, $period);
+                case !$this->isFundedInYear($affiliation, $projectYear):
             default:
                 return (float)0;
         }
@@ -1052,10 +1094,10 @@ class AffiliationService extends AbstractService
         }
 
         foreach ($yearAndPeriod as $invoiceYear => $invoicePeriod) {
-            if (\count($invoicePeriod) === 2) {
+            if (count($invoicePeriod) === 2) {
                 $invoicePeriod = null;
             } else {
-                $invoicePeriod = \array_pop($invoicePeriod);
+                $invoicePeriod = array_pop($invoicePeriod);
             }
 
             //Derive the contribution
@@ -1070,7 +1112,7 @@ class AffiliationService extends AbstractService
                 $year
             );
             if ($contribution !== 0.0) {
-                $line = new \stdClass();
+                $line = new stdClass();
                 $line->year = $invoiceYear;
                 $line->period = $invoicePeriod;
                 $line->periodOrdinal = $invoiceYear . (null === $invoicePeriod ? '' : '-' . $invoicePeriod . 'H');
@@ -1123,7 +1165,7 @@ class AffiliationService extends AbstractService
 
         return sprintf(
             $this->translator->translate("txt-%s%%-contribution-for-%s"),
-            \number_format($contributionFactor * 100, 0),
+            number_format($contributionFactor * 100, 0),
             $year,
             $currency->getSymbol()
         );
@@ -1159,7 +1201,7 @@ class AffiliationService extends AbstractService
         Project $project,
         int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectAndWhich($project, $which);
 
@@ -1205,7 +1247,7 @@ class AffiliationService extends AbstractService
         Version $version,
         int $which = self::WHICH_ALL
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndWhich($version, $which);
 
@@ -1219,7 +1261,7 @@ class AffiliationService extends AbstractService
     public function addAssociate(Affiliation $affiliation, Contact $contact = null, string $email = null): Contact
     {
         if (null === $contact && empty($email)) {
-            throw new \InvalidArgumentException('Both contact and email address cannot be null to add an associate');
+            throw new InvalidArgumentException('Both contact and email address cannot be null to add an associate');
         }
 
         //Boolean to see if the contact whas known already
@@ -1240,7 +1282,7 @@ class AffiliationService extends AbstractService
 
                 $contact = $contactActions->createContact(
                     $email,
-                    \sprintf(
+                    sprintf(
                         'Created via invitation for %s in %s',
                         $affiliation->getOrganisation(),
                         $affiliation->getProject()
@@ -1323,7 +1365,7 @@ class AffiliationService extends AbstractService
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
     ): int {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByProjectAndCountryAndWhich($project, $country, $which);
@@ -1333,7 +1375,7 @@ class AffiliationService extends AbstractService
         Country $country,
         Call $call
     ): int {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByCountryAndCall($country, $call);
@@ -1397,7 +1439,7 @@ class AffiliationService extends AbstractService
     public function findAffiliationByOrganisation(
         Organisation $organisation
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return new ArrayCollection($repository->findAffiliationByOrganisation($organisation));
@@ -1411,7 +1453,7 @@ class AffiliationService extends AbstractService
     public function findAffiliationByOrganisationViaParentOrganisation(
         Organisation $organisation
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return new ArrayCollection($repository->findAffiliationByOrganisationViaParentOrganisation($organisation));
@@ -1451,7 +1493,7 @@ class AffiliationService extends AbstractService
 
     public function findAffiliationWithMissingDoa(): array
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationWithMissingDoa();
@@ -1459,7 +1501,7 @@ class AffiliationService extends AbstractService
 
     public function findAffiliationWithMissingLoi(): Query
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationWithMissingLoi();
@@ -1467,7 +1509,7 @@ class AffiliationService extends AbstractService
 
     public function deactivateAffiliation(Affiliation $affiliation): void
     {
-        $affiliation->setDateEnd(new \DateTime());
+        $affiliation->setDateEnd(new DateTime());
         $this->save($affiliation);
         /*
          * Remove the current cost and effort of the affiliation
@@ -1506,7 +1548,7 @@ class AffiliationService extends AbstractService
 
     public function findLogAffiliations(): array
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationInProjectLog();

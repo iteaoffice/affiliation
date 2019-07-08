@@ -61,7 +61,7 @@ final class Doa extends AbstractAssertion
         }
 
         switch ($this->getPrivilege()) {
-            case 'upload':
+            case 'submit':
                 /*
                  * For the upload we need to see if the user has access on the editing of the affiliation
                  * The affiliation can already be known, but if not grab it from the routeMatch

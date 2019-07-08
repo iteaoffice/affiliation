@@ -12,9 +12,12 @@ declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
+use Contact\Entity\Contact;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use General\Entity\ContentType;
 use Zend\Form\Annotation;
 
 /**
@@ -40,7 +43,7 @@ class Doa extends AbstractEntity
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateSigned;
     /**
@@ -49,15 +52,25 @@ class Doa extends AbstractEntity
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateApproved;
+    /**
+     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="affiliationDoaApprover")
+     * @ORM\JoinColumn(name="approve_contact_id", referencedColumnName="contact_id")
+     * @Annotation\Type("\Contact\Form\Element\Contact")
+     * @Annotation\Attributes({"label":"txt-affiliation-doa-approver-label"})
+     * @Annotation\Options({"help-block":"txt-affiliation-doa-approver-help-block"})
+     *
+     * @var Contact
+     */
+    private $approver;
     /**
      * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="affiliationDoa")
      * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=true)
      * @Annotation\Exclude()
      *
-     * @var \General\Entity\ContentType
+     * @var ContentType
      */
     private $contentType;
     /**
@@ -71,7 +84,7 @@ class Doa extends AbstractEntity
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist","remove"}, mappedBy="doa")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\DoaObject[]|ArrayCollection
+     * @var DoaObject[]|ArrayCollection
      */
     private $object;
     /**
@@ -79,7 +92,7 @@ class Doa extends AbstractEntity
      * @Gedmo\Timestampable(on="update")
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateUpdated;
     /**
@@ -87,7 +100,7 @@ class Doa extends AbstractEntity
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateCreated;
     /**
@@ -95,7 +108,7 @@ class Doa extends AbstractEntity
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Affiliation
+     * @var Affiliation
      */
     private $affiliation;
     /**
@@ -103,7 +116,7 @@ class Doa extends AbstractEntity
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * @Annotation\Exclude()
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $contact;
 
@@ -134,206 +147,129 @@ class Doa extends AbstractEntity
 
     public function parseFileName(): string
     {
-        return sprintf('DOA_%s_%s', $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
+        return sprintf('DOA_%s_%s', $this->affiliation->getOrganisation(), $this->affiliation->getProject());
     }
 
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Doa
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Doa
-     */
-    public function setId($id)
+    public function setId($id): Doa
     {
         $this->id = $id;
-
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateSigned()
+    public function getDateSigned(): ?DateTime
     {
         return $this->dateSigned;
     }
 
-    /**
-     * @param \DateTime $dateSigned
-     *
-     * @return Doa
-     */
-    public function setDateSigned($dateSigned)
+    public function setDateSigned(DateTime $dateSigned): Doa
     {
         $this->dateSigned = $dateSigned;
-
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateApproved()
+    public function getDateApproved(): ?DateTime
     {
         return $this->dateApproved;
     }
 
-    /**
-     * @param \DateTime $dateApproved
-     *
-     * @return Doa
-     */
-    public function setDateApproved($dateApproved)
+    public function setDateApproved(?DateTime $dateApproved): Doa
     {
         $this->dateApproved = $dateApproved;
-
         return $this;
     }
 
-    /**
-     * @return \General\Entity\ContentType
-     */
-    public function getContentType()
+    public function getApprover(): ?Contact
+    {
+        return $this->approver;
+    }
+
+    public function setApprover(Contact $approver): Doa
+    {
+        $this->approver = $approver;
+        return $this;
+    }
+
+    public function getContentType(): ?ContentType
     {
         return $this->contentType;
     }
 
-    /**
-     * @param \General\Entity\ContentType $contentType
-     *
-     * @return Doa
-     */
-    public function setContentType($contentType)
+    public function setContentType(ContentType $contentType): Doa
     {
         $this->contentType = $contentType;
-
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
-    /**
-     * @param int $size
-     *
-     * @return Doa
-     */
-    public function setSize($size)
+    public function setSize(int $size): Doa
     {
         $this->size = $size;
-
         return $this;
     }
 
-    /**
-     * @return DoaObject[]|ArrayCollection
-     */
     public function getObject()
     {
         return $this->object;
     }
 
-    /**
-     * @param DoaObject[]|ArrayCollection $object
-     *
-     * @return Doa
-     */
-    public function setObject($object)
+    public function setObject($object): Doa
     {
         $this->object = $object;
-
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateUpdated()
+    public function getDateUpdated(): ?DateTime
     {
         return $this->dateUpdated;
     }
 
-    /**
-     * @param \DateTime $dateUpdated
-     *
-     * @return Doa
-     */
-    public function setDateUpdated($dateUpdated)
+    public function setDateUpdated(DateTime $dateUpdated): Doa
     {
         $this->dateUpdated = $dateUpdated;
-
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getDateCreated()
+    public function getDateCreated(): ?DateTime
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param \DateTime $dateCreated
-     *
-     * @return Doa
-     */
-    public function setDateCreated($dateCreated)
+    public function setDateCreated(DateTime $dateCreated): Doa
     {
         $this->dateCreated = $dateCreated;
-
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
+    public function getAffiliation(): ?Affiliation
+    {
+        return $this->affiliation;
+    }
+
+    public function setAffiliation(Affiliation $affiliation): Doa
+    {
+        $this->affiliation = $affiliation;
+        return $this;
+    }
+
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     *
-     * @return Doa
-     */
-    public function setContact($contact)
+    public function setContact(Contact $contact): Doa
     {
         $this->contact = $contact;
-
         return $this;
     }
+
+
 }

@@ -20,6 +20,9 @@ use Zend\Form\Element\Text;
 use Zend\Form\Element\Textarea;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
+use Zend\Validator\Callback;
+use Zend\Validator\EmailAddress;
+use Zend\Validator\NotEmpty;
 use function asort;
 use function sprintf;
 
@@ -74,16 +77,6 @@ final class Affiliation extends Form implements InputFilterProviderInterface
             }
         }
         asort($financialContactValueOptions);
-        $communicationContactValueOptions = $financialContactValueOptions;
-        $organisation = $affiliation->getOrganisation();
-        foreach ($organisation->getAffiliation() as $otherAffiliation) {
-            if ((null !== $otherAffiliation->getCommunication())
-                && null === $otherAffiliation->getCommunication()->isActive()
-            ) {
-                $communicationContactValueOptions[$otherAffiliation->getCommunication()->getId()]
-                    = $otherAffiliation->getCommunication()->getFormName();
-            }
-        }
 
         $this->add(
             [
@@ -131,17 +124,28 @@ final class Affiliation extends Form implements InputFilterProviderInterface
         );
         $this->add(
             [
-                'type'       => Select::class,
-                'name'       => 'communication',
+                'type'       => Text::class,
+                'name'       => 'communicationContactName',
                 'options'    => [
-                    'value_options' => $communicationContactValueOptions,
-                    'label'         => _('txt-communication-contact-label'),
-                    'help-block'    => _('txt-communication-contact-help-block'),
+                    'label'      => _('txt-communication-contact-name'),
+                    'help-block' => _('txt-communication-contact-name-help-block'),
                 ],
                 'attributes' => [
-
-                    'class' => 'form-control',
+                    'placeholder' => _('txt-communication-contact-name-placeholder'),
+                ]
+            ]
+        );
+        $this->add(
+            [
+                'type'       => Text::class,
+                'name'       => 'communicationContactEmail',
+                'options'    => [
+                    'label'      => _('txt-communication-contact-email'),
+                    'help-block' => _('txt-communication-contact-email-help-block'),
                 ],
+                'attributes' => [
+                    'placeholder' => _('txt-communication-contact-email-placeholder'),
+                ]
             ]
         );
         $this->add(
@@ -253,7 +257,7 @@ final class Affiliation extends Form implements InputFilterProviderInterface
     public function getInputFilterSpecification(): array
     {
         return [
-            'valueChain'  => [
+            'valueChain'                => [
                 'required'   => false,
                 'validators' => [
                     [
@@ -266,15 +270,54 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                     ],
                 ],
             ],
-            'affiliation' => [
+            'affiliation'               => [
                 'required' => true,
             ],
-            'technical'   => [
+            'technical'                 => [
                 'required' => true,
             ],
-            'financial'   => [
+            'financial'                 => [
                 'required' => true,
-            ]
+            ],
+            'communicationContactName'  => [
+                'required'   => false,
+                'validators' => [
+                    new NotEmpty(NotEmpty::NULL),
+                    [
+                        'name'    => 'Callback',
+                        'options' => [
+                            'messages' => [
+                                Callback::INVALID_VALUE => sprintf(
+                                    'No email provided for the communication contact'
+                                ),
+                            ],
+                            'callback' => static function ($value, $context = []) {
+                                return '' !== $context['communicationContactEmail'];
+                            },
+                        ],
+                    ],
+                ],
+            ],
+            'communicationContactEmail' => [
+                'required'   => false,
+                'validators' => [
+                    new EmailAddress(),
+                    new NotEmpty(NotEmpty::NULL),
+                    [
+                        'name'    => 'Callback',
+                        'options' => [
+                            'messages' => [
+                                Callback::INVALID_VALUE => sprintf(
+                                    'No name provided for the communication contact'
+                                ),
+                            ],
+                            'callback' => static function ($value, $context = []) {
+                                return '' !== $context['communicationContactName'];
+                            },
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }

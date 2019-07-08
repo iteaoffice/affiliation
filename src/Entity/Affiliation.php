@@ -163,6 +163,24 @@ class Affiliation extends AbstractEntity
      */
     private $contact;
     /**
+     * @ORM\Column(name="communication_contact_name", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-affiliation-communication-contact-name-label","help-block":"txt-affiliation-communication-contact-name-help-block"})
+     * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-name-placeholder"})
+     *
+     * @var string
+     */
+    private $communicationContactName;
+    /**
+     * @ORM\Column(name="communication_contact_email", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Email")
+     * @Annotation\Options({"label":"txt-affiliation-communication-contact-email-label","help-block":"txt-affiliation-communication-contact-email-help-block"})
+     * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-email-placeholder"})
+     *
+     * @var string
+     */
+    private $communicationContactEmail;
+    /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
      * @Annotation\Exclude()
@@ -200,27 +218,6 @@ class Affiliation extends AbstractEntity
      * @var Financial
      */
     private $financial;
-    /**
-     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliationCommunication", cascade={"persist"})
-     * @ORM\JoinColumn(name="communication_contact_id", referencedColumnName="contact_id", nullable=true)
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
-     * @Annotation\Options({
-     *      "target_class":"Contact\Entity\Contact",
-     *      "find_method":{
-     *          "name":"findBy",
-     *          "params": {
-     *              "criteria":{},
-     *              "orderBy":{
-     *                  "lastname":"ASC"}
-     *              }
-     *          }
-     *      }
-     * )
-     * @Annotation\Attributes({"label":"txt-affiliation-communication-contact-label"})
-     *
-     * @var Contact
-     */
-    private $communication;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Invoice", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
@@ -942,14 +939,27 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    public function getCommunication(): ?Contact
+    public function getCommunicationContactName(): ?string
     {
-        return $this->communication;
+        return $this->communicationContactName;
     }
 
-    public function setCommunication(?Contact $communication): Affiliation
+    public function setCommunicationContactName(string $communicationContactName): Affiliation
     {
-        $this->communication = $communication;
+        $this->communicationContactName = $communicationContactName;
         return $this;
     }
+
+    public function getCommunicationContactEmail(): ?string
+    {
+        return $this->communicationContactEmail;
+    }
+
+    public function setCommunicationContactEmail(?string $communicationContactEmail): Affiliation
+    {
+        $this->communicationContactEmail = $communicationContactEmail;
+        return $this;
+    }
+
+
 }

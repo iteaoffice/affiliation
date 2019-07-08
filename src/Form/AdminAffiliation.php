@@ -257,45 +257,51 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => Textarea::class,
-                'name'       => 'strategicImportance',
-                'options'    => [
+                'type'    => Textarea::class,
+                'name'    => 'strategicImportance',
+                'options' => [
                     'label'      => _('txt-strategic-importance'),
                     'help-block' => _('txt-strategic-importance-inline-help'),
                 ],
-                'attributes' => [
-                    'class' => 'form-control',
-                ],
             ]
         );
 
         $this->add(
             [
-                'type'       => Contact::class,
-                'name'       => 'financialContact',
-                'options'    => [
+                'type'    => Contact::class,
+                'name'    => 'financialContact',
+                'options' => [
                     'label'      => _('txt-financial-contact'),
                     'help-block' => _('txt-financial-contact-help-block'),
                 ],
-                'attributes' => [
-                    'class' => 'form-control',
-                ],
             ]
         );
         $this->add(
             [
-                'type'       => Contact::class,
-                'name'       => 'communicationContact',
+                'type'       => Text::class,
+                'name'       => 'communicationContactName',
                 'options'    => [
-                    'label'      => _('txt-communication-contact'),
-                    'help-block' => _('txt-communication-contact-help-block'),
+                    'label'      => _('txt-communication-contact-name'),
+                    'help-block' => _('txt-communication-contact-name-help-block'),
                 ],
                 'attributes' => [
-                    'class' => 'form-control',
-                ],
+                    'placeholder' => _('txt-communication-contact-name-placeholder'),
+                ]
             ]
         );
-
+        $this->add(
+            [
+                'type'       => Text::class,
+                'name'       => 'communicationContactEmail',
+                'options'    => [
+                    'label'      => _('txt-communication-contact-email'),
+                    'help-block' => _('txt-communication-contact-email-help-block'),
+                ],
+                'attributes' => [
+                    'placeholder' => _('txt-communication-contact-email-placeholder'),
+                ]
+            ]
+        );
         $this->add(
             [
                 'type'    => Text::class,

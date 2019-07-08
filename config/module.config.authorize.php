@@ -6,23 +6,9 @@ use Affiliation\Acl\Assertion\Loi as LoiAssertion;
 use Affiliation\Acl\Assertion\QuestionnaireAssertion;
 use BjyAuthorize\Guard\Route;
 
-/**
- * ITEA Office copyright message placeholder
- *
- * @category    Affiliation
- * @package     Config
- * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
- */
-
 return [
     'bjyauthorize' => [
-        /* Currently, only controller and route guards exist
-         */
         'guards' => [
-            /* If this guard is specified here (i.e. it is enabled], it will block
-             * access to all routes unless they are specified here.
-             */
             Route::class => [
                 [
                     'route' => 'zfcadmin/affiliation/list-csv',
@@ -101,42 +87,42 @@ return [
                 [
                     'route'     => 'zfcadmin/affiliation/loi/list',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/approval',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/missing',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/remind',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/reminders',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/view',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/edit',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/approve',
                     'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => LoiAssertion::class,
                 ],
                 [
                     'route' => 'zfcadmin/affiliation/questionnaire/list',
@@ -237,7 +223,7 @@ return [
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/doa/upload',
+                    'route'     => 'community/affiliation/doa/submit',
                     'roles'     => ['user'],
                     'assertion' => DoaAssertion::class,
                 ],

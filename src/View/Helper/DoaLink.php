@@ -23,14 +23,6 @@ use Affiliation\Entity\Doa;
  */
 class DoaLink extends LinkAbstract
 {
-    /**
-     * @param Doa $doa
-     * @param string $action
-     * @param string $show
-     * @param Affiliation $affiliation
-     *
-     * @return string
-     */
     public function __invoke(Doa $doa = null, $action = 'view', $show = 'name', Affiliation $affiliation = null): string
     {
         $this->setDoa($doa);
@@ -61,12 +53,6 @@ class DoaLink extends LinkAbstract
         return $this->createLink();
     }
 
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return void
-     */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
@@ -78,19 +64,14 @@ class DoaLink extends LinkAbstract
         }
     }
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
     public function parseAction(): void
     {
         switch ($this->getAction()) {
-            case 'upload':
-                $this->setRouter('community/affiliation/doa/upload');
+            case 'submit':
+                $this->setRouter('community/affiliation/doa/submit');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-upload-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate('txt-submit-doa-for-organisation-%s-in-project-%s-link-title'),
                         $this->getAffiliation()->parseBranchedName(),
                         $this->getAffiliation()->getProject()
                     )
@@ -100,7 +81,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/render');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-render-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate('txt-render-doa-for-organisation-%s-in-project-%s-link-title'),
                         $this->getDoa()->getAffiliation()->parseBranchedName(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -110,7 +91,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/replace');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-replace-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate('txt-replace-doa-for-organisation-%s-in-project-%s-link-title'),
                         $this->getDoa()->getAffiliation()->parseBranchedName(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -120,7 +101,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('community/affiliation/doa/download');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-download-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate('txt-download-doa-for-organisation-%s-in-project-%s-link-title'),
                         $this->getDoa()->getAffiliation()->parseBranchedName(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -128,21 +109,21 @@ class DoaLink extends LinkAbstract
                 break;
             case 'approval-admin':
                 $this->setRouter('zfcadmin/affiliation/doa/approval');
-                $this->setText($this->translator->translate("txt-approval-doa"));
+                $this->setText($this->translator->translate('txt-approval-doa'));
                 break;
             case 'missing-admin':
                 $this->setRouter('zfcadmin/affiliation/doa/missing');
-                $this->setText($this->translator->translate("txt-missing-doa"));
+                $this->setText($this->translator->translate('txt-missing-doa'));
                 break;
             case 'remind-admin':
                 $this->setRouter('zfcadmin/affiliation/doa/remind');
-                $this->setText($this->translator->translate("txt-send-reminder"));
+                $this->setText($this->translator->translate('txt-send-reminder'));
                 break;
             case 'reminders-admin':
                 $this->setRouter('zfcadmin/affiliation/doa/reminders');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-see-reminders-%s-sent"),
+                        $this->translator->translate('txt-see-reminders-%s-sent'),
                         $this->getAffiliation()->getDoaReminder()->count()
                     )
                 );
@@ -151,7 +132,7 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/doa/view');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-view-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate('txt-view-doa-for-organisation-%s-in-project-%s-link-title'),
                         $this->getDoa()->getAffiliation()->parseBranchedName(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
@@ -161,14 +142,14 @@ class DoaLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/doa/edit');
                 $this->setText(
                     sprintf(
-                        $this->translator->translate("txt-edit-doa-for-organisation-%s-in-project-%s-link-title"),
+                        $this->translator->translate('txt-edit-doa-for-organisation-%s-in-project-%s-link-title'),
                         $this->getDoa()->getAffiliation()->parseBranchedName(),
                         $this->getDoa()->getAffiliation()->getProject()
                     )
                 );
                 break;
             default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+                throw new \Exception(sprintf('%s is an incorrect action for %s', $this->getAction(), __CLASS__));
         }
     }
 }

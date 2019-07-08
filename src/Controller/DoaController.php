@@ -14,6 +14,7 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity;
 use Affiliation\Entity\Doa;
+use Affiliation\Form\SubmitLoi;
 use Affiliation\Form\UploadDoa;
 use Affiliation\Service\AffiliationService;
 use General\Service\GeneralService;
@@ -61,8 +62,7 @@ final class DoaController extends AffiliationAbstractController
         $this->translator = $translator;
     }
 
-
-    public function uploadAction()
+    public function submitAction()
     {
         $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
 
@@ -70,41 +70,42 @@ final class DoaController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
+        $contact = $this->identity();
+
         $data = array_merge_recursive(
             $this->getRequest()->getPost()->toArray(),
             $this->getRequest()->getFiles()->toArray()
         );
-        $form = new UploadDoa();
+
+        $form = new SubmitLoi();
         $form->setData($data);
-        if ($this->getRequest()->isPost()) {
-            if (isset($data['cancel'])) {
-                return $this->redirect()->toRoute(
-                    'community/affiliation/affiliation',
-                    ['id' => $affiliation->getId()],
-                    ['fragment' => 'details']
+
+        if ($this->getRequest()->isPost() && isset($data['cancel'])) {
+            return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
+        }
+
+        if ($this->getRequest()->isPost() && !isset($data['approve']) && $form->isValid()) {
+            if (isset($data['submit'])) {
+                $fileData = $form->getData('file');
+                $this->affiliationService->uploadDoa($fileData['file'], $contact, $affiliation);
+
+                $this->flashMessenger()->addSuccessMessage(
+                    sprintf($this->translator->translate('txt-doa-has-been-uploaded-successfully'))
                 );
             }
 
-            if ($form->isValid()) {
-                $fileData = $this->params()->fromFiles();
-                //Create a article object element
-                $affiliationDoaObject = new Entity\DoaObject();
-                $affiliationDoaObject->setObject(file_get_contents($fileData['file']['tmp_name']));
-                $fileSizeValidator = new FilesSize(PHP_INT_MAX);
-                $fileSizeValidator->isValid($fileData['file']);
-                $affiliationDoa = new Entity\Doa();
-                $affiliationDoa->setSize($fileSizeValidator->size);
 
-                $fileTypeValidator = new MimeType();
-                $fileTypeValidator->isValid($fileData['file']);
-                $affiliationDoa->setContentType(
-                    $this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type)
-                );
+            return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
+        }
 
-                $affiliationDoa->setContact($this->identity());
-                $affiliationDoa->setAffiliation($affiliation);
-                $affiliationDoaObject->setDoa($affiliationDoa);
-                $this->affiliationService->save($affiliationDoaObject);
+        if ($this->getRequest()->isPost() && isset($data['approve'])) {
+            if ($data['selfApprove'] === '0') {
+                $form->getInputFilter()->get('selfApprove')->setErrorMessage('Error');
+                $form->get('selfApprove')->setMessages(['Error']);
+            }
+
+            if ($data['selfApprove'] === '1') {
+                $this->affiliationService->submitDoa($contact, $affiliation);
 
                 $changelogMessage = sprintf(
                     $this->translator->translate('txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded'),
@@ -123,17 +124,15 @@ final class DoaController extends AffiliationAbstractController
 
                 return $this->redirect()->toRoute(
                     'community/affiliation/affiliation',
-                    ['id' => $affiliation->getId()],
-                    ['fragment' => 'details']
+                    ['id' => $affiliation->getId()]
                 );
             }
         }
 
         return new ViewModel(
             [
-                'affiliationService' => $this->affiliationService,
-                'affiliation'        => $affiliation,
-                'form'               => $form,
+                'affiliation' => $affiliation,
+                'form'        => $form,
             ]
         );
     }
@@ -143,7 +142,7 @@ final class DoaController extends AffiliationAbstractController
         /**
          * @var Doa $doa
          */
-        $doa = $this->affiliationService->find(Doa::class, (int) $this->params('id'));
+        $doa = $this->affiliationService->find(Doa::class, (int)$this->params('id'));
 
         if (null === $doa || count($doa->getObject()) === 0) {
             return $this->notFoundAction();

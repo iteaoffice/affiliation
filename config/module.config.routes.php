@@ -164,13 +164,13 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'upload'   => [
+                                    'submit'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/upload/affiliation-[:affiliationId].html',
+                                            'route'    => '/submit/affiliation-[:affiliationId].html',
                                             'defaults' => [
-                                                'action'    => 'upload',
-                                                'privilege' => 'upload',
+                                                'action'    => 'submit',
+                                                'privilege' => 'submit',
                                             ],
                                         ],
                                     ],

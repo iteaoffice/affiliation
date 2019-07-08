@@ -89,6 +89,14 @@
         <a href="mailto:{{ affiliation.contact.email }}"><i class="fa fa-envelope-o"></i></a>
         {{ contactLink(affiliation.contact,'view-admin','icon') }}
     </dd>
+
+    {% if affiliation.communicationContactName %}
+        <dt>{{ translate("txt-communication-contact") }}</dt>
+        <dd>{{ affiliation.communicationContactName }} {% if affiliation.communicationContactEmail %} <a
+                    href="mailto:{{ affiliation.communicationContactEmail }}"><i
+                    class="fa fa-envelope-o"></i> {{ affiliation.communicationContactEmail }}</a>{% endif %}</dd>
+    {% endif %}
+
     {% if affiliation.financial %}
         <dt>{{ translate("txt-financial-contact") }}</dt>
         <dd>

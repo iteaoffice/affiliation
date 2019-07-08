@@ -331,11 +331,11 @@ final class RenderPaymentSheet extends AbstractPlugin
                     null !== $financialAddress ? trim(
                         sprintf(
                             '
-%s
-%s
-%s
-%s %s
-%s',
+                                    %s
+                                    %s
+                                    %s
+                                    %s %s
+                                    %s',
                             $this->organisationService->parseOrganisationWithBranch(
                                 $affiliation->getFinancial()
                                     ->getBranch(),

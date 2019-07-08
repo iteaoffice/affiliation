@@ -23,8 +23,6 @@ use function sprintf;
  * @ORM\Entity
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_version")
- *
- * @category    Affiliation
  */
 class Version extends AbstractEntity
 {
@@ -75,6 +73,13 @@ class Version extends AbstractEntity
      * @var \Project\Entity\Funding\Version[]|ArrayCollection
      */
     private $fundingVersion;
+    /**
+     * @ORM\OneToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="projectAffiliationVersion")
+     * @ORM\JoinColumn(name="contract_version_id", referencedColumnName="version_id", nullable=true)
+     *
+     * @var \Project\Entity\Contract\Version
+     */
+    private $contractVersion;
 
     public function __construct()
     {
@@ -102,34 +107,10 @@ class Version extends AbstractEntity
     {
         return sprintf(
             '%s in %s (%s)',
-            $this->getAffiliation()->getOrganisation(),
-            $this->getAffiliation()->getProject(),
-            $this->getVersion()->getVersionType()->getDescription()
+            $this->affiliation->getOrganisation(),
+            $this->affiliation->getProject(),
+            $this->version->getVersionType()->getDescription()
         );
-    }
-
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-
-        return $this;
-    }
-
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    public function setVersion($version)
-    {
-        $this->version = $version;
-
-        return $this;
     }
 
     public function getId()
@@ -137,82 +118,88 @@ class Version extends AbstractEntity
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): Version
     {
         $this->id = $id;
-
         return $this;
     }
 
-    public function getContact()
+    public function getAffiliation(): ?Affiliation
+    {
+        return $this->affiliation;
+    }
+
+    public function setAffiliation(?Affiliation $affiliation): Version
+    {
+        $this->affiliation = $affiliation;
+        return $this;
+    }
+
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
 
-    public function setContact($contact)
+    public function setContact(?Contact $contact): Version
     {
         $this->contact = $contact;
-
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|\Project\Entity\Cost\Version[]
-     */
+    public function getVersion(): ?\Project\Entity\Version\Version
+    {
+        return $this->version;
+    }
+
+    public function setVersion(?\Project\Entity\Version\Version $version): Version
+    {
+        $this->version = $version;
+        return $this;
+    }
+
     public function getCostVersion()
     {
         return $this->costVersion;
     }
 
-    /**
-     * @param ArrayCollection|\Project\Entity\Cost\Version[] $costVersion
-     *
-     * @return Version
-     */
-    public function setCostVersion($costVersion)
+    public function setCostVersion($costVersion): Version
     {
         $this->costVersion = $costVersion;
-
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|\Project\Entity\Effort\Version[]
-     */
     public function getEffortVersion()
     {
         return $this->effortVersion;
     }
 
-    /**
-     * @param ArrayCollection|\Project\Entity\Effort\Version[] $effortVersion
-     *
-     * @return Version
-     */
-    public function setEffortVersion($effortVersion)
+    public function setEffortVersion($effortVersion): Version
     {
         $this->effortVersion = $effortVersion;
-
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|\Project\Entity\Funding\Version[]
-     */
     public function getFundingVersion()
     {
         return $this->fundingVersion;
     }
 
-    /**
-     * @param ArrayCollection|\Project\Entity\Funding\Version[] $fundingVersion
-     *
-     * @return Version
-     */
-    public function setFundingVersion($fundingVersion)
+    public function setFundingVersion($fundingVersion): Version
     {
         $this->fundingVersion = $fundingVersion;
-
         return $this;
     }
+
+    public function getContractVersion(): ?\Project\Entity\Contract\Version
+    {
+        return $this->contractVersion;
+    }
+
+    public function setContractVersion(?\Project\Entity\Contract\Version $contractVersion): Version
+    {
+        $this->contractVersion = $contractVersion;
+        return $this;
+    }
+
+
 }

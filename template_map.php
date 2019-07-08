@@ -38,6 +38,7 @@ return array(
     'affiliation/edit/affiliation'                               => __DIR__ . '//view/affiliation/edit/affiliation.twig',
     'affiliation/edit/manage-associate'                          => __DIR__ . '//view/affiliation/edit/manage-associate.twig',
     'affiliation/pdf/doa-project'                                => __DIR__ . '//view/affiliation/pdf/doa-project.twig',
+    'affiliation/doa/submit'                                     => __DIR__ . '//view/affiliation/doa/submit.twig',
     'affiliation/doa/replace'                                    => __DIR__ . '//view/affiliation/doa/replace.twig',
     'affiliation/doa/upload'                                     => __DIR__ . '//view/affiliation/doa/upload.twig',
     'affiliation/community/tab/description'                      => __DIR__ . '//view/affiliation/community/tab/description.twig',
