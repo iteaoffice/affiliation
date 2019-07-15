@@ -1,16 +1,16 @@
 {% do headTitle().append(translate(affiliation.project.parseFullname())) %}
 {% do headTitle().append(translate("txt-upload-doa-title")) %}
 
-<h1>{{ translate("txt-submit-letter-of-intent-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
-
+<h1>{{ translate("txt-submit-declaration-of-acceptance-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
 {% if not doa %}
 
     <p>You can agree with the Declaration of Acceptance (DOA), also on behalf of your organisation, in two different
         ways:</p>
 
     <ul>
-        <li>Sign the paper version and upload it below</li>
-        <li>Sign the digital version by ticking the checkbox below</li>
+        <li>Complete and sign the digital version by ticking the checkbox below</li>
+        <li>Download and complete and sign the paper version and upload it below</li>
+
     </ul>
 
     {% do form.prepare() %}
@@ -23,9 +23,9 @@
             <div class="offset-sm-3 col-sm-9">
                 <p>{{ translate("txt-please-read-the-text-below-before-signing-the-doa") }}</p>
                 <div style="background-color: #f8f8f8; padding: 10px;">
-                    <strong>{{ affiliation.organisation }}</strong>, partner in the project
-                    <strong>{{ affiliation.project }}</strong>, intends to participate in this project, should it be
-                    accepted by the ITEA Board.
+
+                    {{ doaContent|raw }}
+
                 </div>
             </div>
         </div>
@@ -37,13 +37,16 @@
                         {{ formelement(form.get('selfApprove')) }} {{ translate("txt-self-approve-doa-checkbox-help-text") }}
                     </label>
                 </div>
+                {% if form.get('selfApprove').getMessages() %}
+                    <div class="invalid-feedback">{{ translate("txt-please-check-the-box-above-to-digitally-sign-the-doa") }}</div>{% endif %}
+
             </div>
         </div>
 
 
         <div class="form-group row">
             <div class="offset-sm-3 col-sm-9">
-                {{ formelement(form.get('approve')) }}
+                {{ ztbformelement(form.get('sign')) }}
             </div>
         </div>
     </fieldset>
@@ -82,13 +85,11 @@
 
         <div class="form-group row">
             <div class="offset-sm-3 col-sm-9">
-                {{ ztbformelement(form.get('submit')) }}
+                {{ ztbformelement(form.get('upload')) }}
                 {{ ztbformelement(form.get('cancel')) }}
             </div>
         </div>
     </fieldset>
-
-
 
     {{ form().closeTag()|raw }}
 

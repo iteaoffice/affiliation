@@ -295,15 +295,15 @@ class AffiliationService extends AbstractService
         return $doaObject->getDoa();
     }
 
-    public function submitDoa(Contact $contact, Affiliation $affiliation): Doa
+    public function submitDoa(Contact $contact, Affiliation $affiliation, array $data): Doa
     {
         $doa = new Doa();
         $doa->setContact($contact);
-        $doa->setApprover($contact);
         $doa->setDateSigned(new DateTime());
-        $doa->setDateApproved(new DateTime());
+        $doa->setGroupName($data['group_name']);
+        $doa->setChamberOfCommerceNumber($data['chamber_of_commerce_number']);
+        $doa->setChamberOfCommerceLocation($data['chamber_of_commerce_location']);
         $doa->setAffiliation($affiliation);
-
         $this->save($doa);
 
         return $doa;

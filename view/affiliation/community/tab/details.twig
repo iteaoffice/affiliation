@@ -50,15 +50,20 @@
         <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
         <dd>
             {% if not affiliationService.hasDoa(affiliation) %}
-                {{ doaLink(null,'upload','text', affiliation) }}
+                {% set doaLinkText = doaLink(null,'submit','text', affiliation) %}
+
+                {{ doaLinkText|default(translate("txt-no-doa-uploaded-yet"))|raw }}
             {% elseif affiliation.doa.dateApproved is null %}
                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
                 format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
-                {{ doaLink(affiliation.doa,'replace','icon') }}
-                {{ doaLink(affiliation.doa,'download','icon') }}
+                {% if not affiliation.doa.object.isEmpty() %}
+                    {{ doaLink(affiliation.doa,'download','icon') }}
+                {% endif %}
             {% else %}
-                {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date)|raw }}
-                {{ doaLink(affiliation.doa,'download','icon') }}
+                {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date) }}
+                {% if not affiliation.doa.object.isEmpty() %}
+                    {{ doaLink(affiliation.doa,'download','icon') }}
+                {% endif %}
             {% endif %}
         </dd>
     {% endif %}

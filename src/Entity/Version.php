@@ -74,10 +74,10 @@ class Version extends AbstractEntity
      */
     private $fundingVersion;
     /**
-     * @ORM\OneToOne(targetEntity="Project\Entity\Contract\Version", inversedBy="projectAffiliationVersion")
-     * @ORM\JoinColumn(name="contract_version_id", referencedColumnName="version_id", nullable=true)
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\ContractVersion", inversedBy="affiliationVersion")
+     * @ORM\JoinColumn(name="affiliation_contract_version_id", referencedColumnName="affiliation_contract_version_id", nullable=true)
      *
-     * @var \Project\Entity\Contract\Version
+     * @var ContractVersion
      */
     private $contractVersion;
 
@@ -190,12 +190,12 @@ class Version extends AbstractEntity
         return $this;
     }
 
-    public function getContractVersion(): ?\Project\Entity\Contract\Version
+    public function getContractVersion(): ?ContractVersion
     {
         return $this->contractVersion;
     }
 
-    public function setContractVersion(?\Project\Entity\Contract\Version $contractVersion): Version
+    public function setContractVersion(?ContractVersion $contractVersion): Version
     {
         $this->contractVersion = $contractVersion;
         return $this;

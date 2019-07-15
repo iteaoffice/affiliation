@@ -16,19 +16,19 @@ use Contact\Service\ContactService;
 use Deeplink\Entity\Target;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
+use Zend\Form\Element\Select;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Text;
+use Zend\Form\Element\Textarea;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Form\Element\Submit;
-use Zend\Form\Element\Textarea;
-use Zend\Form\Element\Text;
-use Zend\Form\Element\Select;
 
 /**
- * Class LoiReminder
+ * Class DoaReminder
  *
  * @package Affiliation\Form
  */
-final class LoiReminder extends Form implements InputFilterProviderInterface
+final class DoaReminder extends Form
 {
     public function __construct(
         Affiliation $affiliation,
@@ -60,32 +60,6 @@ final class LoiReminder extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => EntitySelect::class,
-                'name'       => 'deeplinkTarget',
-                'attributes' => [
-                    'label' => _('txt-deeplink-target'),
-                ],
-                'options'    => [
-                    'object_manager'  => $entityManager,
-                    'target_class'    => Target::class,
-                    'find_method'     => [
-                        'name'   => 'findBy',
-                        'params' => [
-                            'criteria' => [],
-                            'orderBy'  => [
-                                'route' => 'ASC',
-                            ],
-                        ],
-                    ],
-                    'label_generator' => function (Target $targetEntity) {
-                        return sprintf('%s (%s)', $targetEntity->getTarget(), $targetEntity->getRoute());
-                    },
-                ],
-            ]
-        );
-
-        $this->add(
-            [
                 'type'       => Text::class,
                 'name'       => 'subject',
                 'attributes' => [
@@ -103,6 +77,32 @@ final class LoiReminder extends Form implements InputFilterProviderInterface
                     'label' => _('txt-message'),
                     'rows'  => 15,
                     'class' => 'form-control',
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => EntitySelect::class,
+                'name'       => 'deeplinkTarget',
+                'attributes' => [
+                    'label' => _('txt-deeplink-target'),
+                ],
+                'options'    => [
+                    'object_manager'  => $entityManager,
+                    'target_class'    => Target::class,
+                    'find_method'     => [
+                        'name'   => 'findTargetsWithRoute',
+                        'params' => [
+                            'criteria' => [],
+                            'orderBy'  => [
+                                'route' => 'ASC',
+                            ],
+                        ],
+                    ],
+                    'label_generator' => static function (Target $targetEntity) {
+                        return sprintf('%s (%s)', $targetEntity->getTarget(), $targetEntity->getRoute());
+                    },
                 ],
             ]
         );
@@ -127,10 +127,5 @@ final class LoiReminder extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
-    }
-
-    public function getInputFilterSpecification(): array
-    {
-        return [];
     }
 }

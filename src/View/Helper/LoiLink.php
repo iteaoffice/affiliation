@@ -127,15 +127,6 @@ class LoiLink extends LinkAbstract
                 $this->setRouter('zfcadmin/affiliation/loi/missing');
                 $this->setText($this->translator->translate('txt-missing-loi'));
                 break;
-            case 'reminders-admin':
-                $this->setRouter('zfcadmin/affiliation/loi/reminders');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-see-reminders-%s-sent'),
-                        $this->getAffiliation()->getLoiReminder()->count()
-                    )
-                );
-                break;
             case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation/loi/view');
                 $this->setText(
@@ -156,8 +147,6 @@ class LoiLink extends LinkAbstract
                     )
                 );
                 break;
-            default:
-                throw new \Exception(sprintf('%s is an incorrect action for %s', $this->getAction(), __CLASS__));
         }
     }
 }

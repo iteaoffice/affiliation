@@ -49,6 +49,11 @@
                             data-toggle="tab">{{ translate("txt-payment-sheet") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#invoice" data-toggle="tab">{{ translate("txt-invoices") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#version" data-toggle="tab">{{ translate("txt-version") }}</a></li>
+    {% if affiliation.hasContractVersion() %}
+        <li class="nav-item"><a class="nav-link" href="#contract"
+                                data-toggle="tab">{{ translate("txt-national-contract") }}</a>
+        </li>
+    {% endif %}
     <li class="nav-item"><a class="nav-link" href="#funding" data-toggle="tab">{{ translate("txt-funding") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#report" data-toggle="tab">{{ translate("txt-reporting") }}</a></li>
 </ul>
@@ -97,6 +102,11 @@
 
             <dt>{{ translate("txt-self-funded-affiliation-status") }}</dt>
             <dd>{{ translate(affiliation.getSelfFunded(true)) }}</dd>
+
+            {% if affiliation.hasContractVersion() %}
+                <dt>{{ translate("txt-national-contract") }}</dt>
+                <dd>{{ contractVersionLink(affiliation.contractVersion.last.version,'view') }}</dd>
+            {% endif %}
 
 
             {% if affiliationService.isSelfFunded(affiliation) %}
@@ -197,7 +207,8 @@
                 <dt>{{ translate("txt-communication-contact") }}</dt>
                 <dd>{{ affiliation.communicationContactName }} {% if affiliation.communicationContactEmail %} <a
                             href="mailto:{{ affiliation.communicationContactEmail }}"><i
-                            class="fa fa-envelope-o"></i> {{ affiliation.communicationContactEmail }}</a>{% endif %}</dd>
+                            class="fa fa-envelope-o"></i> {{ affiliation.communicationContactEmail }}</a>{% endif %}
+                </dd>
             {% endif %}
 
 
@@ -529,6 +540,41 @@
         </table>
 
 
+    </div>
+    <div class="tab-pane" role="tabpanel" id="contract">
+
+
+        {% for contract in affiliation.contract %}
+            <h2>{{ translate("txt-contract") }}</h2>
+
+            <dl class="dl-horizontal">
+                <dt>{{ translate("txt-contract-country") }}</dt>
+                <dd>{{ projectContractLink(contract,'view','country') }}</dd>
+                <dt>{{ translate("txt-project") }}</dt>
+                <dd>{{ projectLink(contract.project,'view-admin','name') }}</dd>
+                <dt>{{ translate("txt-country") }}</dt>
+                <dd>{{ countryLink(contract.country,'view-admin','iso3') }}</dd>
+                <dt>{{ translate("txt-currency") }}</dt>
+                <dd>{{ contract.currency.name }} ({{ contract.currency.symbol }})</dd>
+                <dt>{{ translate("txt-contact") }}</dt>
+                <dd>{{ contactLink(contract.contact,'view-admin', 'name') }} <a
+                            href="mailto:{{ contract.contact.email }}"><i
+                                class="fa fa-envelope-o"></i></a>
+                    {{ contactLink(contract.contact,'view-admin','icon') }}</dd>
+                <dt>{{ translate("txt-date-start") }}</dt>
+                <dd>{{ contract.dateStart|date('d-m-Y') }}</dd>
+                <dt>{{ translate("txt-date-end") }}</dt>
+                <dd>{{ contract.dateEnd|date('d-m-Y') }}</dd>
+            </dl>
+
+            <dl class="dl-horizontal">
+                <dt>{{ translate("txt-involved-partners") }}</dt>
+                {% for affiliation in contract.affiliation %}
+                    <dd>{{ affiliationLink(affiliation,'view-admin') }} ({{ affiliation.organisation.country.iso3 }})
+                    </dd>
+                {% endfor %}
+            </dl>
+        {% endfor %}
     </div>
     <div class="tab-pane" role="tabpanel" id="funding">
         <h2>{{ translate("txt-funding") }}</h2>

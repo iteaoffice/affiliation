@@ -19,6 +19,7 @@ use Affiliation\Entity\Doa;
 
 /**
  * Class DoaLink
+ *
  * @package Affiliation\View\Helper
  */
 class DoaLink extends LinkAbstract
@@ -46,7 +47,10 @@ class DoaLink extends LinkAbstract
 
         if (null !== $doa) {
             $this->addRouterParam('id', $this->getDoa()->getId());
-            $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
+
+            if ($doa->hasObject()) {
+                $this->addRouterParam('ext', $this->getDoa()->getContentType()->getExtension());
+            }
         }
         $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
 
@@ -74,16 +78,6 @@ class DoaLink extends LinkAbstract
                         $this->translator->translate('txt-submit-doa-for-organisation-%s-in-project-%s-link-title'),
                         $this->getAffiliation()->parseBranchedName(),
                         $this->getAffiliation()->getProject()
-                    )
-                );
-                break;
-            case 'render':
-                $this->setRouter('community/affiliation/doa/render');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-render-doa-for-organisation-%s-in-project-%s-link-title'),
-                        $this->getDoa()->getAffiliation()->parseBranchedName(),
-                        $this->getDoa()->getAffiliation()->getProject()
                     )
                 );
                 break;
@@ -148,8 +142,6 @@ class DoaLink extends LinkAbstract
                     )
                 );
                 break;
-            default:
-                throw new \Exception(sprintf('%s is an incorrect action for %s', $this->getAction(), __CLASS__));
         }
     }
 }

@@ -45,11 +45,6 @@ return [
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/doa/list',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
                     'route'     => 'zfcadmin/affiliation/doa/approval',
                     'roles'     => ['office'],
                     'assertion' => DoaAssertion::class,
@@ -85,9 +80,9 @@ return [
                     'assertion' => DoaAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/loi/list',
+                    'route'     => 'zfcadmin/affiliation/doa/decline',
                     'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
+                    'assertion' => DoaAssertion::class,
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/approval',
@@ -96,16 +91,6 @@ return [
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/loi/missing',
-                    'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/loi/remind',
-                    'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/loi/reminders',
                     'roles'     => ['office'],
                     'assertion' => LoiAssertion::class,
                 ],

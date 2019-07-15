@@ -21,8 +21,6 @@ use General\Entity\ContentType;
 use Zend\Form\Annotation;
 
 /**
- * ProjectDoa.
- *
  * @ORM\Table(name="project_doa")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Doa")
  */
@@ -38,33 +36,13 @@ class Doa extends AbstractEntity
      */
     private $id;
     /**
-     * @ORM\Column(name="date_signed", type="date", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Date")
-     * @Annotation\Attributes({"step":"any"})
-     * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="doa")
+     * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
+     * @Annotation\Exclude()
      *
-     * @var DateTime
+     * @var Affiliation
      */
-    private $dateSigned;
-    /**
-     * @ORM\Column(name="date_approved", type="datetime", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Date")
-     * @Annotation\Attributes({"step":"any"})
-     * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
-     *
-     * @var DateTime
-     */
-    private $dateApproved;
-    /**
-     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="affiliationDoaApprover")
-     * @ORM\JoinColumn(name="approve_contact_id", referencedColumnName="contact_id")
-     * @Annotation\Type("\Contact\Form\Element\Contact")
-     * @Annotation\Attributes({"label":"txt-affiliation-doa-approver-label"})
-     * @Annotation\Options({"help-block":"txt-affiliation-doa-approver-help-block"})
-     *
-     * @var Contact
-     */
-    private $approver;
+    private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="General\Entity\ContentType", cascade={"persist"}, inversedBy="affiliationDoa")
      * @ORM\JoinColumn(name="contenttype_id", referencedColumnName="contenttype_id", nullable=true)
@@ -88,14 +66,6 @@ class Doa extends AbstractEntity
      */
     private $object;
     /**
-     * @ORM\Column(name="date_updated", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="update")
-     * @Annotation\Exclude()
-     *
-     * @var DateTime
-     */
-    private $dateUpdated;
-    /**
      * @ORM\Column(name="date_received", type="date", nullable=true)
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
@@ -104,13 +74,35 @@ class Doa extends AbstractEntity
      */
     private $dateCreated;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="doa")
-     * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
+     * @ORM\Column(name="date_updated", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
      * @Annotation\Exclude()
      *
-     * @var Affiliation
+     * @var DateTime
      */
-    private $affiliation;
+    private $dateUpdated;
+    /**
+     * Date when the submitter sends in the DOA
+     *
+     * @ORM\Column(name="date_signed", type="date", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Attributes({"step":"any"})
+     * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
+     *
+     * @var DateTime
+     */
+    private $dateSigned;
+    /**
+     * Date approved by the office
+     *
+     * @ORM\Column(name="date_approved", type="datetime", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Attributes({"step":"any"})
+     * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
+     *
+     * @var DateTime
+     */
+    private $dateApproved;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="affiliationDoa")
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
@@ -119,6 +111,44 @@ class Doa extends AbstractEntity
      * @var Contact
      */
     private $contact;
+    /**
+     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="affiliationDoaApprover")
+     * @ORM\JoinColumn(name="approve_contact_id", referencedColumnName="contact_id")
+     * @Annotation\Type("\Contact\Form\Element\Contact")
+     * @Annotation\Attributes({"label":"txt-affiliation-doa-approver-label"})
+     * @Annotation\Options({"help-block":"txt-affiliation-doa-approver-help-block"})
+     *
+     * @var Contact
+     */
+    private $approver;
+    /**
+     * @ORM\Column(name="group_name", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-doa-group-name-label","help-block":"txt-doa-group-name-help-block"})
+     * @Annotation\Attributes({"placeholder":"txt-doa-group-name-placeholder"})
+     *
+     * @var string
+     */
+    private $groupName;
+    /**
+     * @ORM\Column(name="chamber_of_commerce_number", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-doa-chamber-of-commerce-number-label","help-block":"txt-doa-chamber-of-commerce-number-help-block"})
+     * @Annotation\Attributes({"placeholder":"txt-doa-chamber-of-commerce-number-placeholder"})
+     *
+     * @var string
+     */
+    private $chamberOfCommerceNumber;
+    /**
+     * @ORM\Column(name="chamber_of_commerce_location", type="string", nullable=true)
+     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-doa-chamber-of-commerce-location-label","help-block":"txt-doa-chamber-of-commerce-location-help-block"})
+     * @Annotation\Attributes({"placeholder":"txt-doa-chamber-of-commerce-location-placeholder"})
+     *
+     * @var string
+     */
+    private $chamberOfCommerceLocation;
+
 
     public function __construct()
     {
@@ -138,6 +168,11 @@ class Doa extends AbstractEntity
     public function __isset($property)
     {
         return isset($this->$property);
+    }
+
+    public function hasObject(): bool
+    {
+        return !$this->object->isEmpty();
     }
 
     public function __toString(): string
@@ -271,5 +306,36 @@ class Doa extends AbstractEntity
         return $this;
     }
 
+    public function getGroupName(): ?string
+    {
+        return $this->groupName;
+    }
 
+    public function setGroupName(?string $groupName): Doa
+    {
+        $this->groupName = $groupName;
+        return $this;
+    }
+
+    public function getChamberOfCommerceNumber(): ?string
+    {
+        return $this->chamberOfCommerceNumber;
+    }
+
+    public function setChamberOfCommerceNumber(?string $chamberOfCommerceNumber): Doa
+    {
+        $this->chamberOfCommerceNumber = $chamberOfCommerceNumber;
+        return $this;
+    }
+
+    public function getChamberOfCommerceLocation(): ?string
+    {
+        return $this->chamberOfCommerceLocation;
+    }
+
+    public function setChamberOfCommerceLocation(?string $chamberOfCommerceLocation): Doa
+    {
+        $this->chamberOfCommerceLocation = $chamberOfCommerceLocation;
+        return $this;
+    }
 }

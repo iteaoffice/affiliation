@@ -91,23 +91,13 @@ final class Doa extends AbstractAssertion
 
                 return null === $doa->getDateApproved()
                     && $this->affiliationAssertion->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
-            case 'render':
-                /*
-                 * For the upload we need to see if the user has access on the editing of the affiliation
-                 */
-                if (null !== $this->getRouteMatch()->getParam('id')) {
-                    $affiliationId = $this->getRouteMatch()->getParam('id');
-                } else {
-                    $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
-                }
-                $affiliation = $this->doaService->findAffiliationById((int)$affiliationId);
-
-                return $this->affiliationAssertion->assert($acl, $role, $affiliation, 'view-community');
             case 'download':
+                if (!$doa->hasObject()) {
+                    return false;
+                }
                 return $this->affiliationAssertion->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
             case 'view-admin':
             case 'edit-admin':
-            case 'list-admin':
             case 'missing-admin':
             case 'remind-admin':
             case 'reminders-admin':

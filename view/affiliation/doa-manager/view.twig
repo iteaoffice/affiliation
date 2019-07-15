@@ -9,9 +9,20 @@
     <dt>{{ translate("txt-project") }}</dt>
     <dd>{{ projectLink(doa.affiliation.project, 'view-admin', 'name') }}</dd>
     <dt>{{ translate("txt-project-partner") }}</dt>
-    <dd>{{ doa.affiliation.organisation }}</dd>
+    <dd>{{ affiliationLink(doa.affiliation,'view-admin') }}</dd>
     <dt>{{ translate("txt-partner") }}</dt>
-    <dd>{{ doa.affiliation.organisation }}</dd>
+    <dd>{{ organisationLink(doa.affiliation.organisation,'view-admin') }}</dd>
+
+    {% if doa.chamberOfCommerceNumber %}
+        <dt>{{ translate("txt-group-name") }}</dt>
+        <dd>{{ doa.groupName }}</dd>
+        <dt>{{ translate("txt-chamber-of-commerce-number") }}</dt>
+        <dd>{{ doa.chamberOfCommerceNumber }}</dd>
+        <dt>{{ translate("txt-chamber-of-commerce-location") }}</dt>
+        <dd>{{ doa.chamberOfCommerceLocation }}</dd>
+    {% endif %}
+
+
     <dt>{{ translate("txt-date-uploaded") }}</dt>
     <dd>{{ doa.affiliation.dateCreated|string_date }}</dd>
     <dt>{{ translate("txt-signer") }}</dt>
@@ -22,18 +33,31 @@
     {% else %}
         <dd>{{ translate("txt-this-doa-has-not-been-signed") }}</dd>
     {% endif %}
+
+    <dt>{{ translate("txt-type") }}</dt>
+    <dd>{{ translate("txt-digitally-signed") }}</dd>
+
     <dt>{{ translate("txt-date-approved") }}</dt>
     {% if doa.dateApproved %}
         <dd>{{ doa.dateApproved|string_date }}</dd>
     {% else %}
         <dd>{{ translate("txt-this-doa-has-not-been-approved") }}</dd>
     {% endif %}
-    {% if doa.contentType %}
+    <dt>{{ translate("txt-approved-by") }}</dt>
+    {% if doa.approver %}
+        <dd>{{ contactLink(doa.approver,'view-admin') }}</dd>
+    {% else %}
+        <dd>{{ translate("txt-this-doa-has-not-been-approved") }}</dd>
+    {% endif %}
+    {% if doa.hasObject() %}
+        <dt>{{ translate("txt-type") }}</dt>
+        <dd>{{ translate("txt-file-upload") }}</dd>
         <dt>{{ translate("txt-content-type") }}</dt>
         <dd>{{ contentTypeIcon(doa.contentType) }} {{ doa.contentType.description }} ({{ doa.size|parse_size }})</dd>
+        <dt>{{ translate("txt-download") }}</dt>
+        <dd>{{ doaLink(doa,'download','text') }}</dd>
     {% endif %}
-    <dt>{{ translate("txt-download") }}</dt>
-    <dd>{{ doaLink(doa,'download','text') }}</dd>
+
 </dl>
 
 {{ doaLink(doa,'edit-admin','button') }}

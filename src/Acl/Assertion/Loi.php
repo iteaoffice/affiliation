@@ -108,8 +108,6 @@ final class Loi extends AbstractAssertion
             case 'edit-admin':
             case 'list-admin':
             case 'missing-admin':
-            case 'remind-admin':
-            case 'reminders-admin':
             case 'approval-admin':
                 return $this->rolesHaveAccess([Access::ACCESS_OFFICE]);
         }

@@ -350,14 +350,6 @@ class Affiliation extends AbstractEntity
      */
     private $doaReminder;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @ORM\OrderBy=({"DateCreated"="DESC"})
-     * @Annotation\Exclude();
-     *
-     * @var DoaReminder[]|Collections\ArrayCollection
-     */
-    private $loiReminder;
-    /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Achievement", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
@@ -416,7 +408,6 @@ class Affiliation extends AbstractEntity
         $this->effort = new Collections\ArrayCollection();
         $this->spent = new Collections\ArrayCollection();
         $this->doaReminder = new Collections\ArrayCollection();
-        $this->loiReminder = new Collections\ArrayCollection();
         $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
         $this->changeRequestCostChange = new Collections\ArrayCollection();
@@ -459,10 +450,7 @@ class Affiliation extends AbstractEntity
         return OrganisationService::parseBranch($this->getBranch(), $this->getOrganisation());
     }
 
-    /**
-     * @return string
-     */
-    public function getBranch()
+    public function getBranch(): ?string
     {
         return $this->branch;
     }
@@ -512,6 +500,11 @@ class Affiliation extends AbstractEntity
     public function isSelfFunded(): bool
     {
         return null === $this->dateSelfFunded;
+    }
+
+    public function hasContractVersion(): bool
+    {
+        return null !== $this->contract && !$this->contractVersion->isEmpty();
     }
 
     public function addAssociate(Contact $contact): void
@@ -780,18 +773,6 @@ class Affiliation extends AbstractEntity
     public function setDoaReminder($doaReminder): Affiliation
     {
         $this->doaReminder = $doaReminder;
-
-        return $this;
-    }
-
-    public function getLoiReminder()
-    {
-        return $this->loiReminder;
-    }
-
-    public function setLoiReminder($loiReminder): Affiliation
-    {
-        $this->loiReminder = $loiReminder;
 
         return $this;
     }

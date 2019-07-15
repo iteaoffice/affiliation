@@ -17,26 +17,30 @@ declare(strict_types=1);
 
 namespace Affiliation\Controller;
 
+use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\DoaReminder as DoaReminderEntity;
-use Affiliation\Form\DoaApproval;
+use Affiliation\Form\Doa\FileApproval;
 use Affiliation\Form\DoaReminder;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\DoaService;
 use Affiliation\Service\FormService;
 use Contact\Service\ContactService;
+use DateTime;
 use Deeplink\Entity\Target;
 use Deeplink\Service\DeeplinkService;
 use Doctrine\ORM\EntityManager;
 use General\Service\EmailService;
 use General\Service\GeneralService;
+use Organisation\Service\OrganisationService;
 use Project\Service\ProjectService;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
+use function sprintf;
 
 /**
  * Class DoaManagerController
@@ -110,32 +114,18 @@ final class DoaManagerController extends AffiliationAbstractController
         $this->translator = $translator;
     }
 
-
-    public function listAction(): ViewModel
-    {
-        $doa = $this->doaService->findNotApprovedDoa();
-
-        $form = new DoaApproval($doa, $this->contactService);
-
-        return new ViewModel(
-            [
-                'doa'            => $doa,
-                'form'           => $form,
-                'projectService' => $this->projectService,
-            ]
-        );
-    }
-
     public function approvalAction(): ViewModel
     {
-        $doa = $this->doaService->findNotApprovedDoa();
-        $form = new DoaApproval($doa, $this->contactService);
+        $notApprovedDigitalDoa = $this->doaService->findNotApprovedDigitalDoa();
+        $notApprovedUploadedDoa = $this->doaService->findNotApprovedUploadedDoa();
+        $form = new FileApproval($notApprovedUploadedDoa, $this->contactService);
 
         return new ViewModel(
             [
-                'doa'            => $doa,
-                'form'           => $form,
-                'projectService' => $this->projectService,
+                'notApprovedUploadedDoa' => $notApprovedUploadedDoa,
+                'notApprovedDigitalDoa'  => $notApprovedDigitalDoa,
+                'form'                   => $form,
+                'projectService'         => $this->projectService,
             ]
         );
     }
@@ -209,7 +199,7 @@ final class DoaManagerController extends AffiliationAbstractController
                 $this->doaService->save($doaReminder);
 
                 $this->flashMessenger()->addSuccessMessage(
-                    \sprintf(
+                    sprintf(
                         $this->translator->translate(
                             'txt-reminder-for-doa-for-organisation-%s-in-project-%s-has-been-sent-to-%s'
                         ),
@@ -296,7 +286,7 @@ final class DoaManagerController extends AffiliationAbstractController
 
                 $this->doaService->delete($doa);
 
-                return $this->redirect()->toRoute('zfcadmin/affiliation/doa/list');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/doa/approval');
             }
 
             if ($form->isValid()) {
@@ -360,35 +350,76 @@ final class DoaManagerController extends AffiliationAbstractController
     public function approveAction(): JsonModel
     {
         $doa = $this->params()->fromPost('doa');
-        $contact = $this->params()->fromPost('contact');
-        $dateSigned = $this->params()->fromPost('dateSigned');
-
-        if (empty($contact) || empty($dateSigned)) {
-            return new JsonModel(
-                [
-                    'result' => 'error',
-                    'error'  => _('txt-contact-or-date-signed-is-empty'),
-                ]
-            );
-        }
-
-        if (!\DateTime::createFromFormat('Y-m-d', $dateSigned)) {
-            return new JsonModel(
-                [
-                    'result' => 'error',
-                    'error'  => $this->translator->translate('txt-incorrect-date-format-should-be-yyyy-mm-dd'),
-                ]
-            );
-        }
+        $sendEmail = $this->params()->fromPost('sendEmail', 0);
 
         /**
          * @var $doa Doa
          */
         $doa = $this->affiliationService->find(Doa::class, (int)$doa);
-        $doa->setContact($this->contactService->findContactById((int)$contact));
-        $doa->setDateSigned(\DateTime::createFromFormat('Y-m-d', $dateSigned));
-        $doa->setDateApproved(new \DateTime());
+
+        if ($doa->hasObject()) {
+            $contact = $this->params()->fromPost('contact');
+            $dateSigned = $this->params()->fromPost('dateSigned');
+            if (empty($contact) || empty($dateSigned)) {
+                return new JsonModel(
+                    [
+                        'result' => 'error',
+                        'error'  => _('txt-contact-or-date-signed-is-empty'),
+                    ]
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $dateSigned)) {
+                return new JsonModel(
+                    [
+                        'result' => 'error',
+                        'error'  => $this->translator->translate('txt-incorrect-date-format-should-be-yyyy-mm-dd'),
+                    ]
+                );
+            }
+            $doa->setContact($this->contactService->findContactById((int)$contact));
+            $doa->setDateSigned(DateTime::createFromFormat('Y-m-d', $dateSigned));
+        }
+
+        $doa->setDateApproved(new DateTime());
+        $doa->setApprover($this->identity());
         $this->doaService->save($doa);
+
+        /**
+         * Send the email tot he user
+         */
+        if ($sendEmail === 'true') {
+            $this->emailService->setWebInfo('/affiliation/doa/approved');
+            $this->emailService->addTo($doa->getContact());
+
+            /** @var Affiliation $affiliation */
+            $affiliation = $doa->getAffiliation();
+
+            $this->emailService->setTemplateVariable(
+                'organisation', OrganisationService::parseBranch(
+                $affiliation->getBranch(), $affiliation->getOrganisation()
+            )
+            );
+            $this->emailService->setTemplateVariable('project', $affiliation->getProject()->parseFullName());
+            $this->emailService->setTemplateVariable('signer', $doa->getContact()->parseFullName());
+            $this->emailService->setTemplateVariable('date', $doa->getDateSigned()->format('d-m-Y'));
+            $this->emailService->setTemplateVariable('uploaded', $doa->hasObject());
+
+            $this->emailService->send();
+        }
+
+        return new JsonModel(
+            [
+                'result' => 'success',
+            ]
+        );
+    }
+
+    public function declineAction(): JsonModel
+    {
+        $doa = $this->params()->fromPost('doa');
+        $doa = $this->affiliationService->find(Doa::class, (int)$doa);
+        $this->doaService->delete($doa);
 
         return new JsonModel(
             [

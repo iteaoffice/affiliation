@@ -54,6 +54,13 @@ class ContractVersion extends AbstractEntity
      * @var CostVersion[]|ArrayCollection
      */
     private $costVersion;
+    /**
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Version", cascade={"persist","remove"}, mappedBy="contractVersion")
+     * @Annotation\Exclude()
+     *
+     * @var \Affiliation\Entity\Version
+     */
+    private $affiliationVersion;
 
     public function __construct()
     {
@@ -130,6 +137,17 @@ class ContractVersion extends AbstractEntity
     {
         $this->costVersion = $costVersion;
 
+        return $this;
+    }
+
+    public function getAffiliationVersion(): ?Version
+    {
+        return $this->affiliationVersion;
+    }
+
+    public function setAffiliationVersion(Version $affiliationVersion): ContractVersion
+    {
+        $this->affiliationVersion = $affiliationVersion;
         return $this;
     }
 }

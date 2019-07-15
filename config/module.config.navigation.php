@@ -94,9 +94,9 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'upload-doa'          => [
-                                        'label'   => _('txt-upload-doa'),
-                                        'route'   => 'community/affiliation/doa/upload',
+                                    'submit-doa'          => [
+                                        'label'   => _('txt-submit-doa'),
+                                        'route'   => 'community/affiliation/doa/submit',
                                         'visible' => false,
                                         'params'  => [
                                             'entities'   => [
@@ -244,6 +244,34 @@ return [
                                                                 'id' => Affiliation::class,
                                                             ],
                                                         ],
+                                                    ],
+                                                    'view-doa'       => [
+                                                        'label'   => _('txt-nav-view-doa'),
+                                                        'route'   => 'zfcadmin/affiliation/doa/view',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities'   => [
+                                                                'id' => Doa::class,
+                                                            ],
+                                                            'invokables' => [
+                                                                Invokable\DoaLabel::class,
+                                                            ],
+                                                        ],
+                                                        'pages'   => [
+                                                            'edit-doa' => [
+                                                                'label'   => _('txt-nav-edit-doa'),
+                                                                'route'   => 'zfcadmin/affiliation/doa/edit',
+                                                                'visible' => false,
+                                                                'params'  => [
+                                                                    'entities'   => [
+                                                                        'id' => Doa::class,
+                                                                    ],
+                                                                    'invokables' => [
+                                                                        Invokable\DoaLabel::class,
+                                                                    ],
+                                                                ],
+                                                            ],
+                                                        ]
                                                     ],
                                                     'view-loi'       => [
                                                         'label'   => _('txt-nav-view-loi'),

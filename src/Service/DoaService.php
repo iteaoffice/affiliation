@@ -28,9 +28,14 @@ class DoaService extends AbstractService
         return $this->entityManager->getRepository(Doa::class)->find($id);
     }
 
-    public function findNotApprovedDoa(): ArrayCollection
+    public function findNotApprovedUploadedDoa(): ArrayCollection
     {
-        return new ArrayCollection($this->entityManager->getRepository(Doa::class)->findNotApprovedDoa());
+        return new ArrayCollection($this->entityManager->getRepository(Doa::class)->findNotApprovedUploadedDoa());
+    }
+
+    public function findNotApprovedDigitalDoa(): ArrayCollection
+    {
+        return new ArrayCollection($this->entityManager->getRepository(Doa::class)->findNotApprovedDigitalDoa());
     }
 
     public function findDoaByOrganisation(Organisation $organisation): array

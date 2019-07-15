@@ -19,9 +19,7 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
-use Affiliation\Entity\LoiReminder as LoiReminderEntity;
 use Affiliation\Form\LoiApproval;
-use Affiliation\Form\LoiReminder;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\FormService;
 use Affiliation\Service\LoiService;
@@ -108,22 +106,6 @@ final class LoiManagerController extends AffiliationAbstractController
         $this->translator = $translator;
     }
 
-
-    public function listAction(): ViewModel
-    {
-        $loi = $this->loiService->findNotApprovedLoi();
-
-        $form = new LoiApproval($loi, $this->contactService);
-
-        return new ViewModel(
-            [
-                'loi'            => $loi,
-                'form'           => $form,
-                'projectService' => $this->projectService,
-            ]
-        );
-    }
-
     public function approvalAction(): ViewModel
     {
         $loi = $this->loiService->findNotApprovedLoi();
@@ -156,87 +138,6 @@ final class LoiManagerController extends AffiliationAbstractController
         );
     }
 
-    public function remindAction()
-    {
-        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
-
-        if (null === $affiliation) {
-            return $this->notFoundAction();
-        }
-
-        $form = new LoiReminder($affiliation, $this->contactService, $this->entityManager);
-
-        $data = $this->getRequest()->getPost()->toArray();
-
-        //Get the corresponding template
-        $webInfo = $this->generalService->findWebInfoByInfo('/affiliation/loi:reminder');
-
-        if (null === $webInfo) {
-            return $this->notFoundAction();
-        }
-
-        $form->get('subject')->setValue($webInfo->getSubject());
-        $form->get('message')->setValue($webInfo->getContent());
-
-        $form->setData($data);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $receiver = $this->contactService->findContactById((int)$form->getData()['receiver']);
-
-            if (null === $receiver) {
-                $this->emailService->setWebInfo('/affiliation/loi:reminder');
-                $this->emailService->setSubject($form->getData()['subject']);
-                $this->emailService->setEmailContent($form->getData()['message']);
-                $this->emailService->addTo($receiver);
-                $this->emailService->setTemplateVariable('receiver', $receiver->parseFullName());
-                $this->emailService->setTemplateVariable('organisation', $affiliation->parseBranchedName());
-                $this->emailService->setTemplateVariable('project', $affiliation->getProject()->parseFullName());
-
-                $this->emailService->send();
-
-                //Store the reminder in the database
-                $loiReminder = new LoiReminderEntity();
-                $loiReminder->setAffiliation($affiliation);
-                $loiReminder->setEmail($form->getData()['message']);
-                $loiReminder->setReceiver(
-                    $this->contactService->findContactById((int)$form->getData()['receiver'])
-                );
-                $loiReminder->setSender($this->identity());
-                $this->loiService->save($loiReminder);
-
-                $this->flashMessenger()->addSuccessMessage(
-                    sprintf(
-                        $this->translator->translate(
-                            'txt-reminder-for-loi-for-organisation-%s-in-project-%s-has-been-sent-to-%s'
-                        ),
-                        $affiliation->getOrganisation(),
-                        $affiliation->getProject(),
-                        $this->contactService->findContactById((int)$form->getData()['receiver'])->getEmail()
-                    )
-                );
-
-                return $this->redirect()->toRoute('zfcadmin/affiliation/loi/missing');
-            }
-        }
-
-        return new ViewModel(
-            [
-                'affiliation' => $affiliation,
-                'form'        => $form,
-            ]
-        );
-    }
-
-    public function remindersAction(): ViewModel
-    {
-        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('affiliationId'));
-
-        return new ViewModel(
-            [
-                '$affiliation' => $affiliation,
-            ]
-        );
-    }
 
     public function viewAction(): ViewModel
     {

@@ -14,10 +14,10 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity;
 use Affiliation\Entity\Doa;
-use Affiliation\Form\SubmitLoi;
-use Affiliation\Form\UploadDoa;
+use Affiliation\Form\Doa\SubmitDoa;
 use Affiliation\Service\AffiliationService;
 use General\Service\GeneralService;
+use Organisation\Service\OrganisationService;
 use Project\Entity\Changelog;
 use Project\Service\ProjectService;
 use Zend\Http\Response;
@@ -25,6 +25,7 @@ use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
 use Zend\View\Model\ViewModel;
+use ZfcTwig\View\TwigRenderer;
 
 /**
  * Class DoaController
@@ -49,17 +50,23 @@ final class DoaController extends AffiliationAbstractController
      * @var TranslatorInterface
      */
     private $translator;
+    /**
+     * @var TwigRenderer
+     */
+    private $renderer;
 
     public function __construct(
         AffiliationService $affiliationService,
         ProjectService $projectService,
         GeneralService $generalService,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        TwigRenderer $twigRenderer
     ) {
         $this->affiliationService = $affiliationService;
         $this->projectService = $projectService;
         $this->generalService = $generalService;
         $this->translator = $translator;
+        $this->renderer = $twigRenderer;
     }
 
     public function submitAction()
@@ -77,38 +84,33 @@ final class DoaController extends AffiliationAbstractController
             $this->getRequest()->getFiles()->toArray()
         );
 
-        $form = new SubmitLoi();
+        $form = new SubmitDoa();
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && isset($data['cancel'])) {
             return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
         }
 
-        if ($this->getRequest()->isPost() && !isset($data['approve']) && $form->isValid()) {
-            if (isset($data['submit'])) {
+        if ($this->getRequest()->isPost() && isset($data['upload'])) {
+
+            //Remove the digital elements
+            $form->getInputFilter()->get('group_name')->setRequired(false);
+            $form->getInputFilter()->get('chamber_of_commerce_number')->setRequired(false);
+            $form->getInputFilter()->get('chamber_of_commerce_location')->setRequired(false);
+            $form->getInputFilter()->remove('selfApprove');
+
+            if ($form->isValid()) {
                 $fileData = $form->getData('file');
                 $this->affiliationService->uploadDoa($fileData['file'], $contact, $affiliation);
 
                 $this->flashMessenger()->addSuccessMessage(
                     sprintf($this->translator->translate('txt-doa-has-been-uploaded-successfully'))
                 );
-            }
-
-
-            return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
-        }
-
-        if ($this->getRequest()->isPost() && isset($data['approve'])) {
-            if ($data['selfApprove'] === '0') {
-                $form->getInputFilter()->get('selfApprove')->setErrorMessage('Error');
-                $form->get('selfApprove')->setMessages(['Error']);
-            }
-
-            if ($data['selfApprove'] === '1') {
-                $this->affiliationService->submitDoa($contact, $affiliation);
 
                 $changelogMessage = sprintf(
-                    $this->translator->translate('txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded'),
+                    $this->translator->translate(
+                        'txt-paper-version-of-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded'
+                    ),
                     $affiliation->getOrganisation(),
                     $affiliation->getProject()
                 );
@@ -129,9 +131,51 @@ final class DoaController extends AffiliationAbstractController
             }
         }
 
+        if ($this->getRequest()->isPost() && isset($data['sign'])) {
+
+            $form->getInputFilter()->get('file')->setRequired(false);
+
+            if ($form->isValid()) {
+                $this->affiliationService->submitDoa($contact, $affiliation, $data);
+
+                $changelogMessage = sprintf(
+                    $this->translator->translate(
+                        'txt-project-doa-for-organisation-%s-in-project-%s-has-been-uploaded'
+                    ),
+                    $affiliation->getOrganisation(),
+                    $affiliation->getProject()
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()]
+                );
+            }
+        }
+
+        $doaContent = $this->renderer->render(
+            'affiliation/pdf/doa',
+            [
+                'contact'      => $contact,
+                'organisation' => OrganisationService::parseBranch($affiliation->getBranch(), $affiliation->getOrganisation()),
+                'project_name' => $affiliation->getProject()->parseFullName(),
+                'form'         => $form,
+            ]
+        );
+
         return new ViewModel(
             [
                 'affiliation' => $affiliation,
+                'doaContent'  => $doaContent,
                 'form'        => $form,
             ]
         );
@@ -151,7 +195,7 @@ final class DoaController extends AffiliationAbstractController
             $this->getRequest()->getPost()->toArray(),
             $this->getRequest()->getFiles()->toArray()
         );
-        $form = new UploadDoa();
+        $form = new SubmitDoa();
         $form->setData($data);
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {

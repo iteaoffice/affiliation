@@ -16,7 +16,6 @@ use Affiliation\Form\AddAssociate;
 use Affiliation\Form\AdminAffiliation;
 use Affiliation\Form\EditAssociate;
 use Affiliation\Form\MissingAffiliationParentFilter;
-use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\Service\AffiliationService;
 use Application\Service\AssertionService;
 use Contact\Service\ContactService;
@@ -36,9 +35,6 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
-use Search\Form\SearchResult;
-use Search\Paginator\Adapter\SolariumPaginator;
-use Solarium\QueryType\Select\Query\Query as SolariumQuery;
 use Zend\Http\Request;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
@@ -299,7 +295,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
         if ($this->affiliationService->isActiveInVersion($affiliation)) {
             $form->remove('delete');
         }
-
 
 
         if ($this->getRequest()->isPost() && $form->setData($data)) {
