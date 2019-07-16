@@ -845,7 +845,7 @@ final class EditController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $latestVersion = $this->projectService->getLatestProjectVersion($affiliation->getProject());
+        $latestVersion = $this->projectService->getLatestApprovedProjectVersion($affiliation->getProject());
 
         if (null === $latestVersion) {
             return $this->notFoundAction();
@@ -975,9 +975,9 @@ final class EditController extends AffiliationAbstractController
             foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
                 $effortPerWorkpackageAndYear
                     = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                    $workpackage,
-                    $affiliation
-                );
+                        $workpackage,
+                        $affiliation
+                    );
                 if (!\array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }

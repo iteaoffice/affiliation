@@ -91,7 +91,7 @@ final class PaymentSheet extends AbstractHelper
 
     public function __invoke(Affiliation $affiliation, int $year, int $period, bool $useContractData = true): string
     {
-        $latestVersion = $this->projectService->getLatestProjectVersion($affiliation->getProject());
+        $latestVersion = $this->projectService->getLatestSubmittedProjectVersion($affiliation->getProject());
 
         /**
          * We don't need a payment sheet, when we have no versions

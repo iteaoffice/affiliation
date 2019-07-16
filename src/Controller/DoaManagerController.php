@@ -396,9 +396,11 @@ final class DoaManagerController extends AffiliationAbstractController
             $affiliation = $doa->getAffiliation();
 
             $this->emailService->setTemplateVariable(
-                'organisation', OrganisationService::parseBranch(
-                $affiliation->getBranch(), $affiliation->getOrganisation()
-            )
+                'organisation',
+                OrganisationService::parseBranch(
+                    $affiliation->getBranch(),
+                    $affiliation->getOrganisation()
+                )
             );
             $this->emailService->setTemplateVariable('project', $affiliation->getProject()->parseFullName());
             $this->emailService->setTemplateVariable('signer', $doa->getContact()->parseFullName());

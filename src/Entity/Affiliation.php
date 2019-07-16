@@ -941,6 +941,4 @@ class Affiliation extends AbstractEntity
         $this->communicationContactEmail = $communicationContactEmail;
         return $this;
     }
-
-
 }

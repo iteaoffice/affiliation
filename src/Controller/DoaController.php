@@ -92,7 +92,6 @@ final class DoaController extends AffiliationAbstractController
         }
 
         if ($this->getRequest()->isPost() && isset($data['upload'])) {
-
             //Remove the digital elements
             $form->getInputFilter()->get('group_name')->setRequired(false);
             $form->getInputFilter()->get('chamber_of_commerce_number')->setRequired(false);
@@ -132,7 +131,6 @@ final class DoaController extends AffiliationAbstractController
         }
 
         if ($this->getRequest()->isPost() && isset($data['sign'])) {
-
             $form->getInputFilter()->get('file')->setRequired(false);
 
             if ($form->isValid()) {

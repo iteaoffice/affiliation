@@ -149,7 +149,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 'projectService'        => $this->projectService,
                 'contactService'        => $this->contactService,
                 'workpackageService'    => $this->workpackageService,
-                'latestVersion'         => $this->projectService->getLatestProjectVersion(
+                'latestVersion'         => $this->projectService->getLatestSubmittedProjectVersion(
                     $affiliation->getProject()
                 ),
                 'versionType'           => $this->projectService->getNextMode(

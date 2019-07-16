@@ -74,7 +74,7 @@ class Version extends AbstractEntity
      */
     private $fundingVersion;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\ContractVersion", inversedBy="affiliationVersion")
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\ContractVersion", inversedBy="affiliationVersion", cascade="persist")
      * @ORM\JoinColumn(name="affiliation_contract_version_id", referencedColumnName="affiliation_contract_version_id", nullable=true)
      *
      * @var ContractVersion
@@ -101,6 +101,23 @@ class Version extends AbstractEntity
     public function __isset($property)
     {
         return isset($this->$property);
+    }
+
+    public function hasContractVersion(): bool
+    {
+        //Use the getter to avoid lazy laoding issues when comparing null !== $this->contractVersion
+        return null !== $this->getContractVersion();
+    }
+
+    public function getContractVersion(): ?ContractVersion
+    {
+        return $this->contractVersion;
+    }
+
+    public function setContractVersion(?ContractVersion $contractVersion): Version
+    {
+        $this->contractVersion = $contractVersion;
+        return $this;
     }
 
     public function __toString(): string
@@ -189,17 +206,4 @@ class Version extends AbstractEntity
         $this->fundingVersion = $fundingVersion;
         return $this;
     }
-
-    public function getContractVersion(): ?ContractVersion
-    {
-        return $this->contractVersion;
-    }
-
-    public function setContractVersion(?ContractVersion $contractVersion): Version
-    {
-        $this->contractVersion = $contractVersion;
-        return $this;
-    }
-
-
 }

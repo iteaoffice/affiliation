@@ -112,7 +112,7 @@ final class RenderPaymentSheet extends AbstractPlugin
     ): AffiliationPdf {
         $project = $affiliation->getProject();
         $contact = $affiliation->getContact();
-        $latestVersion = $this->projectService->getLatestProjectVersion($project);
+        $latestVersion = $this->projectService->getLatestSubmittedProjectVersion($project);
 
         if (null === $latestVersion) {
             throw new InvalidArgumentException('No latest version could be found, no payment sheet can be created');

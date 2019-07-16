@@ -27,8 +27,6 @@ use function sprintf;
 class ContractVersion extends AbstractEntity
 {
     /**
-     * @var integer
-     *
      * @ORM\Column(name="affiliation_contract_version_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -55,10 +53,10 @@ class ContractVersion extends AbstractEntity
      */
     private $costVersion;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Version", cascade={"persist","remove"}, mappedBy="contractVersion")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Version", cascade="persist", mappedBy="contractVersion")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Version
+     * @var Version[]|ArrayCollection
      */
     private $affiliationVersion;
 
@@ -140,12 +138,12 @@ class ContractVersion extends AbstractEntity
         return $this;
     }
 
-    public function getAffiliationVersion(): ?Version
+    public function getAffiliationVersion()
     {
         return $this->affiliationVersion;
     }
 
-    public function setAffiliationVersion(Version $affiliationVersion): ContractVersion
+    public function setAffiliationVersion($affiliationVersion): ContractVersion
     {
         $this->affiliationVersion = $affiliationVersion;
         return $this;

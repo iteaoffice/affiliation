@@ -192,6 +192,19 @@ class AffiliationService extends AbstractService
         return false;
     }
 
+    public function findAffiliationVersion(Affiliation $affiliation, Version $version): ?\Affiliation\Entity\Version
+    {
+        $affiliationVersion =  $version->getAffiliationVersion()->filter(static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
+            return $affiliationVersion->getAffiliation() === $affiliation;
+        })->first();
+
+        if ($affiliationVersion) {
+            return $affiliationVersion;
+        }
+
+        return null;
+    }
+
     public function findAffiliationById(int $id): ?Affiliation
     {
         return $this->entityManager->getRepository(Affiliation::class)->find($id);
@@ -485,7 +498,7 @@ class AffiliationService extends AbstractService
         $projectTotal = 0;
 
         //Find first the latestVersion
-        $latestVersion = $this->projectService->getLatestProjectVersion($project, null, true, true);
+        $latestVersion = $this->projectService->getLatestSubmittedProjectVersion($project);
 
         if (null === $latestVersion) {
             return $projectTotal;
@@ -955,7 +968,7 @@ class AffiliationService extends AbstractService
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
                 return (float)1 - $this->parseContributionFactor($affiliation, $year, $period);
-                case !$this->isFundedInYear($affiliation, $projectYear):
+            case !$this->isFundedInYear($affiliation, $projectYear):
             default:
                 return (float)0;
         }
@@ -991,7 +1004,7 @@ class AffiliationService extends AbstractService
         $projectTotal = 0;
 
         //Find first the latestVersion
-        $latestVersion = $this->projectService->getLatestProjectVersion($project, null, true, true);
+        $latestVersion = $this->projectService->getLatestSubmittedProjectVersion($project);
 
         if (null === $latestVersion) {
             return $projectTotal;
@@ -999,6 +1012,7 @@ class AffiliationService extends AbstractService
 
 
         foreach ($latestVersion->getAffiliationVersion() as $affiliationVersion) {
+            /** @var Affiliation $affiliation */
             $affiliation = $affiliationVersion->getAffiliation();
 
             if (!$affiliation->isActive()) {
