@@ -22,7 +22,7 @@ use Affiliation\Entity\Doa;
 use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\DoaReminder as DoaReminderEntity;
 use Affiliation\Form\Doa\FileApproval;
-use Affiliation\Form\DoaReminder;
+use Affiliation\Form\Doa\Reminder;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\DoaService;
 use Affiliation\Service\FormService;
@@ -149,7 +149,7 @@ final class DoaManagerController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $form = new DoaReminder($affiliation, $this->contactService, $this->entityManager);
+        $form = new Reminder($affiliation, $this->contactService, $this->entityManager);
 
         $data = array_merge(
             [

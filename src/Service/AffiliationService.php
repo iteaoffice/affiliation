@@ -498,7 +498,7 @@ class AffiliationService extends AbstractService
         $projectTotal = 0;
 
         //Find first the latestVersion
-        $latestVersion = $this->projectService->getLatestSubmittedProjectVersion($project);
+        $latestVersion = $this->projectService->getLatestNotRejectedProjectVersion($project);
 
         if (null === $latestVersion) {
             return $projectTotal;
@@ -1004,7 +1004,7 @@ class AffiliationService extends AbstractService
         $projectTotal = 0;
 
         //Find first the latestVersion
-        $latestVersion = $this->projectService->getLatestSubmittedProjectVersion($project);
+        $latestVersion = $this->projectService->getLatestNotRejectedProjectVersion($project);
 
         if (null === $latestVersion) {
             return $projectTotal;

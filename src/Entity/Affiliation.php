@@ -499,7 +499,7 @@ class Affiliation extends AbstractEntity
 
     public function isSelfFunded(): bool
     {
-        return null === $this->dateSelfFunded;
+        return $this->selfFunded === self::SELF_FUNDED && null !== $this->dateSelfFunded;
     }
 
     public function hasContractVersion(): bool
