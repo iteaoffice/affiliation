@@ -163,7 +163,7 @@
                 <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
                 <dd>
                     {% if not affiliationService.hasDoa(affiliation) %}
-                        {{ doaLink(null,'upload','text', affiliation) }}
+                        {{ doaLink(null,'submit','text', affiliation) }}
                     {% elseif affiliation.doa.dateApproved is null %}
                         {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
                         format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
