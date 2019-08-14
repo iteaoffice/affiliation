@@ -194,9 +194,11 @@ class AffiliationService extends AbstractService
 
     public function findAffiliationVersion(Affiliation $affiliation, Version $version): ?\Affiliation\Entity\Version
     {
-        $affiliationVersion =  $version->getAffiliationVersion()->filter(static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
-            return $affiliationVersion->getAffiliation() === $affiliation;
-        })->first();
+        $affiliationVersion = $version->getAffiliationVersion()->filter(
+            static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
+                return $affiliationVersion->getAffiliation() === $affiliation;
+            }
+        )->first();
 
         if ($affiliationVersion) {
             return $affiliationVersion;
@@ -563,7 +565,6 @@ class AffiliationService extends AbstractService
             return 0.0;
         }
 
-
         return $this->parseContribution($affiliation, $version, null, $year, $period, false) + $this->parseBalance(
             $affiliation,
             $version,
@@ -891,12 +892,15 @@ class AffiliationService extends AbstractService
             return 0;
         }
 
-        return $this->parseContributionDue(
-            $affiliation,
-            $version,
-            $year,
-            $period
-        ) - $this->parseContributionPaid($affiliation, $year, $period);
+        $balance
+            = $this->parseContributionDue(
+                $affiliation,
+                $version,
+                $year,
+                $period
+            ) - $this->parseContributionPaid($affiliation, $year, $period);
+
+        return $balance;
     }
 
     public function parseContributionDue(
@@ -953,7 +957,7 @@ class AffiliationService extends AbstractService
                 break;
         }
 
-        return (float)$contributionDue;
+        return round($contributionDue, 2);
     }
 
     public function parseContributionFactorDue(
@@ -996,7 +1000,7 @@ class AffiliationService extends AbstractService
             }
         }
 
-        return (float)$contributionPaid;
+        return round($contributionPaid, 2);
     }
 
     public function parseContractTotalByProject(Project $project, int $year, int $period): float

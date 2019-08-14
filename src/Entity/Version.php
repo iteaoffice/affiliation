@@ -105,7 +105,7 @@ class Version extends AbstractEntity
 
     public function hasContractVersion(): bool
     {
-        //Use the getter to avoid lazy laoding issues when comparing null !== $this->contractVersion
+        //Use the getter to avoid lazy loading issues when comparing null !== $this->contractVersion
         return null !== $this->getContractVersion();
     }
 

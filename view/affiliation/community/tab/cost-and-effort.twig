@@ -4,7 +4,7 @@
         Currently we take the draft-cost and effort based year distrubion to see the effect of that.
         Later we can take here the project duraction pased year distribution
     #}
-    <h2>{{ translate("txt-latest-%s-version-of-type-%s")|format(versionService.parseStatus(latestVersion)|lower, latestVersion.versionType) }}</h2>
+    <h2>{{ versionService.parseStatus(latestVersion) }}</h2>
 
     <p>{{ translate("txt-latest-submitted-version-of-type-%s-explanation")|format(latestVersion.versionType) }}</p>
 
@@ -28,9 +28,10 @@
             ) %}
         {% set totalPerYear = 0 %}
 
+        {% set affiliationVersion = affiliationService.findAffiliationVersion(affiliation,latestVersion) %}
+        {% set contractVersion = affiliationVersion.contractVersion.version %}
 
-
-        {% if not useContract %}
+        {% if not affiliationVersion.hasContractVersion() or contractVersion is null or not useContract %}
             <tr>
                 <td colspan="2"></td>
                 {% for year in years %}
@@ -43,7 +44,6 @@
         {% else %}
 
             {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
-
             <tr>
                 <td colspan="2">{{ translate("txt-contract-costs") }} <i class="fa fa-handshake-o"
                                                                          aria-hidden="true"></i></td>
@@ -167,16 +167,16 @@
             </tr>
         {% else %}
 
-            {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
+            {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(latestContractVersion, affiliation) %}
 
             <tr>
                 <td colspan="2">{{ translate("txt-contract-costs") }} <i class="fa fa-handshake-o"
                                                                          aria-hidden="true"></i></td>
                 {% for year in years %}
-                    <td>{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
+                    <td>{{ contractVersionCost[year]|currency_decimal(latestContractVersion.contract.currency) }}</td>
                     {% set totalPerYear = totalPerYear + contractVersionCost[year] %}
                 {% endfor %}
-                <th>{{ totalPerYear|currency_decimal(contractVersion.contract.currency) }}</th>
+                <th>{{ totalPerYear|currency_decimal(latestContractVersion.contract.currency) }}</th>
             </tr>
         {% endif %}
 

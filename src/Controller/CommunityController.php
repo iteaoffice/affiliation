@@ -155,7 +155,7 @@ final class CommunityController extends AffiliationAbstractController
             'contractService'       => $this->contractService,
             'workpackageService'    => $this->workpackageService,
             'latestVersion'         => $this->projectService->getLatestNotRejectedProjectVersion($affiliation->getProject()),
-            'contractVersion'       => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
+            'latestContractVersion'       => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
             'versionType'           => $this->projectService->getNextMode($affiliation->getProject())->getVersionType(),
             'hasProjectEditRights'  => $hasProjectEditRights,
             'reportService'         => $this->reportService,

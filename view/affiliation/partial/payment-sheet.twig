@@ -389,7 +389,8 @@
 
 {% else %}
 
-    {% set total =  affiliationService.parseTotal(affiliation, version, year, period) %}
+    {% set total = affiliationService.parseTotal(affiliation, version, year, period) %}
+
     {% set contributionDue =  affiliationService.parseContributionDue(affiliation, version, year, period) %}
 
     {% set balance = affiliationService.parseBalance(affiliation, version, year, period) %}
