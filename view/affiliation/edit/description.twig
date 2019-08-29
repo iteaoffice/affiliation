@@ -40,7 +40,7 @@
     <div class="form-group row">
         <div class="col-sm-9 offset-sm-3">
             <strong>{{ translate("txt-current-company-description-introduction") }}</strong>
-            <p class="form-control-plaintext">{{ affiliation.organisation.description|striptags }}</p>
+            <p class="form-control-plaintext">{{ affiliation.organisation.description|striptags|raw }}</p>
         </div>
     </div>
 {% endif %}
