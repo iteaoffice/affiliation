@@ -32,7 +32,7 @@ class Doa extends AbstractEntity
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
      *
-     * @var integer
+     * @var int
      */
     private $id;
     /**
@@ -55,7 +55,7 @@ class Doa extends AbstractEntity
      * @ORM\Column(name="size", type="integer", nullable=false, nullable=true)
      * @Annotation\Exclude()
      *
-     * @var integer
+     * @var int
      */
     private $size;
     /**

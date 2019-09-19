@@ -33,19 +33,19 @@ class Log extends AbstractEntity
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var integer
+     * @var int
      */
     private $id;
     /**
      * @ORM\Column(name="year", type="integer", options={"unsigned":true})
      *
-     * @var integer
+     * @var int
      */
     private $year;
     /**
      * @ORM\Column(name="period", type="integer", options={"unsigned":true})
      *
-     * @var integer
+     * @var int
      */
     private $period;
     /**

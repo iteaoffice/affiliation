@@ -33,7 +33,7 @@ class Category extends AbstractEntity
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
      *
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -47,7 +47,7 @@ class Category extends AbstractEntity
      * })
      * @Gedmo\SortablePosition
      *
-     * @var integer
+     * @var int
      */
     private $sequence = 0;
 

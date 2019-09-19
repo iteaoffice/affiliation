@@ -31,7 +31,7 @@ class Loi extends AbstractEntity
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var integer
+     * @var int
      */
     private $id;
     /**
@@ -74,7 +74,7 @@ class Loi extends AbstractEntity
     /**
      * @ORM\Column(name="size", type="integer", options={"unsigned":true}, nullable=true)
      *
-     * @var integer
+     * @var int
      */
     private $size;
     /**

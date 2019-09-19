@@ -27,7 +27,7 @@ use function sprintf;
 class Version extends AbstractEntity
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="affiliation_version_id", type="integer", options={"unsigned":true})
      * @ORM\Id

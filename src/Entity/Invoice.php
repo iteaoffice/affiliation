@@ -31,7 +31,7 @@ class Invoice extends AbstractEntity
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var integer
+     * @var int
      */
     private $id;
     /**
@@ -40,7 +40,7 @@ class Invoice extends AbstractEntity
      * @Annotation\Options({"label":"txt-affiliation-invoice-period-label","help-block":"txt-affiliation-invoice-period-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-period-placeholder"})
      *
-     * @var integer
+     * @var int
      */
     private $period;
     /**
@@ -49,7 +49,7 @@ class Invoice extends AbstractEntity
      * @Annotation\Options({"label":"txt-affiliation-invoice-year-label","help-block":"txt-affiliation-invoice-year-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-year-placeholder"})
      *
-     * @var integer
+     * @var int
      */
     private $year;
     /**

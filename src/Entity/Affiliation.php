@@ -57,7 +57,7 @@ class Affiliation extends AbstractEntity
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
      *
-     * @var integer
+     * @var int
      */
     private $id;
     /**
@@ -114,7 +114,7 @@ class Affiliation extends AbstractEntity
      * @Annotation\Attributes({"array":"selfFundedTemplates"})
      * @Annotation\Attributes({"label":"txt-self-funded"})
      *
-     * @var integer
+     * @var int
      */
     private $selfFunded;
     /**

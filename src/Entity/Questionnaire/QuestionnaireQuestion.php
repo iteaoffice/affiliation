@@ -32,7 +32,7 @@ class QuestionnaireQuestion extends AbstractEntity
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
      *
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -45,7 +45,7 @@ class QuestionnaireQuestion extends AbstractEntity
      * })
      * @Gedmo\SortablePosition
      *
-     * @var integer
+     * @var int
      */
     private $sequence = 0;
 
