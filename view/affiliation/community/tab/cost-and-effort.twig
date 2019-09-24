@@ -1,9 +1,6 @@
 {% if latestVersion %}
 
-    {# README todo
-        Currently we take the draft-cost and effort based year distrubion to see the effect of that.
-        Later we can take here the project duraction pased year distribution
-    #}
+    {% set hasSomeCostAndEffortEditRights = false %}
     <h2>{{ versionService.parseStatus(latestVersion) }}</h2>
 
     <p>{{ translate("txt-latest-submitted-version-of-type-%s-explanation")|format(latestVersion.versionType) }}</p>
@@ -147,17 +144,18 @@
                             hasProjectEditRights or
                             isAllowed(affiliation, 'edit-affiliation')
                             ) %}
+
+                            {% set hasSomeCostAndEffortEditRights = true %}
+
                             <i class="fa pull-left"></i>
                             <a id="cost_{{ year }}"
-                               href="#" class="affiliation workpackage" data-type="text"
+                               href="#" class="affiliation" data-type="text"
                                data-pk="{{ affiliation.id }},{{ year }}"
                                data-url="{{ url('json/project/update-cost') }}"
                                data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost_edit }}</a>
                         {% else %}
                             <i class="fa pull-left"></i>
-                            <span id="cost_{{ year }}"
-                                  class="workpackage"
-                                  rel="{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</span>
+                            <span id="cost_{{ year }}" rel="{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</span>
                         {% endif %}
                     </td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
@@ -228,16 +226,18 @@
                         isAllowed(workpackage, 'edit-community') or
                         isAllowed(affiliation, 'edit-affiliation')
                         ) %}
+
+                        {% set hasSomeCostAndEffortEditRights = true %}
+
                         <i class="fa pull-left"></i>
                         <a id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
-                           href="#" class="workpackage" data-type="text"
+                           href="#" class="workpackage workpackage-edit" data-type="text"
                            data-pk="{{ affiliation.id }},{{ workpackage.id }},{{ year }}"
                            data-url="{{ url('json/project/update-effort') }}"
                            data-title="{{ translate("txt-update-effort") }}">{{ effortInCurrentYear|parse_effort }}</a>
                     {% else %}
                         <i class="fa pull-left"></i>
-                        <span id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
-                              class="workpackage"
+                        <span class="workpackage" id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
                               rel="{{ year }}">{{ effortInCurrentYear|parse_effort }}</span>
                     {% endif %}
                     {% set totalPerWP = totalPerWP + effortInCurrentYear %}
@@ -256,9 +256,11 @@
         </tfoot>
     </table>
 
-    {{ affiliationLink(affiliation, 'edit-cost-and-effort', 'button') }}
+    {% if hasSomeCostAndEffortEditRights %}
+        {{ affiliationLink(affiliation, 'edit-cost-and-effort', 'button') }}
 
-    <span class="pull-right">
+        <span class="pull-right">
          {{ projectLink(affiliation.project, 'edit-cost-and-effort-community', 'button') }}
     </span>
+    {% endif %}
 {% endif %}

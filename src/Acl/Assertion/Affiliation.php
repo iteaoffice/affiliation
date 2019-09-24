@@ -53,10 +53,10 @@ final class Affiliation extends AbstractAssertion
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-        $this->affiliationService     = $container->get(AffiliationService::class);
-        $this->projectService         = $container->get(ProjectService::class);
-        $this->reportService          = $container->get(ReportService::class);
-        $this->projectAssertion       = $container->get(Project::class);
+        $this->affiliationService = $container->get(AffiliationService::class);
+        $this->projectService = $container->get(ProjectService::class);
+        $this->reportService = $container->get(ReportService::class);
+        $this->projectAssertion = $container->get(Project::class);
         $this->questionnaireAssertion = $container->get(QuestionnaireAssertion::class);
     }
 
@@ -98,23 +98,22 @@ final class Affiliation extends AbstractAssertion
             case 'list-questionnaire':
                 return $this->questionnaireAssertion->assert($acl, $role, $affiliation, 'list-community');
             case 'update-effort-spent':
-                return true;
                 // Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
-            if (null !== $reportId) {
-                //Find the corresponding report
-                $report = $this->reportService->findReportById((int) $reportId);
-                if (null === $report || $this->reportService->isFinal($report)) {
+                if (null !== $reportId) {
+                    //Find the corresponding report
+                    $report = $this->reportService->findReportById((int)$reportId);
+                    if (null === $report || $this->reportService->isFinal($report)) {
+                        return false;
+                    }
+                }
+
+                if ($this->projectService->isStopped($affiliation->getProject())) {
                     return false;
                 }
-            }
-
-            if ($this->projectService->isStopped($affiliation->getProject())) {
-                return false;
-            }
-            if ($this->contactService->contactHasPermit($this->contact, 'edit', $affiliation)) {
-                return true;
-            }
+                if ($this->contactService->contactHasPermit($this->contact, 'edit', $affiliation)) {
+                    return true;
+                }
 
                 break;
             case 'edit-financial':
