@@ -4,10 +4,6 @@
     loi.affiliation.project
     )) %}
 
-{% do headLink().appendStylesheet(
-    '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
-    ) %}
-
 <h1>{{ translate("txt-edit-loi-%s-in-%s")|format(
         loi.affiliation.parseBranchedName(),
         loi.affiliation.project
@@ -62,11 +58,3 @@
 </div>
 
 {{ form().closeTag()|raw }}
-
-
-<script type="text/javascript">
-    $('input[type=date]').datepicker({
-        sliderAccessArgs: {touchonly: false},
-        dateFormat: 'yy-mm-dd'
-    });
-</script>

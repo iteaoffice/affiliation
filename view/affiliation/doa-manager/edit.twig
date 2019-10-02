@@ -4,10 +4,6 @@ doa.affiliation.parseBranchedName(),
 doa.affiliation.project.parseFullname()
 )) %}
 
-{% do headLink().appendStylesheet(
-'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css'
-) %}
-
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
     doa.affiliation.parseBranchedName(),
     doa.affiliation.project
@@ -32,8 +28,6 @@ doa.affiliation.project.parseFullname()
         <p class="form-control-plaintext">{{ affiliationLink(doa.affiliation,'view-community') }}</p>
     </div>
 </div>
-
-{#{{ ztbformelement(form.get('contact')) }}#}
 
 {% set doaForm = form.get('affiliation_entity_doa') %}
 
@@ -63,11 +57,3 @@ doa.affiliation.project.parseFullname()
 </div>
 
 {{ form().closeTag()|raw }}
-
-
-<script type="text/javascript">
-    $('input[type=date]').datepicker({
-        sliderAccessArgs: {touchonly: false},
-        dateFormat: 'yy-mm-dd'
-    });
-</script>
