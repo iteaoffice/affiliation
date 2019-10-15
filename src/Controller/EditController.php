@@ -378,7 +378,6 @@ final class EditController extends AffiliationAbstractController
 
 
         $form = new FinancialForm($affiliation, $this->entityManager);
-
         $data = array_merge($formData, $this->getRequest()->getPost()->toArray());
         $form->setData($data);
 

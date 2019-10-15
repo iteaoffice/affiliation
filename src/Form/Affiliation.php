@@ -62,6 +62,7 @@ final class Affiliation extends Form implements InputFilterProviderInterface
             $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         asort($technicalContactValueOptions);
+
         /*
          * Collect the financial contacts
          * This array starts from the technical contacts
@@ -76,6 +77,13 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                     = $otherAffiliation->getFinancial()->getContact()->getFormName();
             }
         }
+
+        //Add the current financial contact
+        if (null !== $affiliation->getFinancial()) {
+            $financialContactValueOptions[$affiliation->getFinancial()->getContact()->getId()]
+                = $affiliation->getFinancial()->getContact()->getFormName();
+        }
+
         asort($financialContactValueOptions);
 
         $this->add(
@@ -112,7 +120,7 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                 'type'       => Select::class,
                 'name'       => 'financial',
                 'options'    => [
-                    'value_options' => $technicalContactValueOptions,
+                    'value_options' => $financialContactValueOptions,
                     'label'         => _('txt-financial-contact'),
                     'help-block'    => _('txt-financial-contact-help-block'),
                 ],

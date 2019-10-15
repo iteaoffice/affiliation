@@ -13,17 +13,18 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
-use function asort;
+use Contact\Entity\Contact;
 use Doctrine\ORM\EntityManager;
-use Organisation\Entity\Financial as FinancialOrganisation;
-use Zend\Form\Form;
-use Zend\Form\Element\Submit;
-use Zend\Form\Element\Radio;
-use General\Entity\Country;
 use DoctrineORMModule\Form\Element\EntitySelect;
+use General\Entity\Country;
+use Organisation\Entity\Financial as FinancialOrganisation;
+use Zend\Form\Element\Radio;
+use Zend\Form\Element\Select;
+use Zend\Form\Element\Submit;
 use Zend\Form\Element\Text;
 use Zend\Form\Element\Textarea;
-use Zend\Form\Element\Select;
+use Zend\Form\Form;
+use function asort;
 
 final class Financial extends Form
 {
@@ -100,29 +101,53 @@ final class Financial extends Form
          */
         $financialContactValueOptions = [];
 
-        $financialContactValueOptions[$affiliation->getContact()->getId()]
-            = $affiliation->getContact()->getFormName();
-        /**
-         * Add the associates
-         */
-        foreach ($affiliation->getAssociate() as $contact) {
+        $financialContactValueOptions[$affiliation->getContact()->getId()] = $affiliation->getContact()->getFormName();
+
+        //Add the current financial contact
+        if (null !== $affiliation->getFinancial()) {
+            $contact = $affiliation->getFinancial()->getContact();
+            $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
+        }
+
+        /** @var Contact $contact */
+        foreach ($affiliation->getAssociate()->filter(
+            static function (Contact $contact) {
+                return $contact->isActive();
+            }
+        ) as $contact) {
             $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         $organisation = $affiliation->getOrganisation();
+
         /**
          * Add the contacts in the organisation
          */
         foreach ($organisation->getContactOrganisation() as $contactOrganisation) {
-            $financialContactValueOptions[$contactOrganisation->getContact()->getId()]
-                = $contactOrganisation->getContact()->getFormName();
+            /** @var Contact $contact */
+            $contact = $contactOrganisation->getContact();
+
+            //Skip any inactive contact
+            if (!$contact->isActive()) {
+                continue;
+            }
+
+            $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         /**
          * Add all the financial contacts form other projects
          */
         foreach ($organisation->getAffiliation() as $otherAffiliation) {
             if ($otherAffiliation->getFinancial() !== null) {
-                $financialContactValueOptions[$otherAffiliation->getFinancial()->getContact()->getId()]
-                    = $otherAffiliation->getFinancial()->getContact()->getFormName();
+
+                /** @var Contact $contact */
+                $contact = $otherAffiliation->getFinancial()->getContact();
+
+                //Skip any inactive contact
+                if (!$contact->isActive()) {
+                    continue;
+                }
+
+                $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
             }
         }
 
