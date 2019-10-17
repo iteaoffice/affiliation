@@ -173,9 +173,7 @@ class AffiliationService extends AbstractService
     public static function useActiveContract(Affiliation $affiliation): bool
     {
         /** Only use the contract is the flag (invoice method) is set */
-        if (null === $affiliation->getInvoiceMethod()
-            || $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE_CONTRACT
-        ) {
+        if ($affiliation->hasInvoiceMethodFPP()) {
             return false;
         }
 
@@ -192,7 +190,7 @@ class AffiliationService extends AbstractService
         return false;
     }
 
-    public function findAffiliationVersion(Affiliation $affiliation, Version $version): ?\Affiliation\Entity\Version
+    public static function findAffiliationVersion(Affiliation $affiliation, Version $version): ?\Affiliation\Entity\Version
     {
         $affiliationVersion = $version->getAffiliationVersion()->filter(
             static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {

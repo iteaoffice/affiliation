@@ -470,6 +470,11 @@ class Affiliation extends AbstractEntity
         $this->organisation = $organisation;
     }
 
+    public function hasInvoiceMethodFPP(): bool
+    {
+        return null !== $this->invoiceMethod && $this->invoiceMethod->getId() === Method::METHOD_PERCENTAGE;
+    }
+
     public function getParentOrganisation(): ?Organisation
     {
         return $this->parentOrganisation;

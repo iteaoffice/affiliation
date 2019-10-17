@@ -105,7 +105,12 @@
 
             {% if affiliation.hasContractVersion() %}
                 <dt>{{ translate("txt-national-contract") }}</dt>
-                <dd>{{ contractVersionLink(affiliation.contractVersion.last.version,'view') }}</dd>
+                <dd>{{ contractVersionLink(affiliation.contractVersion.last.version,'view') }}
+                    {% if not affiliationService.useActiveContract(affiliation) %}
+                        <i class="fa fa-exclamation-triangle text-danger"
+                           title="{{ translate("txt-partner-has-contract-but-fpp-invoice-method-forced") }}"></i>
+                    {% endif %}
+                </dd>
             {% endif %}
 
 
@@ -366,26 +371,39 @@
             <table class="table table-hover table-striped table-sm">
                 <thead>
                 <tr>
+                    <th colspan="2">{{ translate("txt-id") }}</th>
                     <th>{{ translate("txt-version") }}</th>
-                    <th>{{ translate("txt-id") }}</th>
                     <th>{{ translate("txt-status") }}</th>
                     <th>{{ translate("txt-date-reviewed") }}</th>
                     <th>{{ translate("txt-total-effort") }}</th>
                     <th>{{ translate("txt-total-cost") }}</th>
+                    <th>{{ translate("txt-total-contract-cost") }}</th>
                     <th>{{ translate("txt-funding-national") }}</th>
                     <th>{{ translate("txt-funding-eu") }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for affiliationVersion in affiliation.version %}
+
+
+
                     <tr>
                         {% set version = affiliationVersion.version %}
+                        <td>
+                            <small class="text-muted">{{ loop.index }}</small>
+                        </td>
+                        <td><code>{{ affiliationVersion.id }}</code></td>
                         <td>{{ versionLink(version,'view-admin','description') }}</td>
-                        <td>{{ affiliationVersion.id }}</td>
                         <td>{{ versionService.parseStatus(version) }}</td>
                         <td>{{ version.dateReviewed|string_date }}</td>
                         <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
-                        <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_cost }}</td>
+                        <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|currency_decimal }}</td>
+                        <td>
+                            {% if affiliationVersion.hasContractVersion() %}
+                                {{ contractVersionLink(affiliationVersion.contractVersion.version,'view','icon') }}
+                                {{ versionService.findTotalCostVersionByAffiliationAndVersionIncludingContract(affiliationVersion.affiliation, version, true)|currency_decimal(affiliationVersion.contractVersion.version.contract.currency) }}
+                            {% endif %}
+                        </td>
                         <td>{{ versionService.findTotalFundingNationalVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_funding }}</td>
                         <td>{{ versionService.findTotalFundingEuVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_funding }}</td>
                     </tr>
@@ -468,6 +486,20 @@
                     {% endfor %}
                     <td>{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
                 </tr>
+
+                {% if affiliationVersion.hasContractVersion %}
+                    {% set contractVersion = affiliationVersion.contractVersion %}
+                    <tr>
+
+                        <td></td>
+                        <td>{{ translate("txt-contract") }} {{ contractVersionLink(affiliationVersion.contractVersion.version,'view','icon') }}</td>
+                        {% for year in years %}
+                            {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion.version, affiliation) %}
+                            <td>{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
+                        {% endfor %}
+                        <td>{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
+                    </tr>
+                {% endif %}
 
             {% endfor %}
 

@@ -31,6 +31,7 @@ use Organisation\Service\ParentService;
 use Program\Service\CallService;
 use Project\Acl\Assertion\Project;
 use Project\Entity\Changelog;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
@@ -64,6 +65,10 @@ final class AffiliationManagerController extends AffiliationAbstractController
      * @var VersionService
      */
     private $versionService;
+    /**
+     * @var ContractService
+     */
+    private $contractService;
     /**
      * @var ContactService
      */
@@ -106,6 +111,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
         TranslatorInterface $translator,
         ProjectService $projectService,
         VersionService $versionService,
+        ContractService $contractService,
         ContactService $contactService,
         OrganisationService $organisationService,
         ReportService $reportService,
@@ -120,6 +126,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
         $this->translator = $translator;
         $this->projectService = $projectService;
         $this->versionService = $versionService;
+        $this->contractService = $contractService;
         $this->contactService = $contactService;
         $this->organisationService = $organisationService;
         $this->reportService = $reportService;
@@ -159,7 +166,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 'versionService'        => $this->versionService,
                 'invoiceService'        => $this->invoiceService,
                 'organisationService'   => $this->organisationService,
-                'callService'           => $this->callService
+                'callService'           => $this->callService,
+                'contractService'       => $this->contractService
             ]
         );
     }

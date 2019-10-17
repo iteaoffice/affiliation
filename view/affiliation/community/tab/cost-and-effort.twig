@@ -161,7 +161,7 @@
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
                 <th class="cost_total"><i
-                            class="fa pull-left"></i><span>{{ totalPerYear|parse_cost_edit }}</span>
+                            class="fa pull-left"></i>{{ totalPerYear|parse_cost_edit }}
             </tr>
         {% else %}
 
