@@ -15,7 +15,7 @@
                         title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
                 </th>
             {% endfor %}
-            <th>{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
+            <th>{{ translate("txt-total") }}</th>
         </tr>
         </thead>
         <tbody>
@@ -33,10 +33,10 @@
                 <td colspan="2"></td>
                 {% for year in years %}
                     <td class="cost_version_value"
-                        rel="cost_version_{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</td>
+                        rel="cost_version_{{ year }}">{{ costPerYear[year]|parse_cost }}</td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
-                <th id="cost_version_total">{{ totalPerYear|parse_cost_edit }}</th>
+                <th id="cost_version_total">{{ totalPerYear|parse_cost }}</th>
             </tr>
         {% else %}
 
@@ -116,7 +116,7 @@
                         title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
                 </th>
             {% endfor %}
-            <th>{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
+            <th>{{ translate("txt-total") }}</th>
         </tr>
         </thead>
         <tbody>
@@ -152,16 +152,16 @@
                                href="#" class="affiliation" data-type="text"
                                data-pk="{{ affiliation.id }},{{ year }}"
                                data-url="{{ url('json/project/update-cost') }}"
-                               data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost_edit }}</a>
+                               data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost }}</a>
                         {% else %}
                             <i class="fa pull-left"></i>
-                            <span id="cost_{{ year }}" rel="{{ year }}">{{ costPerYear[year]|parse_cost_edit }}</span>
+                            <span id="cost_{{ year }}" rel="{{ year }}">{{ costPerYear[year]|parse_cost }}</span>
                         {% endif %}
                     </td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
                 <th class="cost_total"><i
-                            class="fa pull-left"></i>{{ totalPerYear|parse_cost_edit }}
+                            class="fa pull-left"></i>{{ totalPerYear|parse_cost }}
             </tr>
         {% else %}
 
@@ -190,7 +190,7 @@
 
                 </th>
             {% endfor %}
-            <th>{{ translate("txt-total") }} [{{ translate("txt-py") }}]</th>
+            <th>{{ translate("txt-total") }}</th>
         </tr>
         </thead>
         <tbody>

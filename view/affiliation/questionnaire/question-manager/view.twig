@@ -2,7 +2,7 @@
 {% do headTitle().append(translate("txt-affiliation")) %}
 {% do headTitle().append(translate("txt-affiliation-question-%s")|format(question)) %}
 
-<h1>{{ translate("txt-affiliation-question-%s")|format(question) }} {{ affiliationQuestionLink(question,'edit','button') }}</h1>
+<h1>{{ translate("txt-affiliation-question-%s")|format(question) }}</h1>
 
 <dl class="dl-horizontal">
     <dt>{{ translate("txt-question-id") }}</dt>
@@ -14,7 +14,7 @@
     {% if question.questionnaireQuestions is not empty %}
         <dt>{{ translate("txt-questionnaire") }}</dt>
         {% for questionnaireQuestion in question.questionnaireQuestions %}
-            <dd>{{ affiliationQuestionnaireLink(questionnaireQuestion.questionnaire, 'view', 'name') }}</dd>
+            <dd>{{ affiliationQuestionnaireLink(questionnaireQuestion.questionnaire, 'view-admin', 'name') }}</dd>
         {% endfor %}
     {% endif %}
     {% if question.helpBlock is not empty %}
@@ -36,3 +36,5 @@
     <dt>{{ translate("txt-enabled") }}</dt>
     <dd>{% if question.enabled %}{{ translate("txt-yes") }}{% else %}{{ translate("txt-no") }}{% endif %}</dd>
 </dl>
+
+{{ affiliationQuestionLink(question,'edit','button') }}

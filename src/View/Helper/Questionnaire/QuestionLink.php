@@ -15,6 +15,9 @@ namespace Affiliation\View\Helper\Questionnaire;
 
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\View\Helper\LinkAbstract;
+use function sprintf;
+use function strlen;
+use function substr;
 
 /**
  * Class QuestionLink
@@ -39,8 +42,8 @@ class QuestionLink extends LinkAbstract
         int      $length = null
     ): string {
         $this->question = $question ?? new Question();
-        $this->label    = (($length !== null) && (\strlen((string) $this->question->getQuestion()) > ($length+3)))
-            ? \substr((string) $this->question->getQuestion(), 0, $length) . '...'
+        $this->label    = (($length !== null) && (strlen((string) $this->question->getQuestion()) > ($length+3)))
+            ? substr((string) $this->question->getQuestion(), 0, $length) . '...'
             : (string) $this->question->getQuestion();
         $this->setAction($action);
         $this->setShow($show);
@@ -54,17 +57,12 @@ class QuestionLink extends LinkAbstract
         return $this->createLink();
     }
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
     public function parseAction(): void
     {
         switch ($this->getAction()) {
             case 'view':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/question/view');
-                $this->setText(\sprintf($this->translator->translate("txt-view-question-%s"), $this->label));
+                $this->setText(sprintf($this->translator->translate("txt-view-question-%s"), $this->label));
                 break;
             case 'new':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/question/new');
@@ -72,10 +70,8 @@ class QuestionLink extends LinkAbstract
                 break;
             case 'edit':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/question/edit');
-                $this->setText(\sprintf($this->translator->translate("txt-edit-question-%s"), $this->label));
+                $this->setText(sprintf($this->translator->translate("txt-edit-question-%s"), $this->label));
                 break;
-            default:
-                throw new \Exception(\sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
         }
     }
 }

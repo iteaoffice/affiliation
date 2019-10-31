@@ -24,7 +24,6 @@ use Zend\I18n\Translator\TranslatorInterface;
 use Zend\View\Model\ViewModel;
 
 /**
- * Class QuestionnaireController
  * @package Affiliation\Controller\Questionnaire
  */
 final class QuestionnaireController extends AffiliationAbstractController
@@ -47,18 +46,18 @@ final class QuestionnaireController extends AffiliationAbstractController
     private $translator;
 
     public function __construct(
-        AffiliationService   $affiliationService,
+        AffiliationService $affiliationService,
         QuestionnaireService $questionnaireService,
-        EntityManager        $entityManager,
-        TranslatorInterface  $translator
+        EntityManager $entityManager,
+        TranslatorInterface $translator
     ) {
-        $this->affiliationService   = $affiliationService;
+        $this->affiliationService = $affiliationService;
         $this->questionnaireService = $questionnaireService;
-        $this->entityManager        = $entityManager;
-        $this->translator           = $translator;
+        $this->entityManager = $entityManager;
+        $this->translator = $translator;
     }
 
-    public function overviewAction()
+    public function overviewAction(): ViewModel
     {
         $affiliations = $this->affiliationService->findBy(Affiliation::class, ['contact' => $this->identity()]);
 
@@ -70,17 +69,19 @@ final class QuestionnaireController extends AffiliationAbstractController
             ];
         }
 
-        return new ViewModel([
-            'affiliations' => $affiliationList
-        ]);
+        return new ViewModel(
+            [
+                'affiliations' => $affiliationList
+            ]
+        );
     }
 
-    public function viewAction()
+    public function viewAction(): ViewModel
     {
         /** @var Questionnaire $questionnaire */
         $questionnaire = $this->questionnaireService->find(Questionnaire::class, (int)$this->params('id'));
         /** @var Affiliation $affiliation */
-        $affiliation   = $this->questionnaireService->find(
+        $affiliation = $this->questionnaireService->find(
             Affiliation::class,
             (int)$this->params('affiliationId')
         );
@@ -89,11 +90,13 @@ final class QuestionnaireController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        return new ViewModel([
-            'questionnaire' => $questionnaire,
-            'affiliation'   => $affiliation,
-            'answers'       => $this->questionnaireService->getSortedAnswers($questionnaire, $affiliation)
-        ]);
+        return new ViewModel(
+            [
+                'questionnaire' => $questionnaire,
+                'affiliation'   => $affiliation,
+                'answers'       => $this->questionnaireService->getSortedAnswers($questionnaire, $affiliation)
+            ]
+        );
     }
 
     public function editAction()
@@ -103,7 +106,7 @@ final class QuestionnaireController extends AffiliationAbstractController
         /** @var Questionnaire $questionnaire */
         $questionnaire = $this->questionnaireService->find(Questionnaire::class, (int)$this->params('id'));
         /** @var Affiliation $affiliation */
-        $affiliation   = $this->questionnaireService->find(
+        $affiliation = $this->questionnaireService->find(
             Affiliation::class,
             (int)$this->params('affiliationId')
         );
@@ -123,25 +126,34 @@ final class QuestionnaireController extends AffiliationAbstractController
             $data = $request->getPost()->toArray();
             $form->setData($data);
 
-            if (!isset($data['cancel']) && $form->isValid()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/questionnaire/view',
+                    ['affiliationId' => $affiliation->getId(), 'id' => $questionnaire->getId()]
+                );
+            }
+
+            if ($form->isValid()) {
                 // isValid already hydrated the answer objects, so we only need to flush the entity manager
                 $this->entityManager->flush();
 
                 $this->flashMessenger()->addSuccessMessage(
                     $this->translator->translate('txt-the-answers-have-been-saved-successfully')
                 );
-            }
 
-            return $this->redirect()->toRoute(
-                'community/affiliation/questionnaire/view',
-                ['affiliationId' => $affiliation->getId(), 'id' => $questionnaire->getId()]
-            );
+                return $this->redirect()->toRoute(
+                    'community/affiliation/questionnaire/view',
+                    ['affiliationId' => $affiliation->getId(), 'id' => $questionnaire->getId()]
+                );
+            }
         }
 
-        return new ViewModel([
-            'form'          => $form,
-            'questionnaire' => $questionnaire,
-            'answers'       => $this->questionnaireService->getSortedAnswers($questionnaire, $affiliation)
-        ]);
+        return new ViewModel(
+            [
+                'form'          => $form,
+                'questionnaire' => $questionnaire,
+                'answers'       => $this->questionnaireService->getSortedAnswers($questionnaire, $affiliation)
+            ]
+        );
     }
 }

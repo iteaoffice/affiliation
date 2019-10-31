@@ -58,38 +58,39 @@ class QuestionnaireLink extends LinkAbstract
         switch ($this->getAction()) {
             case 'overview':
                 $this->setRouter('community/affiliation/questionnaire/overview');
+                $this->addClasses('alert-link');
                 $this->setShowOptions([
                     'notification' => $this->translator->translate('txt-questionnaires-pending')
                 ]);
                 break;
             case 'view-community':
                 $this->setRouter('community/affiliation/questionnaire/view');
-                $this->setText($this->translator->translate("txt-view-answers"));
+                $this->setText($this->translator->translate('txt-view-answers'));
                 break;
             case 'edit-community':
                 $this->setRouter('community/affiliation/questionnaire/edit');
-                $this->setText($this->translator->translate("txt-update-answers"));
+                $this->setText($this->translator->translate('txt-update-answers'));
                 break;
             case 'view-admin':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/view');
                 $this->setText(\sprintf(
-                    $this->translator->translate("txt-view-questionnaire-%s"),
+                    $this->translator->translate('txt-view-questionnaire-%s'),
                     $this->questionnaire->getQuestionnaire()
                 ));
                 break;
             case 'new-admin':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/new');
-                $this->setText($this->translator->translate("txt-new-questionnaire"));
+                $this->setText($this->translator->translate('txt-new-questionnaire'));
                 break;
             case 'edit-admin':
                 $this->setRouter('zfcadmin/affiliation/questionnaire/edit');
                 $this->setText(\sprintf(
-                    $this->translator->translate("txt-edit-questionnaire-%s"),
+                    $this->translator->translate('txt-edit-questionnaire-%s'),
                     $this->questionnaire->getQuestionnaire()
                 ));
                 break;
             default:
-                throw new \Exception(\sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+                throw new \Exception(\sprintf('%s is an incorrect action for %s', $this->getAction(), __CLASS__));
         }
     }
 }

@@ -190,8 +190,10 @@ class AffiliationService extends AbstractService
         return false;
     }
 
-    public static function findAffiliationVersion(Affiliation $affiliation, Version $version): ?\Affiliation\Entity\Version
-    {
+    public static function findAffiliationVersion(
+        Affiliation $affiliation,
+        Version $version
+    ): ?\Affiliation\Entity\Version {
         $affiliationVersion = $version->getAffiliationVersion()->filter(
             static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
                 return $affiliationVersion->getAffiliation() === $affiliation;
@@ -260,7 +262,13 @@ class AffiliationService extends AbstractService
     {
         $loiObject = new LoiObject();
         $loiObject->setObject(file_get_contents($file['tmp_name']));
-        $loi = new Loi();
+
+        $loi = $affiliation->getLoi();
+        if (null === $loi) {
+            $loi = new Loi();
+            $loi->setAffiliation($affiliation);
+        }
+
         $loi->setContact($contact);
         $loi->setAffiliation($affiliation);
         $loi->setSize($file['size']);
@@ -277,12 +285,15 @@ class AffiliationService extends AbstractService
 
     public function submitLoi(Contact $contact, Affiliation $affiliation): Loi
     {
-        $loi = new Loi();
+        $loi = $affiliation->getLoi();
+        if (null === $loi) {
+            $loi = new Loi();
+            $loi->setAffiliation($affiliation);
+        }
         $loi->setContact($contact);
         $loi->setApprover($contact);
         $loi->setDateSigned(new DateTime());
         $loi->setDateApproved(new DateTime());
-        $loi->setAffiliation($affiliation);
 
         $this->save($loi);
 
@@ -293,9 +304,15 @@ class AffiliationService extends AbstractService
     {
         $doaObject = new DoaObject();
         $doaObject->setObject(file_get_contents($file['tmp_name']));
-        $doa = new Doa();
+
+        $doa = $affiliation->getDoa();
+
+        if (null === $doa) {
+            $doa = new Doa();
+            $doa->setAffiliation($affiliation);
+        }
+
         $doa->setContact($contact);
-        $doa->setAffiliation($affiliation);
         $doa->setSize($file['size']);
 
         $fileTypeValidator = new MimeType();
@@ -310,13 +327,19 @@ class AffiliationService extends AbstractService
 
     public function submitDoa(Contact $contact, Affiliation $affiliation, array $data): Doa
     {
-        $doa = new Doa();
+        $doa = $affiliation->getDoa();
+
+        if (null === $doa) {
+            $doa = new Doa();
+            $doa->setAffiliation($affiliation);
+        }
+
         $doa->setContact($contact);
         $doa->setDateSigned(new DateTime());
         $doa->setGroupName($data['group_name']);
         $doa->setChamberOfCommerceNumber($data['chamber_of_commerce_number']);
         $doa->setChamberOfCommerceLocation($data['chamber_of_commerce_location']);
-        $doa->setAffiliation($affiliation);
+
         $this->save($doa);
 
         return $doa;

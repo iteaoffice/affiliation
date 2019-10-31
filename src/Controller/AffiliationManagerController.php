@@ -328,8 +328,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 );
 
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation/view',
-                    ['id' => $affiliation->getId(),]
+                    'zfcadmin/project/project/affiliation',
+                    ['id' => $affiliation->getProject()->getId(),]
                 );
             }
 

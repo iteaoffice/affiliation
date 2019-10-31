@@ -59,7 +59,8 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
             $affiliationFieldSet = new EffortPerAffiliationFieldset(
                 $affiliation,
                 $affiliation->getProject(),
-                $projectService
+                $projectService,
+                $workpackage
             );
 
             $workPackageFieldset->add($affiliationFieldSet);
@@ -80,8 +81,8 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
                 'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update-costs-and-effort"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update-costs-and-effort'),
                 ],
             ]
         );
@@ -90,8 +91,8 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
                 'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );

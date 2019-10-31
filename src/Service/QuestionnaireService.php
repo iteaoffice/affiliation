@@ -54,8 +54,8 @@ class QuestionnaireService extends AbstractService
             $answer = $questionnaireQuestion->getAnswers()->first();
         }
 
-        // No or new answers
-        if (!$answer || $answer->isEmpty()) {
+        // No, or not from this affiliation or new answers
+        if (!$answer || $answer->getAffiliation() !== $affiliation || $answer->isEmpty()) {
             static $sortedQuestionnaireQuestions = [];
             if (!isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
                 $sortedQuestionnaireQuestions[$questionnaire->getId()] =
@@ -70,6 +70,10 @@ class QuestionnaireService extends AbstractService
                 $answer = clone $answerTemplate;
                 $answer->setQuestionnaireQuestion($questionnaireQuestion);
                 $answer->setAffiliation($affiliation);
+
+                //Persist the $answer to be able to only flush at the end
+                $this->entityManager->persist($answer);
+
                 $answers[] = $answer;
             }
             return $answers;

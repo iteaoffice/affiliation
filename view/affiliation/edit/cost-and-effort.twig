@@ -41,12 +41,6 @@
 
 
 <table class="table table-listing table-striped table-sm">
-    <tfoot>
-    <tr>
-        <td colspan="{{ 1 + yearRange|length }}"></td>
-        <td id="effort-total-affiliation">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</td>
-    </tr>
-    </tfoot>
     <tbody>
     {% set useContract = affiliationService.useActiveContract(affiliation) %}
     {% set contractVersion = contractService.findLatestContractVersionByAffiliation(affiliation) %}
@@ -61,7 +55,7 @@
                 {% endif %}
             </th>
         {% endfor %}
-        <th style="width: 120px;">{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
+        <th class="text-right">{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
     </tr>
 
     {# Rows for the costs #}
@@ -72,11 +66,10 @@
             </td>
 
             {% set totalContractCost = 0 %}
-
             {% for year in yearRange %}
                 {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
 
-                <td>
+                <td class="text-right text-monospace">
                     {{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}
 
                     {% set contractVersion = contractService.findLatestContractVersionByAffiliation(affiliation) %}
@@ -84,7 +77,7 @@
                     {% set contractCost = 0 %}
                     {% if exchangeRate %}
                         {% set contractCost = contractVersionCost[year] / (exchangeRate  * 1000) %}
-                        <input type="hidden" class="form-control cost-input year-{{ year }}"
+                        <input type="hidden" class="form-control cost-input data-year={{ year }}"
                                name="costPerAffiliationAndYear[{{ affiliation.id }}][{{ year }}][cost]"
                                value="{{ contractCost }}">
 
@@ -94,7 +87,7 @@
                 </td>
             {% endfor %}
 
-            <td>{{ totalContractCost|currency_decimal(contractVersion.contract.currency) }}</td>
+            <td class="text-right text-monospace">{{ totalContractCost|currency_decimal(contractVersion.contract.currency) }}</td>
         {% else %}
             <td></td>
             {% for year in yearRange %}
@@ -109,20 +102,20 @@
                     {{ formelement(costPerAffiliationAndYear.get('cost')) }}
                 {% else %}
                     {% for cost in affiliation.cost if cost.dateStart|date('Y') == year %}
-                        <span class="cost-input year-{{ year }}">{{ cost.costs|parse_cost }}</span>
+                        <span class="cost-input total-cost-year-{{ year }}">{{ cost.costs|parse_cost }}</span>
                     {% else %}
                         {{ 0|parse_effort }}
                     {% endfor %}
                 {% endif %}
                 </td>
             {% endfor %}
+
+            <td class="text-right text-monospace total-cost-affiliation-{{ affiliation.id }}">
+                {{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}
+            </td>
         {% endif %}
 
-        <td id="cost-total-affiliation">
-            {% if not useContract %}
-                {{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}
-            {% endif %}
-        </td>
+
     </tr>
 
     <tr class="table-success">
@@ -130,13 +123,12 @@
         {% for year in yearRange %}
             <th>{{ year }}         </th>
         {% endfor %}
-        <th>{{ translate("txt-total") }} [PY]</th>
+        <th class="text-right">{{ translate("txt-total") }}</th>
     </tr>
 
     {# rows for the effort#}
     {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(project) %}
-
-        <tr data-workpackage="{{ workpackage.id }}">
+        <tr>
             <td>{{ workpackage }}</td>
             {% for year in yearRange %}
                 {% if projectService.isOutOfBounds(project, year) %}
@@ -152,7 +144,8 @@
                     {% for effort in affiliation.effort if
                         effort.dateStart|date('Y') == year and
                         effort.workpackage.id == workpackage.id %}
-                        <span class="effort-input year-{{ year }}">{{ effort.effort|parse_effort }}</span>
+                        <span class="effort-input" data-workpackage="{{ workpackage.id }}"
+                              data-year="{{ year }}">{{ effort.effort|parse_effort }}</span>
                     {% else %}
                         {{ 0|parse_effort }}
                     {% endfor %}
@@ -160,17 +153,26 @@
                 </td>
             {% endfor %}
 
-            <td id="effort-total-workpackage-{{ workpackage.id }}" class="effort-total-per-workpackage-and-affiliation">
+            <td class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}-workpackage-{{ workpackage.id }}">
                 {{ projectService.findTotalEffortByWorkpackageAndAffiliation(workpackage, affiliation)|parse_effort }}
             </td>
         </tr>
-
     {% endfor %}
 
+    <tr>
+        <th>{{ translate("txt-effort-total") }}</th>
 
+        {% set totalEffortByAffiliationPerYear = projectService.findTotalEffortByAffiliationPerYear(affiliation) %}
+
+        {% for year in yearRange %}
+            <th class="text-right text-monospace total-effort-year-{{ year }}">
+                {{ totalEffortByAffiliationPerYear[year]|parse_effort }}
+            </th>
+        {% endfor %}
+        <th class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
+    </tr>
     </tbody>
 </table>
-</div>
 
 
 {{ formelement(form.get('csrf')) }}
@@ -187,59 +189,77 @@
 
 
 <script type="text/javascript">
-
-
     $(document).ready(function () {
         $(".cost-input").keyup(function () {
-            calculateTotalCost(this);
+            calculateTotalCost($(this));
         });
         $(".effort-input").keyup(function () {
-            calculateTotalEffort(this);
+            calculateTotalEffort($(this));
         });
     });
 
-    function calculateTotalCost(src) {
-        var sum = 0;
-        var tableRow = $(src).closest('tr');
+    function getValue($element) {
+        let $value = 0;
+        if ($element.hasClass('form-control')) {
+            $value = parseFloat($element.val());
+        } else {
+            $value = parseFloat($element.html());
+        }
 
-        /**
-         * Calculate the sum of the different floats per affiliation (table row)
-         */
-        tableRow.find('.cost-input').each(function (index, elem) {
-            var val = parseFloat($(elem).val());
-            if (!isNaN(val)) {
-                sum += val;
-            }
-        });
-
-        $('#cost-total-affiliation').html(sum.toFixed(0)).effect("highlight");
+        return $value;
     }
 
-    function calculateTotalEffort(src) {
-        var sum = 0;
-        var tableRow = $(src).closest('tr');
+    function toKiloEuro(number) {
+        return number.toFixed(2);
+    }
 
-        tableRow.find('.effort-input').each(function (index, elem) {
-            var val = parseFloat($(elem).val());
-            if (!isNaN(val)) {
-                sum += val;
+    function toPY(number) {
+        return number.toFixed(2);
+    }
+
+    function calculateTotalCost($element) {
+        const $inputElement = $('.cost-input');
+        const $affiliation = $element.data('affiliation');
+        let $total = 0;
+
+        $inputElement.each(function (index, element) {
+            $element = $(element);
+            const $value = getValue($element);
+            $total += $value;
+        });
+
+        $('.total-cost-affiliation-' + $affiliation).html(toKiloEuro($total));
+    }
+
+    function calculateTotalEffort($element) {
+
+        const $inputElement = $('.effort-input');
+        const $year = $element.data('year');
+        const $workpackage = $element.data('workpackage');
+        const $affiliation = $element.data('affiliation');
+
+        let $totalPerAffiliation = 0;
+        let $totalPerAffiliationPerWp = 0;
+        let $totalPerYear = 0;
+
+        $inputElement.each(function (index, element) {
+            $element = $(element);
+            const $value = getValue($element);
+            if ($element.data('year') === $year) {
+                $totalPerYear += $value;
+            }
+            if ($element.data('affiliation') === $affiliation) {
+                $totalPerAffiliation += $value;
+            }
+
+            if ($element.data('affiliation') === $affiliation && $element.data('workpackage') === $workpackage) {
+                $totalPerAffiliationPerWp += $value;
             }
         });
 
-        $('#effort-total-workpackage-' + tableRow.data('workpackage')).html(sum.toFixed(2)).effect("highlight");
+        $('.total-effort-affiliation-' + $affiliation).html(toPY($totalPerAffiliation));
+        $('.total-effort-affiliation-' + $affiliation + '-workpackage-' + $workpackage).html(toPY($totalPerAffiliationPerWp));
+        $('.total-effort-year-' + $year).html(toPY($totalPerYear));
 
-        var sum = 0;
-        /**
-         * Calculate the per affiliation over each workpackage
-         */
-        $('.effort-total-per-workpackage-and-affiliation').each(function (index, elem) {
-            var val = parseFloat($(elem).text());
-            if (!isNaN(val)) {
-                sum += val;
-            }
-
-        });
-        $('#effort-total-affiliation').html(sum.toFixed(2)).effect("highlight");
     }
 </script>
-

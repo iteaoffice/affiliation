@@ -73,6 +73,10 @@ final class Affiliation extends AbstractAssertion
             $affiliation = $this->affiliationService->findAffiliationById((int)$id);
         }
 
+        if (null === $affiliation) {
+            return true;
+        }
+
         switch ($this->getPrivilege()) {
             case 'view-community':
                 if ($this->contactService->contactHasPermit($this->contact, 'view', $affiliation)) {

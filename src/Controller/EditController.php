@@ -25,6 +25,7 @@ use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Entity\Contact;
 use Contact\Service\ContactService;
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use DragonBe\Vies\Vies;
 use General\Entity\Country;
@@ -41,8 +42,13 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
+use Throwable;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\View\Model\ViewModel;
+use function array_key_exists;
+use function count;
+use function explode;
+use function str_replace;
 
 /**
  * Class EditController
@@ -257,7 +263,7 @@ final class EditController extends AffiliationAbstractController
                 /*
                  * Parse the organisation and branch
                  */
-                [$organisationId, $branch] = \explode('|', $formData['affiliation']);
+                [$organisationId, $branch] = explode('|', $formData['affiliation']);
                 $organisation = $this->organisationService->findOrganisationById((int)$organisationId);
                 $affiliation->setOrganisation($organisation);
                 $affiliation->setContact($this->contactService->findContactById((int)$formData['technical']));
@@ -285,7 +291,7 @@ final class EditController extends AffiliationAbstractController
                 //Update the mode of the project
                 $project = $affiliation->getProject();
                 $project->setMode($this->projectService->getNextMode($project)->getMode());
-                $this->projectService->save($project);
+                //$this->projectService->save($project);
 
                 $changelogMessage = sprintf(
                     $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
@@ -501,17 +507,17 @@ final class EditController extends AffiliationAbstractController
 
                             //Update the financial
                             $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_VALID);
-                            $organisationFinancial->setDateVat(new \DateTime());
+                            $organisationFinancial->setDateVat(new DateTime());
                         } else {
                             //Update the financial
                             $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_INVALID);
-                            $organisationFinancial->setDateVat(new \DateTime());
+                            $organisationFinancial->setDateVat(new DateTime());
                             $this->flashMessenger()->setNamespace('error')
                                 ->addMessage(
                                     sprintf($this->translator->translate('txt-vat-number-is-invalid'), $affiliation)
                                 );
                         }
-                    } catch (\Throwable $e) {
+                    } catch (Throwable $e) {
                         $this->flashMessenger()->setNamespace('danger')
                             ->addMessage(
                                 sprintf(
@@ -721,7 +727,7 @@ final class EditController extends AffiliationAbstractController
             }
 
             $removedContacts = [];
-            if (\array_key_exists('contact', $data)) {
+            if (array_key_exists('contact', $data)) {
                 //Find the contact
                 foreach ($data['contact'] as $contactId) {
                     $contact = $this->contactService->findContactById((int)$contactId);
@@ -739,7 +745,7 @@ final class EditController extends AffiliationAbstractController
 
             $changelogMessage = sprintf(
                 $this->translator->translate('txt-%s-associates-were-removed-from-affiliation'),
-                \count($removedContacts)
+                count($removedContacts)
             );
 
             $this->flashMessenger()->addSuccessMessage($changelogMessage);
@@ -960,7 +966,7 @@ final class EditController extends AffiliationAbstractController
         $formData = [];
         foreach ($this->projectService->parseEditYearRange($project) as $year) {
             $costPerYear = $this->projectService->findTotalCostByAffiliationPerYear($affiliation);
-            if (!\array_key_exists($year, $costPerYear)) {
+            if (!array_key_exists($year, $costPerYear)) {
                 $costPerYear[$year] = 0;
             }
             $formData['costPerAffiliationAndYear']
@@ -977,7 +983,7 @@ final class EditController extends AffiliationAbstractController
                         $workpackage,
                         $affiliation
                     );
-                if (!\array_key_exists($year, $effortPerWorkpackageAndYear)) {
+                if (!array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }
                 $formData['effortPerAffiliationAndYear']
@@ -1011,7 +1017,7 @@ final class EditController extends AffiliationAbstractController
             foreach ($formData['costPerAffiliationAndYear'][$affiliation->getId()] as $year => $costValue) {
                 $cost = $this->projectService->findCostByAffiliationAndYear($affiliation, $year);
 
-                $setCostValue = (float)\str_replace(',', '.', $costValue['cost']);
+                $setCostValue = (float)str_replace(',', '.', $costValue['cost']);
 
                 if (null !== $cost && $setCostValue === 0.0) {
                     $this->projectService->delete($cost);
@@ -1024,9 +1030,9 @@ final class EditController extends AffiliationAbstractController
                     if (null === $cost) {
                         $cost = new Cost();
                         $cost->setAffiliation($affiliation);
-                        $dateStart = new \DateTime();
+                        $dateStart = new DateTime();
                         $cost->setDateStart($dateStart->modify('first day of january ' . $year));
-                        $dateEnd = new \DateTime();
+                        $dateEnd = new DateTime();
                         $cost->setDateEnd($dateEnd->modify('last day of december ' . $year));
                     }
                     $cost->setCosts($setCostValue * 1000);
@@ -1052,7 +1058,7 @@ final class EditController extends AffiliationAbstractController
                             $year
                         );
 
-                    $setEffortValue = (float)\str_replace(',', '.', $effortValue['effort']);
+                    $setEffortValue = (float)str_replace(',', '.', $effortValue['effort']);
 
                     if (null !== $effort && $setEffortValue === 0.0) {
                         $this->projectService->delete($effort);
@@ -1066,9 +1072,9 @@ final class EditController extends AffiliationAbstractController
                             $effort = new Effort();
                             $effort->setAffiliation($affiliation);
                             $effort->setWorkpackage($workpackage);
-                            $dateStart = new \DateTime();
+                            $dateStart = new DateTime();
                             $effort->setDateStart($dateStart->modify('first day of january ' . $year));
-                            $dateEnd = new \DateTime();
+                            $dateEnd = new DateTime();
                             $effort->setDateEnd($dateEnd->modify('last day of december ' . $year));
                         }
                         $effort->setEffort($setEffortValue);
@@ -1078,7 +1084,7 @@ final class EditController extends AffiliationAbstractController
             }
             //Update the mode of the project when the saved is pressed
             $project->setMode($this->projectService->getNextMode($project)->getMode());
-            $this->projectService->save($project);
+            //$this->projectService->save($project);
 
             $changelogMessage = sprintf(
                 $this->translator->translate(

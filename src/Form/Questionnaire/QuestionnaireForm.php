@@ -22,7 +22,6 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Zend\Form\Element;
 use Zend\Form\Fieldset;
 use Zend\Form\Form;
-use Zend\InputFilter\CollectionInputFilter;
 use Zend\InputFilter\InputFilter;
 use Zend\Json\Json;
 use function array_merge;
@@ -52,24 +51,6 @@ final class QuestionnaireForm extends Form
         );
         $doctrineHydrator = new DoctrineHydrator($entityManager);
 
-        // Setup input filters
-        $answerFilter = new InputFilter();
-        $answerFilter->add(
-            [
-                'name'     => 'value',
-                'required' => false,
-                'filters'  => [
-                    ['name' => 'StripTags'],
-                    ['name' => 'StringTrim'],
-                    ['name' => 'ToNull'],
-                ],
-            ]
-        );
-        $answersFilter = new CollectionInputFilter();
-        $answersFilter->setInputFilter($answerFilter);
-        $questionnaireFilter = new InputFilter();
-        $questionnaireFilter->add($answersFilter, 'answers');
-        $this->setInputFilter($questionnaireFilter);
 
         $answerCollection = new Element\Collection('answers');
         $answerCollection->setUseAsBaseFieldset(true);
@@ -77,8 +58,13 @@ final class QuestionnaireForm extends Form
         $answerCollection->setAllowAdd(false);
         $answerCollection->setAllowRemove(false);
 
+        $questionnaireFilter = new InputFilter();
+        $answersFilter = new InputFilter();
+
         /** @var Answer $answer */
         foreach ($affiliationQuestionService->getSortedAnswers($questionnaire, $affiliation) as $answer) {
+
+            /** @var Question $question */
             $question = $answer->getQuestionnaireQuestion()->getQuestion();
             $placeholder = $question->getPlaceholder();
 
@@ -90,6 +76,22 @@ final class QuestionnaireForm extends Form
                 'label'      => $question->getQuestion(),
                 'help-block' => nl2br((string)$question->getHelpBlock()),
             ];
+
+            // Setup input filters
+            $answerFilter = new InputFilter();
+            $answerFilter->add(
+                [
+                    'name'     => 'value',
+                    'required' => $question->getRequired(),
+                    'filters'  => [
+                        ['name' => 'StripTags'],
+                        ['name' => 'StringTrim'],
+                        ['name' => 'ToNull'],
+                    ],
+                ]
+            );
+            $answersFilter->add($answerFilter, $question->getId());
+
 
             switch ($question->getInputType()) {
                 case Question::INPUT_TYPE_BOOL:
@@ -189,6 +191,9 @@ final class QuestionnaireForm extends Form
 
         // Add the answer collection to the form
         $this->add($answerCollection);
+
+        $questionnaireFilter->add($answersFilter, 'answers');
+        $this->setInputFilter($questionnaireFilter);
 
         $this->add(
             [

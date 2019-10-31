@@ -92,7 +92,7 @@ final class AffiliationLink extends LinkAbstract
                 break;
             case 'edit-cost-and-effort':
                 $this->setRouter('community/affiliation/edit/cost-and-effort');
-                $this->setText(sprintf($this->translator->translate('txt-edit-cost-and-effort-of-%s'), $this->getAffiliation()));
+                $this->setText(sprintf($this->translator->translate('txt-edit-cost-and-effort')));
                 break;
             case 'add-associate-admin':
                 $this->setRouter('zfcadmin/affiliation/add-associate');

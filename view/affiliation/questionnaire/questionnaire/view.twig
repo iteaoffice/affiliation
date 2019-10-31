@@ -3,10 +3,12 @@
 {% do headTitle().append(translate("txt-affiliation-questionnaire-%s")|format(questionnaire)) %}
 
 <h1>{{ questionnaire.questionnaire }}</h1>
+
 {% if questionnaire.description is not empty %}
     <p>{{ questionnaire.description }}</p>
 {% endif %}
 <hr>
+
 {% for answer in answers %}
     {% set currentCategory = answer.questionnaireQuestion.question.category.category %}
     {% if currentCategory != activeCategory %}
@@ -18,9 +20,9 @@
     {% if answer.value is not null %}
         <p>{{ answer.value }}</p>
     {% elseif not answer.questionnaireQuestion.question.required %}
-        <p>({{ translate('txt-not-applicable') }})</p>
+        <p>({{ translate("txt-no-answer-provided") }})</p>
     {% else %}
-        {{ ztbalert().info(translate('txt-no-answer-provided'))|raw }}
+        {{ ztbalert().info(translate("txt-no-answer-provided"))|raw }}
     {% endif %}
 {% endfor %}
 

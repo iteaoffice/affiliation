@@ -462,7 +462,7 @@
                                    href="#" class="cost" data-type="text"
                                    data-pk="{{ yearTotal.id }}"
                                    data-url="{{ url('zfcadmin/project/version/update-cost') }}"
-                                   data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost_edit }}</a>
+                                   data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost }}</a>
                             {% else %}
                                 {# find the affiliationVersion by going over the versions, #}
                                 {% set affiliationVersionId = null %}
@@ -477,7 +477,7 @@
                                        data-params="{'year':{{ year }},'affiliationVersionId':{{ affiliationVersionId }}}"
                                        data-pk=""
                                        data-url="{{ url('zfcadmin/project/version/new-cost') }}"
-                                       data-title="{{ translate("txt-new-cost") }}">{{ 0|parse_cost_edit }}</a>
+                                       data-title="{{ translate("txt-new-cost") }}">{{ 0|parse_cost }}</a>
                                 {% else %}
                                     0
                                 {% endif %}
@@ -532,7 +532,7 @@
                            href="#" class="cost" data-type="text"
                            data-pk="{{ affiliation.id }},{{ year }}"
                            data-url="{{ url('json/project/update-cost') }}"
-                           data-title="{{ translate("txt-update-costs") }}">{{ yearTotal|parse_cost_edit }}</a>
+                           data-title="{{ translate("txt-update-costs") }}">{{ yearTotal|parse_cost }}</a>
                     </td>
                 {% endfor %}
                 <td>{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</td>
