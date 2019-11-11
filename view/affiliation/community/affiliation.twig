@@ -15,6 +15,7 @@
 <p class="lead">
     {{ translate("txt-partner-in-%s")|format(affiliation.project.parseFullName()) }}
     {{ affiliationLink(affiliation,'view-admin','icon') }}
+    {{ organisationUpdateNotification(affiliation.organisation) }}
 </p>
 
 {% if affiliation.dateEnd %}

@@ -20,29 +20,28 @@ namespace Affiliation\Navigation\Invokable\Questionnaire;
 use Admin\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Zend\Navigation\Page\Mvc;
+use function array_merge;
+use function strlen;
+use function substr;
 
 /**
  * Class QuestionnaireLabel
+ *
  * @package Affiliation\Navigation\Invokable\Questionnaire
  */
-class QuestionnaireLabel extends AbstractNavigationInvokable
+final class QuestionnaireLabel extends AbstractNavigationInvokable
 {
-    /**
-     * @param Mvc $page
-     *
-     * @return void
-     */
     public function __invoke(Mvc $page): void
     {
+        $label = $this->translator->translate('txt-nav-view');
+
         if ($this->getEntities()->containsKey(Questionnaire::class)) {
             /** @var Questionnaire $questionnaire */
             $questionnaire = $this->getEntities()->get(Questionnaire::class);
-            $page->setParams(\array_merge($page->getParams(), ['id' => $questionnaire->getId()]));
-            $label = (\strlen($questionnaire->getQuestionnaire()) > 33)
-                ? \substr($questionnaire->getQuestionnaire(), 0, 30) . '...'
+            $page->setParams(array_merge($page->getParams(), ['id' => $questionnaire->getId()]));
+            $label = (strlen($questionnaire->getQuestionnaire()) > 33)
+                ? substr($questionnaire->getQuestionnaire(), 0, 30) . '...'
                 : $questionnaire->getQuestionnaire();
-        } else {
-            $label = $this->translator->translate('txt-nav-view');
         }
         $page->set('label', $label);
     }

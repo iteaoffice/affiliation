@@ -13,15 +13,15 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use Contact\Form\Element\Contact;
 use Contact\Service\ContactService;
 use Zend\Form\Element\Email;
+use Zend\Form\Element\Submit;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\Uri\Uri;
 use Zend\Validator\Callback;
 use Zend\Validator\EmailAddress;
-use Zend\Form\Element\Submit;
-use Contact\Form\Element\Contact;
 use Zend\Validator\NotEmpty;
 use function in_array;
 
@@ -30,7 +30,7 @@ use function in_array;
  *
  * @package Affiliation\Form
  */
-class AddAssociate extends Form implements InputFilterProviderInterface
+final class AddAssociate extends Form implements InputFilterProviderInterface
 {
     protected $extensions = [];
 

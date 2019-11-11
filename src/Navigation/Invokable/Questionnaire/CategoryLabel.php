@@ -23,24 +23,20 @@ use Zend\Navigation\Page\Mvc;
 
 /**
  * Class CategoryLabel
- * @package Affiliation\Navigation\Invokable\Question
+ *
+ * @package Affiliation\Navigation\Invokable\Questionnaire
  */
-class CategoryLabel extends AbstractNavigationInvokable
+final class CategoryLabel extends AbstractNavigationInvokable
 {
-    /**
-     * @param Mvc $page
-     *
-     * @return void
-     */
     public function __invoke(Mvc $page): void
     {
+        $label = $this->translator->translate('txt-nav-view');
+
         if ($this->getEntities()->containsKey(Category::class)) {
             /** @var Category $category */
             $category = $this->getEntities()->get(Category::class);
             $page->setParams(\array_merge($page->getParams(), ['id' => $category->getId()]));
             $label = $category->getCategory();
-        } else {
-            $label = $this->translator->translate('txt-nav-view');
         }
         $page->set('label', $label);
     }

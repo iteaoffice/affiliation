@@ -27,15 +27,12 @@ use Zend\Navigation\Page\Mvc;
  *
  * @package Affiliation\Navigation\Invokable
  */
-class AffiliationLabel extends AbstractNavigationInvokable
+final class AffiliationLabel extends AbstractNavigationInvokable
 {
-    /**
-     * @param Mvc $page
-     *
-     * @return void
-     */
     public function __invoke(Mvc $page): void
     {
+        $label = $this->translator->translate('txt-nav-view');
+
         if ($this->getEntities()->containsKey(Affiliation::class)) {
             /** @var Affiliation $affiliation */
             $affiliation = $this->getEntities()->get(Affiliation::class);
@@ -49,9 +46,8 @@ class AffiliationLabel extends AbstractNavigationInvokable
                 )
             );
             $label = (string)$affiliation;
-        } else {
-            $label = $this->translator->translate('txt-nav-view');
         }
+
         $page->set('label', $label);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
-*
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
@@ -23,15 +23,12 @@ use Zend\Navigation\Page\Mvc;
  *
  * @package Loi\Navigation\Invokable
  */
-class LoiLabel extends AbstractNavigationInvokable
+final class LoiLabel extends AbstractNavigationInvokable
 {
-    /**
-     * @param Mvc $page
-     *
-     * @return void
-     */
     public function __invoke(Mvc $page): void
     {
+        $label = $this->translator->translate('txt-nav-view');
+
         if ($this->getEntities()->containsKey(Loi::class)) {
             /** @var Loi $loi */
             $loi = $this->getEntities()->get(Loi::class);
@@ -46,8 +43,6 @@ class LoiLabel extends AbstractNavigationInvokable
                 )
             );
             $label = $this->translator->translate('txt-loi');
-        } else {
-            $label = $this->translator->translate('txt-nav-view');
         }
         $page->set('label', $label);
     }

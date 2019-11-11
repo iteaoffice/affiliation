@@ -1,6 +1,6 @@
 <?php
 /**
-*
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
@@ -19,11 +19,8 @@ use Zend\InputFilter\InputFilter;
  *
  * @package Affiliation\InputFilter
  */
-class DescriptionFilter extends InputFilter
+final class DescriptionFilter extends InputFilter
 {
-    /**
-     * DescriptionFilter constructor.
-     */
     public function __construct()
     {
         $inputFilter = new InputFilter();
@@ -33,7 +30,6 @@ class DescriptionFilter extends InputFilter
                 'required' => true,
             ]
         );
-
 
         $this->add($inputFilter, 'affiliation_entity_description');
     }

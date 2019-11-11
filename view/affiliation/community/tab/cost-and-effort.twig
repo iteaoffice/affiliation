@@ -33,13 +33,12 @@
                 <td colspan="2"></td>
                 {% for year in years %}
                     <td class="cost_version_value"
-                        rel="cost_version_{{ year }}">{{ costPerYear[year]|parse_cost }}</td>
+                        rel="cost_version_{{ year }}">{{ costPerYear[year]|currency_decimal() }}</td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
-                <th id="cost_version_total">{{ totalPerYear|parse_cost }}</th>
+                <th id="cost_version_total">{{ totalPerYear|currency_decimal() }}</th>
             </tr>
         {% else %}
-
             {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
             <tr>
                 <td colspan="2">{{ translate("txt-contract-costs") }} <i class="fa fa-handshake-o"
