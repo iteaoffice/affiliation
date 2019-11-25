@@ -371,8 +371,8 @@
             <table class="table table-hover table-striped table-sm">
                 <thead>
                 <tr>
-                    <th colspan="2">{{ translate("txt-id") }}</th>
-                    <th>{{ translate("txt-version") }}</th>
+                    <th colspan="2">{{ translate("txt-version") }}</th>
+                    <th>{{ translate("txt-affiliation-version") }}</th>
                     <th>{{ translate("txt-status") }}</th>
                     <th>{{ translate("txt-date-reviewed") }}</th>
                     <th>{{ translate("txt-total-effort") }}</th>
@@ -382,18 +382,18 @@
                     <th>{{ translate("txt-funding-eu") }}</th>
                 </tr>
                 </thead>
+                <tfoot>
+                <tr>
+                    <td colspan="10"></td>
+                </tr>
+                </tfoot>
                 <tbody>
                 {% for affiliationVersion in affiliation.version %}
-
-
-
                     <tr>
                         {% set version = affiliationVersion.version %}
-                        <td>
-                            <small class="text-muted">{{ loop.index }}</small>
-                        </td>
-                        <td><code>{{ affiliationVersion.id }}</code></td>
+                        <td><small class="text-muted">{{ version.id }}</small></td>
                         <td>{{ versionLink(version,'view-admin','description') }}</td>
+                        <td><small class="text-muted">{{ affiliationVersion.id }}</small></td>
                         <td>{{ versionService.parseStatus(version) }}</td>
                         <td>{{ version.dateReviewed|string_date }}</td>
                         <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
@@ -419,9 +419,7 @@
         <table class="table table-hover table-striped table-sm">
             <thead>
             <tr>
-
-                <th></th>
-                <th>{{ translate("txt-type") }}</th>
+                <th colspan="2">{{ translate("txt-type") }}</th>
 
                 {% for year in projectService.parseYearRange(project, true) %}
                     <th>{{ year }}</th>
@@ -429,15 +427,21 @@
                 <th>{{ translate("txt-total") }}</th>
             </tr>
             </thead>
+            <tfoot>
+                <tr>
+                    <td colspan="{{ 3 + projectService.parseYearRange(project, true)|length }}"></td>
+                </tr>
+            </tfoot>
             <tbody>
             {% for affiliationVersion in affiliation.version %}
                 {% set version = affiliationVersion.version %}
                 <tr>
-                    <th colspan="{{ 4 + projectService.parseYearRange(project, true)|length }}">{{ versionLink(version,'view-admin','description') }}</th>
+                    <th colspan="{{ 4 + projectService.parseYearRange(project, true)|length }}">
+
+                        {{ versionLink(version,'view-admin','description') }}</th>
                 </tr>
                 <tr>
-
-                    <td>{{ versionService.parseStatus(affiliationVersion.version) }}</td>
+                    <td><small class="text-muted">{{ version.id }}</small> {{ versionService.parseStatus(affiliationVersion.version) }}</td>
                     <td>{{ translate("txt-effort") }}</td>
 
                     {% for year in projectService.parseYearRange(project, true) %}
@@ -445,9 +449,7 @@
                         <td>{{ yearTotal|parse_effort }}</td>
                     {% endfor %}
                     <td>{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliation, version)|parse_effort }}</td>
-
                 </tr>
-
                 <tr>
 
                     <td></td>

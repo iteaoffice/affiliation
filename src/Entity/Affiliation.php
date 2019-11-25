@@ -425,6 +425,11 @@ class Affiliation extends AbstractEntity
         return self::$selfFundedTemplates;
     }
 
+    public function isSelfFunded(): bool
+    {
+        return $this->selfFunded === self::SELF_FUNDED && null !== $this->dateSelfFunded;
+    }
+
     public function __get($property)
     {
         return $this->$property;
@@ -500,11 +505,6 @@ class Affiliation extends AbstractEntity
     public function hasDescription(): bool
     {
         return null !== $this->description;
-    }
-
-    public function isSelfFunded(): bool
-    {
-        return $this->selfFunded === self::SELF_FUNDED && null !== $this->dateSelfFunded;
     }
 
     public function hasContractVersion(): bool

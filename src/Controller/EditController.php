@@ -149,11 +149,10 @@ final class EditController extends AffiliationAbstractController
             $affiliation->getOrganisation()->getId(),
             $affiliation->getBranch()
         );
-        $formData['technical'] = $affiliation->getContact()->getId();
 
+        $formData['technical'] = $affiliation->getContact()->getId();
         $formData['communicationContactName'] = $affiliation->getCommunicationContactName();
         $formData['communicationContactEmail'] = $affiliation->getCommunicationContactEmail();
-
         $formData['valueChain'] = $affiliation->getValueChain();
         $formData['marketAccess'] = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();

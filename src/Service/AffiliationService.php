@@ -170,6 +170,39 @@ class AffiliationService extends AbstractService
         $this->translator = $translator;
     }
 
+    public static function findAffiliationVersion(
+        Affiliation $affiliation,
+        Version $version
+    ): ?\Affiliation\Entity\Version {
+        $affiliationVersion = $version->getAffiliationVersion()->filter(
+            static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
+                return $affiliationVersion->getAffiliation() === $affiliation;
+            }
+        )->first();
+
+        if ($affiliationVersion) {
+            return $affiliationVersion;
+        }
+
+        return null;
+    }
+
+    public static function useContractInVersion(Affiliation $affiliation, Version $version): bool
+    {
+        if (!self::useActiveContract($affiliation)) {
+            return false;
+        }
+
+        $affiliationVersion = self::findAffiliationVersion($affiliation, $version);
+
+        //If we cannot find the affiliation in the version
+        if (null === $affiliationVersion) {
+            return false;
+        }
+
+        return $affiliationVersion->hasContractVersion();
+    }
+
     public static function useActiveContract(Affiliation $affiliation): bool
     {
         /** Only use the contract is the flag (invoice method) is set */
@@ -188,23 +221,6 @@ class AffiliationService extends AbstractService
         }
 
         return false;
-    }
-
-    public static function findAffiliationVersion(
-        Affiliation $affiliation,
-        Version $version
-    ): ?\Affiliation\Entity\Version {
-        $affiliationVersion = $version->getAffiliationVersion()->filter(
-            static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
-                return $affiliationVersion->getAffiliation() === $affiliation;
-            }
-        )->first();
-
-        if ($affiliationVersion) {
-            return $affiliationVersion;
-        }
-
-        return null;
     }
 
     public function findAffiliationById(int $id): ?Affiliation

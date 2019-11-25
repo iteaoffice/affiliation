@@ -142,7 +142,7 @@ final class CommunityController extends AffiliationAbstractController
         /*
          * Create the checklist already now, since we need it in every method
          */
-        $checklist = $this->checklist(
+        $projectChecklist = $this->projectChecklist(
             $affiliation->getProject(),
             $this->callService->getCallStatus($affiliation->getProject()->getCall())->getVersionType()
         );
@@ -166,7 +166,7 @@ final class CommunityController extends AffiliationAbstractController
             'parentService'         => $this->parentService,
             'callService'           => $this->callService,
             'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
-            'checklist'             => $checklist,
+            'projectChecklist'             => $projectChecklist,
             'project'               => $affiliation->getProject()
         ];
 

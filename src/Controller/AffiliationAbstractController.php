@@ -14,7 +14,7 @@ namespace Affiliation\Controller;
 use Affiliation\Controller\Plugin;
 use Affiliation\Entity\Affiliation;
 use Contact\Entity\Contact;
-use Project\Controller\Plugin\Checklist;
+use Project\Controller\Plugin\Checklist\ProjectChecklist;
 use Project\Entity\Project;
 use Project\Entity\Version\Type;
 use Search\Service\AbstractSearchService;
@@ -29,7 +29,7 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      Identity|Contact identity()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
- * @method      Checklist checklist(Project $project, Type $versionType)
+ * @method      ProjectChecklist projectChecklist(Project $project, Type $versionType)
  * @method      Plugin\AffiliationPdf renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
  * @method      Plugin\RenderDoa renderDoa()
  * @method      Plugin\RenderLoi renderLoi()

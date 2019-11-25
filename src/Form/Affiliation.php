@@ -13,6 +13,7 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
+use Contact\Entity\Contact;
 use Zend\Form\Element\Radio;
 use Zend\Form\Element\Select;
 use Zend\Form\Element\Submit;
@@ -62,6 +63,19 @@ final class Affiliation extends Form implements InputFilterProviderInterface
             $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         asort($technicalContactValueOptions);
+
+        //Go over the TC/PTC to add them
+        if ($this->isContactInAffiliationOrganisation($affiliation->getProject()->getContact(), $affiliation)) {
+            $contact = $affiliation->getProject()->getContact();
+            $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
+        }
+
+        foreach ($affiliation->getProject()->getProxyContact() as $proxyContact) {
+            if ($this->isContactInAffiliationOrganisation($proxyContact, $affiliation)) {
+                $contact = $affiliation->getProject()->getContact();
+                $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
+            }
+        }
 
         /*
          * Collect the financial contacts
@@ -260,6 +274,14 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
+    }
+
+    private function isContactInAffiliationOrganisation(Contact $contact, Entity\Affiliation $affiliation): bool
+    {
+        if (!$contact->hasOrganisation()) {
+            return false;
+        }
+        return $contact->getContactOrganisation()->getOrganisation() === $affiliation->getOrganisation();
     }
 
     public function getInputFilterSpecification(): array
