@@ -37,6 +37,7 @@
     "iteaoffice/contact": "^4.1",
     "iteaoffice/organisation": "^4.1",
     "iteaoffice/general": "^4.1",
+    "iteaoffice/invoice": "^4.1",
     "iteaoffice/project": "^4.1"
   },
   "autoload": {
