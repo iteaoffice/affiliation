@@ -101,7 +101,7 @@
                     {% set costPerAffiliationAndYear = costPerAffiliationAndYear.get(affiliation.id).get(year) %}
                     {{ formelement(costPerAffiliationAndYear.get('cost')) }}
                 {% else %}
-                    {% for cost in affiliation.cost if cost.dateStart|date('Y') == year %}
+                    {% for cost in affiliation.cost|filter(cost => cost.dateStart|date('Y') == year) -%}
                         <span class="cost-input total-cost-year-{{ year }}">{{ cost.costs|parse_cost }}</span>
                     {% else %}
                         {{ 0|parse_effort }}
@@ -141,9 +141,9 @@
                     {% set effortPerAffiliationAndYear = effortPerAffiliationAndYear.get(affiliation.id).get(year) %}
                     {{ formelement(effortPerAffiliationAndYear.get('effort')) }}
                 {% else %}
-                    {% for effort in affiliation.effort if
+                    {% for effort in affiliation.effort|filter(effort =>
                         effort.dateStart|date('Y') == year and
-                        effort.workpackage.id == workpackage.id %}
+                        effort.workpackage.id == workpackage.id) -%}
                         <span class="effort-input" data-workpackage="{{ workpackage.id }}"
                               data-year="{{ year }}">{{ effort.effort|parse_effort }}</span>
                     {% else %}

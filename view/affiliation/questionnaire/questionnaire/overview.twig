@@ -3,7 +3,7 @@
 
 <h1>{{ translate("txt-questionnaire-overview") }}</h1>
 
-{% for affiliationData in affiliations if affiliationData.questionnaires|length > 0 %}
+{% for affiliationData in affiliations|filter(affiliationData => affiliationData.questionnaires|length > 0) -%}
     <h2>{{ affiliationData.affiliation.project.parseFullName() }}</h2>
     <table class="table table-hover table-striped table-sm">
         <thead>

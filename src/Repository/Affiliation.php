@@ -14,7 +14,6 @@ namespace Affiliation\Repository;
 
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
@@ -379,6 +378,10 @@ use Project\Entity\Version\Version;
 
         $qb->addGroupBy('affiliation_entity_affiliation.project');
 
+        if (null === $qb->getQuery()->getOneOrNullResult()) {
+            return 0;
+        }
+
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
@@ -412,8 +415,8 @@ use Project\Entity\Version\Version;
     /**
      * @param Organisation $organisation
      *
-     * @deprecated
      * @return Entity\Affiliation[]
+     *@deprecated
      */
     public function findAffiliationByOrganisation(Organisation $organisation): array
     {
@@ -475,6 +478,10 @@ use Project\Entity\Version\Version;
 
         $qb->addGroupBy('affiliation_entity_affiliation.project');
 
+        if (null === $qb->getQuery()->getOneOrNullResult()) {
+            return 0;
+        }
+
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }
 
@@ -491,6 +498,10 @@ use Project\Entity\Version\Version;
         $qb->setParameter(1, $call);
         $qb->setParameter(2, $country);
         $qb->addGroupBy('organisation_entity_organisation.country');
+
+        if (null === $qb->getQuery()->getOneOrNullResult()) {
+            return 0;
+        }
 
         return (int)$qb->getQuery()->getOneOrNullResult()['amount'];
     }

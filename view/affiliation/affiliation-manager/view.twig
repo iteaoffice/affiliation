@@ -134,7 +134,7 @@
             {% if callService.requireDoaPerProgram(affiliation.project.call) %}
                 <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
                 {% if affiliation.parentOrganisation %}
-                    <dd>{% for doa in affiliation.parentOrganisation.parent.doa if doa.program.id == project.call.program.id %}
+                    <dd>{% for doa in affiliation.parentOrganisation.parent.doa|filter(doa => doa.program.id == project.call.program.id) -%}
                             {% if programDoa.dateApproved is null %}
                                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(doa.dateCreated|date("d-m-Y"))|raw }}
                                 {#{{ parentDoaLink(doa,'replace','icon') }}#}
@@ -148,7 +148,7 @@
                         {% endfor %}
                     </dd>
                 {% else %}
-                    <dd>{% for programDoa in affiliation.organisation.programDoa if programDoa.program.id == project.call.program.id %}
+                    <dd>{% for programDoa in affiliation.organisation.programDoa|filter(programDoa => programDoa.program.id == project.call.program.id) -%}
                             {% if programDoa.dateApproved is null %}
                                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
                                 {{ programDoaLink(programDoa,'replace','icon') }}
@@ -468,7 +468,7 @@
                             {% else %}
                                 {# find the affiliationVersion by going over the versions, #}
                                 {% set affiliationVersionId = null %}
-                                {% for affiliationVersion in version.affiliationVersion if affiliationVersion.affiliation.id == affiliation.id %}
+                                {% for affiliationVersion in version.affiliationVersion|filter(affiliationVersion => affiliationVersion.affiliation.id == affiliation.id) -%}
                                     {% set affiliationVersionId = affiliationVersion.id %}
                                 {% endfor %}
 

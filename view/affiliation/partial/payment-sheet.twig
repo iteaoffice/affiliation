@@ -241,7 +241,7 @@
 
 {% set contributionPaid = affiliationService.parseContributionPaid(affiliation, year, period) %}
 {% set hasAlreadyPaidInvoices = false %}
-    {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period) %}
+    {% for affiliationInvoice in affiliation.invoice|affiliationInvoice(affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period)) -%}
         {% set hasAlreadyPaidInvoices = true %}
     {% endfor %}
 
@@ -261,7 +261,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period) %}
+            {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period)) -%}
                 <tr>
                     <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }} {{ invoiceLink(affiliationInvoice.invoice,'view','icon') }}</td>
                     <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
@@ -328,7 +328,7 @@
 
     {% set hasInvoicesInPeriod = false %}
     {% set hasVat = false %}
-    {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year == year and affiliationInvoice.period == period %}
+    {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year == year and affiliationInvoice.period == period) -%}
         {% set hasInvoicesInPeriod = true %}
 
         {% set hasVat = invoiceService.hasVat(affiliationInvoice.invoice) %}
@@ -350,7 +350,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year == year and affiliationInvoice.period == period %}
+            {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year == year and affiliationInvoice.period == period) -%}
                 <tr>
                     <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }} {{ invoiceLink(affiliationInvoice.invoice,'view','icon') }}</td>
                     <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
@@ -461,7 +461,7 @@
     </table>
 
     {% set hasAlreadySentInvoices = false %}
-    {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period) %}
+    {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period)) -%}
         {% set hasAlreadySentInvoices = true %}
     {% endfor %}
 
@@ -480,7 +480,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period) %}
+            {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period)) -%}
                 {% if invoiceService.isSent(affiliationInvoice.invoice) %}
                     <tr>
                         <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
