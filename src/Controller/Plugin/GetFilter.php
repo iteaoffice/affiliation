@@ -19,11 +19,11 @@ declare(strict_types=1);
 namespace Affiliation\Controller\Plugin;
 
 use Doctrine\Common\Collections\Criteria;
+use Interop\Container\ContainerInterface;
 use Zend\Http\Request;
 use Zend\Json\Json;
 use Zend\Mvc\Application;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\ServiceManager\ServiceManager;
 use function base64_decode;
 use function base64_encode;
 use function http_build_query;
@@ -36,25 +36,19 @@ use function urldecode;
  */
 final class GetFilter extends AbstractPlugin
 {
-    /**
-     * @var ServiceManager
-     */
-    private $serviceManager;
-    /**
-     * @var array
-     */
-    private $filter = [];
+    private ContainerInterface $container;
+    private array $filter = [];
 
-    public function __construct(ServiceManager $serviceManager)
+    public function __construct(ContainerInterface $container)
     {
-        $this->serviceManager = $serviceManager;
+        $this->container = $container;
     }
 
     public function __invoke(): GetFilter
     {
         $filter = [];
         /** @var Application $application */
-        $application = $this->serviceManager->get('application');
+        $application = $this->container->get('application');
         $encodedFilter = urldecode((string)$application->getMvcEvent()->getRouteMatch()->getParam('encodedFilter'));
         /** @var Request $request */
         $request = $application->getMvcEvent()->getRequest();

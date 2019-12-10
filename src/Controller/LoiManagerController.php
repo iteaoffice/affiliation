@@ -47,42 +47,15 @@ use function sprintf;
  */
 final class LoiManagerController extends AffiliationAbstractController
 {
-    /**
-     * @var LoiService
-     */
-    private $loiService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var GeneralService
-     */
-    private $generalService;
-    /**
-     * @var EmailService
-     */
-    private $emailService;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
-    /**
-     * @var FormService
-     */
-    private $formService;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private LoiService $loiService;
+    private ContactService $contactService;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private GeneralService $generalService;
+    private EmailService $emailService;
+    private EntityManager $entityManager;
+    private FormService $formService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         LoiService $loiService,

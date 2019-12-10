@@ -28,22 +28,10 @@ use Zend\View\Model\ViewModel;
  */
 final class QuestionnaireController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var QuestionnaireService
-     */
-    private $questionnaireService;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private AffiliationService $affiliationService;
+    private QuestionnaireService $questionnaireService;
+    private EntityManager $entityManager;
+    private TranslatorInterface $translator;
 
     public function __construct(
         AffiliationService $affiliationService,

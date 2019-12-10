@@ -65,14 +65,12 @@ $config = [
     'controller_plugins' => [
         'aliases'   => [
             'renderPaymentSheet'   => Controller\Plugin\RenderPaymentSheet::class,
-            'renderDoa'            => Controller\Plugin\RenderDoa::class,
             'renderLoi'            => Controller\Plugin\RenderLoi::class,
             'getAffiliationFilter' => Controller\Plugin\GetFilter::class,
             'mergeAffiliation'     => Controller\Plugin\MergeAffiliation::class,
         ],
         'factories' => [
             Controller\Plugin\RenderPaymentSheet::class => ConfigAbstractFactory::class,
-            Controller\Plugin\RenderDoa::class          => ConfigAbstractFactory::class,
             Controller\Plugin\RenderLoi::class          => ConfigAbstractFactory::class,
             Controller\Plugin\GetFilter::class          => Factory\InvokableFactory::class,
             Controller\Plugin\MergeAffiliation::class   => ConfigAbstractFactory::class,

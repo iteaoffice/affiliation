@@ -44,42 +44,15 @@ use function trim;
  */
 final class RenderPaymentSheet extends AbstractPlugin
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ModuleOptions
-     */
-    private $moduleOptions;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private AffiliationService $affiliationService;
+    private ModuleOptions $moduleOptions;
+    private ProjectService $projectService;
+    private VersionService $versionService;
+    private ContractService $contractService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private InvoiceService $invoiceService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         AffiliationService $affiliationService,

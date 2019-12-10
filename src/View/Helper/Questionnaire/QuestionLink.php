@@ -42,7 +42,7 @@ class QuestionLink extends LinkAbstract
         int      $length = null
     ): string {
         $this->question = $question ?? new Question();
-        $this->label    = (($length !== null) && (strlen((string) $this->question->getQuestion()) > ($length+3)))
+        $this->label    = (($length !== null) && (strlen((string) $this->question->getQuestion()) > ($length + 3)))
             ? substr((string) $this->question->getQuestion(), 0, $length) . '...'
             : (string) $this->question->getQuestion();
         $this->setAction($action);

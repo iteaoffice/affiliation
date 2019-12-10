@@ -31,7 +31,6 @@ use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
  * @method      bool isAllowed($resource, $action)
  * @method      ProjectChecklist projectChecklist(Project $project, Type $versionType)
  * @method      Plugin\AffiliationPdf renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
- * @method      Plugin\RenderDoa renderDoa()
  * @method      Plugin\RenderLoi renderLoi()
  * @method      Plugin\GetFilter getAffiliationFilter()
  * @method      Plugin\MergeAffiliation mergeAffiliation($mainAffiliation, $affiliation)

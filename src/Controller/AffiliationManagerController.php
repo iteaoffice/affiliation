@@ -49,62 +49,20 @@ use Zend\View\Model\ViewModel;
  */
 final class AffiliationManagerController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var ReportService
-     */
-    private $reportService;
-    /**
-     * @var WorkpackageService
-     */
-    private $workpackageService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var ParentService
-     */
-    private $parentService;
-    /**
-     * @var CallService
-     */
-    private $callService;
-    /**
-     * @var AssertionService
-     */
-    private $assertionService;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    private AffiliationService $affiliationService;
+    private TranslatorInterface $translator;
+    private ProjectService $projectService;
+    private VersionService $versionService;
+    private ContractService $contractService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private ReportService $reportService;
+    private WorkpackageService $workpackageService;
+    private InvoiceService $invoiceService;
+    private ParentService $parentService;
+    private CallService $callService;
+    private AssertionService $assertionService;
+    private EntityManager $entityManager;
 
     public function __construct(
         AffiliationService $affiliationService,

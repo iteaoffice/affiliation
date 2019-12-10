@@ -25,6 +25,8 @@ use Zend\Http\Request;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
+use function ceil;
+use function urlencode;
 
 /**
  * Class QuestionnaireManagerController
@@ -32,20 +34,9 @@ use Zend\View\Model\ViewModel;
  */
 final class QuestionnaireManagerController extends AffiliationAbstractController
 {
-    /**
-     * @var QuestionnaireService
-     */
-    private $questionnaireService;
-
-    /**
-     * @var FormService
-     */
-    private $formService;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private QuestionnaireService $questionnaireService;
+    private FormService $formService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         QuestionnaireService $questionnaireService,
@@ -66,7 +57,7 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
         $paginator = new Paginator(new PaginatorAdapter(new ORMPaginator($query, false)));
         $paginator::setDefaultItemCountPerPage(($page === 'all') ? PHP_INT_MAX : 20);
         $paginator->setCurrentPageNumber($page);
-        $paginator->setPageRange(\ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage()));
+        $paginator->setPageRange(ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage()));
 
         $form = new QuestionnaireFilter();
         $form->setData(['filter' => $filterPlugin->getFilter()]);
@@ -74,7 +65,7 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
         return new ViewModel([
             'form'          => $form,
             'paginator'     => $paginator,
-            'encodedFilter' => \urlencode($filterPlugin->getHash()),
+            'encodedFilter' => urlencode($filterPlugin->getHash()),
             'order'         => $filterPlugin->getOrder(),
             'direction'     => $filterPlugin->getDirection(),
         ]);

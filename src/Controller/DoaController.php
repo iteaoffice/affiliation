@@ -26,6 +26,7 @@ use Zend\Validator\File\FilesSize;
 use Zend\Validator\File\MimeType;
 use Zend\View\Model\ViewModel;
 use ZfcTwig\View\TwigRenderer;
+use function count;
 
 /**
  * Class DoaController
@@ -34,26 +35,11 @@ use ZfcTwig\View\TwigRenderer;
  */
 final class DoaController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var GeneralService
-     */
-    private $generalService;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    /**
-     * @var TwigRenderer
-     */
-    private $renderer;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private GeneralService $generalService;
+    private TranslatorInterface $translator;
+    private TwigRenderer $renderer;
 
     public function __construct(
         AffiliationService $affiliationService,
@@ -272,13 +258,10 @@ final class DoaController extends AffiliationAbstractController
         /** @var Response $response */
         $response = $this->getResponse();
 
-        if (null === $doa || \count($doa->getObject()) === 0) {
+        if (null === $doa || count($doa->getObject()) === 0) {
             return $response->setStatusCode(Response::STATUS_CODE_404);
         }
 
-        /*
-         * Due to the BLOB issue, we treat this as an array and we need to capture the first element
-         */
         $object = $doa->getObject()->first()->getObject();
 
         $response->setContent(stream_get_contents($object));

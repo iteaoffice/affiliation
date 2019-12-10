@@ -11,8 +11,8 @@ use function sprintf;
 
 final class PaymentSheetPeriod
 {
-    private $year;
-    private $period;
+    private int $year;
+    private int $period;
 
     public function __construct(int $year, int $period)
     {

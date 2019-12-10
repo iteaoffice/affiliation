@@ -38,30 +38,13 @@ final class MergeAffiliation extends AbstractPlugin
     public const STRATEGY_SUM = 0;       // Add other cost and effort to main
     public const STRATEGY_USE_MAIN = 1;  // Use cost and effort of main affiliation
     public const STRATEGY_USE_OTHER = 2; // Use cost and effort of other affiliation
-    /**
-     * @var array
-     */
-    protected $debug = [];
-    /**
-     * @var AdminService
-     */
-    protected $adminService;
-    /**
-     * @var EntityManager
-     */
-    protected $entityManager;
-    /**
-     * @var Affiliation
-     */
-    private $otherAffiliation;
-    /**
-     * @var Affiliation
-     */
-    private $mainAffiliation;
-    /**
-     * @var int
-     */
-    private $costAndEffortStrategy;
+
+    protected array $debug = [];
+    protected AdminService $adminService;
+    protected EntityManager $entityManager;
+    private Affiliation $otherAffiliation;
+    private Affiliation $mainAffiliation;
+    private int $costAndEffortStrategy;
 
     public function __construct(AdminService $adminService, EntityManager $entityManager)
     {

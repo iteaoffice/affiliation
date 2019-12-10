@@ -163,7 +163,6 @@ final class AddAssociate extends Form implements InputFilterProviderInterface
             'email'   => [
                 'required'   => false,
                 'validators' => [
-
                     new NotEmpty(NotEmpty::NULL),
                     new Callback(
                         [

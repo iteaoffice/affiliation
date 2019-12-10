@@ -49,46 +49,16 @@ use function sprintf;
  */
 final class DoaManagerController extends AffiliationAbstractController
 {
-    /**
-     * @var DoaService
-     */
-    private $doaService;
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var GeneralService
-     */
-    private $generalService;
-    /**
-     * @var EmailService
-     */
-    private $emailService;
-    /**
-     * @var DeeplinkService
-     */
-    private $deeplinkService;
-    /**
-     * @var FormService
-     */
-    private $formService;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private DoaService $doaService;
+    private AffiliationService $affiliationService;
+    private ContactService $contactService;
+    private ProjectService $projectService;
+    private GeneralService $generalService;
+    private EmailService $emailService;
+    private DeeplinkService $deeplinkService;
+    private FormService $formService;
+    private EntityManager $entityManager;
+    private TranslatorInterface $translator;
 
     public function __construct(
         DoaService $doaService,

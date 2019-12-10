@@ -20,9 +20,9 @@ use Zend\Stdlib\AbstractOptions;
  */
 class ModuleOptions extends AbstractOptions implements AffiliationOptionsInterface
 {
-    protected $doaTemplate = '';
-    protected $loiTemplate = '';
-    protected $paymentSheetTemplate = '';
+    protected string $doaTemplate = '';
+    protected string $loiTemplate = '';
+    protected string $paymentSheetTemplate = '';
 
     public function getDoaTemplate(): string
     {

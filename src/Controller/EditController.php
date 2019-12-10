@@ -57,54 +57,18 @@ use function str_replace;
  */
 final class EditController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var CountryService
-     */
-    private $countryService;
-    /**
-     * @var ReportService
-     */
-    private $reportService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var WorkpackageService
-     */
-    private $workpackageService;
-    /**
-     * @var FormService
-     */
-    private $formService;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private VersionService $versionService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private CountryService $countryService;
+    private ReportService $reportService;
+    private ContractService $contractService;
+    private WorkpackageService $workpackageService;
+    private FormService $formService;
+    private EntityManager $entityManager;
+    private TranslatorInterface $translator;
 
     public function __construct(
         AffiliationService $affiliationService,

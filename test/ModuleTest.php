@@ -49,10 +49,6 @@ class ModuleTest extends AbstractServiceTest
 
         foreach ($abstractFacories as $service => $dependencies) {
 
-            if ($service === AffiliationSearchService::class) {
-                continue;
-            }
-
             $instantiatedDependencies = [];
             foreach ($dependencies as $dependency) {
 

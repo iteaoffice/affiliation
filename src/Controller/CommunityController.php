@@ -38,62 +38,20 @@ use Zend\View\Model\ViewModel;
  */
 final class CommunityController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var ReportService
-     */
-    private $reportService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var WorkpackageService
-     */
-    private $workpackageService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var ParentService
-     */
-    private $parentService;
-    /**
-     * @var CallService
-     */
-    private $callService;
-    /**
-     * @var ModuleOptions
-     */
-    private $invoiceModuleOptions;
-    /**
-     * @var AssertionService
-     */
-    private $assertionService;
-    /**
-     * @var QuestionnaireService
-     */
-    private $questionnaireService;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private VersionService $versionService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private ReportService $reportService;
+    private ContractService $contractService;
+    private WorkpackageService $workpackageService;
+    private InvoiceService $invoiceService;
+    private ParentService $parentService;
+    private CallService $callService;
+    private ModuleOptions $invoiceModuleOptions;
+    private AssertionService $assertionService;
+    private QuestionnaireService $questionnaireService;
 
     public function __construct(
         AffiliationService $affiliationService,

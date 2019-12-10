@@ -83,58 +83,19 @@ class AffiliationService extends AbstractService
     public const AFFILIATION_DEACTIVATE = 'deacivate';
     public const AFFILIATION_REACTIVATE = 'reactivate';
 
-    /**
-     * @var GeneralService
-     */
-    private $generalService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ParentService
-     */
-    private $parentService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var DeeplinkService
-     */
-    private $deeplinkService;
-    /**
-     * @var EmailService
-     */
-    private $emailService;
-    /**
-     * @var HelperPluginManager
-     */
-    private $viewHelperManager;
-    /**
-     * @var PluginManager;
-     */
-    private $controllerPluginManager;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private GeneralService $generalService;
+    private ProjectService $projectService;
+    private InvoiceService $invoiceService;
+    private ContractService $contractService;
+    private OrganisationService $organisationService;
+    private VersionService $versionService;
+    private ParentService $parentService;
+    private ContactService $contactService;
+    private DeeplinkService $deeplinkService;
+    private EmailService $emailService;
+    private HelperPluginManager $viewHelperManager;
+    private PluginManager $controllerPluginManager;
+    private TranslatorInterface $translator;
 
     public function __construct(
         EntityManager $entityManager,

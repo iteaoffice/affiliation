@@ -30,20 +30,9 @@ use Zend\View\Model\ViewModel;
  */
 final class CategoryManagerController extends AffiliationAbstractController
 {
-    /**
-     * @var QuestionnaireService
-     */
-    private $questionnaireService;
-
-    /**
-     * @var FormService
-     */
-    private $formService;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private QuestionnaireService $questionnaireService;
+    private FormService $formService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         QuestionnaireService $questionnaireService,

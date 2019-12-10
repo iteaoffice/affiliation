@@ -19,23 +19,15 @@ use setasign\Fpdi\Tcpdf\Fpdi;
  */
 class AffiliationPdf extends Fpdi
 {
-    /**
-     * "Remembers" the template id of the imported page.
-     */
-    protected $_tplIdx;
-    /**
-     * Location of the template.
-     *
-     * @var string
-     */
-    protected $template;
+    protected ? string $_tplIdx = null;
+    protected ? string $template = null;
 
     /**
      * Draw an imported PDF logo on every page.
      */
     public function header()
     {
-        if (\is_null($this->_tplIdx)) {
+        if ($this->_tplIdx === null) {
             if (!file_exists($this->template)) {
                 throw new \InvalidArgumentException(sprintf("Template %s cannot be found", $this->template));
             }
@@ -48,20 +40,13 @@ class AffiliationPdf extends Fpdi
         $this->SetXY(PDF_MARGIN_LEFT, 5);
     }
 
-    /**
-     * @param $header
-     * @param $data
-     * @param array|null $width
-     * @param bool $lastRow
-     * @param int $height
-     */
     public function coloredTable(
         array $header,
         array $data,
         array $width = null,
         bool $lastRow = false,
         int $height = 6
-    ): void {
+    ) : void {
         // Colors, line width and bold font
         $this->SetDrawColor(205, 205, 205);
         $this->SetFillColor(255, 255, 255);
@@ -140,9 +125,6 @@ class AffiliationPdf extends Fpdi
         // emtpy method body
     }
 
-    /**
-     * @param $template
-     */
     public function setTemplate($template)
     {
         $this->template = $template;

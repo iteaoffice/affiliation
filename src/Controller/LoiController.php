@@ -34,26 +34,11 @@ use Zend\View\Model\ViewModel;
  */
 final class LoiController extends AffiliationAbstractController
 {
-    /**
-     * @var LoiService
-     */
-    private $loiService;
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var GeneralService
-     */
-    private $generalService;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private LoiService $loiService;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private GeneralService $generalService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         LoiService $loiService,

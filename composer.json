@@ -38,7 +38,8 @@
     "iteaoffice/organisation": "^4.1",
     "iteaoffice/general": "^4.1",
     "iteaoffice/invoice": "^4.1",
-    "iteaoffice/project": "^4.1"
+    "iteaoffice/project": "^4.1",
+    "setasign/fpdi-tcpdf": "^2.2"
   },
   "autoload": {
     "psr-4": {
@@ -68,8 +69,8 @@
     ],
     "php-lint": "./vendor/bin/parallel-lint src",
     "phpstan": "./vendor/bin/phpstan analyse src/ --level=1",
-    "cs": "./vendor/bin/phpcs -n -p --standard=PSR2 --extensions=php,twig src",
-    "cbf": "./vendor/bin/phpcbf src --standard=PSR2",
+    "cs": "./vendor/bin/phpcs -n -p --standard=PSR12 --extensions=php,twig src",
+    "cbf": "./vendor/bin/phpcbf src --standard=PSR12 --extensions=php,twig",
     "cs-fix": "./vendor/bin/php-cs-fixer fix -v src",
     "test": "./vendor/bin/phpunit"
   }

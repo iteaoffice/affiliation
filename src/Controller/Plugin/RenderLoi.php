@@ -25,18 +25,9 @@ use ZfcTwig\View\TwigRenderer;
  */
 final class RenderLoi extends AbstractPlugin
 {
-    /**
-     * @var ModuleOptions
-     */
-    private $moduleOptions;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var TwigRenderer
-     */
-    private $renderer;
+    private ModuleOptions $moduleOptions;
+    private ContactService $contactService;
+    private TwigRenderer $renderer;
 
     public function __construct(ModuleOptions $moduleOptions, ContactService $contactService, TwigRenderer $renderer)
     {
@@ -51,7 +42,6 @@ final class RenderLoi extends AbstractPlugin
         $pdf->setTemplate($this->moduleOptions->getDoaTemplate());
         $pdf->AddPage();
         $pdf->SetFontSize(9);
-
 
         // Write the contact details
         $pdf->SetXY(14, 55);
