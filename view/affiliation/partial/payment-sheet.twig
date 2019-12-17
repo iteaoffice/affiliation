@@ -205,7 +205,7 @@
                 <td>
                     <span class="pull-right">{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal() }}{% else %}{{ 0|currency_decimal() }}{% endif %}</span>
                 </td>
-                <td>{{ dueFactor|localizednumber('percent') }}</td>
+                <td>{{ dueFactor|format_number(style='percent') }}</td>
                 <td><span class="pull-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</span></td>
             {% endif %}
 
@@ -216,8 +216,8 @@
                     &euro; {% if affiliationService.isFundedInYear(affiliation, year) %}{{ projectService.findProjectFeeByYear(year).contribution|number_format(2) }}{% else %}0{% endif %}</td>
                 <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal() }}{% else %}{{ 0|currency_decimal() }}{% endif %}</td>
 
-                <td>{{ dueFactor|localizednumber('percent') }}</td>
-                <td><span class="pull-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</span></td>
+                <td>{{ dueFactor|format_number(style='percent') }}</td>
+                <td class="text-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</td>
             {% endif %}
             {% set totalDueBasedOnProjectData = totalDueBasedOnProjectData + dueInYear * dueFactor %}
         </tr>
@@ -241,7 +241,7 @@
 
 {% set contributionPaid = affiliationService.parseContributionPaid(affiliation, year, period) %}
 {% set hasAlreadyPaidInvoices = false %}
-    {% for affiliationInvoice in affiliation.invoice|affiliationInvoice(affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period)) -%}
+    {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => (affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period))) -%}
         {% set hasAlreadyPaidInvoices = true %}
     {% endfor %}
 
@@ -257,7 +257,7 @@
                 <th>{{ translate("txt-date") }}</th>
                 <th>{{ translate("txt-contribution-euro") }}</th>
                 <th>{{ translate("txt-paid") }}</th>
-                <th><span class="pull-right">{{ translate("txt-invoiced-euro") }}</span></th>
+                <th class="text-right">{{ translate("txt-invoiced-euro") }}</th>
             </tr>
             </thead>
             <tbody>
@@ -438,7 +438,7 @@
         <tbody>
         <tr>
             <td>{{ year }}-{{ period }}</td>
-            <td>{{ translate("txt-%s-contribution-for-%s")|format(affiliationService.parseContributionFactor(affiliation, year, period)|localizednumber('percent'),year) }}</td>
+            <td>{{ translate("txt-%s-contribution-for-%s")|format(affiliationService.parseContributionFactor(affiliation, year, period)|format_number(style='percent'),year) }}</td>
             <td><span class="pull-right">{{ contribution|currency_decimal() }}</span></td>
             <td></td>
         </tr>
