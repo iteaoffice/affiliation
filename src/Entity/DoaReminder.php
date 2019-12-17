@@ -71,21 +71,6 @@ class DoaReminder extends AbstractEntity
      */
     private $sender;
 
-    public function __get($property)
-    {
-        return $this->$property;
-    }
-
-    public function __set($property, $value)
-    {
-        $this->$property = $value;
-    }
-
-    public function __isset($property)
-    {
-        return isset($this->$property);
-    }
-
     public function __toString(): string
     {
         return (string)$this->getId();

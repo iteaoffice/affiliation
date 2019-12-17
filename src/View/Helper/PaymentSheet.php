@@ -35,38 +35,14 @@ use ZfcTwig\View\TwigRenderer;
  */
 final class PaymentSheet extends AbstractHelper
 {
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var TwigRenderer
-     */
-    private $renderer;
+    private ProjectService $projectService;
+    private ContractService $contractService;
+    private InvoiceService $invoiceService;
+    private AffiliationService $affiliationService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private VersionService $versionService;
+    private TwigRenderer $renderer;
 
     public function __construct(
         ProjectService $projectService,
