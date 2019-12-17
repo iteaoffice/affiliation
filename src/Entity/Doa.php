@@ -274,7 +274,7 @@ class Doa extends AbstractEntity
         return $this->affiliation;
     }
 
-    public function setAffiliation(Affiliation $affiliation): Doa
+    public function setAffiliation(?Affiliation $affiliation): Doa
     {
         $this->affiliation = $affiliation;
         return $this;

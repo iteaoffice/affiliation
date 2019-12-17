@@ -16,8 +16,10 @@ namespace Affiliation\View\Helper\Questionnaire;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Service\QuestionnaireService;
+use DateTime;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\View\Helper\AbstractHelper;
+use function sprintf;
 
 /**
  * Class QuestionnaireHelper
@@ -28,7 +30,7 @@ class QuestionnaireHelper extends AbstractHelper
     /**
      * @var QuestionnaireService
      */
-    private $questionnaireService;
+    private QuestionnaireService $questionnaireService;
 
     public function __construct(QuestionnaireService $questionnaireService)
     {
@@ -40,12 +42,12 @@ class QuestionnaireHelper extends AbstractHelper
         return $this;
     }
 
-    public function getStartDate(Questionnaire $questionnaire, Affiliation $affiliation): ?\DateTime
+    public function getStartDate(Questionnaire $questionnaire, Affiliation $affiliation): ?DateTime
     {
         return $this->questionnaireService->getStartDate($questionnaire, $affiliation);
     }
 
-    public function getEndDate(Questionnaire $questionnaire, Affiliation $affiliation): ?\DateTime
+    public function getEndDate(Questionnaire $questionnaire, Affiliation $affiliation): ?DateTime
     {
         return $this->questionnaireService->getEndDate($questionnaire, $affiliation);
     }
@@ -71,6 +73,6 @@ class QuestionnaireHelper extends AbstractHelper
 
         $label = $percentage . '%';
 
-        return \sprintf($template, $style, $percentage, $percentage, $label);
+        return sprintf($template, $style, $percentage, $percentage, $label);
     }
 }

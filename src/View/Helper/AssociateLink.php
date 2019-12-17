@@ -15,38 +15,39 @@ namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Entity\Contact;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 
 /**
- * Create a link to an affiliation.
- *
- * @category    Affiliation
+ * Class AssociateLink
+ * @package Affiliation\View\Helper
  */
-class AssociateLink extends LinkAbstract
+final class AssociateLink extends AbstractLink
 {
     public function __invoke(
         Affiliation $affiliation,
-        $action = 'view',
-        $show = 'name',
-        Contact $contact = null
+        string $action,
+        string $show,
+        Contact $contact
     ): string {
-        $this->setAffiliation($affiliation);
-        $this->setAction($action);
-        $this->setShow($show);
-        $this->setContact($contact);
-        /*
-         * Set the non-standard options needed to give an other link value
-         */
-        $this->setShowOptions(
-            [
-                'contact' => $this->getContact()->getDisplayName(),
-            ]
-        );
+        $routeParams = [];
+        $showOptions = [];
 
-        $this->addRouterParam('id', $this->getAffiliation()->getId());
-        $this->addRouterParam('contact', $this->getContact()->getId());
+        $routeParams['id'] = $contact->getId();
+        $routeParams['contact'] = $contact->getId();
+        $showOptions['contact'] = $contact->parseFullName();
 
-        $this->setRouter('zfcadmin/affiliation/edit-associate');
+        $linkParams = [
+            'icon' => 'fa-user-o',
+            'route' => 'zfcadmin/affiliation/edit-associate',
+            'text' => $showOptions[$show]
+                ?? $this->translator->translate('txt-edit-associate')
+        ];
 
-        return $this->createLink();
+        $linkParams['action'] = $action;
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
+
+        return $this->parse(Link::fromArray($linkParams));
     }
 }

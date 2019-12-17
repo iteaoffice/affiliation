@@ -1,12 +1,12 @@
 <?php
 
 /**
- * ITEA Office all rights reserved
- *
- * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
+ *
+ * @link        http://github.com/iteaoffice/general for the canonical source repository
  */
 
 declare(strict_types=1);
@@ -14,58 +14,60 @@ declare(strict_types=1);
 namespace Affiliation\View\Helper\Questionnaire;
 
 use Affiliation\Entity\Questionnaire\Category;
-use Affiliation\View\Helper\LinkAbstract;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 
 /**
  * Class CategoryLink
- * @package Affiliation\View\Helper\Question
+ * @package Affiliation\View\Helper\Questionnaire
  */
-class CategoryLink extends LinkAbstract
+final class CategoryLink extends AbstractLink
 {
-    /**
-     * @var Category
-     */
-    private $category;
-
     public function __invoke(
         Category $category = null,
-        string   $action = 'view',
-        string   $show = 'name'
+        string $action = 'view',
+        string $show = 'name',
+        int $length = null
     ): string {
-        $this->category = $category ?? new Category();
-        $this->setAction($action);
-        $this->setShow($show);
+        $category ??= new Category();
 
-        $this->addRouterParam('id', $this->category->getId());
-        $this->setShowOptions([
-            'name' => $this->category->getCategory()
-        ]);
+        $routeParams = [];
+        $showOptions = [];
+        if (!$category->isEmpty()) {
+            $routeParams['id'] = $category->getId();
+            $showOptions['name'] = $category->getCategory();
+        }
 
-        return $this->createLink();
-    }
-
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
-    public function parseAction(): void
-    {
-        switch ($this->getAction()) {
-            case 'view':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/category/view');
-                $this->setText(\sprintf($this->translator->translate("txt-view-category-%s"), $this->category));
-                break;
+        switch ($action) {
             case 'new':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/category/new');
-                $this->setText($this->translator->translate("txt-new-category"));
+                $linkParams = [
+                    'icon' => 'fa-plus',
+                    'route' => 'zfcadmin/affiliation/questionnaire/category/new',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-new-category')
+                ];
                 break;
             case 'edit':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/category/edit');
-                $this->setText(\sprintf($this->translator->translate("txt-edit-category-%s"), $this->category));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'zfcadmin/affiliation/questionnaire/category/edit',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-category')
+                ];
                 break;
-            default:
-                throw new \Exception(\sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
+            case 'view':
+                $linkParams = [
+                    'icon' => 'fa-category-circle-o',
+                    'route' => 'zfcadmin/affiliation/questionnaire/category/view',
+                    'text' => $showOptions[$show] ?? $category->getCategory()
+                ];
+                break;
         }
+
+        $linkParams['action'] = $action;
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
+
+        return $this->parse(Link::fromArray($linkParams));
     }
 }

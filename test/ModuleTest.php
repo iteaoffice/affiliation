@@ -37,9 +37,6 @@ class ModuleTest extends AbstractServiceTest
         $this->assertArrayHasKey(ConfigAbstractFactory::class, $config);
     }
 
-    /**
-     *
-     */
     public function testInstantiationOfConfigAbstractFactories(): void
     {
         $module = new Module();

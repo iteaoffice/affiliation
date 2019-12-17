@@ -16,137 +16,141 @@ namespace Affiliation\View\Helper;
 use Affiliation\Acl\Assertion\Loi as LoiAssertion;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Loi;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 
 /**
  * Class LoiLink
  *
  * @package Affiliation\View\Helper
  */
-class LoiLink extends LinkAbstract
+final class LoiLink extends AbstractLink
 {
-    public function __invoke(Loi $loi = null, $action = 'view', $show = 'name', Affiliation $affiliation = null): string
-    {
-        $this->setLoi($loi);
-        $this->setAffiliation($affiliation);
-        $this->setAction($action);
-        $this->setShow($show);
-        /*
-         * Set the non-standard options needed to give an other link value
-         */
-        $this->setShowOptions(
-            [
-                'name' => $this->getLoi(),
-            ]
-        );
-        if (!$this->hasAccess(
-            $this->getLoi(),
-            LoiAssertion::class,
-            $this->getAction()
-        )
-        ) {
+    public function __invoke(
+        Loi $loi = null,
+        $action = 'view',
+        $show = 'name',
+        Affiliation $affiliation = null
+    ): string {
+        $loi ??= (new Loi())->setAffiliation($affiliation);
+
+        if (!$this->hasAccess($loi, LoiAssertion::class, $action)) {
             return '';
         }
 
-        $this->addRouterParam('id', $this->getLoi()->getId());
-        $this->addRouterParam('affiliationId', $this->getAffiliation()->getId());
+        $routeParams = [];
+        $showOptions = [];
 
-        return $this->createLink();
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function setAffiliation($affiliation): void
-    {
-        $this->affiliation = $affiliation;
-        /*
-         * Only overwrite the the Affiliation in the LOI when this is not is_null
-         */
-        if (null !== $affiliation) {
-            $this->getLoi()->setAffiliation($affiliation);
+        if (!$loi->isEmpty()) {
+            $routeParams['id'] = $loi->getId();
+            $showOptions['name'] = $loi->parseFileName();
         }
-    }
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
-    public function parseAction(): void
-    {
-        switch ($this->getAction()) {
+        if (null !== $affiliation) {
+            $routeParams['affiliationId'] = $affiliation->getId();
+        }
+
+        switch ($action) {
             case 'submit':
-                $this->setRouter('community/affiliation/loi/submit');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-submit-loi-for-organisation-%s-in-project-%s-link-title'),
-                        $this->getAffiliation()->parseBranchedName(),
-                        $this->getAffiliation()->getProject()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-share-square-o',
+                    'route' => 'community/affiliation/loi/submit',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate('txt-submit-loi-for-organisation-%s-in-project-%s-link-title'),
+                            $affiliation->parseBranchedName(),
+                            $affiliation->getProject()
+                        )
+                ];
                 break;
             case 'render':
-                $this->setRouter('community/affiliation/loi/render');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-render-loi-for-organisation-%s-in-project-%s-link-title'),
-                        $this->getLoi()->getAffiliation()->parseBranchedName(),
-                        $this->getLoi()->getAffiliation()->getProject()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-file-pdf-o',
+                    'route' => 'community/affiliation/loi/render',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate('txt-render-loi-for-organisation-%s-in-project-%s-link-title'),
+                            $affiliation->parseBranchedName(),
+                            $affiliation->getProject()
+                        )
+                ];
+
                 break;
             case 'replace':
-                $this->setRouter('community/affiliation/loi/replace');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-replace-loi-for-organisation-%s-in-project-%s-link-title'),
-                        $this->getLoi()->getAffiliation()->parseBranchedName(),
-                        $this->getLoi()->getAffiliation()->getProject()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-refresh',
+                    'route' => 'community/affiliation/loi/replace',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate('txt-replace-loi-for-organisation-%s-in-project-%s-link-title'),
+                            $loi->getAffiliation()->parseBranchedName(),
+                            $loi->getAffiliation()->getProject()
+                        )
+                ];
+
                 break;
             case 'download':
-                $this->setRouter('community/affiliation/loi/download');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-download-loi-for-organisation-%s-in-project-%s-link-title'),
-                        $this->getLoi()->getAffiliation()->getOrganisation(),
-                        $this->getLoi()->getAffiliation()->getProject()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-file-pdf-o',
+                    'route' => 'community/affiliation/loi/download',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate('txt-download-loi-for-organisation-%s-in-project-%s-link-title'),
+                            $loi->getAffiliation()->parseBranchedName(),
+                            $loi->getAffiliation()->getProject()
+                        )
+                ];
+
                 break;
             case 'remind-admin':
-                $this->setRouter('zfcadmin/affiliation/loi/remind');
-                $this->setText($this->translator->translate('txt-send-reminder'));
+                $linkParams = [
+                    'icon' => 'fa-bell-o',
+                    'route' => 'zfcadmin/affiliation/loi/remind',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-send-reminder')
+                ];
                 break;
             case 'approval-admin':
-                $this->setRouter('zfcadmin/affiliation/loi/approval');
-                $this->setText($this->translator->translate('txt-approval-loi'));
+                $linkParams = [
+                    'icon' => 'fa-thumbs-o-up',
+                    'route' => 'zfcadmin/affiliation/loi/approval',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-approval-loi')
+                ];
+
                 break;
             case 'missing-admin':
-                $this->setRouter('zfcadmin/affiliation/loi/missing');
-                $this->setText($this->translator->translate('txt-missing-loi'));
+                $linkParams = [
+                    'icon' => 'fa-star-half-o',
+                    'route' => 'zfcadmin/affiliation/loi/missing',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-missing-loi')
+                ];
+
                 break;
             case 'view-admin':
-                $this->setRouter('zfcadmin/affiliation/loi/view');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-view-loi-for-organisation-%s-in-project-%s-link-title'),
-                        $this->getLoi()->getAffiliation()->parseBranchedName(),
-                        $this->getLoi()->getAffiliation()->getProject()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-file-o',
+                    'route' => 'zfcadmin/affiliation/loi/view',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-view-loi')
+                ];
+
                 break;
             case 'edit-admin':
-                $this->setRouter('zfcadmin/affiliation/loi/edit');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate('txt-edit-loi-for-organisation-%s-in-project-%s-link-title'),
-                        $this->getLoi()->getAffiliation()->parseBranchedName(),
-                        $this->getLoi()->getAffiliation()->getProject()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'zfcadmin/affiliation/loi/edit',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-loi')
+                ];
                 break;
         }
+
+        $linkParams['action'] = $action;
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
+
+        return $this->parse(Link::fromArray($linkParams));
     }
 }

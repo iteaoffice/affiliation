@@ -1,12 +1,12 @@
 <?php
 
 /**
- * ITEA Office all rights reserved
- *
- * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
+ *
+ * @link        http://github.com/iteaoffice/general for the canonical source repository
  */
 
 declare(strict_types=1);
@@ -16,81 +16,91 @@ namespace Affiliation\View\Helper\Questionnaire;
 use Affiliation\Acl\Assertion\QuestionnaireAssertion;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Questionnaire;
-use Affiliation\View\Helper\LinkAbstract;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 
 /**
  * Class QuestionnaireLink
  * @package Affiliation\View\Helper\Questionnaire
  */
-class QuestionnaireLink extends LinkAbstract
+final class QuestionnaireLink extends AbstractLink
 {
-    /**
-     * @var Questionnaire
-     */
-    private $questionnaire;
-
     public function __invoke(
         Questionnaire $questionnaire = null,
-        string        $action = 'view-community',
-        string        $show = 'name',
-        Affiliation   $affiliation = null
+        string $action = 'view',
+        string $show = 'name',
+        Affiliation $affiliation = null
     ): string {
-        $this->questionnaire = $questionnaire ?? new Questionnaire();
-        $this->affiliation   = $affiliation ?? new Affiliation();
-        $this->setAction($action);
-        $this->setShow($show);
-        $this->addRouterParam('id', $this->questionnaire->getId());
-        $this->addRouterParam('affiliationId', $this->affiliation->getId());
+        $questionnaire ??= new Questionnaire();
 
-        $this->setShowOptions([
-            'name' => $this->questionnaire->getQuestionnaire()
-        ]);
-
-        if (!$this->hasAccess($this->affiliation, QuestionnaireAssertion::class, $this->getAction())) {
+        if (!$this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
             return '';
         }
 
-        return $this->createLink();
-    }
+        $routeParams = [];
+        $showOptions = [];
+        if (!$questionnaire->isEmpty()) {
+            $routeParams['id'] = $questionnaire->getId();
+            $showOptions['name'] = $questionnaire->getQuestionnaire();
+        }
 
-    public function parseAction(): void
-    {
-        switch ($this->getAction()) {
+        if (null !== $affiliation) {
+            $routeParams['affiliationId'] = $affiliation->getId();
+        }
+
+        switch ($action) {
             case 'overview':
-                $this->setRouter('community/affiliation/questionnaire/overview');
-                $this->addClasses('alert-link');
-                $this->setShowOptions([
-                    'notification' => $this->translator->translate('txt-questionnaires-pending')
-                ]);
+                $linkParams = [
+                    'icon' => 'fa-plus',
+                    'route' => 'community/affiliation/questionnaire/overview',
+                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-view-questionnaire')
+                ];
                 break;
             case 'view-community':
-                $this->setRouter('community/affiliation/questionnaire/view');
-                $this->setText($this->translator->translate('txt-view-answers'));
+                $linkParams = [
+                    'icon' => 'fa-question-circle-o',
+                    'route' => 'community/affiliation/questionnaire/view',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-view-answers')
+                ];
                 break;
             case 'edit-community':
-                $this->setRouter('community/affiliation/questionnaire/edit');
-                $this->setText($this->translator->translate('txt-update-answers'));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'community/affiliation/questionnaire/edit',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-update-answers')
+                ];
                 break;
             case 'view-admin':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/view');
-                $this->setText(\sprintf(
-                    $this->translator->translate('txt-view-questionnaire-%s'),
-                    $this->questionnaire->getQuestionnaire()
-                ));
-                break;
-            case 'new-admin':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/new');
-                $this->setText($this->translator->translate('txt-new-questionnaire'));
+                $linkParams = [
+                    'icon' => 'fa-question-circle-o',
+                    'route' => 'zfcadmin/affiliation/questionnaire/view',
+                    'text' => $showOptions[$show] ?? $questionnaire->getQuestionnaire()
+                ];
                 break;
             case 'edit-admin':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/edit');
-                $this->setText(\sprintf(
-                    $this->translator->translate('txt-edit-questionnaire-%s'),
-                    $this->questionnaire->getQuestionnaire()
-                ));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'zfcadmin/affiliation/questionnaire/edit',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-questionnaire')
+                ];
                 break;
-            default:
-                throw new \Exception(\sprintf('%s is an incorrect action for %s', $this->getAction(), __CLASS__));
+            case 'new-admin':
+                $linkParams = [
+                    'icon' => 'fa-plus',
+                    'route' => 'zfcadmin/affiliation/questionnaire/new',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-new-questionnaire')
+                ];
+                break;
         }
+
+        $linkParams['action'] = $action;
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
+
+        return $this->parse(Link::fromArray($linkParams));
     }
 }

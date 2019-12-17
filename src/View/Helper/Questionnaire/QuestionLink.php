@@ -1,12 +1,12 @@
 <?php
 
 /**
- * ITEA Office all rights reserved
- *
- * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
+ *
+ * @link        http://github.com/iteaoffice/general for the canonical source repository
  */
 
 declare(strict_types=1);
@@ -14,64 +14,64 @@ declare(strict_types=1);
 namespace Affiliation\View\Helper\Questionnaire;
 
 use Affiliation\Entity\Questionnaire\Question;
-use Affiliation\View\Helper\LinkAbstract;
-use function sprintf;
-use function strlen;
-use function substr;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 
 /**
  * Class QuestionLink
- * @package Affiliation\View\Helper\Questionnaire
+ * @package General\View\Helper
  */
-class QuestionLink extends LinkAbstract
+final class QuestionLink extends AbstractLink
 {
-    /**
-     * @var Question
-     */
-    private $question;
-
-    /**
-     * @var string
-     */
-    private $label = '';
-
     public function __invoke(
         Question $question = null,
-        string   $action = 'view',
-        string   $show = 'name',
-        int      $length = null
+        string $action = 'view',
+        string $show = 'name',
+        int $length = null
     ): string {
-        $this->question = $question ?? new Question();
-        $this->label    = (($length !== null) && (strlen((string) $this->question->getQuestion()) > ($length + 3)))
-            ? substr((string) $this->question->getQuestion(), 0, $length) . '...'
-            : (string) $this->question->getQuestion();
-        $this->setAction($action);
-        $this->setShow($show);
+        $question ??= new Question();
 
-        $this->addRouterParam('id', $this->question->getId());
+        $label = (($length !== null) && (strlen((string)$question->getQuestion()) > ($length + 3)))
+            ? substr((string)$question->getQuestion(), 0, $length) . '...'
+            : (string)$question->getQuestion();
 
-        $this->setShowOptions([
-            'name' => $this->label
-        ]);
+        $routeParams = [];
+        $showOptions = [];
+        if (!$question->isEmpty()) {
+            $routeParams['id'] = $question->getId();
+            $showOptions['name'] = $label;
+        }
 
-        return $this->createLink();
-    }
-
-    public function parseAction(): void
-    {
-        switch ($this->getAction()) {
-            case 'view':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/question/view');
-                $this->setText(sprintf($this->translator->translate("txt-view-question-%s"), $this->label));
-                break;
+        switch ($action) {
             case 'new':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/question/new');
-                $this->setText($this->translator->translate("txt-new-question"));
+                $linkParams = [
+                    'icon' => 'fa-plus',
+                    'route' => 'zfcadmin/affiliation/questionnaire/question/new',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-new-question')
+                ];
                 break;
             case 'edit':
-                $this->setRouter('zfcadmin/affiliation/questionnaire/question/edit');
-                $this->setText(sprintf($this->translator->translate("txt-edit-question-%s"), $this->label));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'zfcadmin/affiliation/questionnaire/question/edit',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-question')
+                ];
+                break;
+            case 'view':
+                $linkParams = [
+                    'icon' => 'fa-question-circle-o',
+                    'route' => 'zfcadmin/affiliation/questionnaire/question/view',
+                    'text' => $showOptions[$show] ?? $label
+                ];
                 break;
         }
+
+        $linkParams['action'] = $action;
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
+
+        return $this->parse(Link::fromArray($linkParams));
     }
 }
