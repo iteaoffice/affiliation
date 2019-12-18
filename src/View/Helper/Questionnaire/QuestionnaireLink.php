@@ -27,11 +27,12 @@ final class QuestionnaireLink extends AbstractLink
 {
     public function __invoke(
         Questionnaire $questionnaire = null,
-        string $action = 'view',
-        string $show = 'name',
-        Affiliation $affiliation = null
+        string        $action = 'view',
+        string        $show = 'name',
+        Affiliation   $affiliation = null
     ): string {
         $questionnaire ??= new Questionnaire();
+        $affiliation   ??= new Affiliation();
 
         if (!$this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
             return '';
@@ -44,7 +45,7 @@ final class QuestionnaireLink extends AbstractLink
             $showOptions['name'] = $questionnaire->getQuestionnaire();
         }
 
-        if (null !== $affiliation) {
+        if (!$affiliation->isEmpty()) {
             $routeParams['affiliationId'] = $affiliation->getId();
         }
 
@@ -83,16 +84,14 @@ final class QuestionnaireLink extends AbstractLink
                 $linkParams = [
                     'icon' => 'fa-pencil-square-o',
                     'route' => 'zfcadmin/affiliation/questionnaire/edit',
-                    'text' => $showOptions[$show]
-                        ?? $this->translator->translate('txt-edit-questionnaire')
+                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-edit-questionnaire')
                 ];
                 break;
             case 'new-admin':
                 $linkParams = [
                     'icon' => 'fa-plus',
                     'route' => 'zfcadmin/affiliation/questionnaire/new',
-                    'text' => $showOptions[$show]
-                        ?? $this->translator->translate('txt-new-questionnaire')
+                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-new-questionnaire')
                 ];
                 break;
         }
