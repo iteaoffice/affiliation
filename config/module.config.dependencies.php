@@ -59,6 +59,7 @@ return [
         ],
         Service\QuestionnaireService::class => [
             EntityManager::class,
+            VersionService::class,
         ],
         Service\DoaService::class => [
             EntityManager::class
