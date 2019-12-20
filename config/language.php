@@ -1,5 +1,5 @@
 <?php
-_("txt-affiliation-description-placeholder');
+_('txt-affiliation-description-placeholder');
 _('txt-affiliation-description');
 _('txt-affiliation-description-explanation');
 _('txt-branch');
@@ -76,4 +76,4 @@ _('txt-affiliation-invoice-year-help-block');
 _('txt-affiliation-invoice-year-placeholder');
 _('txt-affiliation-invoice-amount-invoiced-label');
 _('txt-affiliation-invoice-amount-invoiced-help-block');
-_('txt-affiliation-invoice-amount-invoiced-placeholder");
+_('txt-affiliation-invoice-amount-invoiced-placeholder');

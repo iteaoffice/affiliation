@@ -37,7 +37,7 @@ use function round;
  */
 class QuestionnaireService extends AbstractService
 {
-    private /*VersionService*/ $versionService;
+    /*VersionService*/ private $versionService;
 
     public function __construct(
         EntityManager  $entityManager,
