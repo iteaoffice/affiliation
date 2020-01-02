@@ -50,6 +50,8 @@ final class QuestionnaireForm extends Form
             ]
         );
         $doctrineHydrator = new DoctrineHydrator($entityManager);
+
+
         $answerCollection = new Element\Collection('answers');
         $answerCollection->setUseAsBaseFieldset(true);
         $answerCollection->setCreateNewObjects(false);
@@ -162,7 +164,7 @@ final class QuestionnaireForm extends Form
                     $attributes['value'] = $answer->getValue();
                     $answerFieldset->add(
                         [
-                            'type'       => Element\Date::class,
+                            'type'       => Element\Text::class,//Element\Date::class,
                             'name'       => 'value',
                             'attributes' => $attributes,
                             'options'    => $optionTemplate,

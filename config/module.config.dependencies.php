@@ -58,8 +58,7 @@ return [
             TranslatorInterface::class
         ],
         Service\QuestionnaireService::class => [
-            EntityManager::class,
-            VersionService::class,
+            EntityManager::class
         ],
         Service\DoaService::class => [
             EntityManager::class

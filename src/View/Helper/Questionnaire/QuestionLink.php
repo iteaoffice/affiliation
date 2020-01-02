@@ -31,9 +31,9 @@ final class QuestionLink extends AbstractLink
     ): string {
         $question ??= new Question();
 
-        $label = (($length !== null) && (strlen((string) $question->getQuestion()) > ($length + 3)))
-            ? substr((string) $question->getQuestion(), 0, $length) . '...'
-            : (string) $question->getQuestion();
+        $label = (($length !== null) && (strlen((string)$question->getQuestion()) > ($length + 3)))
+            ? substr((string)$question->getQuestion(), 0, $length) . '...'
+            : (string)$question->getQuestion();
 
         $routeParams = [];
         $showOptions = [];
@@ -47,14 +47,16 @@ final class QuestionLink extends AbstractLink
                 $linkParams = [
                     'icon' => 'fa-plus',
                     'route' => 'zfcadmin/affiliation/questionnaire/question/new',
-                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-new-question')
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-new-question')
                 ];
                 break;
             case 'edit':
                 $linkParams = [
                     'icon' => 'fa-pencil-square-o',
                     'route' => 'zfcadmin/affiliation/questionnaire/question/edit',
-                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-edit-question')
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-question')
                 ];
                 break;
             case 'view':
