@@ -51,7 +51,7 @@ final class AddAssociate extends Form implements InputFilterProviderInterface
             $email = $contactOrganisation->getContact()->getEmail();
             $validator = new EmailAddress();
             if ($validator->isValid($email)
-                && !in_array(
+                && ! in_array(
                     $validator->hostname,
                     ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],
                     true
@@ -175,7 +175,7 @@ final class AddAssociate extends Form implements InputFilterProviderInterface
                             ],
                             'callback' => function ($value) {
                                 $validator = new EmailAddress();
-                                if (!$validator->isValid($value)) {
+                                if (! $validator->isValid($value)) {
                                     return false;
                                 }
 

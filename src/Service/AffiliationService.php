@@ -150,7 +150,7 @@ class AffiliationService extends AbstractService
 
     public static function useContractInVersion(Affiliation $affiliation, Version $version): bool
     {
-        if (!self::useActiveContract($affiliation)) {
+        if (! self::useActiveContract($affiliation)) {
             return false;
         }
 
@@ -176,7 +176,7 @@ class AffiliationService extends AbstractService
         }
 
         foreach ($affiliation->getContract() as $contract) {
-            if (!$contract->getVersion()->isEmpty()) {
+            if (! $contract->getVersion()->isEmpty()) {
                 return true;
             }
         }
@@ -196,7 +196,7 @@ class AffiliationService extends AbstractService
 
     public function isActiveInVersion(Affiliation $affiliation): bool
     {
-        return !$affiliation->getVersion()->isEmpty();
+        return ! $affiliation->getVersion()->isEmpty();
     }
 
     public function hasDoa(Affiliation $affiliation): bool
@@ -363,7 +363,7 @@ class AffiliationService extends AbstractService
             $parent = $affiliation->getParentOrganisation()->getParent();
 
             $organisation = $parent->getOrganisation();
-            if (!$parent->getFinancial()->isEmpty()) {
+            if (! $parent->getFinancial()->isEmpty()) {
                 $organisation = $parent->getFinancial()->first()->getOrganisation();
             }
         }
@@ -410,7 +410,7 @@ class AffiliationService extends AbstractService
                         break 2;
                     }
 
-                    if (!$countryFound) {
+                    if (! $countryFound) {
                         $this->projectService->delete($rationale);
                     }
                 }
@@ -453,7 +453,7 @@ class AffiliationService extends AbstractService
         $errors = [];
         switch (true) {
             case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE
-                && !($affiliation->getProject()->getCall()->getProgram()->getId() === 3
+                && ! ($affiliation->getProject()->getCall()->getProgram()->getId() === 3
                     && $affiliation->getOrganisation()->getType()->getId() === Type::TYPE_UNIVERSITY):
                 $errors[] = sprintf(
                     'No invoice is needed for %s',
@@ -463,7 +463,7 @@ class AffiliationService extends AbstractService
             case null === $affiliation->getFinancial():
                 $errors[] = 'No financial organisation (affiliation financial) set for this partner';
                 break;
-            case !$affiliation->isActive():
+            case ! $affiliation->isActive():
                 $errors[] = 'Partner is de-activated';
                 break;
             case null === $affiliation->getFinancial()->getOrganisation()->getFinancial():
@@ -507,7 +507,7 @@ class AffiliationService extends AbstractService
         foreach ($latestVersion->getAffiliationVersion() as $affiliationVersion) {
             $affiliation = $affiliationVersion->getAffiliation();
 
-            if (!$affiliation->isActive()) {
+            if (! $affiliation->isActive()) {
                 continue;
             }
 
@@ -596,7 +596,7 @@ class AffiliationService extends AbstractService
         $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
 
         //Force the invoiceMethod back to _percentage_ when we don't want to use contract data
-        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || !$useContractData)) {
+        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || ! $useContractData)) {
             $invoiceMethod = Method::METHOD_PERCENTAGE;
         }
 
@@ -801,7 +801,7 @@ class AffiliationService extends AbstractService
     public function parseContributionFactor(Affiliation $affiliation, int $year, ?int $period = null): float
     {
         switch (true) {
-            case !$this->isFundedInYear($affiliation, $year):
+            case ! $this->isFundedInYear($affiliation, $year):
                 return (float)0;
             case null === $period:
                 return 1;
@@ -970,7 +970,7 @@ class AffiliationService extends AbstractService
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
                 return (float)1 - $this->parseContributionFactor($affiliation, $year, $period);
-            case !$this->isFundedInYear($affiliation, $projectYear):
+            case ! $this->isFundedInYear($affiliation, $projectYear):
             default:
                 return (float)0;
         }
@@ -1017,7 +1017,7 @@ class AffiliationService extends AbstractService
             /** @var Affiliation $affiliation */
             $affiliation = $affiliationVersion->getAffiliation();
 
-            if (!$affiliation->isActive()) {
+            if (! $affiliation->isActive()) {
                 continue;
             }
 
@@ -1097,7 +1097,7 @@ class AffiliationService extends AbstractService
                     continue;
                 }
 
-                if (!$this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
+                if (! $this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
                 ) {
                     $yearAndPeriod[$otherYear][] = $invoicePeriod;
                 }
@@ -1284,7 +1284,7 @@ class AffiliationService extends AbstractService
         $hasContact = true;
 
         //When we have an email, create a contact based also on the $affiliation
-        if (!empty($email)) {
+        if (! empty($email)) {
             //Try to find the contact based on the email address
             $contact = $this->contactService->findContactByEmail($email);
 
@@ -1488,7 +1488,7 @@ class AffiliationService extends AbstractService
         }
 
         foreach ($project->getAffiliation() as $affiliation) {
-            if ($which === self::WHICH_ONLY_ACTIVE && !$affiliation->isActive()) {
+            if ($which === self::WHICH_ONLY_ACTIVE && ! $affiliation->isActive()) {
                 continue;
             }
             if ($which === self::WHICH_ONLY_INACTIVE && $affiliation->isActive()) {

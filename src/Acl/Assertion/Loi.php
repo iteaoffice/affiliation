@@ -55,7 +55,7 @@ final class Loi extends AbstractAssertion
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$loi instanceof LoiEntity && null !== $id) {
+        if (! $loi instanceof LoiEntity && null !== $id) {
             $loi = $this->loiService->findLoiById((int)$id);
         }
 

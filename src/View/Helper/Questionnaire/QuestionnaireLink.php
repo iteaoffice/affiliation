@@ -33,13 +33,13 @@ final class QuestionnaireLink extends AbstractLink
     ): string {
         $questionnaire ??= new Questionnaire();
 
-        if (!$this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
+        if (! $this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
-        if (!$questionnaire->isEmpty()) {
+        if (! $questionnaire->isEmpty()) {
             $routeParams['id'] = $questionnaire->getId();
             $showOptions['name'] = $questionnaire->getQuestionnaire();
         }

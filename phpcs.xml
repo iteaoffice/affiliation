@@ -4,5 +4,5 @@
 
     <!-- Paths to check -->
     <file>config</file>
-    <file>module</file>
+    <file>src</file>
 </ruleset>

@@ -77,7 +77,7 @@ final class LoiController extends AffiliationAbstractController
             return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
         }
 
-        if ($this->getRequest()->isPost() && !isset($data['approve']) && $form->isValid()) {
+        if ($this->getRequest()->isPost() && ! isset($data['approve']) && $form->isValid()) {
             if (isset($data['submit'])) {
                 $fileData = $form->getData('file');
                 $this->affiliationService->uploadLoi($fileData['file'], $contact, $affiliation);

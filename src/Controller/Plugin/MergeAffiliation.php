@@ -128,7 +128,7 @@ final class MergeAffiliation extends AbstractPlugin
 
             // Step 11: Move the associates
             foreach ($otherAffiliation->getAssociate() as $key => $associate) {
-                if (!$mainAffiliation->getAssociate()->contains($associate)) {
+                if (! $mainAffiliation->getAssociate()->contains($associate)) {
                     $mainAffiliation->getAssociate()->add($associate);
                 }
                 $otherAffiliation->getAssociate()->remove($key);
@@ -178,7 +178,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if (! $matched) {
                 $otherCost->setAffiliation($this->getMainAffiliation());
                 $this->entityManager->persist($otherCost);
                 $this->getMainAffiliation()->getCost()->add($otherCost);
@@ -266,7 +266,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if (! $matched) {
                 $otherEffort->setAffiliation($this->getMainAffiliation());
                 $this->entityManager->persist($otherEffort);
                 $this->getMainAffiliation()->getEffort()->add($otherEffort);
@@ -326,7 +326,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if (! $matched) {
                 $otherSpent->setAffiliation($this->getMainAffiliation());
                 $this->entityManager->persist($otherSpent);
                 $this->getMainAffiliation()->getSpent()->add($otherSpent);
@@ -372,7 +372,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // Not matched with main affiliation version, add it to main
-            if (!$matched) {
+            if (! $matched) {
                 // No match with a main affiliation version, add it to main affiliation
                 $otherAffiliationVersion->setAffiliation($this->getMainAffiliation());
                 $this->getMainAffiliation()->getVersion()->add($otherAffiliationVersion);
@@ -412,7 +412,7 @@ final class MergeAffiliation extends AbstractPlugin
                 }
             }
 
-            if (!$matched) {
+            if (! $matched) {
                 // No match with a main affiliation version cost, add it to main version
                 $otherCostVersion->setAffiliationVersion($mainVersion);
                 $mainVersion->getCostVersion()->add($otherCostVersion);
@@ -456,7 +456,7 @@ final class MergeAffiliation extends AbstractPlugin
                 }
             }
 
-            if (!$matched) {
+            if (! $matched) {
                 // No match with a main affiliation version effort, add it to main version
                 $otherEffortVersion->setAffiliationVersion($mainVersion);
                 $mainVersion->getEffortVersion()->add($otherEffortVersion);

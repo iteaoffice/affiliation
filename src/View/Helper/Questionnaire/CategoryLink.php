@@ -33,7 +33,7 @@ final class CategoryLink extends AbstractLink
 
         $routeParams = [];
         $showOptions = [];
-        if (!$category->isEmpty()) {
+        if (! $category->isEmpty()) {
             $routeParams['id'] = $category->getId();
             $showOptions['name'] = $category->getCategory();
         }

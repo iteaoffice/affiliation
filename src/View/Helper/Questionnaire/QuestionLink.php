@@ -37,7 +37,7 @@ final class QuestionLink extends AbstractLink
 
         $routeParams = [];
         $showOptions = [];
-        if (!$question->isEmpty()) {
+        if (! $question->isEmpty()) {
             $routeParams['id'] = $question->getId();
             $showOptions['name'] = $label;
         }

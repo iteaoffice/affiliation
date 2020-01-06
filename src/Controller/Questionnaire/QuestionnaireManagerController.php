@@ -97,7 +97,7 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
         $form->remove('delete');
 
         if ($request->isPost()) {
-            if (!isset($data['cancel']) && $form->isValid()) {
+            if (! isset($data['cancel']) && $form->isValid()) {
                 /** @var Question $question */
                 $question = $form->getData();
                 $this->questionnaireService->save($question);

@@ -127,7 +127,7 @@ final class Financial extends Form
             $contact = $contactOrganisation->getContact();
 
             //Skip any inactive contact
-            if (!$contact->isActive()) {
+            if (! $contact->isActive()) {
                 continue;
             }
 
@@ -143,7 +143,7 @@ final class Financial extends Form
                 $contact = $otherAffiliation->getFinancial()->getContact();
 
                 //Skip any inactive contact
-                if (!$contact->isActive()) {
+                if (! $contact->isActive()) {
                     continue;
                 }
 

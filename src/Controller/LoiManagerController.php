@@ -178,7 +178,7 @@ final class LoiManagerController extends AffiliationAbstractController
                     /*
                      * Replace the content of the object
                      */
-                    if (!$loi->getObject()->isEmpty()) {
+                    if (! $loi->getObject()->isEmpty()) {
                         $loi->getObject()->first()->setObject(
                             file_get_contents($fileData['affiliation_entity_loi']['file']['tmp_name'])
                         );
@@ -247,7 +247,7 @@ final class LoiManagerController extends AffiliationAbstractController
             );
         }
 
-        if (!DateTime::createFromFormat('Y-m-d', $dateSigned)) {
+        if (! DateTime::createFromFormat('Y-m-d', $dateSigned)) {
             return new JsonModel(
                 [
                     'result' => 'error',

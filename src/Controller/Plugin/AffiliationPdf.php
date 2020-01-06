@@ -28,7 +28,7 @@ class AffiliationPdf extends Fpdi
     public function header()
     {
         if ($this->_tplIdx === null) {
-            if (!file_exists($this->template)) {
+            if (! file_exists($this->template)) {
                 throw new \InvalidArgumentException(sprintf("Template %s cannot be found", $this->template));
             }
             $this->setSourceFile($this->template);
@@ -114,7 +114,7 @@ class AffiliationPdf extends Fpdi
             }
             $rowCounter++;
             $this->Ln();
-            $fill = !$fill;
+            $fill = ! $fill;
         }
         $this->Cell(array_sum($w), 0, '', 'T');
         $this->Ln();

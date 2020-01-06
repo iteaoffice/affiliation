@@ -53,7 +53,7 @@ final class GetFilter extends AbstractPlugin
         /** @var Request $request */
         $request = $application->getMvcEvent()->getRequest();
 
-        if (!empty($encodedFilter) && !empty($base64decodedFilter = base64_decode($encodedFilter))) {
+        if (! empty($encodedFilter) && ! empty($base64decodedFilter = base64_decode($encodedFilter))) {
             // Take the filter from the URL
             $filter = (array)Json::decode($base64decodedFilter);
         }
@@ -70,7 +70,7 @@ final class GetFilter extends AbstractPlugin
         }
 
         // Add a default order and direction if not known in the filter
-        if (!isset($filter['order'])) {
+        if (! isset($filter['order'])) {
             $filter['order'] = '';
             $filter['direction'] = Criteria::ASC;
         }

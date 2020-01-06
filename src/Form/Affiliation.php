@@ -278,7 +278,7 @@ final class Affiliation extends Form implements InputFilterProviderInterface
 
     private function isContactInAffiliationOrganisation(Contact $contact, Entity\Affiliation $affiliation): bool
     {
-        if (!$contact->hasOrganisation()) {
+        if (! $contact->hasOrganisation()) {
             return false;
         }
         return $contact->getContactOrganisation()->getOrganisation() === $affiliation->getOrganisation();

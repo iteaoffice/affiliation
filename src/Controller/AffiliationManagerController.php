@@ -291,7 +291,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 );
             }
 
-            if (isset($data['delete']) && !$this->affiliationService->isActiveInVersion($affiliation)) {
+            if (isset($data['delete']) && ! $this->affiliationService->isActiveInVersion($affiliation)) {
                 $this->affiliationService->delete($affiliation);
 
                 return $this->redirect()->toRoute(
@@ -316,7 +316,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $contact = $this->contactService->findContactById((int)$formData['contact']);
 
                 switch (true) {
-                    case !empty($formData['parentOrganisationLike']):
+                    case ! empty($formData['parentOrganisationLike']):
                         /** @var Organisation $parentOrganisation */
                         $parentOrganisation = $this->parentService->find(
                             Organisation::class,
@@ -325,7 +325,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                         $affiliation->setParentOrganisation($parentOrganisation);
                         $affiliation->setOrganisation($parentOrganisation->getOrganisation());
                         break;
-                    case !empty($formData['parentOrganisation']):
+                    case ! empty($formData['parentOrganisation']):
                         /** @var Organisation $parentOrganisation */
                         $parentOrganisation = $this->parentService->find(
                             Organisation::class,
@@ -334,7 +334,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                         $affiliation->setParentOrganisation($parentOrganisation);
                         $affiliation->setOrganisation($parentOrganisation->getOrganisation());
                         break;
-                    case !empty($formData['parent']):
+                    case ! empty($formData['parent']):
                         // When a parent is selected, use that to find the $parent
                         $parent = $this->parentService->findParentById($formData['parent']);
                         $parentOrganisation = $this->parentService->findParentOrganisationInParentByOrganisation(
@@ -415,7 +415,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $affiliation->setMarketAccess($formData['marketAccess']);
 
                 $affiliation->setInvoiceMethod(null);
-                if (!empty($formData['invoiceMethod'])) {
+                if (! empty($formData['invoiceMethod'])) {
                     /** @var Method $method */
                     $method = $this->invoiceService->find(Method::class, (int)$formData['invoiceMethod']);
                     $affiliation->setInvoiceMethod($method);
@@ -424,7 +424,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $this->affiliationService->save($affiliation);
 
                 // Only update the financial when an financial organisation is chosen
-                if (!empty($formData['financialOrganisation'])) {
+                if (! empty($formData['financialOrganisation'])) {
                     if (null === ($financial = $affiliation->getFinancial())) {
                         $financial = new Financial();
                         $financial->setAffiliation($affiliation);
@@ -436,7 +436,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                     );
                     $financial->setContact($this->contactService->findContactById((int)$formData['financialContact']));
                     $financial->setBranch($formData['financialBranch']);
-                    if (!empty($formData['emailCC'])) {
+                    if (! empty($formData['emailCC'])) {
                         $financial->setEmailCC($formData['emailCC']);
                     }
 
@@ -492,7 +492,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($request->isPost()) {
-            if (!empty($data['cancel'])) {
+            if (! empty($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
                     ['id' => $affiliation->getId()],
@@ -500,7 +500,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 );
             }
 
-            if (!empty($data['delete'])) {
+            if (! empty($data['delete'])) {
                 $affiliation->removeAssociate($contact);
                 $this->affiliationService->save($affiliation);
 

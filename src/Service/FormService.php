@@ -48,7 +48,7 @@ class FormService
          *
          * But if the class a class is injected, we will change it into the className but hint the user to use a string
          */
-        if (!$classNameOrEntity instanceof AbstractEntity) {
+        if (! $classNameOrEntity instanceof AbstractEntity) {
             $classNameOrEntity = new $classNameOrEntity();
         }
 

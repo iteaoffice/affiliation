@@ -69,7 +69,7 @@ final class Affiliation extends AbstractAssertion
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!($affiliation instanceof AffiliationEntity) && (null !== $id)) {
+        if (! ($affiliation instanceof AffiliationEntity) && (null !== $id)) {
             $affiliation = $this->affiliationService->findAffiliationById((int)$id);
         }
 

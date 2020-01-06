@@ -30,7 +30,7 @@ final class EffortSpentLink extends AbstractLink
         string $show,
         Report $report
     ): string {
-        if (!$this->hasAccess($affiliation, AffiliationAssertion::class, 'update-effort-spent')) {
+        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, 'update-effort-spent')) {
             return '';
         }
 

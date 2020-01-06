@@ -157,7 +157,7 @@ class Doa extends AbstractEntity
 
     public function hasObject(): bool
     {
-        return !$this->object->isEmpty();
+        return ! $this->object->isEmpty();
     }
 
     public function __toString(): string

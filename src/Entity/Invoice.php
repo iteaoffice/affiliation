@@ -121,7 +121,7 @@ class Invoice extends AbstractEntity
 
     public function hasYearAndPeriod(int $year, int $period): bool
     {
-        if (!$this->hasYear($year)) {
+        if (! $this->hasYear($year)) {
             return false;
         }
 

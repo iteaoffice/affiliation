@@ -117,7 +117,7 @@ abstract class AbstractAssertion implements AssertionInterface
         if (null !== $this->getRequest()->getPost('id')) {
             return (int)$this->getRequest()->getPost('id');
         }
-        if (!$this->hasRouteMatch()) {
+        if (! $this->hasRouteMatch()) {
             return null;
         }
         if (null !== $this->getRouteMatch()->getParam('id')) {
@@ -164,7 +164,7 @@ abstract class AbstractAssertion implements AssertionInterface
 
     private function prepareAccessRoles($accessRoleOrCollection): array
     {
-        if (!$accessRoleOrCollection instanceof PersistentCollection) {
+        if (! $accessRoleOrCollection instanceof PersistentCollection) {
             /*
              * We only have a string or array, so we need to lookup the role
              */
@@ -190,6 +190,6 @@ abstract class AbstractAssertion implements AssertionInterface
 
     public function hasContact(): bool
     {
-        return !$this->contact->isEmpty();
+        return ! $this->contact->isEmpty();
     }
 }

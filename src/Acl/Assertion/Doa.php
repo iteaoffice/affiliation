@@ -55,7 +55,7 @@ final class Doa extends AbstractAssertion
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$doa instanceof DoaEntity && null !== $id) {
+        if (! $doa instanceof DoaEntity && null !== $id) {
             /** @var DoaEntity $doa */
             $doa = $this->doaService->findDoaById((int)$id);
         }
@@ -92,7 +92,7 @@ final class Doa extends AbstractAssertion
                 return null === $doa->getDateApproved()
                     && $this->affiliationAssertion->assert($acl, $role, $doa->getAffiliation(), 'edit-community');
             case 'download':
-                if (!$doa->hasObject()) {
+                if (! $doa->hasObject()) {
                     return false;
                 }
                 return $this->affiliationAssertion->assert($acl, $role, $doa->getAffiliation(), 'edit-community');

@@ -32,7 +32,7 @@ final class AffiliationLink extends AbstractLink
         int $year = null,
         int $period = null
     ): string {
-        if (!$this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
+        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
             return $action !== 'view-community' ? ''
                 : $affiliation->getOrganisation()->getOrganisation();
         }

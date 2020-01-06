@@ -54,7 +54,7 @@ final class QuestionnaireAssertion extends AbstractAssertion
 
         $questionnaireId = $this->getId();
         $affiliationId   = $this->getRouteMatch()->getParam('affiliationId');
-        if (!($affiliation instanceof AffiliationEntity) && ($affiliationId !== null)) {
+        if (! ($affiliation instanceof AffiliationEntity) && ($affiliationId !== null)) {
             $affiliation = $this->questionnaireService->find(AffiliationEntity::class, (int) $affiliationId);
         }
         $isTechContact   = (

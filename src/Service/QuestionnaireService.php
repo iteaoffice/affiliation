@@ -49,9 +49,9 @@ class QuestionnaireService extends AbstractService
         }
 
         // No, or not from this affiliation or new answers
-        if (!$answer || $answer->getAffiliation() !== $affiliation || $answer->isEmpty()) {
+        if (! $answer || $answer->getAffiliation() !== $affiliation || $answer->isEmpty()) {
             static $sortedQuestionnaireQuestions = [];
-            if (!isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
+            if (! isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
                 $sortedQuestionnaireQuestions[$questionnaire->getId()] =
                     $this->entityManager->getRepository(QuestionnaireQuestion::class)->getSorted(
                         $questionnaire
@@ -89,7 +89,7 @@ class QuestionnaireService extends AbstractService
         /** @var Answer $answer */
         foreach ($answers as $answer) {
             $value = $answer->getValue();
-            if (!empty($value) || !$answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
+            if (! empty($value) || ! $answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
                 $answerCount++;
             }
         }
