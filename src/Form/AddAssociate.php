@@ -15,14 +15,14 @@ namespace Affiliation\Form;
 use Affiliation\Entity\Affiliation;
 use Contact\Form\Element\Contact;
 use Contact\Service\ContactService;
-use Zend\Form\Element\Email;
-use Zend\Form\Element\Submit;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Uri\Uri;
-use Zend\Validator\Callback;
-use Zend\Validator\EmailAddress;
-use Zend\Validator\NotEmpty;
+use Laminas\Form\Element\Email;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Uri\Uri;
+use Laminas\Validator\Callback;
+use Laminas\Validator\EmailAddress;
+use Laminas\Validator\NotEmpty;
 use function in_array;
 
 /**

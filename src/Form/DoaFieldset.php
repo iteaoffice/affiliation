@@ -13,10 +13,10 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity;
 use Doctrine\ORM\EntityManager;
-use Zend\Form\Element\File;
-use Zend\Form\Element\Select;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Validator\File\Size;
+use Laminas\Form\Element\File;
+use Laminas\Form\Element\Select;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Validator\File\Size;
 
 /**
  * Class DoaFieldset

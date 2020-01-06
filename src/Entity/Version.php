@@ -15,13 +15,13 @@ namespace Affiliation\Entity;
 use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use function sprintf;
 
 /**
  * @ORM\Table(name="affiliation_version")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_version")
  */
 class Version extends AbstractEntity

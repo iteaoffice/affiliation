@@ -14,14 +14,14 @@ namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * Entity for the Affiliation.
  *
  * @ORM\Table(name="project_doa_reminder")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_doa_reminder")
  *
  * @category    Affiliation

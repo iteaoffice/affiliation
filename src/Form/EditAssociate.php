@@ -13,10 +13,10 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Service\ContactService;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Form\Element\Submit;
-use Zend\Form\Element\Select;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Element\Select;
 use Contact\Form\Element\Contact;
 
 /**

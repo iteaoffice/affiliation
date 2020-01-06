@@ -17,8 +17,8 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Service\QuestionnaireService;
 use DateTime;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\View\Helper\AbstractHelper;
 use function sprintf;
 
 /**

@@ -18,7 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use General\Entity\ContentType;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="project_doa")
@@ -85,7 +85,7 @@ class Doa extends AbstractEntity
      * Date when the submitter sends in the DOA
      *
      * @ORM\Column(name="date_signed", type="date", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Type("\Laminas\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
      *
@@ -96,7 +96,7 @@ class Doa extends AbstractEntity
      * Date approved by the office
      *
      * @ORM\Column(name="date_approved", type="datetime", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Type("\Laminas\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
      *
@@ -123,7 +123,7 @@ class Doa extends AbstractEntity
     private $approver;
     /**
      * @ORM\Column(name="group_name", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-doa-group-name-label","help-block":"txt-doa-group-name-help-block"})
      * @Annotation\Attributes({"placeholder":"txt-doa-group-name-placeholder"})
      *
@@ -132,7 +132,7 @@ class Doa extends AbstractEntity
     private $groupName;
     /**
      * @ORM\Column(name="chamber_of_commerce_number", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-doa-chamber-of-commerce-number-label","help-block":"txt-doa-chamber-of-commerce-number-help-block"})
      * @Annotation\Attributes({"placeholder":"txt-doa-chamber-of-commerce-number-placeholder"})
      *
@@ -141,7 +141,7 @@ class Doa extends AbstractEntity
     private $chamberOfCommerceNumber;
     /**
      * @ORM\Column(name="chamber_of_commerce_location", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-doa-chamber-of-commerce-location-label","help-block":"txt-doa-chamber-of-commerce-location-help-block"})
      * @Annotation\Attributes({"placeholder":"txt-doa-chamber-of-commerce-location-placeholder"})
      *

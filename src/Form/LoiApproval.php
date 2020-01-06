@@ -13,12 +13,12 @@ namespace Affiliation\Form;
 
 use Contact\Service\ContactService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Zend\Form\Element\Date;
-use Zend\Form\Element\Select;
-use Zend\Form\Element\Submit;
-use Zend\Form\Fieldset;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Element\Date;
+use Laminas\Form\Element\Select;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Fieldset;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
 
 /**
  * Class LoiApproval

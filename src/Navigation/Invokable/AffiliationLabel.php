@@ -20,7 +20,7 @@ namespace Affiliation\Navigation\Invokable;
 use Admin\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Affiliation;
 use Project\Entity\Project;
-use Zend\Navigation\Page\Mvc;
+use Laminas\Navigation\Page\Mvc;
 
 /**
  * Class AffiliationLabel

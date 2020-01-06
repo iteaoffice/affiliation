@@ -19,9 +19,9 @@ use Affiliation\Form\Questionnaire\QuestionnaireForm;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\QuestionnaireService;
 use Doctrine\ORM\EntityManager;
-use Zend\Http\Request;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\View\Model\ViewModel;
+use Laminas\Http\Request;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\View\Model\ViewModel;
 
 /**
  * @package Affiliation\Controller\Questionnaire

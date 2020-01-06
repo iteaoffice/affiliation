@@ -21,10 +21,10 @@ use Contact\Entity\Contact;
 use Contact\Service\ContactService;
 use Doctrine\ORM\PersistentCollection;
 use Interop\Container\ContainerInterface;
-use Zend\Authentication\AuthenticationService;
-use Zend\Http\Request;
-use Zend\Permissions\Acl\Assertion\AssertionInterface;
-use Zend\Router\Http\RouteMatch;
+use Laminas\Authentication\AuthenticationService;
+use Laminas\Http\Request;
+use Laminas\Permissions\Acl\Assertion\AssertionInterface;
+use Laminas\Router\Http\RouteMatch;
 
 /**
  * Class AbstractAssertion

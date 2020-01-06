@@ -16,7 +16,7 @@ use Affiliation\Entity\Affiliation;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Affiliation\Entity\AbstractEntity;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="affiliation_questionnaire_answer")

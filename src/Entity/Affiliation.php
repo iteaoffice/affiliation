@@ -32,12 +32,12 @@ use Project\Entity\Funding\Funded;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Project;
 use Project\Entity\Report\EffortSpent;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="affiliation")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Affiliation")
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation")
  */
 class Affiliation extends AbstractEntity
@@ -45,7 +45,7 @@ class Affiliation extends AbstractEntity
     public const NOT_SELF_FUNDED = 0;
     public const SELF_FUNDED = 1;
 
-    protected static $selfFundedTemplates
+    protected static array $selfFundedTemplates
         = [
             self::NOT_SELF_FUNDED => 'txt-not-self-funded',
             self::SELF_FUNDED     => 'txt-self-funded',
@@ -62,7 +62,7 @@ class Affiliation extends AbstractEntity
     private $id;
     /**
      * @ORM\Column(name="branch", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-branch"})
      *
      * @var string
@@ -70,7 +70,7 @@ class Affiliation extends AbstractEntity
     private $branch;
     /**
      * @ORM\Column(name="note", type="text", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-note"})
      *
      * @var string
@@ -78,7 +78,7 @@ class Affiliation extends AbstractEntity
     private $note;
     /**
      * @ORM\Column(name="value_chain", type="string", length=255, nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-value-chain"})
      *
      * @var string
@@ -86,7 +86,7 @@ class Affiliation extends AbstractEntity
     private $valueChain;
     /**
      * @ORM\Column(name="market_access", type="text", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-market-access"})
      *
      * @var string
@@ -94,7 +94,7 @@ class Affiliation extends AbstractEntity
     private $marketAccess;
     /**
      * @ORM\Column(name="strategic_importance", type="text", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-strategic-importance"})
      *
      * @var string
@@ -102,7 +102,7 @@ class Affiliation extends AbstractEntity
     private $strategicImportance;
     /**
      * @ORM\Column(name="main_contribution", type="text", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-main-contribution"})
      *
      * @var string
@@ -110,7 +110,7 @@ class Affiliation extends AbstractEntity
     private $mainContribution;
     /**
      * @ORM\Column(name="self_funded", type="smallint", nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Type("Laminas\Form\Element\Radio")
      * @Annotation\Attributes({"array":"selfFundedTemplates"})
      * @Annotation\Attributes({"label":"txt-self-funded"})
      *
@@ -127,7 +127,7 @@ class Affiliation extends AbstractEntity
     private $dateCreated;
     /**
      * @ORM\Column(name="date_end", type="datetime", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\DateTime")
+     * @Annotation\Type("\Laminas\Form\Element\DateTime")
      * @Annotation\Options({"label":"txt-date-end"})
      *
      * @var DateTime
@@ -135,7 +135,7 @@ class Affiliation extends AbstractEntity
     private $dateEnd;
     /**
      * @ORM\Column(name="date_self_funded", type="datetime", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\DateTime")
+     * @Annotation\Type("\Laminas\Form\Element\DateTime")
      * @Annotation\Options({"label":"txt-date-self-funded"})
      *
      * @var DateTime
@@ -164,7 +164,7 @@ class Affiliation extends AbstractEntity
     private $contact;
     /**
      * @ORM\Column(name="communication_contact_name", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-affiliation-communication-contact-name-label","help-block":"txt-affiliation-communication-contact-name-help-block"})
      * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-name-placeholder"})
      *
@@ -173,7 +173,7 @@ class Affiliation extends AbstractEntity
     private $communicationContactName;
     /**
      * @ORM\Column(name="communication_contact_email", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Email")
+     * @Annotation\Type("\Laminas\Form\Element\Email")
      * @Annotation\Options({"label":"txt-affiliation-communication-contact-email-label","help-block":"txt-affiliation-communication-contact-email-help-block"})
      * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-email-placeholder"})
      *

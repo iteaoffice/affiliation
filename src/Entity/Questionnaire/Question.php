@@ -16,7 +16,7 @@ use Affiliation\Entity\AbstractEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * Question
@@ -44,7 +44,7 @@ class Question extends AbstractEntity
      *
      * @var array
      */
-    protected static $inputTypeTemplates = [
+    protected static array $inputTypeTemplates = [
         self::INPUT_TYPE_BOOL => 'txt-input-type-bool',
         self::INPUT_TYPE_STRING => 'txt-input-type-string',
         self::INPUT_TYPE_TEXT => 'txt-input-type-text',
@@ -79,7 +79,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="question", type="string", nullable=false)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({
      *     "label":"txt-question",
      *     "help-block":"txt-question-help-block",
@@ -91,7 +91,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="help_block", type="text", length=65535, nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Textarea")
+     * @Annotation\Type("\Laminas\Form\Element\Textarea")
      * @Annotation\Options({
      *     "label":"txt-help-block",
      *     "help-block":"txt-help-block-help-block"
@@ -103,7 +103,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="placeholder", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({
      *     "label":"txt-placeholder",
      *     "help-block":"txt-placeholder-help-block"
@@ -115,7 +115,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="input_type", type="smallint", length=5, options={"unsigned"=true}, nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Type("Laminas\Form\Element\Radio")
      * @Annotation\Attributes({"array":"inputTypeTemplates"})
      * @Annotation\Options({
      *     "label":"txt-input-type",
@@ -128,7 +128,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="`values`", type="text", length=65535, nullable=true)
-     * @Annotation\Type("Zend\Form\Element\Textarea")
+     * @Annotation\Type("Laminas\Form\Element\Textarea")
      * @Annotation\Options({
      *     "label":"txt-values",
      *     "help-block":"txt-values-help-block"
@@ -140,7 +140,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="is_required", type="boolean", length=1, nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({
      *     "label":"txt-required",
      *     "help-block":"txt-required-help-block"
@@ -152,7 +152,7 @@ class Question extends AbstractEntity
 
     /**
      * @ORM\Column(name="is_enabled", type="boolean", length=1, nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Checkbox")
+     * @Annotation\Type("Laminas\Form\Element\Checkbox")
      * @Annotation\Options({
      *     "label":"txt-enabled",
      *     "help-block":"txt-enabled-help-block"

@@ -25,7 +25,7 @@ use Doctrine\ORM\ORMException;
 use Project\Entity\Cost\Version as CostVersion;
 use Project\Entity\Effort\Version as EffortVersion;
 use Project\Entity\Version\Version as ProjectVersion;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Class MergeAffiliation

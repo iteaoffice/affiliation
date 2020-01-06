@@ -13,8 +13,8 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity\AbstractEntity;
 use Doctrine\ORM\EntityManager;
-use Zend\Form\Element;
-use Zend\Form\Form;
+use Laminas\Form\Element;
+use Laminas\Form\Form;
 
 /**
  * Class CreateObject

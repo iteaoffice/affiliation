@@ -16,12 +16,12 @@ use Contact\Entity\Contact;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="affiliation_description")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_description")
  */
 class Description extends AbstractEntity
@@ -44,7 +44,7 @@ class Description extends AbstractEntity
     private $affiliation;
     /**
      * @ORM\Column(name="description", type="text", nullable=false)
-     * @Annotation\Type("\Zend\Form\Element\Textarea")
+     * @Annotation\Type("\Laminas\Form\Element\Textarea")
      * @Annotation\Options({"label":"txt-affiliation-description","help-block":"txt-affiliation-description-explanation"})
      * @Annotation\Attributes({"placeholder":"txt-affiliation-description-placeholder","rows":"12"})
      *

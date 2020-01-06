@@ -56,10 +56,10 @@ use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use stdClass;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Mvc\Controller\PluginManager;
-use Zend\Validator\File\MimeType;
-use Zend\View\HelperPluginManager;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\Controller\PluginManager;
+use Laminas\Validator\File\MimeType;
+use Laminas\View\HelperPluginManager;
 use function array_pop;
 use function count;
 use function in_array;
@@ -1342,8 +1342,8 @@ class AffiliationService extends AbstractService
             $affiliation->getId()
         );
 
-        $this->emailService->setTemplateVariable('edit_profile_url', $deeplinkLink($deeplinkProfile, 'view', 'link'));
-        $this->emailService->setTemplateVariable('partner_page_url', $deeplinkLink($deeplinkPartner, 'view', 'link'));
+        $this->emailService->setTemplateVariable('edit_profile_url', $deeplinkLink($deeplinkProfile));
+        $this->emailService->setTemplateVariable('partner_page_url', $deeplinkLink($deeplinkPartner));
         $this->emailService->setTemplateVariable('project', $affiliation->getProject()->parseFullName());
         $this->emailService->setTemplateVariable('organisation', $affiliation->parseBranchedName());
         $this->emailService->setTemplateVariable('has_contact', $hasContact);

@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Affiliation;
 
 use Affiliation\Controller;
-use Zend\Router\Http\Segment;
+use Laminas\Router\Http\Segment;
 
 return [
     'router' => [

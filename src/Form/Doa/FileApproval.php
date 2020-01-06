@@ -13,11 +13,11 @@ namespace Affiliation\Form\Doa;
 
 use Contact\Service\ContactService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Zend\Form\Element\Checkbox;
-use Zend\Form\Element\Date;
-use Zend\Form\Element\Select;
-use Zend\Form\Fieldset;
-use Zend\Form\Form;
+use Laminas\Form\Element\Checkbox;
+use Laminas\Form\Element\Date;
+use Laminas\Form\Element\Select;
+use Laminas\Form\Fieldset;
+use Laminas\Form\Form;
 
 /**
  * Class DoaApproval

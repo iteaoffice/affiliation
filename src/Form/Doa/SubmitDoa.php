@@ -11,15 +11,15 @@ declare(strict_types=1);
 
 namespace Affiliation\Form\Doa;
 
-use Zend\Form\Element\Checkbox;
-use Zend\Form\Element\File;
-use Zend\Form\Element\Submit;
-use Zend\Form\Element\Text;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Validator\Callback;
-use Zend\Validator\File\Extension;
-use Zend\Validator\File\Size;
+use Laminas\Form\Element\Checkbox;
+use Laminas\Form\Element\File;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Element\Text;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Validator\Callback;
+use Laminas\Validator\File\Extension;
+use Laminas\Validator\File\Size;
 
 /**
  * Class SubmitDoa

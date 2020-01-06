@@ -15,13 +15,13 @@ namespace Affiliation\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Project\Entity\Contract\CostVersion;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use function sprintf;
 
 /**
  * @ORM\Table(name="affiliation_contract_version")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_contract_version")
  */
 class ContractVersion extends AbstractEntity

@@ -25,7 +25,7 @@ use Organisation\Service\OrganisationService;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 use ZfcTwig\View\TwigRenderer;
 
 /**

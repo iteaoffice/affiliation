@@ -20,11 +20,11 @@ use General\Service\GeneralService;
 use Organisation\Service\OrganisationService;
 use Project\Entity\Changelog;
 use Project\Service\ProjectService;
-use Zend\Http\Response;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Validator\File\FilesSize;
-use Zend\Validator\File\MimeType;
-use Zend\View\Model\ViewModel;
+use Laminas\Http\Response;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Validator\File\FilesSize;
+use Laminas\Validator\File\MimeType;
+use Laminas\View\Model\ViewModel;
 use ZfcTwig\View\TwigRenderer;
 use function count;
 

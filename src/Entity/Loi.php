@@ -18,7 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use General\Entity\ContentType;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="project_loi")
@@ -36,7 +36,7 @@ class Loi extends AbstractEntity
     private $id;
     /**
      * @ORM\Column(name="date_signed", type="date", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Type("\Laminas\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-signed", "format":"Y-m-d"})
      *
@@ -45,7 +45,7 @@ class Loi extends AbstractEntity
     private $dateSigned;
     /**
      * @ORM\Column(name="date_approved", type="datetime", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Date")
+     * @Annotation\Type("\Laminas\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
      * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
      * @Annotation\Options({"help-block":"txt-affiliation-loi-date-approved-help-block"})

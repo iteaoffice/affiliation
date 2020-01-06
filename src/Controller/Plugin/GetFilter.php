@@ -20,10 +20,10 @@ namespace Affiliation\Controller\Plugin;
 
 use Doctrine\Common\Collections\Criteria;
 use Interop\Container\ContainerInterface;
-use Zend\Http\Request;
-use Zend\Json\Json;
-use Zend\Mvc\Application;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Http\Request;
+use Laminas\Json\Json;
+use Laminas\Mvc\Application;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use function base64_decode;
 use function base64_encode;
 use function http_build_query;

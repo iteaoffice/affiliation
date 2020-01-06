@@ -20,7 +20,7 @@ namespace Affiliation\Factory;
 use Affiliation\Service\FormService;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Class FormServiceFactory

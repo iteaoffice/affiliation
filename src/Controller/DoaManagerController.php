@@ -35,11 +35,11 @@ use General\Service\EmailService;
 use General\Service\GeneralService;
 use Organisation\Service\OrganisationService;
 use Project\Service\ProjectService;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Validator\File\FilesSize;
-use Zend\Validator\File\MimeType;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Validator\File\FilesSize;
+use Laminas\Validator\File\MimeType;
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
 use function sprintf;
 
 /**

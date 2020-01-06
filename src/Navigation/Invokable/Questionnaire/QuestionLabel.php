@@ -19,7 +19,7 @@ namespace Affiliation\Navigation\Invokable\Questionnaire;
 
 use Admin\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Questionnaire\Question;
-use Zend\Navigation\Page\Mvc;
+use Laminas\Navigation\Page\Mvc;
 use function array_merge;
 use function strlen;
 use function substr;

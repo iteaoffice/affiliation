@@ -13,8 +13,8 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity;
 use Doctrine\ORM\EntityManager;
-use Zend\Form\Element\File;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Element\File;
+use Laminas\InputFilter\InputFilterProviderInterface;
 
 /**
  * Class LoiFieldset

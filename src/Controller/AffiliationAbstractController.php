@@ -18,10 +18,10 @@ use Project\Controller\Plugin\Checklist\ProjectChecklist;
 use Project\Entity\Project;
 use Project\Entity\Version\Type;
 use Search\Service\AbstractSearchService;
-use Zend\Http\Response;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use Zend\Mvc\Plugin\Identity\Identity;
+use Laminas\Http\Response;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Mvc\Plugin\Identity\Identity;
 use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 /**

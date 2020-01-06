@@ -20,9 +20,9 @@ use Affiliation\Entity\AbstractEntity;
 use Affiliation\Form\CreateObject;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilter;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilter;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class FormService

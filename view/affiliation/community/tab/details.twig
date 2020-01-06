@@ -158,4 +158,4 @@
     </dd>
 </dl>
 
-{{ affiliationLink|raw }} {{ organisationUpdateLink(null, 'edit', 'button', affiliation.organisation) }}
+{{ affiliationLink|raw }} {% if affilation.organisation.hasPendingUpdate() %}{{ organisationUpdateLink(null, 'edit', 'button', affiliation.organisation) }}{% endif %}

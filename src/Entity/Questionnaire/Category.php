@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * Category
@@ -40,7 +40,7 @@ class Category extends AbstractEntity
     /**
      *
      * @ORM\Column(name="sequence", type="integer", options={"unsigned":true})
-     * @Annotation\Type("\Zend\Form\Element\Number")
+     * @Annotation\Type("\Laminas\Form\Element\Number")
      * @Annotation\Options({
      *     "label":"txt-sequence",
      *     "help-block":"txt-sequence-help-block"
@@ -53,7 +53,7 @@ class Category extends AbstractEntity
 
     /**
      * @ORM\Column(name="category", type="string", length=55, nullable=false)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({
      *     "label":"txt-category",
      *     "help-block":"txt-category-help-block"

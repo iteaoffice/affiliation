@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Options;
 
-use Zend\Stdlib\AbstractOptions;
+use Laminas\Stdlib\AbstractOptions;
 
 /**
  * Class ModuleOptions

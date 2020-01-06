@@ -20,16 +20,16 @@ use Invoice\Entity\Method;
 use Organisation\Entity\OParent;
 use Organisation\Form\Element\Organisation;
 use Organisation\Service\ParentService;
-use Zend\Form\Element\Checkbox;
-use Zend\Form\Element\Date;
-use Zend\Form\Element\Email;
-use Zend\Form\Element\Radio;
-use Zend\Form\Element\Select;
-use Zend\Form\Element\Submit;
-use Zend\Form\Element\Text;
-use Zend\Form\Element\Textarea;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Element\Checkbox;
+use Laminas\Form\Element\Date;
+use Laminas\Form\Element\Email;
+use Laminas\Form\Element\Radio;
+use Laminas\Form\Element\Select;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Element\Text;
+use Laminas\Form\Element\Textarea;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
 
 /**
  * Class AdminAffiliation

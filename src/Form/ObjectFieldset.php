@@ -22,12 +22,12 @@ use DoctrineORMModule\Form\Element\EntityMultiCheckbox;
 use DoctrineORMModule\Form\Element\EntityRadio;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use Affiliation\Entity;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Element;
-use Zend\Form\Element\Radio;
-use Zend\Form\Fieldset;
-use Zend\Form\FieldsetInterface;
-use Zend\Form\Form;
+use Laminas\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Element;
+use Laminas\Form\Element\Radio;
+use Laminas\Form\Fieldset;
+use Laminas\Form\FieldsetInterface;
+use Laminas\Form\Form;
 
 /**
  * Class ObjectFieldset

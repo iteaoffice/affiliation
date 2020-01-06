@@ -16,7 +16,7 @@ use Admin\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Loi;
 use Project\Entity\Project;
-use Zend\Navigation\Page\Mvc;
+use Laminas\Navigation\Page\Mvc;
 
 /**
  * Class LoiLabel

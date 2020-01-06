@@ -14,14 +14,14 @@ namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use General\Entity\ExchangeRate;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 use function array_key_exists;
 use function in_array;
 
 /**
  * @ORM\Table(name="affiliation_invoice")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_invoice")
  */
 class Invoice extends AbstractEntity
@@ -36,7 +36,7 @@ class Invoice extends AbstractEntity
     private $id;
     /**
      * @ORM\Column(name="period", type="integer", options={"unsigned":true})
-     * @Annotation\Type("\Zend\Form\Element\Number")
+     * @Annotation\Type("\Laminas\Form\Element\Number")
      * @Annotation\Options({"label":"txt-affiliation-invoice-period-label","help-block":"txt-affiliation-invoice-period-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-period-placeholder"})
      *
@@ -45,7 +45,7 @@ class Invoice extends AbstractEntity
     private $period;
     /**
      * @ORM\Column(name="year", type="integer", options={"unsigned":true})
-     * @Annotation\Type("\Zend\Form\Element\Number")
+     * @Annotation\Type("\Laminas\Form\Element\Number")
      * @Annotation\Options({"label":"txt-affiliation-invoice-year-label","help-block":"txt-affiliation-invoice-year-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-year-placeholder"})
      *
@@ -54,14 +54,14 @@ class Invoice extends AbstractEntity
     private $year;
     /**
      * @ORM\Column(name="years", type="array", nullable=false)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      *
      * @var array
      */
     private $years;
     /**
      * @ORM\Column(name="amount_invoiced", type="decimal", precision=10, scale=2, nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-affiliation-invoice-amount-invoiced-label","help-block":"txt-affiliation-invoice-amount-invoiced-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-invoice-amount-invoiced-placeholder"})
      *

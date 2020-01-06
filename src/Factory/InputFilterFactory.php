@@ -14,8 +14,8 @@ namespace Affiliation\Factory;
 
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
-use Zend\InputFilter\InputFilter;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\InputFilter\InputFilter;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Class InputFilterFactory

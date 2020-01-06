@@ -21,7 +21,7 @@ use Admin\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Project\Entity\Project;
-use Zend\Navigation\Page\Mvc;
+use Laminas\Navigation\Page\Mvc;
 
 /**
  * Class DoaLabel

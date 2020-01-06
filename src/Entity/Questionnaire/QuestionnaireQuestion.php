@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="affiliation_questionnaire_question_questionnaire")
@@ -38,7 +38,7 @@ class QuestionnaireQuestion extends AbstractEntity
 
     /**
      * @ORM\Column(name="sequence", type="integer", options={"unsigned":true})
-     * @Annotation\Type("\Zend\Form\Element\Number")
+     * @Annotation\Type("\Laminas\Form\Element\Number")
      * @Annotation\Options({
      *     "label":"txt-sequence",
      *     "help-block":"txt-sequence-help-block"
@@ -52,7 +52,7 @@ class QuestionnaireQuestion extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Questionnaire\Questionnaire", cascade={"persist"}, inversedBy="questionnaireQuestions")
      * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="questionnaire_id", nullable=false)
-     * @Annotation\Type("\Zend\Form\Element\Hidden")
+     * @Annotation\Type("\Laminas\Form\Element\Hidden")
      * @Gedmo\SortableGroup
      *
      * @var Questionnaire

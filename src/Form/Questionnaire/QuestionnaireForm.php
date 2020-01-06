@@ -19,11 +19,11 @@ use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Service\QuestionnaireService;
 use Doctrine\ORM\EntityManager;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use Zend\Form\Element;
-use Zend\Form\Fieldset;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilter;
-use Zend\Json\Json;
+use Laminas\Form\Element;
+use Laminas\Form\Fieldset;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilter;
+use Laminas\Json\Json;
 use function array_merge;
 use function nl2br;
 

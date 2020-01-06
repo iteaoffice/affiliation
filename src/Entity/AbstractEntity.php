@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
-use Zend\Permissions\Acl\Resource\ResourceInterface;
+use Laminas\Permissions\Acl\Resource\ResourceInterface;
 
 /**
  * Class AbstractEntity

@@ -15,7 +15,7 @@ namespace Affiliation\Controller\Plugin;
 use Affiliation\Entity\Loi;
 use Affiliation\Options\ModuleOptions;
 use Contact\Service\ContactService;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use ZfcTwig\View\TwigRenderer;
 
 /**

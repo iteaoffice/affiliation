@@ -37,9 +37,9 @@ use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Testing\Util\AbstractServiceTest;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Mvc\Controller\PluginManager;
-use Zend\View\HelperPluginManager;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\Controller\PluginManager;
+use Laminas\View\HelperPluginManager;
 
 /**
  * Class AffiliationServiceTest

@@ -16,7 +16,7 @@ use Affiliation\Entity\AbstractEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * Category
@@ -52,7 +52,7 @@ class Questionnaire extends AbstractEntity
 
     /**
      * @ORM\Column(name="questionnaire", type="string", length=55, nullable=false)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({
      *     "label":"txt-questionnaire",
      *     "help-block":"txt-questionnaire-help-block"
@@ -64,7 +64,7 @@ class Questionnaire extends AbstractEntity
 
     /**
      * @ORM\Column(name="description", type="text", length=65535, nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Textarea")
+     * @Annotation\Type("\Laminas\Form\Element\Textarea")
      * @Annotation\Options({
      *     "label":"txt-description",
      *     "help-block":"txt-description-help-block"

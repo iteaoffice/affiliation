@@ -13,8 +13,8 @@ namespace AffiliationTest\Entity;
 use Affiliation\Entity\AbstractEntity;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\Finder;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Element;
+use Laminas\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Element;
 
 class EntityTest extends TestCase
 {
