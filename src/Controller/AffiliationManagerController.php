@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -229,7 +230,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
         if (null !== $affiliation->getDateEnd()) {
             $formData['dateEnd'] = $affiliation->getDateEnd()->format('Y-m-d');
         }
-        if (null !== $affiliation->getDateSelfFunded() || $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
+        if (
+            null !== $affiliation->getDateSelfFunded() || $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
         ) {
             if (null === $affiliation->getDateSelfFunded()) {
                 $formData['dateSelfFunded'] = date('Y-m-d');
@@ -375,14 +377,14 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 }
 
                 // The partner has been updated now, so we need to store the name of the organiation and the project
-                if (null !== $parentOrganisation
+                if (
+                    null !== $parentOrganisation
                     && null === $this->organisationService
                         ->findOrganisationNameByNameAndProject(
                             $parentOrganisation->getOrganisation(),
                             $organisation->getOrganisation(),
                             $affiliation->getProject()
                         )
-
                 ) {
                     $name = new Name();
                     $name->setOrganisation($parentOrganisation->getOrganisation());

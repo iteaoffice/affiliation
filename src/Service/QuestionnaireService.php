@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -174,7 +175,8 @@ class QuestionnaireService extends AbstractService
     {
         foreach ($contact->getAffiliation() as $affiliation) {
             foreach ($this->getAvailableQuestionnaires($affiliation) as $questionnaire) {
-                if ($this->isOpen($questionnaire, $affiliation)
+                if (
+                    $this->isOpen($questionnaire, $affiliation)
                     && ($this->parseCompletedPercentage($questionnaire, $affiliation) < 100)
                 ) {
                     return true;

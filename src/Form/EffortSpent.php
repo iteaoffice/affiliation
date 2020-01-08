@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -7,6 +8,7 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;
@@ -168,23 +170,26 @@ final class EffortSpent extends Form implements InputFilterProviderInterface
                                 ),
                             ],
                             'callback' => function ($value, $context = []) {
-                                if ($this->effortPlanned == 0
+                                if (
+                                    $this->effortPlanned == 0
                                     && $context['effort'] == 0
                                 ) {
                                     return true;
                                 }
 
-                                if ($this->effortPlanned == 0
+                                if (
+                                    $this->effortPlanned == 0
                                     && $context['effort'] != 0
                                 ) {
                                     return strlen($value) > 0;
                                 }
 
-                                if (abs(
-                                    ($context['effort']
+                                if (
+                                    abs(
+                                        ($context['effort']
                                             - $this->effortPlanned)
                                         / $this->effortPlanned
-                                ) > 0.2
+                                    ) > 0.2
                                 ) {
                                     return strlen($value) > 0;
                                 }

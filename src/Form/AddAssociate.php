@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -23,6 +24,7 @@ use Laminas\Uri\Uri;
 use Laminas\Validator\Callback;
 use Laminas\Validator\EmailAddress;
 use Laminas\Validator\NotEmpty;
+
 use function in_array;
 
 /**
@@ -50,7 +52,8 @@ final class AddAssociate extends Form implements InputFilterProviderInterface
         foreach ($affiliation->getOrganisation()->getContactOrganisation() as $contactOrganisation) {
             $email = $contactOrganisation->getContact()->getEmail();
             $validator = new EmailAddress();
-            if ($validator->isValid($email)
+            if (
+                $validator->isValid($email)
                 && ! in_array(
                     $validator->hostname,
                     ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],

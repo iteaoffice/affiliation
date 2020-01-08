@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA copyright message placeholder.
  *
@@ -16,6 +17,7 @@ use Contact\Entity\Contact;
 use Doctrine\ORM\Mapping as ORM;
 use Organisation\Entity\Organisation;
 use Laminas\Form\Annotation;
+
 use function sprintf;
 
 /**

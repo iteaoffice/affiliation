@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -7,8 +8,8 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace Affiliation\Form;
 
@@ -24,6 +25,7 @@ use Laminas\Form\Element\Submit;
 use Laminas\Form\Element\Text;
 use Laminas\Form\Element\Textarea;
 use Laminas\Form\Form;
+
 use function asort;
 
 final class Financial extends Form
@@ -110,11 +112,13 @@ final class Financial extends Form
         }
 
         /** @var Contact $contact */
-        foreach ($affiliation->getAssociate()->filter(
-            static function (Contact $contact) {
-                return $contact->isActive();
-            }
-        ) as $contact) {
+        foreach (
+            $affiliation->getAssociate()->filter(
+                static function (Contact $contact) {
+                    return $contact->isActive();
+                }
+            ) as $contact
+        ) {
             $financialContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
         $organisation = $affiliation->getOrganisation();

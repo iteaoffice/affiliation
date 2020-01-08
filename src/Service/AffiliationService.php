@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -60,6 +61,7 @@ use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Mvc\Controller\PluginManager;
 use Laminas\Validator\File\MimeType;
 use Laminas\View\HelperPluginManager;
+
 use function array_pop;
 use function count;
 use function in_array;
@@ -512,7 +514,8 @@ class AffiliationService extends AbstractService
             }
 
 
-            if (null !== $affiliation->getInvoiceMethod()
+            if (
+                null !== $affiliation->getInvoiceMethod()
                 && $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE
             ) {
                 continue;
@@ -985,7 +988,8 @@ class AffiliationService extends AbstractService
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
             if (null !== $period) {
                 //When we have a period, we also take the period fo the current year into account
-                if ($invoice->getYear() < $year
+                if (
+                    $invoice->getYear() < $year
                     || ($invoice->getPeriod() < $period
                         && $invoice->getYear() === $year)
                 ) {
@@ -1027,7 +1031,8 @@ class AffiliationService extends AbstractService
                 continue;
             }
 
-            if (null !== $affiliation->getInvoiceMethod()
+            if (
+                null !== $affiliation->getInvoiceMethod()
                 && $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE_CONTRACT
             ) {
                 continue;
@@ -1097,7 +1102,8 @@ class AffiliationService extends AbstractService
                     continue;
                 }
 
-                if (! $this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
+                if (
+                    ! $this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
                 ) {
                     $yearAndPeriod[$otherYear][] = $invoicePeriod;
                 }
@@ -1156,7 +1162,8 @@ class AffiliationService extends AbstractService
     {
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
             //When the invoice is a credit invoice, skip the invoice
-            if ($this->invoiceService->hasCredit($affiliationInvoice->getInvoice())
+            if (
+                $this->invoiceService->hasCredit($affiliationInvoice->getInvoice())
                 || $this->invoiceService->isCredit($affiliationInvoice->getInvoice())
             ) {
                 continue;
@@ -1496,7 +1503,8 @@ class AffiliationService extends AbstractService
             }
 
             //Do a match on the organisation or technical contact
-            if ($affiliation->getContact() === $contact
+            if (
+                $affiliation->getContact() === $contact
                 || $affiliation->getOrganisation()->getId() ===
                 $contact->getContactOrganisation()->getOrganisation()->getId()
             ) {

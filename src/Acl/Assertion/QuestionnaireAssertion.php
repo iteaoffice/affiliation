@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -40,8 +41,8 @@ final class QuestionnaireAssertion extends AbstractAssertion
     }
 
     public function assert(
-        Acl               $acl,
-        RoleInterface     $role = null,
+        Acl $acl,
+        RoleInterface $role = null,
         ResourceInterface $affiliation = null,
         $privilege = null
     ): bool {

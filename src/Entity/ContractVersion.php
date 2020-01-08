@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA copyright message placeholder.
  *
@@ -16,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Project\Entity\Contract\CostVersion;
 use Laminas\Form\Annotation;
+
 use function sprintf;
 
 /**

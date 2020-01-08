@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA copyright message placeholder.
  *
@@ -15,6 +16,7 @@ namespace Affiliation\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use General\Entity\ExchangeRate;
 use Laminas\Form\Annotation;
+
 use function array_key_exists;
 use function in_array;
 

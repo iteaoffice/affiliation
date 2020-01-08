@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -45,6 +46,7 @@ use Project\Service\WorkpackageService;
 use Throwable;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\View\Model\ViewModel;
+
 use function array_key_exists;
 use function count;
 use function explode;
@@ -826,7 +828,8 @@ final class EditController extends AffiliationAbstractController
                 $report
             );
 
-        if (! $effortSpent
+        if (
+            ! $effortSpent
             = $this->reportService->findEffortSpentByReportAndAffiliation($report, $affiliation)
         ) {
             $effortSpent = new ReportEffortSpent();

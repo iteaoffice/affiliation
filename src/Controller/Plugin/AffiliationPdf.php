@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -19,8 +20,8 @@ use setasign\Fpdi\Tcpdf\Fpdi;
  */
 class AffiliationPdf extends Fpdi
 {
-    protected ? string $_tplIdx = null;
-    protected ? string $template = null;
+    protected ?string $_tplIdx = null;
+    protected ?string $template = null;
 
     /**
      * Draw an imported PDF logo on every page.
@@ -46,7 +47,7 @@ class AffiliationPdf extends Fpdi
         array $width = null,
         bool $lastRow = false,
         int $height = 6
-    ) : void {
+    ): void {
         // Colors, line width and bold font
         $this->SetDrawColor(205, 205, 205);
         $this->SetFillColor(255, 255, 255);

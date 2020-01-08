@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -16,12 +17,12 @@ use Admin\Entity\Access;
 use Affiliation\Entity\Affiliation as AffiliationEntity;
 use Affiliation\Service\AffiliationService;
 use Interop\Container\ContainerInterface;
-use Project\Acl\Assertion\Project;
-use Project\Service\ProjectService;
-use Project\Service\ReportService;
 use Laminas\Permissions\Acl\Acl;
 use Laminas\Permissions\Acl\Resource\ResourceInterface;
 use Laminas\Permissions\Acl\Role\RoleInterface;
+use Project\Acl\Assertion\Project;
+use Project\Service\ProjectService;
+use Project\Service\ReportService;
 
 /**
  * Class Affiliation.

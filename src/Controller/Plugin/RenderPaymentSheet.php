@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -30,6 +31,7 @@ use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+
 use function array_key_exists;
 use function count;
 use function implode;
@@ -267,12 +269,14 @@ final class RenderPaymentSheet extends AbstractPlugin
 
             $preferredDelivery = 'No billing organisation known';
 
-            if (null !== $affiliation->getFinancial()
+            if (
+                null !== $affiliation->getFinancial()
                 && null !== $affiliation->getFinancial()->getOrganisation()->getFinancial()
             ) {
                 $preferredDelivery = $this->translator->translate('txt-by-postal-mail');
 
-                if ($affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
+                if (
+                    $affiliation->getFinancial()->getOrganisation()->getFinancial()->getEmail()
                     === Financial::EMAIL_DELIVERY
                 ) {
                     $preferredDelivery = sprintf(
@@ -548,7 +552,8 @@ final class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $previousInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if (null !== $affiliationInvoice->getInvoice()->getDayBookNumber()
+            if (
+                null !== $affiliationInvoice->getInvoice()->getDayBookNumber()
                 && ($affiliationInvoice->getYear() < $year
                     || ($affiliationInvoice->getYear() === $year && $affiliationInvoice->getPeriod() < $period))
             ) {
@@ -913,7 +918,8 @@ final class RenderPaymentSheet extends AbstractPlugin
         //Old Invoices
         $alreadySentInvoices = [];
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
-            if ($affiliationInvoice->getYear() > $year
+            if (
+                $affiliationInvoice->getYear() > $year
                 || ($affiliationInvoice->getYear() === $year
                     && $affiliationInvoice->getPeriod() > $period)
             ) {

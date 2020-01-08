@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -25,6 +26,7 @@ use Laminas\Http\Request;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Paginator\Paginator;
 use Laminas\View\Model\ViewModel;
+
 use function ceil;
 use function urlencode;
 
@@ -40,8 +42,8 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
 
     public function __construct(
         QuestionnaireService $questionnaireService,
-        FormService          $formService,
-        TranslatorInterface  $translator
+        FormService $formService,
+        TranslatorInterface $translator
     ) {
         $this->questionnaireService = $questionnaireService;
         $this->formService          = $formService;

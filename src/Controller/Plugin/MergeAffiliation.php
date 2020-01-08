@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -155,7 +156,8 @@ final class MergeAffiliation extends AbstractPlugin
             // Check whether the main affiliation already has cost in the same period
             $matched = false;
             foreach ($this->getMainAffiliation()->getCost() as &$mainCost) {
-                if ($otherCost->getDateStart()->format('dmY') === $mainCost->getDateStart()->format('dmY')
+                if (
+                    $otherCost->getDateStart()->format('dmY') === $mainCost->getDateStart()->format('dmY')
                     && $otherCost->getDateEnd()->format('dmY') === $mainCost->getDateEnd()->format('dmY')
                 ) {
                     switch ($this->getCostAndEffortStrategy()) {
@@ -230,7 +232,8 @@ final class MergeAffiliation extends AbstractPlugin
             // Check whether the main affiliation already has effort in the same period for the same workpackage
             $matched = false;
             foreach ($this->getMainAffiliation()->getEffort() as &$mainEffort) {
-                if ($otherEffort->getDateStart()->format('dmY') === $mainEffort->getDateStart()->format('dmY')
+                if (
+                    $otherEffort->getDateStart()->format('dmY') === $mainEffort->getDateStart()->format('dmY')
                     && $otherEffort->getDateEnd()->format('dmY') === $mainEffort->getDateEnd()->format('dmY')
                     && $otherEffort->getWorkpackage()->getId() === $mainEffort->getWorkpackage()->getId()
                 ) {
@@ -290,7 +293,8 @@ final class MergeAffiliation extends AbstractPlugin
             // same period for the same workpackage
             $matched = false;
             foreach ($this->getMainAffiliation()->getSpent() as &$mainSpent) {
-                if ($otherSpent->getDateStart()->format('dmY') === $mainSpent->getDateStart()->format('dmY')
+                if (
+                    $otherSpent->getDateStart()->format('dmY') === $mainSpent->getDateStart()->format('dmY')
                     && $otherSpent->getDateEnd()->format('dmY') === $mainSpent->getDateEnd()->format('dmY')
                     && $otherSpent->getWorkpackage()->getId() === $mainSpent->getWorkpackage()->getId()
                 ) {
@@ -389,7 +393,8 @@ final class MergeAffiliation extends AbstractPlugin
             /** @var CostVersion $mainCostVersion */
             foreach ($mainVersion->getCostVersion() as &$mainCostVersion) {
                 // Check for a match with main cost version on start and end date
-                if ($otherCostVersion->getDateStart()->format('dmY') === $mainCostVersion->getDateStart()
+                if (
+                    $otherCostVersion->getDateStart()->format('dmY') === $mainCostVersion->getDateStart()
                         ->format('dmY')
                     && $otherCostVersion->getDateEnd()->format('dmY') === $mainCostVersion->getDateEnd()
                         ->format('dmY')
@@ -429,7 +434,8 @@ final class MergeAffiliation extends AbstractPlugin
             /** @var EffortVersion $mainCostVersion */
             foreach ($mainVersion->getEffortVersion() as &$mainEffortVersion) {
                 // Check for a match with main effort version on start date, end date and workpackage
-                if ($otherEffortVersion->getDateStart()->format('dmY') === $mainEffortVersion->getDateStart()
+                if (
+                    $otherEffortVersion->getDateStart()->format('dmY') === $mainEffortVersion->getDateStart()
                         ->format('dmY')
                     && $otherEffortVersion->getDateEnd()->format('dmY') === $mainEffortVersion->getDateEnd()
                         ->format('dmY')

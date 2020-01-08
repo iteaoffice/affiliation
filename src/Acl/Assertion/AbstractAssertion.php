@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Jield BV all rights reserved
  *
@@ -148,7 +149,8 @@ abstract class AbstractAssertion implements AssertionInterface
             if ($role === Access::ACCESS_PUBLIC) {
                 return true;
             }
-            if ($this->hasContact()
+            if (
+                $this->hasContact()
                 && \in_array(
                     $role,
                     $this->adminService->findAccessRolesByContactAsArray($this->contact),

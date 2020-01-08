@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -7,6 +8,7 @@
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;
@@ -24,6 +26,7 @@ use Laminas\InputFilter\InputFilterProviderInterface;
 use Laminas\Validator\Callback;
 use Laminas\Validator\EmailAddress;
 use Laminas\Validator\NotEmpty;
+
 use function asort;
 use function sprintf;
 
@@ -84,7 +87,8 @@ final class Affiliation extends Form implements InputFilterProviderInterface
         $financialContactValueOptions = $technicalContactValueOptions;
         $organisation = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $otherAffiliation) {
-            if ((null !== $otherAffiliation->getFinancial())
+            if (
+                (null !== $otherAffiliation->getFinancial())
                 && null === $otherAffiliation->getFinancial()->getContact()->isActive()
             ) {
                 $financialContactValueOptions[$otherAffiliation->getFinancial()->getContact()->getId()]

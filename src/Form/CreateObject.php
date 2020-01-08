@@ -1,4 +1,5 @@
 <?php
+
 /**
 *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
@@ -7,6 +8,7 @@
  *
  * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;

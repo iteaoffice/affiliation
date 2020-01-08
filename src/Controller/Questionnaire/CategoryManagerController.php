@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -36,8 +37,8 @@ final class CategoryManagerController extends AffiliationAbstractController
 
     public function __construct(
         QuestionnaireService $questionnaireService,
-        FormService          $formService,
-        TranslatorInterface  $translator
+        FormService $formService,
+        TranslatorInterface $translator
     ) {
         $this->questionnaireService = $questionnaireService;
         $this->formService          = $formService;

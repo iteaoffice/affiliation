@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -20,6 +21,7 @@ namespace Affiliation\Navigation\Invokable\Questionnaire;
 use Admin\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Questionnaire\Question;
 use Laminas\Navigation\Page\Mvc;
+
 use function array_merge;
 use function strlen;
 use function substr;
