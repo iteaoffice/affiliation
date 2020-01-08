@@ -31,13 +31,13 @@
     "doctrine/doctrine-orm-module": "@stable"
   },
   "require-dev": {
-    "iteaoffice/testing": "^2.1",
-    "iteaoffice/search": "^2.1",
-    "iteaoffice/contact": "^5.1",
-    "iteaoffice/organisation": "^5.1",
-    "iteaoffice/general": "^5.1",
-    "iteaoffice/invoice": "^5.1",
-    "iteaoffice/project": "^5.1",
+    "iteaoffice/testing": "2.*",
+    "iteaoffice/search": "2.*",
+    "iteaoffice/contact": "5.*",
+    "iteaoffice/organisation": "5.*",
+    "iteaoffice/general": "5.*",
+    "iteaoffice/invoice": "5.*",
+    "iteaoffice/project": "5.*",
     "setasign/fpdi-tcpdf": "^2.2"
   },
   "autoload": {
