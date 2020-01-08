@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Doa
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -28,9 +29,14 @@ class DoaService extends AbstractService
         return $this->entityManager->getRepository(Doa::class)->find($id);
     }
 
-    public function findNotApprovedDoa(): ArrayCollection
+    public function findNotApprovedUploadedDoa(): ArrayCollection
     {
-        return new ArrayCollection($this->entityManager->getRepository(Doa::class)->findNotApprovedDoa());
+        return new ArrayCollection($this->entityManager->getRepository(Doa::class)->findNotApprovedUploadedDoa());
+    }
+
+    public function findNotApprovedDigitalDoa(): ArrayCollection
+    {
+        return new ArrayCollection($this->entityManager->getRepository(Doa::class)->findNotApprovedDigitalDoa());
     }
 
     public function findDoaByOrganisation(Organisation $organisation): array

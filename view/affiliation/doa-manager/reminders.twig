@@ -5,14 +5,14 @@ affiliation.project
 )) %}
 
 
-<h1 class="display-4">{{ translate("txt-edit-doa-%s-in-%s")|format(
+<h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
     affiliation.parseBranchedName(),
     affiliation.project
     ) }} {{ doaLink(null, 'remind-admin', 'button', affiliation) }}</h1>
 
 {% if affiliation.doaReminder.count() > 0 %}
 
-    <table class="table table-striped table-condensed table-sm table-hover">
+    <table class="table table-striped table-sm table-hover">
         <thead>
         <tr>
             <th>{{ translate("txt-reminder-date") }}</th>

@@ -1,30 +1,32 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category  Affiliation
  *
  * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\Service;
 
-use Affiliation\Entity\AbstractEntity;
 use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Doa;
+use Affiliation\Entity\DoaObject;
 use Affiliation\Entity\Invoice;
 use Affiliation\Entity\Loi;
 use Affiliation\Entity\LoiObject;
 use Affiliation\Repository;
-use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\ValueObject\PaymentSheetPeriod;
 use Contact\Controller\Plugin\ContactActions;
 use Contact\Entity\Contact;
 use Contact\Entity\ContactOrganisation;
 use Contact\Service\ContactService;
 use Contact\Service\SelectionContactService;
+use DateTime;
 use Deeplink\Service\DeeplinkService;
 use Deeplink\View\Helper\DeeplinkLink;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,6 +36,7 @@ use General\Entity\Country;
 use General\Entity\Currency;
 use General\Service\EmailService;
 use General\Service\GeneralService;
+use InvalidArgumentException;
 use Invoice\Entity\Method;
 use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
@@ -53,94 +56,52 @@ use Project\Entity\Version\Version;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use Search\Service\AbstractSearchService;
-use Search\Service\SearchUpdateInterface;
-use Solarium\Client;
-use Solarium\Core\Query\AbstractQuery;
-use Solarium\QueryType\Update\Query\Document\Document;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Mvc\Controller\PluginManager;
-use Zend\Validator\File\MimeType;
-use Zend\View\HelperPluginManager;
+use stdClass;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\Controller\PluginManager;
+use Laminas\Validator\File\MimeType;
+use Laminas\View\HelperPluginManager;
+
+use function array_pop;
+use function count;
+use function in_array;
+use function ksort;
+use function number_format;
+use function round;
+use function sprintf;
 
 /**
  * Class AffiliationService
  *
  * @package Affiliation\Service
  */
-class AffiliationService extends AbstractService implements SearchUpdateInterface
+class AffiliationService extends AbstractService
 {
-    /**
-     * Constant to determine which affiliations must be taken from the database.
-     */
     public const WHICH_ALL = 1;
     public const WHICH_ONLY_ACTIVE = 2;
     public const WHICH_ONLY_INACTIVE = 3;
+    public const WHICH_INVOICING = 4;
 
     public const AFFILIATION_DEACTIVATE = 'deacivate';
     public const AFFILIATION_REACTIVATE = 'reactivate';
 
-    /**
-     * @var AffiliationSearchService
-     */
-    private $affiliationSearchService;
-    /**
-     * @var GeneralService
-     */
-    private $generalService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ParentService
-     */
-    private $parentService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var DeeplinkService
-     */
-    private $deeplinkService;
-    /**
-     * @var EmailService
-     */
-    private $emailService;
-    /**
-     * @var HelperPluginManager
-     */
-    private $viewHelperManager;
-    /**
-     * @var PluginManager;
-     */
-    private $controllerPluginManager;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private GeneralService $generalService;
+    private ProjectService $projectService;
+    private InvoiceService $invoiceService;
+    private ContractService $contractService;
+    private OrganisationService $organisationService;
+    private VersionService $versionService;
+    private ParentService $parentService;
+    private ContactService $contactService;
+    private DeeplinkService $deeplinkService;
+    private EmailService $emailService;
+    private HelperPluginManager $viewHelperManager;
+    private PluginManager $controllerPluginManager;
+    private TranslatorInterface $translator;
 
     public function __construct(
         EntityManager $entityManager,
         SelectionContactService $selectionContactService,
-        AffiliationSearchService $affiliationSearchService,
         GeneralService $generalService,
         ProjectService $projectService,
         InvoiceService $invoiceService,
@@ -157,7 +118,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     ) {
         parent::__construct($entityManager, $selectionContactService);
 
-        $this->affiliationSearchService = $affiliationSearchService;
         $this->generalService = $generalService;
         $this->projectService = $projectService;
         $this->invoiceService = $invoiceService;
@@ -173,12 +133,43 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         $this->translator = $translator;
     }
 
+    public static function findAffiliationVersion(
+        Affiliation $affiliation,
+        Version $version
+    ): ?\Affiliation\Entity\Version {
+        $affiliationVersion = $version->getAffiliationVersion()->filter(
+            static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
+                return $affiliationVersion->getAffiliation() === $affiliation;
+            }
+        )->first();
+
+        if ($affiliationVersion) {
+            return $affiliationVersion;
+        }
+
+        return null;
+    }
+
+    public static function useContractInVersion(Affiliation $affiliation, Version $version): bool
+    {
+        if (! self::useActiveContract($affiliation)) {
+            return false;
+        }
+
+        $affiliationVersion = self::findAffiliationVersion($affiliation, $version);
+
+        //If we cannot find the affiliation in the version
+        if (null === $affiliationVersion) {
+            return false;
+        }
+
+        return $affiliationVersion->hasContractVersion();
+    }
+
     public static function useActiveContract(Affiliation $affiliation): bool
     {
         /** Only use the contract is the flag (invoice method) is set */
-        if (null === $affiliation->getInvoiceMethod()
-            || $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE_CONTRACT
-        ) {
+        if ($affiliation->hasInvoiceMethodFPP()) {
             return false;
         }
 
@@ -187,7 +178,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         }
 
         foreach ($affiliation->getContract() as $contract) {
-            if (!$contract->getVersion()->isEmpty()) {
+            if (! $contract->getVersion()->isEmpty()) {
                 return true;
             }
         }
@@ -207,7 +198,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
     public function isActiveInVersion(Affiliation $affiliation): bool
     {
-        return !$affiliation->getVersion()->isEmpty();
+        return ! $affiliation->getVersion()->isEmpty();
     }
 
     public function hasDoa(Affiliation $affiliation): bool
@@ -250,7 +241,13 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     {
         $loiObject = new LoiObject();
         $loiObject->setObject(file_get_contents($file['tmp_name']));
-        $loi = new Loi();
+
+        $loi = $affiliation->getLoi();
+        if (null === $loi) {
+            $loi = new Loi();
+            $loi->setAffiliation($affiliation);
+        }
+
         $loi->setContact($contact);
         $loi->setAffiliation($affiliation);
         $loi->setSize($file['size']);
@@ -265,99 +262,66 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         return $loiObject->getLoi();
     }
 
-    public function save(AbstractEntity $abstractEntity): AbstractEntity
-    {
-        parent::save($abstractEntity);
-
-        if ($abstractEntity instanceof Affiliation) {
-            $this->updateEntityInSearchEngine($abstractEntity);
-        }
-
-        return $abstractEntity;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     */
-    public function updateEntityInSearchEngine($affiliation): void
-    {
-        $document = $this->prepareSearchUpdate($affiliation);
-
-        $this->affiliationSearchService->executeUpdateDocument($document);
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return AbstractQuery
-     */
-    public function prepareSearchUpdate($affiliation): AbstractQuery
-    {
-        $client = new Client();
-
-        $update = $client->createUpdate();
-        $project = $affiliation->getProject();
-        $contact = $affiliation->getContact();
-
-        /** @var Document $affiliationDocument */
-        $affiliationDocument = $update->createDocument();
-
-        $affiliationDocument->setField('id', $affiliation->getResourceId());
-        $affiliationDocument->setField('affiliation_id', $affiliation->getId());
-        $affiliationDocument->setField(
-            'date_created',
-            $affiliation->getDateCreated()->format(AbstractSearchService::DATE_SOLR)
-        );
-        $affiliationDocument->setField('is_active', $affiliation->isActive());
-
-        $descriptionMerged = '';
-        foreach ($affiliation->getDescription() as $description) {
-            $descriptionMerged .= $description->getDescription() . "\n\n";
-        }
-        $affiliationDocument->setField('description', $descriptionMerged);
-        $affiliationDocument->setField('branch', $affiliation->getBranch());
-        $affiliationDocument->setField('value_chain', $affiliation->getValueChain());
-        $affiliationDocument->setField('market_access', $affiliation->getMarketAccess());
-        $affiliationDocument->setField('main_contribution', $affiliation->getMainContribution());
-        $affiliationDocument->setField('strategic_importance', $affiliation->getStrategicImportance());
-
-        // Organisation
-        $affiliationDocument->setField('organisation', (string)$affiliation->getOrganisation());
-        $affiliationDocument->setField('organisation_id', $affiliation->getOrganisation()->getId());
-        $affiliationDocument->setField('organisation_type', (string)$affiliation->getOrganisation()->getType());
-        $affiliationDocument->setField('organisation_country', (string)$affiliation->getOrganisation()->getCountry());
-
-        // Project
-        $affiliationDocument->setField('project', $project->getProject());
-        $affiliationDocument->setField('project_id', $project->getId());
-        $affiliationDocument->setField('project_number', $project->getNumber());
-        $affiliationDocument->setField('project_title', $project->getTitle());
-        $affiliationDocument->setField('project_status', $this->projectService->parseStatus($project));
-        $affiliationDocument->setField('project_call', $project->getCall()->shortName());
-        $affiliationDocument->setField('project_call_id', $project->getCall()->getId());
-        $affiliationDocument->setField('project_program', (string)$project->getCall()->getProgram());
-
-        // Contact
-        $affiliationDocument->setField('contact', $contact->parseFullName());
-        $affiliationDocument->setField('contact_id', $contact->getId());
-
-        $update->addDocument($affiliationDocument);
-
-        return $update;
-    }
-
     public function submitLoi(Contact $contact, Affiliation $affiliation): Loi
     {
-        $loi = new Loi();
+        $loi = $affiliation->getLoi();
+        if (null === $loi) {
+            $loi = new Loi();
+            $loi->setAffiliation($affiliation);
+        }
         $loi->setContact($contact);
         $loi->setApprover($contact);
-        $loi->setDateSigned(new \DateTime());
-        $loi->setDateApproved(new \DateTime());
-        $loi->setAffiliation($affiliation);
+        $loi->setDateSigned(new DateTime());
+        $loi->setDateApproved(new DateTime());
 
         $this->save($loi);
 
         return $loi;
+    }
+
+    public function uploadDoa(array $file, Contact $contact, Affiliation $affiliation): Doa
+    {
+        $doaObject = new DoaObject();
+        $doaObject->setObject(file_get_contents($file['tmp_name']));
+
+        $doa = $affiliation->getDoa();
+
+        if (null === $doa) {
+            $doa = new Doa();
+            $doa->setAffiliation($affiliation);
+        }
+
+        $doa->setContact($contact);
+        $doa->setSize($file['size']);
+
+        $fileTypeValidator = new MimeType();
+        $fileTypeValidator->isValid($file);
+        $doa->setContentType($this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type));
+
+        $doaObject->setDoa($doa);
+        $this->save($doaObject);
+
+        return $doaObject->getDoa();
+    }
+
+    public function submitDoa(Contact $contact, Affiliation $affiliation, array $data): Doa
+    {
+        $doa = $affiliation->getDoa();
+
+        if (null === $doa) {
+            $doa = new Doa();
+            $doa->setAffiliation($affiliation);
+        }
+
+        $doa->setContact($contact);
+        $doa->setDateSigned(new DateTime());
+        $doa->setGroupName($data['group_name']);
+        $doa->setChamberOfCommerceNumber($data['chamber_of_commerce_number']);
+        $doa->setChamberOfCommerceLocation($data['chamber_of_commerce_location']);
+
+        $this->save($doa);
+
+        return $doa;
     }
 
     /**
@@ -365,7 +329,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
      */
     public function findNotValidatedSelfFundedAffiliation(): array
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findNotValidatedSelfFundedAffiliation();
@@ -373,7 +337,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
     public function findMissingAffiliationParent(): Query
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findMissingAffiliationParent();
@@ -401,7 +365,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             $parent = $affiliation->getParentOrganisation()->getParent();
 
             $organisation = $parent->getOrganisation();
-            if (!$parent->getFinancial()->isEmpty()) {
+            if (! $parent->getFinancial()->isEmpty()) {
                 $organisation = $parent->getFinancial()->first()->getOrganisation();
             }
         }
@@ -448,7 +412,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                         break 2;
                     }
 
-                    if (!$countryFound) {
+                    if (! $countryFound) {
                         $this->projectService->delete($rationale);
                     }
                 }
@@ -466,24 +430,15 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
 
-        if (\count($affiliations) === 0) {
+        if (count($affiliations) === 0) {
             $affiliations = [];
         }
 
         return new ArrayCollection($affiliations);
-    }
-
-    public function delete(AbstractEntity $abstractEntity): void
-    {
-        if ($abstractEntity instanceof Affiliation) {
-            $this->affiliationSearchService->deleteDocument($abstractEntity);
-        }
-
-        parent::delete($abstractEntity);
     }
 
     public function getFinancialContact(Affiliation $affiliation): ?Contact
@@ -495,12 +450,12 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         return $affiliation->getFinancial()->getContact();
     }
 
-    public function canCreateInvoice(Affiliation $affiliation): array
+    public function canCreateInvoice(Affiliation $affiliation, Method $method = null): array
     {
         $errors = [];
         switch (true) {
             case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE
-                && !($affiliation->getProject()->getCall()->getProgram()->getId() === 3
+                && ! ($affiliation->getProject()->getCall()->getProgram()->getId() === 3
                     && $affiliation->getOrganisation()->getType()->getId() === Type::TYPE_UNIVERSITY):
                 $errors[] = sprintf(
                     'No invoice is needed for %s',
@@ -510,7 +465,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             case null === $affiliation->getFinancial():
                 $errors[] = 'No financial organisation (affiliation financial) set for this partner';
                 break;
-            case !$affiliation->isActive():
+            case ! $affiliation->isActive():
                 $errors[] = 'Partner is de-activated';
                 break;
             case null === $affiliation->getFinancial()->getOrganisation()->getFinancial():
@@ -519,21 +474,17 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             case null === $affiliation->getFinancial()->getContact():
                 $errors[] = 'No financial contact set for this organisation';
                 break;
+            case null !== $method && null !== $affiliation->getInvoiceMethod()
+                && $affiliation->getInvoiceMethod()->getId() !== $method->getId():
+                $errors[] = sprintf(
+                    'Invoice method is already set to %s, so invoice on %s cannot be created',
+                    $affiliation->getInvoiceMethod()->getMethod(),
+                    $method->getMethod()
+                );
+                break;
         }
 
         return $errors;
-    }
-
-    public function findAffiliationInvoiceByAffiliationPeriodAndYear(
-        Affiliation $affiliation,
-        int $period,
-        int $year
-    ): ArrayCollection {
-        return $affiliation->getInvoice()->filter(
-            function (Invoice $invoice) use ($period, $year) {
-                return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
-            }
-        );
     }
 
     public function findAffiliationInProjectLog(): array
@@ -544,18 +495,115 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         return $repository->findAffiliationInProjectLog();
     }
 
+    public function parseTotalByProject(Project $project, int $year, int $period): float
+    {
+        $projectTotal = 0;
+
+        //Find first the latestVersion
+        $latestVersion = $this->projectService->getLatestNotRejectedProjectVersion($project);
+
+        if (null === $latestVersion) {
+            return $projectTotal;
+        }
+
+        foreach ($latestVersion->getAffiliationVersion() as $affiliationVersion) {
+            $affiliation = $affiliationVersion->getAffiliation();
+
+            if (! $affiliation->isActive()) {
+                continue;
+            }
+
+
+            if (
+                null !== $affiliation->getInvoiceMethod()
+                && $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE
+            ) {
+                continue;
+            }
+
+
+            $projectTotal += $this->parseTotalExcludingInvoiced($affiliation, $latestVersion, $year, $period);
+        }
+
+        return $projectTotal;
+    }
+
+    public function parseTotalExcludingInvoiced(
+        Affiliation $affiliation,
+        Version $version,
+        int $year,
+        ?int $period = null
+    ): float {
+        $amountInvoiced = 0;
+        /** @var Invoice $affiliationInvoice */
+        foreach ($this->findAffiliationInvoiceByAffiliationPeriodAndYear($affiliation, $period, $year) as $affiliationInvoice) {
+            $amountInvoiced += $affiliationInvoice->getAmountInvoiced();
+        }
+
+        return $this->parseTotal($affiliation, $version, $year, $period) - $amountInvoiced;
+    }
+
+    public function findAffiliationInvoiceByAffiliationPeriodAndYear(
+        Affiliation $affiliation,
+        int $period,
+        int $year
+    ): ArrayCollection {
+        return $affiliation->getInvoice()->filter(
+            static function (Invoice $invoice) use ($period, $year) {
+                return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
+            }
+        );
+    }
+
     public function parseTotal(
         Affiliation $affiliation,
         Version $version,
         int $year,
         ?int $period = null
     ): float {
+        if ($this->parseInvoiceMethod($affiliation, false) === Method::METHOD_PERCENTAGE_CONTRACT) {
+            print 'Parse total cannot be used for contracts';
+            return 0.0;
+        }
+
         return $this->parseContribution($affiliation, $version, null, $year, $period, false) + $this->parseBalance(
             $affiliation,
             $version,
             $year,
             $period
         );
+    }
+
+    public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
+    {
+        //When the partner has an invoice method defined, we only return it when the $useContractData is set to
+        //True and otherwise we will return the normal
+        if (null !== $affiliation->getInvoiceMethod()) {
+            if ($affiliation->getInvoiceMethod()->getId() === Method::METHOD_PERCENTAGE_CONTRACT) {
+                if ($useContractData) {
+                    return Method::METHOD_PERCENTAGE_CONTRACT;
+                }
+
+                return Method::METHOD_PERCENTAGE;
+            }
+
+            return $affiliation->getInvoiceMethod()->getId();
+        }
+
+        $invoiceMethod = (int)$this->invoiceService->findInvoiceMethod(
+            $affiliation->getProject()->getCall()->getProgram()
+        )->getId();
+
+
+        //The percentage method depends on the fact if we have a contract or not.
+        $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
+
+        //Force the invoiceMethod back to _percentage_ when we don't want to use contract data
+        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || ! $useContractData)) {
+            $invoiceMethod = Method::METHOD_PERCENTAGE;
+        }
+
+        return $invoiceMethod;
     }
 
     public function parseContribution(
@@ -575,6 +623,10 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         switch ($invoiceMethod) {
             case Method::METHOD_FUNDING:
             case Method::METHOD_FUNDING_MEMBER:
+                if (null === $affiliation->getParentOrganisation()) {
+                    return 0;
+                }
+
                 return $this->parseContributionBase($affiliation, $version, null, $year, false)
                     * $this->parseContributionFee(
                         $affiliation,
@@ -616,37 +668,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         return (float)0;
     }
 
-    public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
-    {
-        //When the partnre has an invoice method defined, we only return it when the $useContractData is set to
-        //True and otherwise we will return the normal
-        if (null !== $affiliation->getInvoiceMethod()) {
-            if ($affiliation->getInvoiceMethod()->getId() === Method::METHOD_PERCENTAGE_CONTRACT) {
-                if ($useContractData) {
-                    return Method::METHOD_PERCENTAGE_CONTRACT;
-                }
-
-                return Method::METHOD_PERCENTAGE;
-            }
-
-            return $affiliation->getInvoiceMethod()->getId();
-        }
-
-        $invoiceMethod = (int)$this->invoiceService->findInvoiceMethod(
-            $affiliation->getProject()->getCall()->getProgram()
-        )->getId();
-
-        //The percentage method depends on the fact if we have a contract or not.
-        $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
-
-        //Force the invoiceMethod back to _percentage_ when we don't want to use contract data
-        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || !$useContractData)) {
-            $invoiceMethod = Method::METHOD_PERCENTAGE;
-        }
-
-        return $invoiceMethod;
-    }
-
     public function parseContributionBase(
         Affiliation $affiliation,
         ?Version $version,
@@ -665,7 +686,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         switch ($invoiceMethod) {
             case Method::METHOD_PERCENTAGE:
                 if (null === $version) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'The contract version cannot be null for parsing the contribution base'
                     );
                 }
@@ -680,7 +701,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                 break;
             case Method::METHOD_PERCENTAGE_CONTRACT:
                 if (null === $contractVersion) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'The contract version cannot be null for parsing the contribution base'
                     );
                 }
@@ -729,7 +750,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                 return $fee->getContribution();
             case Method::METHOD_FUNDING_MEMBER:
                 if (null === $parent) {
-                    throw new \InvalidArgumentException('Invoice cannot be funding when no parent is known');
+                    throw new InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
                 $invoiceFactor = $this->parentService->parseInvoiceFactor(
@@ -758,7 +779,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
             case Method::METHOD_FUNDING:
                 if (null === $parent) {
-                    throw new \InvalidArgumentException('Invoice cannot be funding when no parent is known');
+                    throw new InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
                 //Funding PENTA === 1.5 %
@@ -776,14 +797,14 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                 return 0;
 
             default:
-                throw new \InvalidArgumentException(sprintf('Unknown contribution fee in %s', __FUNCTION__));
+                throw new InvalidArgumentException(sprintf('Unknown contribution fee in %s', __FUNCTION__));
         }
     }
 
     public function parseContributionFactor(Affiliation $affiliation, int $year, ?int $period = null): float
     {
         switch (true) {
-            case !$this->isFundedInYear($affiliation, $year):
+            case ! $this->isFundedInYear($affiliation, $year):
                 return (float)0;
             case null === $period:
                 return 1;
@@ -868,16 +889,19 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     ): float {
         //Based on the invoice method we will only have a balance when we are working with percentage
         $invoiceMethod = $this->parseInvoiceMethod($affiliation);
-        if (\in_array($invoiceMethod, [Method::METHOD_FUNDING, Method::METHOD_FUNDING_MEMBER], true)) {
+        if (in_array($invoiceMethod, [Method::METHOD_FUNDING, Method::METHOD_FUNDING_MEMBER], true)) {
             return 0;
         }
 
-        return $this->parseContributionDue(
-            $affiliation,
-            $version,
-            $year,
-            $period
-        ) - $this->parseContributionPaid($affiliation, $year, $period);
+        $balance
+            = $this->parseContributionDue(
+                $affiliation,
+                $version,
+                $year,
+                $period
+            ) - $this->parseContributionPaid($affiliation, $year, $period);
+
+        return $balance;
     }
 
     public function parseContributionDue(
@@ -934,7 +958,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                 break;
         }
 
-        return (float)$contributionDue;
+        return round($contributionDue, 2);
     }
 
     public function parseContributionFactorDue(
@@ -944,13 +968,12 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         int $period = null
     ): float {
         switch (true) {
-            case !$this->isFundedInYear($affiliation, $projectYear):
-                return (float)0;
             case null === $period || $projectYear < $year:
                 return (float)1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
                 return (float)1 - $this->parseContributionFactor($affiliation, $year, $period);
+            case ! $this->isFundedInYear($affiliation, $projectYear):
             default:
                 return (float)0;
         }
@@ -963,25 +986,63 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         //Sum the invoiced amount of all invoices for this affiliation
         foreach ($affiliation->getInvoice() as $invoice) {
             //Filter invoices of previous years or this year, but the previous period and already sent to accounting
-            if (null !== $invoice->getInvoice()->getDayBookNumber()) {
-                if (null !== $period) {
-                    //When we have a period, we also take the period fo the current year into account
-                    if ($invoice->getYear() < $year
-                        || ($invoice->getPeriod() < $period
-                            && $invoice->getYear() === $year)
-                    ) {
-                        $contributionPaid += $invoice->getAmountInvoiced();
-                    }
-                } else {
-                    //We have no period, so only count the invoices of the last year
-                    if ($invoice->getYear() < $year) {
-                        $contributionPaid += $invoice->getAmountInvoiced();
-                    }
+            if (null !== $period) {
+                //When we have a period, we also take the period fo the current year into account
+                if (
+                    $invoice->getYear() < $year
+                    || ($invoice->getPeriod() < $period
+                        && $invoice->getYear() === $year)
+                ) {
+                    $contributionPaid += $invoice->getAmountInvoiced();
+                }
+            } else {
+                if ($invoice->getYear() < $year) {
+                    $contributionPaid += $invoice->getAmountInvoiced();
                 }
             }
         }
 
-        return (float)$contributionPaid;
+        return round($contributionPaid, 2);
+    }
+
+    public function parseContractTotalByProject(Project $project, int $year, int $period): float
+    {
+        $projectTotal = 0;
+
+        //Find first the latestVersion
+        $latestVersion = $this->projectService->getLatestNotRejectedProjectVersion($project);
+
+        if (null === $latestVersion) {
+            return $projectTotal;
+        }
+
+
+        foreach ($latestVersion->getAffiliationVersion() as $affiliationVersion) {
+            /** @var Affiliation $affiliation */
+            $affiliation = $affiliationVersion->getAffiliation();
+
+            if (! $affiliation->isActive()) {
+                continue;
+            }
+
+            $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
+
+            if (null === $contractVersion) {
+                continue;
+            }
+
+            if (
+                null !== $affiliation->getInvoiceMethod()
+                && $affiliation->getInvoiceMethod()->getId() !== Method::METHOD_PERCENTAGE_CONTRACT
+            ) {
+                continue;
+            }
+
+
+            $projectTotal += $this->parseContractTotal($affiliation, $contractVersion, $year, $period, false);
+        }
+
+        return $projectTotal;
     }
 
     public function parseContractTotal(
@@ -989,9 +1050,9 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         ContractVersion $version,
         int $year,
         ?int $period = null,
-        bool $skipAlreadyInvoiced = false
+        bool $onlyCurrentPeriod = false
     ): float {
-        return $this->parseTotalByInvoiceLines($affiliation, $version, $year, $period, $skipAlreadyInvoiced);
+        return $this->parseTotalByInvoiceLines($affiliation, $version, $year, $period, $onlyCurrentPeriod);
     }
 
     public function parseTotalByInvoiceLines(
@@ -999,11 +1060,11 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         ContractVersion $contractVersion,
         int $year,
         ?int $period = null,
-        bool $skipAlreadyInvoiced = false
+        bool $onlyCurrentPeriod = false
     ): float {
         $total = 0.0;
 
-        foreach ($this->findInvoiceLines($affiliation, $contractVersion, $year, $period, $skipAlreadyInvoiced) as $line) {
+        foreach ($this->findInvoiceLines($affiliation, $contractVersion, $year, $period, $onlyCurrentPeriod) as $line) {
             $total += $line->lineTotal;
         }
 
@@ -1015,7 +1076,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         ContractVersion $contractVersion,
         int $year,
         ?int $period = null,
-        bool $skipAlreadyInvoiced = false
+        bool $onlyCurrentPeriod = false
     ): array {
         $lines = [];
 
@@ -1041,29 +1102,24 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                     continue;
                 }
 
-                if (!$this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
+                if (
+                    ! $this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
                 ) {
                     $yearAndPeriod[$otherYear][] = $invoicePeriod;
                 }
             }
         }
 
-        //For the payment sheet we want to cancel the current invoice period because otherwise the current lines
-        //are ignored as soon as the invoice has been sent. By adding the 'years' of the current invoice (if any)
-        //the system will add these to the open items
-        if ($skipAlreadyInvoiced && $this->affiliationHasInvoiceInYearAndPeriod($affiliation, $year, $period)
-        ) {
-            $affiliationInvoice = $this->findAffiliationInvoiceInYearAndPeriod($affiliation, $year, $period);
-            if (null !== $affiliationInvoice) {
-                $yearAndPeriod += $affiliationInvoice->getYears();
-            }
+        if ($onlyCurrentPeriod) {
+            $yearAndPeriod = [];
+            $yearAndPeriod[$year][] = $period;
         }
 
         foreach ($yearAndPeriod as $invoiceYear => $invoicePeriod) {
-            if (\count($invoicePeriod) === 2) {
+            if (count($invoicePeriod) === 2) {
                 $invoicePeriod = null;
             } else {
-                $invoicePeriod = \array_pop($invoicePeriod);
+                $invoicePeriod = array_pop($invoicePeriod);
             }
 
             //Derive the contribution
@@ -1078,7 +1134,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                 $year
             );
             if ($contribution !== 0.0) {
-                $line = new \stdClass();
+                $line = new stdClass();
                 $line->year = $invoiceYear;
                 $line->period = $invoicePeriod;
                 $line->periodOrdinal = $invoiceYear . (null === $invoicePeriod ? '' : '-' . $invoicePeriod . 'H');
@@ -1088,7 +1144,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                     $currency,
                     $invoicePeriod
                 );
-                $line->lineTotal = $contribution;
+                $line->lineTotal = round($contribution, 2);
 
                 $lines[] = $line;
             }
@@ -1106,7 +1162,8 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     {
         foreach ($affiliation->getInvoice() as $affiliationInvoice) {
             //When the invoice is a credit invoice, skip the invoice
-            if ($this->invoiceService->hasCredit($affiliationInvoice->getInvoice())
+            if (
+                $this->invoiceService->hasCredit($affiliationInvoice->getInvoice())
                 || $this->invoiceService->isCredit($affiliationInvoice->getInvoice())
             ) {
                 continue;
@@ -1167,7 +1224,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         Project $project,
         int $which = self::WHICH_ONLY_ACTIVE
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectAndWhich($project, $which);
 
@@ -1196,10 +1253,11 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     public function findAffiliationByParentAndProgramAndWhich(
         OParent $parent,
         Program $program,
-        int $which = self::WHICH_ONLY_ACTIVE
+        int $which = self::WHICH_ONLY_ACTIVE,
+        int $year = null
     ): ArrayCollection {
         $repository = $this->entityManager->getRepository(Affiliation::class);
-        $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which);
+        $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which, $year);
 
         if (null === $affiliations) {
             $affiliations = [];
@@ -1212,7 +1270,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         Version $version,
         int $which = self::WHICH_ALL
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndWhich($version, $which);
 
@@ -1226,14 +1284,14 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     public function addAssociate(Affiliation $affiliation, Contact $contact = null, string $email = null): Contact
     {
         if (null === $contact && empty($email)) {
-            throw new \InvalidArgumentException('Both contact and email address cannot be null to add an associate');
+            throw new InvalidArgumentException('Both contact and email address cannot be null to add an associate');
         }
 
         //Boolean to see if the contact whas known already
         $hasContact = true;
 
         //When we have an email, create a contact based also on the $affiliation
-        if (!empty($email)) {
+        if (! empty($email)) {
             //Try to find the contact based on the email address
             $contact = $this->contactService->findContactByEmail($email);
 
@@ -1247,7 +1305,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
                 $contact = $contactActions->createContact(
                     $email,
-                    \sprintf(
+                    sprintf(
                         'Created via invitation for %s in %s',
                         $affiliation->getOrganisation(),
                         $affiliation->getProject()
@@ -1274,16 +1332,13 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         $affiliation->addAssociate($contact);
         $this->save($affiliation);
 
-        $this->refreshAccessRolesByContact($contact);
-
-        //Send an email to the invitee
-
+        // Send an email to the invitee
         $this->emailService->setWebInfo("/project/add_associate:associate");
         $this->emailService->addTo($contact);
 
         $deeplinkLink = $this->viewHelperManager->get(DeeplinkLink::class);
 
-        //The contact can be found. But we forward him to the profile-edit
+        // The contact can be found. But we forward him to the profile-edit
         $targetProfile = $this->deeplinkService->createTargetFromRoute('community/contact/profile/edit');
         $deeplinkProfile = $this->deeplinkService->createDeeplink($targetProfile, $contact);
         $targetPartner = $this->deeplinkService->createTargetFromRoute('community/affiliation/affiliation');
@@ -1294,8 +1349,8 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             $affiliation->getId()
         );
 
-        $this->emailService->setTemplateVariable('edit_profile_url', $deeplinkLink($deeplinkProfile, 'view', 'link'));
-        $this->emailService->setTemplateVariable('partner_page_url', $deeplinkLink($deeplinkPartner, 'view', 'link'));
+        $this->emailService->setTemplateVariable('edit_profile_url', $deeplinkLink($deeplinkProfile));
+        $this->emailService->setTemplateVariable('partner_page_url', $deeplinkLink($deeplinkPartner));
         $this->emailService->setTemplateVariable('project', $affiliation->getProject()->parseFullName());
         $this->emailService->setTemplateVariable('organisation', $affiliation->parseBranchedName());
         $this->emailService->setTemplateVariable('has_contact', $hasContact);
@@ -1333,7 +1388,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
     ): int {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByProjectAndCountryAndWhich($project, $country, $which);
@@ -1343,7 +1398,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         Country $country,
         Call $call
     ): int {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByCountryAndCall($country, $call);
@@ -1393,7 +1448,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             $result[$country->getCountry()] = $country;
         }
 
-        \ksort($result);
+        ksort($result);
 
         return $result;
     }
@@ -1401,13 +1456,13 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     /**
      * @param Organisation $organisation
      *
-     * @deprecated
      * @return ArrayCollection|Affiliation[]
+     * @deprecated
      */
     public function findAffiliationByOrganisation(
         Organisation $organisation
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return new ArrayCollection($repository->findAffiliationByOrganisation($organisation));
@@ -1421,7 +1476,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
     public function findAffiliationByOrganisationViaParentOrganisation(
         Organisation $organisation
     ): ArrayCollection {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return new ArrayCollection($repository->findAffiliationByOrganisationViaParentOrganisation($organisation));
@@ -1440,7 +1495,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
         }
 
         foreach ($project->getAffiliation() as $affiliation) {
-            if ($which === self::WHICH_ONLY_ACTIVE && !$affiliation->isActive()) {
+            if ($which === self::WHICH_ONLY_ACTIVE && ! $affiliation->isActive()) {
                 continue;
             }
             if ($which === self::WHICH_ONLY_INACTIVE && $affiliation->isActive()) {
@@ -1448,7 +1503,8 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             }
 
             //Do a match on the organisation or technical contact
-            if ($affiliation->getContact() === $contact
+            if (
+                $affiliation->getContact() === $contact
                 || $affiliation->getOrganisation()->getId() ===
                 $contact->getContactOrganisation()->getOrganisation()->getId()
             ) {
@@ -1461,7 +1517,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
     public function findAffiliationWithMissingDoa(): array
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationWithMissingDoa();
@@ -1469,7 +1525,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
     public function findAffiliationWithMissingLoi(): Query
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationWithMissingLoi();
@@ -1477,7 +1533,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
     public function deactivateAffiliation(Affiliation $affiliation): void
     {
-        $affiliation->setDateEnd(new \DateTime());
+        $affiliation->setDateEnd(new DateTime());
         $this->save($affiliation);
         /*
          * Remove the current cost and effort of the affiliation
@@ -1516,7 +1572,7 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
 
     public function findLogAffiliations(): array
     {
-        /** @var \Affiliation\Repository\Affiliation $repository */
+        /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAffiliationInProjectLog();
@@ -1538,23 +1594,6 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
             [$affiliation->getBranch()]
                 = $this->organisationService
                 ->parseOrganisationWithBranch($affiliation->getBranch(), $affiliation->getOrganisation());
-        }
-        /**
-         * Go over the organisation and join the clusters and grab all its affiliations
-         */
-        foreach ($organisation->getCluster() as $cluster) {
-            foreach ($cluster->getMember() as $clusterMember) {
-                foreach ($clusterMember->getAffiliation() as $affiliation) {
-                    $options[$affiliation->getOrganisation()->getCountry()
-                        ->getCountry()][$affiliation->getOrganisation()
-                        ->getId()][$affiliation->getBranch()]
-                        = $this->organisationService
-                        ->parseOrganisationWithBranch(
-                            $affiliation->getBranch(),
-                            $affiliation->getOrganisation()
-                        );
-                }
-            }
         }
         /**
          * Go over the contact and grab all its affiliations
@@ -1596,40 +1635,8 @@ class AffiliationService extends AbstractService implements SearchUpdateInterfac
                         $contact->getContactOrganisation()->getOrganisation()
                     );
             }
-            /**
-             * Go over the clusters
-             */
-            foreach ($organisation->getContactOrganisation() as $contactOrganisation) {
-                foreach ($contactOrganisation->getOrganisation()->getCluster() as $cluster) {
-                    foreach ($cluster->getMember() as $clusterMember) {
-                        foreach ($clusterMember->getAffiliation() as $affiliation) {
-                            $options[$affiliation->getOrganisation()->getCountry()
-                                ->getCountry()][$affiliation->getOrganisation()
-                                ->getId()][$affiliation->getBranch()]
-                                = $this->organisationService
-                                ->parseOrganisationWithBranch(
-                                    $affiliation->getBranch(),
-                                    $affiliation->getOrganisation()
-                                );
-                        }
-                    }
-                }
-            }
         }
 
         return $options;
-    }
-
-    public function updateCollectionInSearchEngine(bool $clearIndex = false): void
-    {
-        $affiliations = $this->findAll(Affiliation::class);
-        $collection = [];
-
-        /** @var Affiliation $press */
-        foreach ($affiliations as $affiliation) {
-            $collection[] = $this->prepareSearchUpdate($affiliation);
-        }
-
-        $this->affiliationSearchService->updateIndexWithCollection($collection, $clearIndex);
     }
 }

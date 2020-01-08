@@ -5,26 +5,32 @@
  * @category    Affiliation
  * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
+use Affiliation\Entity\Affiliation;
+use Affiliation\Entity\Doa;
+use Affiliation\Entity\Loi;
+use Affiliation\Entity\Questionnaire;
+use Affiliation\Navigation\Invokable;
 
 $communityNavigation = [
     'project' => [
         'pages' => [
-            'project-basics' => [
+            'project-basics'         => [
                 'pages' => [
                     'project-partners' => [
                         'pages' => [
                             'affiliation' => [
-                                'label'   => _("txt-nav-project-partner"),
+                                'label'   => _('txt-nav-project-partner'),
                                 'route'   => 'community/affiliation/affiliation',
                                 'visible' => false,
                                 'params'  => [
                                     'entities'   => [
-                                        'id' => Affiliation\Entity\Affiliation::class,
+                                        'id' => Affiliation::class,
                                     ],
                                     'invokables' => [
-                                        Affiliation\Navigation\Invokable\AffiliationLabel::class,
+                                        Invokable\AffiliationLabel::class,
                                     ],
                                 ],
                                 'pages'   => [
@@ -34,7 +40,7 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                         ],
                                     ],
@@ -44,7 +50,7 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                         ],
                                     ],
@@ -54,7 +60,7 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                         ],
                                     ],
@@ -64,7 +70,7 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                         ],
                                     ],
@@ -74,27 +80,27 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                         ],
                                     ],
                                     'cost-and-effort'     => [
                                         'label'   => _('txt-edit-cost-and-effort'),
-                                        'route'   => 'community/affiliation/edit/costs-and-effort',
+                                        'route'   => 'community/affiliation/edit/cost-and-effort',
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                         ],
                                     ],
-                                    'upload-doa'          => [
-                                        'label'   => _('txt-upload-doa'),
-                                        'route'   => 'community/affiliation/doa/upload',
+                                    'submit-doa'          => [
+                                        'label'   => _('txt-submit-doa'),
+                                        'route'   => 'community/affiliation/doa/submit',
                                         'visible' => false,
                                         'params'  => [
                                             'entities'   => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                             'routeParam' => [
                                                 'id' => 'affiliationId',
@@ -107,10 +113,10 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities'   => [
-                                                'id' => \Affiliation\Entity\Doa::class,
+                                                'id' => Doa::class,
                                             ],
                                             'invokables' => [
-                                                Affiliation\Navigation\Invokable\DoaLabel::class,
+                                                Invokable\DoaLabel::class,
                                             ],
                                         ],
                                     ],
@@ -120,7 +126,7 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities'   => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                             'routeParam' => [
                                                 'id' => 'affiliationId',
@@ -133,10 +139,10 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities'   => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                             'invokables' => [
-                                                Affiliation\Navigation\Invokable\LoiLabel::class,
+                                                Invokable\LoiLabel::class,
                                             ],
                                         ],
                                     ],
@@ -146,7 +152,7 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
                                             ],
                                         ],
                                     ],
@@ -156,7 +162,33 @@ $communityNavigation = [
                                         'visible' => false,
                                         'params'  => [
                                             'entities' => [
-                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                'id' => Affiliation::class,
+                                            ],
+                                        ],
+                                    ],
+                                    'view-questionnaire'  => [
+                                        'label'   => _('txt-view-questionnaire'),
+                                        'route'   => 'community/affiliation/questionnaire/view',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities'   => [
+                                                'id' => Affiliation::class,
+                                            ],
+                                            'routeParam' => [
+                                                'id' => 'affiliationId',
+                                            ],
+                                        ],
+                                    ],
+                                    'edit-questionnaire'  => [
+                                        'label'   => _('txt-edit-questionnaire'),
+                                        'route'   => 'community/affiliation/questionnaire/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities'   => [
+                                                'id' => Affiliation::class,
+                                            ],
+                                            'routeParam' => [
+                                                'id' => 'affiliationId',
                                             ],
                                         ],
                                     ],
@@ -166,6 +198,10 @@ $communityNavigation = [
                     ],
                 ],
             ],
+            'questionnaire-overview' => [
+                'label' => _('txt-questionnaire-overview'),
+                'route' => 'community/affiliation/questionnaire/overview',
+            ],
         ],
     ],
 ];
@@ -173,19 +209,12 @@ $communityNavigation = [
 return [
     'navigation' => [
         'community'  => $communityNavigation,
-        'community2' => $communityNavigation,
+        'community2' => ['index' => [
+            'pages' => $communityNavigation
+        ],
+        ],
         'admin'      => [
-            'organisation' => [
-                // And finally, here is where we define our page hierarchy
-                'pages' => [
-                    'affiliation-list' => [
-                        'label' => _("txt-nav-affiliation-list"),
-                        'order' => 115,
-                        'route' => 'zfcadmin/affiliation/list',
-                    ],
-                ],
-            ],
-            'project'      => [
+            'project' => [
                 'pages' => [
                     'project-list' => [
                         'pages' => [
@@ -194,15 +223,15 @@ return [
                                     'affiliations' => [
                                         'pages' => [
                                             'affiliation' => [
-                                                'label'   => _("txt-nav-project-partner"),
+                                                'label'   => _('txt-nav-project-partner'),
                                                 'route'   => 'zfcadmin/affiliation/view',
                                                 'visible' => false,
                                                 'params'  => [
                                                     'entities'   => [
-                                                        'id' => Affiliation\Entity\Affiliation::class,
+                                                        'id' => Affiliation::class,
                                                     ],
                                                     'invokables' => [
-                                                        Affiliation\Navigation\Invokable\AffiliationLabel::class,
+                                                        Invokable\AffiliationLabel::class,
                                                     ],
                                                 ],
                                                 'pages'   => [
@@ -212,9 +241,65 @@ return [
                                                         'visible' => false,
                                                         'params'  => [
                                                             'entities' => [
-                                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                                'id' => Affiliation::class,
                                                             ],
                                                         ],
+                                                    ],
+                                                    'view-doa'       => [
+                                                        'label'   => _('txt-nav-view-doa'),
+                                                        'route'   => 'zfcadmin/affiliation/doa/view',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities'   => [
+                                                                'id' => Doa::class,
+                                                            ],
+                                                            'invokables' => [
+                                                                Invokable\DoaLabel::class,
+                                                            ],
+                                                        ],
+                                                        'pages'   => [
+                                                            'edit-doa' => [
+                                                                'label'   => _('txt-nav-edit-doa'),
+                                                                'route'   => 'zfcadmin/affiliation/doa/edit',
+                                                                'visible' => false,
+                                                                'params'  => [
+                                                                    'entities'   => [
+                                                                        'id' => Doa::class,
+                                                                    ],
+                                                                    'invokables' => [
+                                                                        Invokable\DoaLabel::class,
+                                                                    ],
+                                                                ],
+                                                            ],
+                                                        ]
+                                                    ],
+                                                    'view-loi'       => [
+                                                        'label'   => _('txt-nav-view-loi'),
+                                                        'route'   => 'zfcadmin/affiliation/loi/view',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities'   => [
+                                                                'id' => Loi::class,
+                                                            ],
+                                                            'invokables' => [
+                                                                Invokable\LoiLabel::class,
+                                                            ],
+                                                        ],
+                                                        'pages'   => [
+                                                            'edit-loi' => [
+                                                                'label'   => _('txt-nav-edit-loi'),
+                                                                'route'   => 'zfcadmin/affiliation/loi/edit',
+                                                                'visible' => false,
+                                                                'params'  => [
+                                                                    'entities'   => [
+                                                                        'id' => Loi::class,
+                                                                    ],
+                                                                    'invokables' => [
+                                                                        Invokable\LoiLabel::class,
+                                                                    ],
+                                                                ],
+                                                            ],
+                                                        ]
                                                     ],
                                                     'edit-associate' => [
                                                         'label'   => _('txt-nav-edit-associate'),
@@ -222,7 +307,7 @@ return [
                                                         'visible' => false,
                                                         'params'  => [
                                                             'entities' => [
-                                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                                'id' => Affiliation::class,
                                                             ],
                                                         ],
                                                     ],
@@ -231,7 +316,7 @@ return [
                                                         'route'  => 'zfcadmin/affiliation/add-associate',
                                                         'params' => [
                                                             'entities' => [
-                                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                                'id' => Affiliation::class,
                                                             ],
                                                         ],
                                                     ],
@@ -241,7 +326,7 @@ return [
                                                         'visible' => false,
                                                         'params'  => [
                                                             'entities' => [
-                                                                'id' => \Affiliation\Entity\Affiliation::class,
+                                                                'id' => Affiliation::class,
                                                             ],
                                                         ],
                                                     ],
@@ -255,15 +340,15 @@ return [
                     ],
                 ],
             ],
-            'tools'        => [
+            'tools'   => [
                 'pages' => [
                     'missing-affiliation-parent' => [
-                        'label' => _("txt-nav-missing-affiliation-parent"),
+                        'label' => _('txt-nav-missing-affiliation-parent'),
                         'order' => 20,
                         'route' => 'zfcadmin/affiliation/missing-affiliation-parent',
                     ],
                     'doa-approval'               => [
-                        'label' => _("txt-nav-doa-approval"),
+                        'label' => _('txt-nav-doa-approval'),
                         'order' => 80,
                         'route' => 'zfcadmin/affiliation/doa/approval',
                         'pages' => [
@@ -273,17 +358,17 @@ return [
                                 'visible' => false,
                                 'params'  => [
                                     'entities'   => [
-                                        'id' => \Affiliation\Entity\Doa::class,
+                                        'id' => Doa::class,
                                     ],
                                     'invokables' => [
-                                        Affiliation\Navigation\Invokable\DoaLabel::class,
+                                        Invokable\DoaLabel::class,
                                     ],
                                 ],
                             ],
                         ],
                     ],
                     'doa-missing'                => [
-                        'label' => _("txt-nav-missing-doa"),
+                        'label' => _('txt-nav-missing-doa'),
                         'order' => 90,
                         'route' => 'zfcadmin/affiliation/doa/missing',
                         'pages' => [
@@ -292,13 +377,13 @@ return [
                                 'route'  => 'zfcadmin/affiliation/doa/remind',
                                 'params' => [
                                     'entities'   => [
-                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                        'id' => Affiliation::class,
                                     ],
                                     'routeParam' => [
                                         'id' => 'affiliationId'
                                     ],
                                     'invokables' => [
-                                        Affiliation\Navigation\Invokable\AffiliationLabel::class,
+                                        Invokable\AffiliationLabel::class,
                                     ],
                                 ],
                             ],
@@ -310,12 +395,12 @@ return [
                         ],
                     ],
                     'loi-approval'               => [
-                        'label' => _("txt-nav-loi-approval"),
+                        'label' => _('txt-nav-loi-approval'),
                         'order' => 100,
                         'route' => 'zfcadmin/affiliation/loi/approval',
                     ],
                     'loi-missing'                => [
-                        'label' => _("txt-nav-missing-loi"),
+                        'label' => _('txt-nav-missing-loi'),
                         'order' => 110,
                         'route' => 'zfcadmin/affiliation/loi/missing',
                         'pages' => [
@@ -324,20 +409,129 @@ return [
                                 'route'  => 'zfcadmin/affiliation/loi/remind',
                                 'params' => [
                                     'entities'   => [
-                                        'id' => \Affiliation\Entity\Affiliation::class,
+                                        'id' => Affiliation::class,
                                     ],
                                     'routeParam' => [
                                         'id' => 'affiliationId'
                                     ],
                                     'invokables' => [
-                                        Affiliation\Navigation\Invokable\AffiliationLabel::class,
+                                        Invokable\AffiliationLabel::class,
                                     ],
                                 ],
                             ],
                         ],
                     ],
                 ]
-            ]
+            ],
+            'config'  => [
+                'pages' => [
+                    'questionnaire-list'     => [
+                        'label' => _('txt-nav-affiliation-questionnaire-list'),
+                        'route' => 'zfcadmin/affiliation/questionnaire/list',
+                        'pages' => [
+                            'view-questionnaire' => [
+                                'route'   => 'zfcadmin/affiliation/questionnaire/view',
+                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => Questionnaire\Questionnaire::class,
+                                    ],
+                                    'invokables' => [
+                                        Invokable\Questionnaire\QuestionnaireLabel::class,
+                                    ],
+                                ],
+                                'pages'   => [
+                                    'edit-questionnaire' => [
+                                        'label'   => _('txt-edit'),
+                                        'route'   => 'zfcadmin/affiliation/questionnaire/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Questionnaire\Questionnaire::class,
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'new-questionnaire'  => [
+                                'label'   => _('txt-new-questionnaire'),
+                                'route'   => 'zfcadmin/affiliation/questionnaire/new',
+                                'visible' => false,
+                            ],
+                        ],
+                    ],
+                    'question-list'          => [
+                        'label' => _('txt-nav-affiliation-question-list'),
+                        'route' => 'zfcadmin/affiliation/questionnaire/question/list',
+                        'pages' => [
+                            'view-question' => [
+                                'route'   => 'zfcadmin/affiliation/questionnaire/question/view',
+                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => Questionnaire\Question::class,
+                                    ],
+                                    'invokables' => [
+                                        Invokable\Questionnaire\QuestionLabel::class,
+                                    ],
+                                ],
+                                'pages'   => [
+                                    'edit-question' => [
+                                        'label'   => _('txt-edit'),
+                                        'route'   => 'zfcadmin/affiliation/questionnaire/question/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Questionnaire\Question::class,
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'new-question'  => [
+                                'label'   => _('txt-new-question'),
+                                'route'   => 'zfcadmin/affiliation/questionnaire/question/new',
+                                'visible' => false,
+                            ],
+                        ],
+                    ],
+                    'question-category-list' => [
+                        'label' => _('txt-nav-affiliation-question-category-list'),
+                        'route' => 'zfcadmin/affiliation/questionnaire/category/list',
+                        'pages' => [
+                            'view-question-category' => [
+                                'route'   => 'zfcadmin/affiliation/questionnaire/category/view',
+                                'visible' => false,
+                                'params'  => [
+                                    'entities'   => [
+                                        'id' => Questionnaire\Category::class,
+                                    ],
+                                    'invokables' => [
+                                        Invokable\Questionnaire\CategoryLabel::class,
+                                    ],
+                                ],
+                                'pages'   => [
+                                    'edit-question-category' => [
+                                        'label'   => _('txt-edit'),
+                                        'route'   => 'zfcadmin/affiliation/questionnaire/category/edit',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Questionnaire\Category::class,
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'new-question-category'  => [
+                                'label'   => _('txt-new-question-category'),
+                                'route'   => 'zfcadmin/affiliation/questionnaire/category/new',
+                                'visible' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
 ];

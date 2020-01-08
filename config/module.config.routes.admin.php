@@ -5,13 +5,14 @@
  * @category    Affiliation
  * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 declare(strict_types=1);
 
 namespace Affiliation;
 
 use Affiliation\Controller;
+use Laminas\Router\Http\Segment;
 
 return [
     'router' => [
@@ -29,26 +30,6 @@ return [
                         ],
                         'may_terminate' => false,
                         'child_routes'  => [
-                            'list'                       => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
-                                    'defaults' => [
-                                        'format' => 'html',
-                                        'action' => 'list',
-                                    ],
-                                ],
-                            ],
-                            'list-csv'                   => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/list[/f-:encodedFilter].csv',
-                                    'defaults' => [
-                                        'format' => 'csv',
-                                        'action' => 'list',
-                                    ],
-                                ],
-                            ],
                             'view'                       => [
                                 'type'    => 'Segment',
                                 'options' => [
@@ -98,7 +79,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'add-associate'             => [
+                            'add-associate'              => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/add-associate/affiliation-[:id].html',
@@ -121,18 +102,7 @@ return [
                                 ],
                                 'may_terminate' => false,
                                 'child_routes'  => [
-                                    'list'      => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/list.html',
-                                            'defaults' => [
-                                                'action'    => 'list',
-                                                'privilege' => 'list-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'approval'  => [
+                                    'approval' => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
@@ -143,7 +113,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'missing'   => [
+                                    'missing'  => [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
@@ -154,7 +124,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'view'      => [
+                                    'view'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'priority'    => 100,
@@ -168,33 +138,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'remind'    => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/remind/[:affiliationId].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'remind',
-                                                'privilege'   => 'remind-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'reminders' => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/reminders/[:affiliationId].html',
-                                            'defaults' => [
-                                                'constraints' => [
-                                                    'id' => '[0-9_-]+',
-                                                ],
-                                                'action'      => 'reminders',
-                                                'privilege'   => 'reminders-admin',
-                                            ],
-                                        ],
-                                    ],
-                                    'edit'      => [
+                                    'edit'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/edit/[:id].html',
@@ -207,10 +151,9 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'approve'   => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
+                                    'approve'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
                                             'route'    => '/approve.html',
                                             'defaults' => [
                                                 'action'    => 'approve',
@@ -222,7 +165,6 @@ return [
                             ],
                             'doa'                        => [
                                 'type'          => 'Segment',
-                                'priority'      => 1000,
                                 'options'       => [
                                     'route'    => '/doa',
                                     'defaults' => [
@@ -232,21 +174,9 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'list'      => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
-                                            'route'    => '/list.html',
-                                            'defaults' => [
-                                                'action'    => 'list',
-                                                'privilege' => 'list-admin',
-                                            ],
-                                        ],
-                                    ],
                                     'approval'  => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
                                             'route'    => '/approval.html',
                                             'defaults' => [
                                                 'action'    => 'approval',
@@ -255,9 +185,8 @@ return [
                                         ],
                                     ],
                                     'missing'   => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
                                             'route'    => '/missing[/page-:page].html',
                                             'defaults' => [
                                                 'action'    => 'missing',
@@ -268,7 +197,6 @@ return [
                                     'view'      => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'priority'    => 100,
                                             'route'       => '/[:id].html',
                                             'constraints' => [
                                                 'id' => '[0-9_-]+',
@@ -322,10 +250,172 @@ return [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
-                                            'route'    => '/approve.html',
+                                            'route'    => '/approve.json',
                                             'defaults' => [
                                                 'action'    => 'approve',
                                                 'privilege' => 'edit-admin',
+                                            ],
+                                        ],
+                                    ],
+                                    'decline'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/decline.json',
+                                            'defaults' => [
+                                                'action'    => 'decline',
+                                                'privilege' => 'edit-admin',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'questionnaire'              => [
+                                'type'          => Segment::class,
+                                'options'       => [
+                                    'route'    => '/questionnaire',
+                                    'defaults' => [
+                                        'controller' => Controller\Questionnaire\QuestionnaireManagerController::class,
+                                        'action'     => 'list',
+                                    ],
+                                ],
+                                'may_terminate' => false,
+                                'child_routes'  => [
+                                    'list'     => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                            'defaults' => [
+                                                'action' => 'list',
+                                            ],
+                                        ],
+                                    ],
+                                    'view'     => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/view/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'view',
+
+                                            ],
+                                        ],
+                                    ],
+                                    'edit'     => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/edit/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'edit',
+                                            ],
+                                        ],
+                                    ],
+                                    'new'      => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/new.html',
+                                            'defaults' => [
+                                                'action' => 'new',
+                                            ],
+                                        ],
+                                    ],
+                                    'question' => [
+                                        'type'          => Segment::class,
+                                        'options'       => [
+                                            'route'    => '/question',
+                                            'defaults' => [
+                                                'action'     => 'list',
+                                                'controller' => Controller\Questionnaire\QuestionManagerController::class,
+                                            ],
+                                        ],
+                                        'may_terminate' => false,
+                                        'child_routes'  => [
+                                            'list' => [
+                                                'type'     => Segment::class,
+                                                'priority' => 1000,
+                                                'options'  => [
+                                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                                    'defaults' => [
+                                                        'action' => 'list',
+                                                    ],
+                                                ],
+                                            ],
+                                            'view' => [
+                                                'type'    => Segment::class,
+                                                'options' => [
+                                                    'route'    => '/view/[:id].html',
+                                                    'defaults' => [
+                                                        'action' => 'view',
+
+                                                    ],
+                                                ],
+                                            ],
+                                            'edit' => [
+                                                'type'    => Segment::class,
+                                                'options' => [
+                                                    'route'    => '/edit/[:id].html',
+                                                    'defaults' => [
+                                                        'action' => 'edit',
+                                                    ],
+                                                ],
+                                            ],
+                                            'new'  => [
+                                                'type'    => Segment::class,
+                                                'options' => [
+                                                    'route'    => '/new.html',
+                                                    'defaults' => [
+                                                        'action' => 'new',
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'category' => [
+                                        'type'          => Segment::class,
+                                        'options'       => [
+                                            'route'    => '/category',
+                                            'defaults' => [
+                                                'action'     => 'list',
+                                                'controller' => Controller\Questionnaire\CategoryManagerController::class,
+                                            ],
+                                        ],
+                                        'may_terminate' => false,
+                                        'child_routes'  => [
+                                            'list' => [
+                                                'type'     => Segment::class,
+                                                'priority' => 1000,
+                                                'options'  => [
+                                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                                    'defaults' => [
+                                                        'action' => 'list',
+                                                    ],
+                                                ],
+                                            ],
+                                            'view' => [
+                                                'type'    => Segment::class,
+                                                'options' => [
+                                                    'route'    => '/view/[:id].html',
+                                                    'defaults' => [
+                                                        'action' => 'view',
+
+                                                    ],
+                                                ],
+                                            ],
+                                            'edit' => [
+                                                'type'    => Segment::class,
+                                                'options' => [
+                                                    'route'    => '/edit/[:id].html',
+                                                    'defaults' => [
+                                                        'action' => 'edit',
+                                                    ],
+                                                ],
+                                            ],
+                                            'new'  => [
+                                                'type'    => Segment::class,
+                                                'options' => [
+                                                    'route'    => '/new.html',
+                                                    'defaults' => [
+                                                        'action' => 'new',
+                                                    ],
+                                                ],
                                             ],
                                         ],
                                     ],

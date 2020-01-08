@@ -1,42 +1,35 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\Controller\Plugin;
 
-use setasign\Fpdi\TcpdfFpdi;
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 /**
  * Class PDF.
  */
-class AffiliationPdf extends TcpdfFpdi
+class AffiliationPdf extends Fpdi
 {
-    /**
-     * "Remembers" the template id of the imported page.
-     */
-    protected $_tplIdx;
-    /**
-     * Location of the template.
-     *
-     * @var string
-     */
-    protected $template;
+    protected ?string $_tplIdx = null;
+    protected ?string $template = null;
 
     /**
      * Draw an imported PDF logo on every page.
      */
     public function header()
     {
-        if (\is_null($this->_tplIdx)) {
-            if (!file_exists($this->template)) {
+        if ($this->_tplIdx === null) {
+            if (! file_exists($this->template)) {
                 throw new \InvalidArgumentException(sprintf("Template %s cannot be found", $this->template));
             }
             $this->setSourceFile($this->template);
@@ -48,13 +41,6 @@ class AffiliationPdf extends TcpdfFpdi
         $this->SetXY(PDF_MARGIN_LEFT, 5);
     }
 
-    /**
-     * @param $header
-     * @param $data
-     * @param array|null $width
-     * @param bool $lastRow
-     * @param int $height
-     */
     public function coloredTable(
         array $header,
         array $data,
@@ -129,7 +115,7 @@ class AffiliationPdf extends TcpdfFpdi
             }
             $rowCounter++;
             $this->Ln();
-            $fill = !$fill;
+            $fill = ! $fill;
         }
         $this->Cell(array_sum($w), 0, '', 'T');
         $this->Ln();
@@ -140,9 +126,6 @@ class AffiliationPdf extends TcpdfFpdi
         // emtpy method body
     }
 
-    /**
-     * @param $template
-     */
     public function setTemplate($template)
     {
         $this->template = $template;

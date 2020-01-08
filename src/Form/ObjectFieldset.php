@@ -1,80 +1,119 @@
 <?php
+
 /**
- * ITEA Office all rights reserved
+ * Jield BV all rights reserved.
  *
- * PHP Version 7
+ * PHP Version 5
  *
  * @category    Project
  *
- * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
- * @license     https://itea3.org/license.txt proprietary
+ * @author      Dr. ir. Johan van der Heide <info@jield.nl>
+ * @copyright   Copyright (c) 2004-2017 Jield BV (https://jield.nl)
+ * @license     https://jield.nl/license.txt proprietary
  *
- * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;
 
-use Affiliation\Entity;
 use Doctrine\ORM\EntityManager;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use DoctrineORMModule\Form\Element\EntityMultiCheckbox;
 use DoctrineORMModule\Form\Element\EntityRadio;
 use DoctrineORMModule\Form\Element\EntitySelect;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Element\Radio;
-use Zend\Form\Fieldset;
+use Affiliation\Entity;
+use Laminas\Form\Annotation\AnnotationBuilder;
+use Laminas\Form\Element;
+use Laminas\Form\Element\Radio;
+use Laminas\Form\Fieldset;
+use Laminas\Form\FieldsetInterface;
+use Laminas\Form\Form;
 
 /**
- * ITEA Office all rights reserved
- *
- * @category    Affiliation
- *
- * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * Class ObjectFieldset
+ * @package Affiliation\Form
  */
 class ObjectFieldset extends Fieldset
 {
     /**
-     * @param EntityManager $entityManager
-     * @param Entity\AbstractEntity $object
+     * @var EntityManager
      */
+    private $entityManager;
+
     public function __construct(EntityManager $entityManager, Entity\AbstractEntity $object)
     {
         parent::__construct($object->get('underscore_entity_name'));
-        $doctrineHydrator = new DoctrineHydrator($entityManager);
+        $this->entityManager = $entityManager;
+        $doctrineHydrator    = new DoctrineHydrator($entityManager);
         $this->setHydrator($doctrineHydrator)->setObject($object);
         $builder = new AnnotationBuilder();
-        /*
-         * Go over the different form elements and add them to the form
-         */
 
-        foreach ($builder->createForm($object)->getElements() as $element) {
-            /*
-             * Go over each element to add the objectManager to the EntitySelect
-             */
-            if ($element instanceof EntitySelect
-                || $element instanceof EntityMultiCheckbox
-                || $element instanceof EntityRadio
-            ) {
-                $element->setOptions(array_merge($element->getOptions(), ['object_manager' => $entityManager]));
-            }
-            if ($element instanceof Radio && !$element instanceof EntityRadio) {
-                $attributes = $element->getAttributes();
-                $valueOptionsArray = 'get' . ucfirst($attributes['array']);
+        // createForm() already creates a proper form, so attatching its elements
+        // to $this is only for backward compatibility
+        $data = $builder->createForm($object);
+        $this->addElements($data, $object, $this);
+    }
 
-                $element->setOptions(
-                    array_merge(
-                        $element->getOptions(),
-                        ['value_options' => $object::$valueOptionsArray()]
-                    )
-                );
+    protected function addElements(
+        Fieldset $dataFieldset,
+        $object,
+        Fieldset $baseFieldset = null
+    ): void {
+        /** @var Element $element */
+        foreach ($dataFieldset->getElements() as $element) {
+            $this->parseElement($element, $object);
+            // Add only when a type is provided
+            if (! \array_key_exists('type', $element->getAttributes())) {
+                continue;
             }
-            //Add only when a type is provided
-            if (array_key_exists('type', $element->getAttributes())) {
-                $this->add($element);
+
+            if ($baseFieldset instanceof Fieldset) {
+                $baseFieldset->add($element);
+            } else {
+                $dataFieldset->add($element);
             }
+        }
+        // Prepare the target element of a form collection
+        if ($dataFieldset instanceof Element\Collection) {
+            /** @var Element\Collection $dataFieldset */
+            $targetFieldset = $dataFieldset->getTargetElement();
+            // Collections have "container" fieldsets for their items, they must have the hydrator set too
+            if ($targetFieldset instanceof FieldsetInterface) {
+                $targetFieldset->setHydrator($this->getHydrator());
+            }
+            /** @var Fieldset $targetFieldset */
+            foreach ($targetFieldset->getElements() as $element) {
+                $this->parseElement($element, $targetFieldset->getObject());
+            }
+        }
+
+        // Add sub-fieldsets
+        foreach ($dataFieldset->getFieldsets() as $subFieldset) {
+            /** @var Fieldset $subFieldset */
+            $subFieldset->setHydrator($this->getHydrator());
+            $this->addElements($subFieldset, $subFieldset->getObject());
+            $this->add($subFieldset);
+        }
+    }
+
+    protected function parseElement(Element $element, $object): void
+    {
+        // Go over each element to add the objectManager to the EntitySelect
+        /** Element $element */
+        if (
+            $element instanceof EntitySelect || $element instanceof EntityMultiCheckbox
+            || $element instanceof EntityRadio
+        ) {
+            $element->setOptions(\array_merge($element->getOptions(), ['object_manager' => $this->entityManager]));
+        }
+        if ($element instanceof Radio && ! ($element instanceof EntityRadio)) {
+            $attributes        = $element->getAttributes();
+            $valueOptionsArray = \sprintf('get%s', \ucfirst($attributes['array']));
+            $element->setOptions(\array_merge(
+                $element->getOptions(),
+                ['value_options' => $object::$valueOptionsArray()]
+            ));
         }
     }
 }

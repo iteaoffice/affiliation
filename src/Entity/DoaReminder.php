@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA copyright message placeholder.
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -14,14 +15,14 @@ namespace Affiliation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
 
 /**
  * Entity for the Affiliation.
  *
  * @ORM\Table(name="project_doa_reminder")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_doa_reminder")
  *
  * @category    Affiliation
@@ -29,11 +30,11 @@ use Zend\Form\Annotation;
 class DoaReminder extends AbstractEntity
 {
     /**
-     * @ORM\Column(name="reminder_id", type="integer", nullable=false)
+     * @ORM\Column(name="reminder_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @var integer
+     * @var int
      */
     private $id;
     /**
@@ -71,21 +72,6 @@ class DoaReminder extends AbstractEntity
      */
     private $sender;
 
-    public function __get($property)
-    {
-        return $this->$property;
-    }
-
-    public function __set($property, $value)
-    {
-        $this->$property = $value;
-    }
-
-    public function __isset($property)
-    {
-        return isset($this->$property);
-    }
-
     public function __toString(): string
     {
         return (string)$this->getId();
@@ -103,39 +89,22 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail()
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     *
-     * @return DoaReminder
-     */
     public function setEmail($email)
     {
         $this->email = $email;
 
         return $this;
     }
-
-    /**
-     * @return \DateTime
-     */
     public function getDateCreated()
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param \DateTime $dateCreated
-     *
-     * @return DoaReminder
-     */
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
@@ -143,19 +112,11 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Affiliation
-     */
     public function getAffiliation()
     {
         return $this->affiliation;
     }
 
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return DoaReminder
-     */
     public function setAffiliation($affiliation)
     {
         $this->affiliation = $affiliation;
@@ -163,19 +124,11 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getReceiver()
     {
         return $this->receiver;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $receiver
-     *
-     * @return DoaReminder
-     */
     public function setReceiver($receiver)
     {
         $this->receiver = $receiver;
@@ -183,9 +136,6 @@ class DoaReminder extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getSender()
     {
         return $this->sender;

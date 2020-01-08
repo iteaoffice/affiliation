@@ -5,7 +5,7 @@
  * @category    Affiliation
  * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 declare(strict_types=1);
 
@@ -164,13 +164,13 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'upload'   => [
+                                    'submit'   => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/upload/affiliation-[:affiliationId].html',
+                                            'route'    => '/submit/affiliation-[:affiliationId].html',
                                             'defaults' => [
-                                                'action'    => 'upload',
-                                                'privilege' => 'upload',
+                                                'action'    => 'submit',
+                                                'privilege' => 'submit',
                                             ],
                                         ],
                                     ],
@@ -243,6 +243,49 @@ return [
                                             'defaults' => [
                                                 'action'    => 'download',
                                                 'privilege' => 'download',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'questionnaire'     => [
+                                'type'         => 'Segment',
+                                'options'      => [
+                                    'route'    => '/questionnaire',
+                                    'defaults' => [
+                                        'controller' => Controller\Questionnaire\QuestionnaireController::class,
+                                        'action'     => 'view',
+                                    ],
+                                ],
+                                'may_terminate' => false,
+                                'child_routes' => [
+                                    'view'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/view[/:affiliationId]/q-[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'view',
+                                                'privilege' => 'view-community',
+                                            ],
+                                        ],
+                                    ],
+                                    'edit'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/edit[/:affiliationId]/q-[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'edit',
+                                                'privilege' => 'edit-community',
+                                            ],
+                                        ],
+                                    ],
+                                    'overview'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/overview.html',
+                                            'defaults' => [
+                                                'action'    => 'overview',
+                                                'privilege' => 'overview',
                                             ],
                                         ],
                                     ],

@@ -1,7 +1,7 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
 
-<h1 class="display-4">{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.organisation, affiliation.project.parseFullName()) }}</h1>
+<h1>{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.organisation, affiliation.project.parseFullName()) }}</h1>
 
 <h2>{{ translate("txt-project-information") }}</h2>
 
@@ -34,7 +34,7 @@
     {% endfor %}
 
 <form method="post" action="">
-    <table class="table table-hover table-striped table-condensed table-sm">
+    <table class="table table-hover table-striped table-sm">
         <thead>
         <tr>
             <th colspan="2">{{ translate("txt-organisation-name") }}</th>
@@ -61,7 +61,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="success">
+        <tr class="table-success">
             <td>
                 {{ translate("txt-main") }}:
             </td>
@@ -80,7 +80,7 @@
             <td>{{ affiliation.associate.count() }}</td>
             <td>{{ affiliation.invoice.count() }}</td>
         </tr>
-        {% for affiliation in affiliationService.findAffiliationByProjectAndWhich(affiliation.project, constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE")) if affiliation.id != mainAffiliationId %}
+        {% for affiliation in affiliationService.findAffiliationByProjectAndWhich(affiliation.project, constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE"))|filter(affiliation => affiliation.id != mainAffiliationId) -%}
             {% set effortVersionTableAmount = 0 %}
             {% for affiliationVersion in affiliation.version %}
                 {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}
@@ -89,7 +89,7 @@
             {% for affiliationVersion in affiliation.version %}
                 {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
             {% endfor %}
-            <tr {% if merge == affiliation.id %}class="info"{% endif %}>
+            <tr {% if merge == affiliation.id %}class="table-info"{% endif %}>
                 <td>
                     {% if merge != affiliation.id %}
                         <input type="radio" name="merge" value="{{ affiliation.id }}">

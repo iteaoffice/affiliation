@@ -1,57 +1,69 @@
 <?php
+
 /**
  * ITEA copyright message placeholder.
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
+use Affiliation\Entity\Questionnaire\Answer;
 use Contact\Entity\Contact;
+use DateTime;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Invoice\Entity\Method;
+use Organisation\Entity\Parent\Organisation;
 use Organisation\Service\OrganisationService;
-use Zend\Form\Annotation;
-use Zend\Permissions\Acl\Resource\ResourceInterface;
+use Project\Entity\Achievement;
+use Project\Entity\ChangeRequest\CostChange;
+use Project\Entity\ChangeRequest\Country;
+use Project\Entity\Contract;
+use Project\Entity\Contract\Cost;
+use Project\Entity\Effort\Effort;
+use Project\Entity\Effort\Spent;
+use Project\Entity\Funding\Funded;
+use Project\Entity\Funding\Funding;
+use Project\Entity\Project;
+use Project\Entity\Report\EffortSpent;
+use Laminas\Form\Annotation;
 
 /**
- * Entity for the Affiliation.
- *
  * @ORM\Table(name="affiliation")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Affiliation")
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation")
- *
- * @category    Affiliation
  */
 class Affiliation extends AbstractEntity
 {
     public const NOT_SELF_FUNDED = 0;
     public const SELF_FUNDED = 1;
 
-    protected static $selfFundedTemplates
+    protected static array $selfFundedTemplates
         = [
             self::NOT_SELF_FUNDED => 'txt-not-self-funded',
             self::SELF_FUNDED     => 'txt-self-funded',
         ];
+
     /**
-     * @ORM\Column(name="affiliation_id", type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Annotation\Exclude()
      *
-     * @var integer
+     * @var int
      */
     private $id;
     /**
      * @ORM\Column(name="branch", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-branch"})
      *
      * @var string
@@ -59,39 +71,39 @@ class Affiliation extends AbstractEntity
     private $branch;
     /**
      * @ORM\Column(name="note", type="text", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-note"})
      *
      * @var string
      */
     private $note;
     /**
-     * @ORM\Column(name="value_chain", type="string", length=60, nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @ORM\Column(name="value_chain", type="string", length=255, nullable=true)
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-value-chain"})
      *
      * @var string
      */
     private $valueChain;
     /**
-     * @ORM\Column(name="market_access", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @ORM\Column(name="market_access", type="text", nullable=true)
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-market-access"})
      *
      * @var string
      */
     private $marketAccess;
     /**
-     * @ORM\Column(name="strategic_importance", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @ORM\Column(name="strategic_importance", type="text", nullable=true)
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-strategic-importance"})
      *
      * @var string
      */
     private $strategicImportance;
     /**
-     * @ORM\Column(name="main_contribution", type="string", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\Text")
+     * @ORM\Column(name="main_contribution", type="text", nullable=true)
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-main-contribution"})
      *
      * @var string
@@ -99,42 +111,40 @@ class Affiliation extends AbstractEntity
     private $mainContribution;
     /**
      * @ORM\Column(name="self_funded", type="smallint", nullable=false)
-     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Type("Laminas\Form\Element\Radio")
      * @Annotation\Attributes({"array":"selfFundedTemplates"})
      * @Annotation\Attributes({"label":"txt-self-funded"})
      *
-     * @var integer
+     * @var int
      */
     private $selfFunded;
     /**
-     * @ORM\Column(name="date_created", type="datetime", nullable=false)
+     * @ORM\Column(name="date_created", type="datetime", nullable=true)
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateCreated;
     /**
      * @ORM\Column(name="date_end", type="datetime", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\DateTime")
+     * @Annotation\Type("\Laminas\Form\Element\DateTime")
      * @Annotation\Options({"label":"txt-date-end"})
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateEnd;
     /**
      * @ORM\Column(name="date_self_funded", type="datetime", nullable=true)
-     * @Annotation\Type("\Zend\Form\Element\DateTime")
+     * @Annotation\Type("\Laminas\Form\Element\DateTime")
      * @Annotation\Options({"label":"txt-date-self-funded"})
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateSelfFunded;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * })
      * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
      * @Annotation\Options({
      *      "target_class":"Contact\Entity\Contact",
@@ -148,16 +158,32 @@ class Affiliation extends AbstractEntity
      *          }
      *      }
      * )
-     * @Annotation\Attributes({"label":"txt-project-leader"})
+     * @Annotation\Attributes({"label":"txt-technical-contact"})
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $contact;
     /**
+     * @ORM\Column(name="communication_contact_name", type="string", nullable=true)
+     * @Annotation\Type("\Laminas\Form\Element\Text")
+     * @Annotation\Options({"label":"txt-affiliation-communication-contact-name-label","help-block":"txt-affiliation-communication-contact-name-help-block"})
+     * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-name-placeholder"})
+     *
+     * @var string
+     */
+    private $communicationContactName;
+    /**
+     * @ORM\Column(name="communication_contact_email", type="string", nullable=true)
+     * @Annotation\Type("\Laminas\Form\Element\Email")
+     * @Annotation\Options({"label":"txt-affiliation-communication-contact-email-label","help-block":"txt-affiliation-communication-contact-email-help-block"})
+     * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-email-placeholder"})
+     *
+     * @var string
+     */
+    private $communicationContactEmail;
+    /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
-     * })
      * @Annotation\Exclude()
      *
      * @var \Organisation\Entity\Organisation
@@ -165,96 +191,67 @@ class Affiliation extends AbstractEntity
     private $organisation;
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Parent\Organisation", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="parent_organisation_id", referencedColumnName="parent_organisation_id", nullable=true)
-     * })
      * @Annotation\Exclude()
      *
-     * @var \Organisation\Entity\Parent\Organisation|null
+     * @var Organisation|null
      */
     private $parentOrganisation;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Project", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="project_id", referencedColumnName="project_id", nullable=true)
-     * })
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Project
+     * @var Project
      */
     private $project;
     /**
-     * @ORM\ManyToMany(targetEntity="Organisation\Entity\IctOrganisation", inversedBy="affiliation", cascade={"persist"})
-     * @ORM\OrderBy=({"Organisation"="ASC"})
-     * @ORM\JoinTable(name="affiliation_ict_organisation",
-     *    joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
-     *    inverseJoinColumns={@ORM\JoinColumn(name="ict_id", referencedColumnName="ict_id")}
-     * )
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntityMultiCheckbox")
-     * @Annotation\Options({
-     *      "target_class":"Organisation\Entity\IctOrganisation",
-     *      "find_method":{
-     *          "name":"findBy",
-     *          "params": {
-     *              "criteria":{},
-     *              "orderBy":{
-     *                  "organisation":"ASC"}
-     *              }
-     *          }
-     *      }
-     * )
-     * @Annotation\Attributes({"label":"txt-ict-organisation"})
-     *
-     * @var \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
-     */
-    private $ictOrganisation;
-    /**
-     * @ORM\ManyToMany(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Description[]|Collections\ArrayCollection()
+     * @var Description|null
      */
     private $description;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Financial", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Financial
+     * @var Financial
      */
     private $financial;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Invoice", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
+     * @var Invoice[]|Collections\ArrayCollection()
      */
     private $invoice;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Log", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Log[]|Collections\ArrayCollection()
+     * @var Log[]|Collections\ArrayCollection()
      */
     private $log;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Version", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Version[]|Collections\ArrayCollection()
+     * @var Version[]|Collections\ArrayCollection()
      */
     private $version;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Contract", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Contract[]|Collections\ArrayCollection()
+     * @var Contract[]|Collections\ArrayCollection()
      */
     private $contract;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\ContractVersion", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\ContractVersion[]|Collections\ArrayCollection()
+     * @var ContractVersion[]|Collections\ArrayCollection()
      */
     private $contractVersion;
     /**
@@ -279,14 +276,14 @@ class Affiliation extends AbstractEntity
      * )
      * @Annotation\Attributes({"label":"txt-associates"})
      *
-     * @var \Contact\Entity\Contact[]|Collections\ArrayCollection()
+     * @var Contact[]|Collections\ArrayCollection()
      */
     private $associate;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Funding\Funding[]|Collections\ArrayCollection()
+     * @var Funding[]|Collections\ArrayCollection()
      */
     private $funding;
     /**
@@ -300,49 +297,49 @@ class Affiliation extends AbstractEntity
      * @ORM\OneToMany(targetEntity="Project\Entity\Contract\Cost", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Contract\Cost[]|Collections\ArrayCollection()
+     * @var Cost[]|Collections\ArrayCollection()
      */
     private $contractCost;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
+     * @var Effort[]|Collections\ArrayCollection()
      */
     private $effort;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funded", cascade={"persist","remove"}, mappedBy="affiliation", orphanRemoval=true)
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Funding\Funded[]|Collections\ArrayCollection()
+     * @var Funded[]|Collections\ArrayCollection()
      */
     private $funded;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Spent", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Effort\Spent[]|Collections\ArrayCollection()
+     * @var Spent[]|Collections\ArrayCollection()
      */
     private $spent;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Report\EffortSpent", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Report\EffortSpent[]|Collections\ArrayCollection()
+     * @var EffortSpent[]|Collections\ArrayCollection()
      */
     private $projectReportEffortSpent;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Loi
+     * @var Loi
      */
     private $loi;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist","remove"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\Doa
+     * @var Doa
      */
     private $doa;
     /**
@@ -350,36 +347,28 @@ class Affiliation extends AbstractEntity
      * @ORM\OrderBy=({"DateCreated"="DESC"})
      * @Annotation\Exclude();
      *
-     * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
+     * @var DoaReminder[]|Collections\ArrayCollection
      */
     private $doaReminder;
-    /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiReminder", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @ORM\OrderBy=({"DateCreated"="DESC"})
-     * @Annotation\Exclude();
-     *
-     * @var \Affiliation\Entity\DoaReminder[]|Collections\ArrayCollection
-     */
-    private $loiReminder;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Achievement", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\Achievement[]|Collections\ArrayCollection
+     * @var Achievement[]|Collections\ArrayCollection
      */
     private $achievement;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\ChangeRequest\CostChange[]|Collections\ArrayCollection
+     * @var CostChange[]|Collections\ArrayCollection
      */
     private $changeRequestCostChange;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\Country", cascade={"persist"}, mappedBy="affiliation")
      * @Annotation\Exclude()
      *
-     * @var \Project\Entity\ChangeRequest\Country[]|Collections\ArrayCollection
+     * @var Country[]|Collections\ArrayCollection
      */
     private $changeRequestCountry;
     /**
@@ -394,17 +383,19 @@ class Affiliation extends AbstractEntity
      * @ORM\JoinColumn(name="method_id", referencedColumnName="method_id", nullable=true)
      * @Annotation\Exclude()
      *
-     * @var \Invoice\Entity\Method
+     * @var Method
      */
     private $invoiceMethod;
-
     /**
-     * Class constructor.
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\Answer", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @Annotation\Exclude();
+     *
+     * @var Answer[]|Collections\Collection
      */
+    private $answers;
+
     public function __construct()
     {
-        $this->ictOrganisation = new Collections\ArrayCollection();
-        $this->description = new Collections\ArrayCollection();
         $this->invoice = new Collections\ArrayCollection();
         $this->log = new Collections\ArrayCollection();
         $this->version = new Collections\ArrayCollection();
@@ -418,12 +409,12 @@ class Affiliation extends AbstractEntity
         $this->effort = new Collections\ArrayCollection();
         $this->spent = new Collections\ArrayCollection();
         $this->doaReminder = new Collections\ArrayCollection();
-        $this->loiReminder = new Collections\ArrayCollection();
         $this->achievement = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
         $this->changeRequestCostChange = new Collections\ArrayCollection();
         $this->changeRequestCountry = new Collections\ArrayCollection();
         $this->projectLog = new Collections\ArrayCollection();
+        $this->answers = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -435,19 +426,9 @@ class Affiliation extends AbstractEntity
         return self::$selfFundedTemplates;
     }
 
-    public function __get($property)
+    public function isSelfFunded(): bool
     {
-        return $this->$property;
-    }
-
-    public function __set($property, $value)
-    {
-        $this->$property = $value;
-    }
-
-    public function __isset($property)
-    {
-        return isset($this->$property);
+        return $this->selfFunded === self::SELF_FUNDED && null !== $this->dateSelfFunded;
     }
 
     public function __toString(): string
@@ -460,37 +441,11 @@ class Affiliation extends AbstractEntity
         return OrganisationService::parseBranch($this->getBranch(), $this->getOrganisation());
     }
 
-    /**
-     * @return null|\Organisation\Entity\Parent\Organisation
-     */
-    public function getParentOrganisation(): ?\Organisation\Entity\Parent\Organisation
-    {
-        return $this->parentOrganisation;
-    }
-
-    /**
-     * @param null|\Organisation\Entity\Parent\Organisation $parentOrganisation
-     *
-     * @return Affiliation
-     */
-    public function setParentOrganisation($parentOrganisation): Affiliation
-    {
-        $this->parentOrganisation = $parentOrganisation;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBranch()
+    public function getBranch(): ?string
     {
         return $this->branch;
     }
 
-    /**
-     * @param string $branch
-     */
     public function setBranch($branch)
     {
         $this->branch = $branch;
@@ -506,6 +461,23 @@ class Affiliation extends AbstractEntity
         $this->organisation = $organisation;
     }
 
+    public function hasInvoiceMethodFPP(): bool
+    {
+        return null !== $this->invoiceMethod && $this->invoiceMethod->getId() === Method::METHOD_PERCENTAGE;
+    }
+
+    public function getParentOrganisation(): ?Organisation
+    {
+        return $this->parentOrganisation;
+    }
+
+    public function setParentOrganisation($parentOrganisation): Affiliation
+    {
+        $this->parentOrganisation = $parentOrganisation;
+
+        return $this;
+    }
+
     public function isActive(): bool
     {
         return null === $this->dateEnd;
@@ -516,226 +488,138 @@ class Affiliation extends AbstractEntity
         return null !== $this->financial;
     }
 
-    public function isSelfFunded(): bool
+    public function hasDescription(): bool
     {
-        return null === $this->dateSelfFunded;
+        return null !== $this->description;
     }
 
-    /**
-     * @param Contact $contact
-     */
-    public function addAssociate(Contact $contact)
+    public function hasContractVersion(): bool
     {
-        if (!$this->associate->contains($contact)) {
+        return null !== $this->contract && ! $this->contractVersion->isEmpty();
+    }
+
+    public function addAssociate(Contact $contact): void
+    {
+        if (! $this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
 
-    /**
-     * @param Contact $contact
-     */
-    public function removeAssociate(Contact $contact)
+    public function removeAssociate(Contact $contact): void
     {
         $this->associate->removeElement($contact);
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
     public function getContact()
     {
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     */
     public function setContact($contact)
     {
         $this->contact = $contact;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getDateCreated()
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param \DateTime $dateCreated
-     */
     public function setDateCreated($dateCreated)
     {
         $this->dateCreated = $dateCreated;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getDateEnd()
     {
         return $this->dateEnd;
     }
 
-    /**
-     * @param \DateTime $dateEnd
-     */
     public function setDateEnd($dateEnd)
     {
         $this->dateEnd = $dateEnd;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getDateSelfFunded()
     {
         return $this->dateSelfFunded;
     }
 
-    /**
-     * @param \DateTime $dateSelfFunded
-     */
     public function setDateSelfFunded($dateSelfFunded)
     {
         $this->dateSelfFunded = $dateSelfFunded;
     }
 
-    /**
-     * @return \Affiliation\Entity\Description[]|Collections\ArrayCollection()
-     */
-    public function getDescription()
+    public function getDescription(): ?Description
     {
         return $this->description;
     }
 
-    /**
-     * @param \Affiliation\Entity\Description[]|Collections\ArrayCollection() $description
-     */
     public function setDescription($description)
     {
         $this->description = $description;
     }
 
-    /**
-     * @return \Affiliation\Entity\Financial
-     */
-    public function getFinancial()
+    public function getFinancial(): ?Financial
     {
         return $this->financial;
     }
 
-    /**
-     * @param \Affiliation\Entity\Financial $financial
-     */
     public function setFinancial($financial)
     {
         $this->financial = $financial;
     }
 
-    /**
-     * @return \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection()
-     */
-    public function getIctOrganisation()
-    {
-        return $this->ictOrganisation;
-    }
-
-    /**
-     * @param \Organisation\Entity\IctOrganisation[]|Collections\ArrayCollection() $ictOrganisation
-     */
-    public function setIctOrganisation($ictOrganisation)
-    {
-        $this->ictOrganisation = $ictOrganisation;
-    }
-
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return \Affiliation\Entity\Invoice[]|Collections\ArrayCollection()
-     */
     public function getInvoice()
     {
         return $this->invoice;
     }
 
-    /**
-     * @param \Affiliation\Entity\Invoice[]|Collections\ArrayCollection() $invoice
-     */
     public function setInvoice($invoice)
     {
         $this->invoice = $invoice;
     }
 
-    /**
-     * @return \Affiliation\Entity\Log[]|Collections\ArrayCollection()
-     */
     public function getLog()
     {
         return $this->log;
     }
 
-    /**
-     * @param \Affiliation\Entity\Log[]|Collections\ArrayCollection() $log
-     */
     public function setLog($log)
     {
         $this->log = $log;
     }
 
-    /**
-     * @return string
-     */
     public function getNote()
     {
         return $this->note;
     }
 
-    /**
-     * @param string $note
-     */
     public function setNote($note)
     {
         $this->note = $note;
     }
 
-    /**
-     * @return \Project\Entity\Project
-     */
     public function getProject()
     {
         return $this->project;
     }
 
-    /**
-     * @param \Project\Entity\Project $project
-     */
     public function setProject($project)
     {
         $this->project = $project;
     }
 
-    /**
-     * @param bool|true $textual
-     *
-     * @return int
-     */
     public function getSelfFunded(bool $textual = false)
     {
         if ($textual) {
@@ -745,251 +629,162 @@ class Affiliation extends AbstractEntity
         return $this->selfFunded;
     }
 
-    /**
-     * @param int $selfFunded
-     */
     public function setSelfFunded($selfFunded)
     {
         $this->selfFunded = $selfFunded;
     }
 
-    /**
-     * @return string
-     */
     public function getValueChain()
     {
         return $this->valueChain;
     }
 
-    /**
-     * @param string $valueChain
-     */
     public function setValueChain($valueChain)
     {
         $this->valueChain = $valueChain;
     }
 
-    /**
-     * @return \Affiliation\Entity\Version[]|Collections\ArrayCollection()
-     */
     public function getVersion()
     {
         return $this->version;
     }
 
-    /**
-     * @param \Affiliation\Entity\Version[]|Collections\ArrayCollection() $version
-     */
     public function setVersion($version)
     {
         $this->version = $version;
     }
 
-    /**
-     * @return \Contact\Entity\Contact[]|Collections\ArrayCollection()
-     */
     public function getAssociate()
     {
         return $this->associate;
     }
 
-    /**
-     * @param \Contact\Entity\Contact[]|Collections\ArrayCollection() $associate
-     */
     public function setAssociate($associate)
     {
         $this->associate = $associate;
     }
 
-    /**
-     * @return \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
-     */
     public function getCost()
     {
         return $this->cost;
     }
 
-    /**
-     * @param \Project\Entity\Cost\Cost[]|Collections\ArrayCollection() $cost
-     */
     public function setCost($cost)
     {
         $this->cost = $cost;
     }
 
-    /**
-     * @return \Project\Entity\Funding\Funding[]|Collections\ArrayCollection()
-     */
     public function getFunding()
     {
         return $this->funding;
     }
 
-    /**
-     * @param \Project\Entity\Funding\Funding[]|Collections\ArrayCollection() $funding
-     */
     public function setFunding($funding)
     {
         $this->funding = $funding;
     }
 
-    /**
-     * @return \Project\Entity\Effort\Spent[]|Collections\ArrayCollection()
-     */
     public function getSpent()
     {
         return $this->spent;
     }
 
-    /**
-     * @param \Project\Entity\Effort\Spent[]|Collections\ArrayCollection() $spent
-     */
-    public function setSpent($spent)
+    public function setSpent($spent): Affiliation
     {
         $this->spent = $spent;
+
+        return $this;
     }
 
-    /**
-     * @return \Project\Entity\Effort\Effort[]|Collections\ArrayCollection()
-     */
     public function getEffort()
     {
         return $this->effort;
     }
 
-    /**
-     * @param \Project\Entity\Effort\Effort[]|Collections\ArrayCollection() $effort
-     */
-    public function setEffort($effort)
+    public function setEffort($effort): Affiliation
     {
         $this->effort = $effort;
+
+        return $this;
     }
 
-    /**
-     * @return \Affiliation\Entity\Loi
-     */
     public function getLoi()
     {
         return $this->loi;
     }
 
-    /**
-     * @param \Affiliation\Entity\Loi $loi
-     */
-    public function setLoi($loi)
+    public function setLoi($loi): Affiliation
     {
         $this->loi = $loi;
+
+        return $this;
     }
 
-    /**
-     * @return Doa
-     */
     public function getDoa()
     {
         return $this->doa;
     }
 
-    /**
-     * @param Doa $doa
-     */
-    public function setDoa($doa)
+    public function setDoa($doa): Affiliation
     {
         $this->doa = $doa;
+
+        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getMainContribution()
+    public function getMainContribution(): ?string
     {
         return $this->mainContribution;
     }
 
-    /**
-     * @param string $mainContribution
-     */
-    public function setMainContribution($mainContribution)
+    public function setMainContribution($mainContribution): Affiliation
     {
         $this->mainContribution = $mainContribution;
+
+        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getMarketAccess()
+    public function getMarketAccess(): ?string
     {
         return $this->marketAccess;
     }
 
-    /**
-     * @param string $marketAccess
-     */
-    public function setMarketAccess($marketAccess)
+    public function setMarketAccess($marketAccess): Affiliation
     {
         $this->marketAccess = $marketAccess;
+
+        return $this;
     }
 
-    /**
-     * @return DoaReminder[]|Collections\ArrayCollection
-     */
     public function getDoaReminder()
     {
         return $this->doaReminder;
     }
 
-    /**
-     * @param DoaReminder[]|Collections\ArrayCollection $doaReminder
-     */
-    public function setDoaReminder($doaReminder)
+    public function setDoaReminder($doaReminder): Affiliation
     {
         $this->doaReminder = $doaReminder;
+
+        return $this;
     }
 
-    /**
-     * @return DoaReminder[]|Collections\ArrayCollection
-     */
-    public function getLoiReminder()
-    {
-        return $this->loiReminder;
-    }
-
-    /**
-     * @param DoaReminder[]|Collections\ArrayCollection $loiReminder
-     */
-    public function setLoiReminder($loiReminder)
-    {
-        $this->loiReminder = $loiReminder;
-    }
-
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Achievement[]
-     */
     public function getAchievement()
     {
         return $this->achievement;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Achievement[] $achievement
-     */
-    public function setAchievement($achievement)
+    public function setAchievement($achievement): Affiliation
     {
         $this->achievement = $achievement;
+
+        return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[]
-     */
     public function getProjectReportEffortSpent()
     {
         return $this->projectReportEffortSpent;
     }
 
-    /**
-     * @param  Collections\ArrayCollection|\Project\Entity\Report\EffortSpent[] $projectReportEffortSpent
-     *
-     * @return Affiliation
-     */
     public function setProjectReportEffortSpent($projectReportEffortSpent): Affiliation
     {
         $this->projectReportEffortSpent = $projectReportEffortSpent;
@@ -997,39 +792,23 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\ChangeRequest\CostChange[]
-     */
     public function getChangeRequestCostChange()
     {
         return $this->changeRequestCostChange;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\ChangeRequest\CostChange[] $changerequestCostChange
-     *
-     * @return Affiliation
-     */
-    public function setChangeRequestCostChange($changerequestCostChange): Affiliation
+    public function setChangeRequestCostChange($changeRequestCostChange): Affiliation
     {
-        $this->changeRequestCostChange = $changerequestCostChange;
+        $this->changeRequestCostChange = $changeRequestCostChange;
 
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[]
-     */
     public function getChangeRequestCountry()
     {
         return $this->changeRequestCountry;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\ChangeRequest\Country[] $changerequestCountry
-     *
-     * @return Affiliation
-     */
     public function setChangeRequestCountry($changerequestCountry): Affiliation
     {
         $this->changeRequestCountry = $changerequestCountry;
@@ -1037,59 +816,35 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Log[]
-     */
     public function getProjectLog()
     {
         return $this->projectLog;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Log[] $projectLog
-     *
-     * @return Affiliation
-     */
-    public function setProjectLog($projectLog)
+    public function setProjectLog($projectLog): Affiliation
     {
         $this->projectLog = $projectLog;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getStrategicImportance()
+    public function getStrategicImportance(): ?string
     {
         return $this->strategicImportance;
     }
 
-    /**
-     * @param string $strategicImportance
-     *
-     * @return Affiliation
-     */
-    public function setStrategicImportance($strategicImportance)
+    public function setStrategicImportance($strategicImportance): Affiliation
     {
         $this->strategicImportance = $strategicImportance;
 
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Funding\Funded[]
-     */
     public function getFunded()
     {
         return $this->funded;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Funding\Funded[] $funded
-     *
-     * @return Affiliation
-     */
     public function setFunded($funded): Affiliation
     {
         $this->funded = $funded;
@@ -1097,19 +852,11 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Contract[]
-     */
     public function getContract()
     {
         return $this->contract;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Contract[] $contract
-     *
-     * @return Affiliation
-     */
     public function setContract($contract): Affiliation
     {
         $this->contract = $contract;
@@ -1117,19 +864,11 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return ContractVersion[]|Collections\ArrayCollection
-     */
     public function getContractVersion()
     {
         return $this->contractVersion;
     }
 
-    /**
-     * @param ContractVersion[]|Collections\ArrayCollection $contractVersion
-     *
-     * @return Affiliation
-     */
     public function setContractVersion($contractVersion): Affiliation
     {
         $this->contractVersion = $contractVersion;
@@ -1137,19 +876,11 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return Collections\ArrayCollection|\Project\Entity\Contract\Cost[]
-     */
     public function getContractCost()
     {
         return $this->contractCost;
     }
 
-    /**
-     * @param Collections\ArrayCollection|\Project\Entity\Contract\Cost[] $contractCost
-     *
-     * @return Affiliation
-     */
     public function setContractCost($contractCost): Affiliation
     {
         $this->contractCost = $contractCost;
@@ -1157,23 +888,48 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @return \Invoice\Entity\Method
-     */
-    public function getInvoiceMethod(): ?\Invoice\Entity\Method
+    public function getInvoiceMethod(): ?Method
     {
         return $this->invoiceMethod;
     }
 
-    /**
-     * @param \Invoice\Entity\Method $invoiceMethod
-     *
-     * @return Affiliation
-     */
-    public function setInvoiceMethod(?\Invoice\Entity\Method $invoiceMethod): Affiliation
+    public function setInvoiceMethod(?Method $invoiceMethod): Affiliation
     {
         $this->invoiceMethod = $invoiceMethod;
 
+        return $this;
+    }
+
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
+
+    public function setAnswers($answers): Affiliation
+    {
+        $this->answers = $answers;
+        return $this;
+    }
+
+    public function getCommunicationContactName(): ?string
+    {
+        return $this->communicationContactName;
+    }
+
+    public function setCommunicationContactName(string $communicationContactName): Affiliation
+    {
+        $this->communicationContactName = $communicationContactName;
+        return $this;
+    }
+
+    public function getCommunicationContactEmail(): ?string
+    {
+        return $this->communicationContactEmail;
+    }
+
+    public function setCommunicationContactEmail(?string $communicationContactEmail): Affiliation
+    {
+        $this->communicationContactEmail = $communicationContactEmail;
         return $this;
     }
 }

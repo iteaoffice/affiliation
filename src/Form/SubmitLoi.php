@@ -1,30 +1,33 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;
 
-use Zend\Form\Element\Checkbox;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Validator\File\Extension;
-use Zend\Validator\File\Size;
+use Laminas\Form\Element\Checkbox;
+use Laminas\Form\Element\File;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Validator\File\Extension;
+use Laminas\Validator\File\Size;
 
 /**
+ * Class SubmitLoi
  *
+ * @package Affiliation\Form
  */
-class SubmitLoi extends Form implements InputFilterProviderInterface
+final class SubmitLoi extends Form implements InputFilterProviderInterface
 {
-    /**
-     * Class constructor.
-     */
     public function __construct()
     {
         parent::__construct();
@@ -34,21 +37,21 @@ class SubmitLoi extends Form implements InputFilterProviderInterface
         $this->setAttribute('enctype', 'multipart/form-data');
         $this->add(
             [
-                'type'    => '\Zend\Form\Element\File',
+                'type'    => File::class,
                 'name'    => 'file',
                 'options' => [
-                    "label"      => "txt-file",
-                    "help-block" => _("txt-a-signed-loi-is-required"),
+                    'label'      => 'txt-file',
+                    'help-block' => _('txt-a-signed-loi-is-required'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-upload-loi"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-upload-loi'),
                 ],
             ]
         );
@@ -58,7 +61,7 @@ class SubmitLoi extends Form implements InputFilterProviderInterface
                 'name'       => 'selfApprove',
                 'options'    => [
                     'inline'     => true,
-                    "help-block" => _("txt-self-approve-loi-checkbox-help-text"),
+                    'help-block' => _('txt-self-approve-loi-checkbox-help-text'),
                 ],
                 'attributes' => [
 
@@ -67,32 +70,26 @@ class SubmitLoi extends Form implements InputFilterProviderInterface
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'approve',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-approve-loi"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-approve-loi'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [

@@ -1,13 +1,9 @@
 <?php
+
 /**
- * ITEA Office all rights reserved
- *
- * PHP Version 7
- *
- * @category    Project
- *
+*
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/project for the canonical source repository
@@ -17,18 +13,15 @@ declare(strict_types=1);
 
 namespace Affiliation\InputFilter;
 
-use Zend\InputFilter\InputFilter;
+use Laminas\InputFilter\InputFilter;
 
 /**
  * Class AffiliationFilter
  *
  * @package Affiliation\InputFilter
  */
-class AffiliationFilter extends InputFilter
+final class AffiliationFilter extends InputFilter
 {
-    /**
-     * AffiliationFilter constructor.
-     */
     public function __construct()
     {
         $inputFilter = new InputFilter();
@@ -60,8 +53,18 @@ class AffiliationFilter extends InputFilter
         );
         $inputFilter->add(
             [
-                'name'     => 'valueChain',
-                'required' => false,
+                'name'       => 'valueChain',
+                'required'   => false,
+                'validators' => [
+                    [
+                        'name'    => 'StringLength',
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 0,
+                            'max'      => 255,
+                        ],
+                    ],
+                ],
             ]
         );
         $inputFilter->add(
@@ -100,7 +103,6 @@ class AffiliationFilter extends InputFilter
                 'required' => true,
             ]
         );
-
 
         $this->add($inputFilter, 'affiliation_entity_affiliation');
     }

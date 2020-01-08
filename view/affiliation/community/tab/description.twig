@@ -1,0 +1,14 @@
+<h2>{{ translate("txt-partner-description") }}</h2>
+
+{% if affiliation.description %}
+    <dl class="dl-horizontal">
+        <dt>{{ translate("txt-description") }}</dt>
+        <dd>{{ affiliation.description.description|nl2br }}</dd>
+    </dl>
+{% else %}
+    {{ ztbalert().warning(translate("txt-no-description-found-for-%s")|format(
+        affiliation.parseBranchedName()
+    ))|raw }}
+{% endif %}
+
+{{ affiliationLink(affiliation, 'edit-description','button') }}

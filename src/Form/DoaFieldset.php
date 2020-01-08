@@ -1,90 +1,58 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category  Content
  *
  * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;
 
 use Affiliation\Entity;
 use Doctrine\ORM\EntityManager;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use DoctrineORMModule\Form\Element\EntitySelect;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Fieldset;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Validator\File\Size;
+use Laminas\Form\Element\File;
+use Laminas\Form\Element\Select;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Validator\File\Size;
 
 /**
- * Class DoaFieldset.
+ * Class DoaFieldset
+ *
+ * @package Affiliation\Form
  */
-class DoaFieldset extends Fieldset implements InputFilterProviderInterface
+final class DoaFieldset extends ObjectFieldset implements InputFilterProviderInterface
 {
-    /**
-     * DoaFieldset constructor.
-     *
-     * @param EntityManager $entityManager
-     */
     public function __construct(EntityManager $entityManager)
     {
-        parent::__construct('affiliation_entity_doa');
-        $doa = new Entity\Doa();
-        $doctrineHydrator = new DoctrineHydrator($entityManager, Entity\Doa::class);
-        $this->setHydrator($doctrineHydrator)->setObject($doa);
-        $builder = new AnnotationBuilder();
-        /*
-         * Go over the different form elements and add them to the form
-         */
-        foreach ($builder->createForm($doa)->getElements() as $element) {
-            /*
-             * Go over each element to add the objectManager to the EntitySelect
-             */
-            if ($element instanceof EntitySelect) {
-                $element->setOptions(
-                    [
-                        'object_manager' => $entityManager,
-                    ]
-                );
-            }
-            //Add only when a type is provided
-            if (array_key_exists('type', $element->getAttributes())) {
-                $this->add($element);
-            }
-        }
+        parent::__construct($entityManager, new Entity\Doa());
 
         $this->add(
             [
-                'type'    => '\Zend\Form\Element\Select',
+                'type'    => Select::class,
                 'name'    => 'contact',
                 'options' => [
-                    "label" => "txt-signer",
+                    'label' => 'txt-signer',
                 ],
             ]
         );
 
         $this->add(
             [
-                'type'    => '\Zend\Form\Element\File',
+                'type'    => File::class,
                 'name'    => 'file',
                 'options' => [
-                    "label"      => "txt-source-file",
-                    "help-block" => _("txt-attachment-requirements"),
+                    'label'      => 'txt-source-file',
+                    'help-block' => _('txt-attachment-requirements'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [

@@ -1,0 +1,118 @@
+{% do form.prepare() %}
+{{ form().openTag(form)|raw }}
+{{ formelement(form.get('csrf')) }}
+
+{% set questionnaireFieldset = form.get('affiliation_entity_questionnaire_questionnaire') %}
+
+{{ ztbformelement(questionnaireFieldset.get('phase')) }}
+{{ ztbformelement(questionnaireFieldset.get('questionnaire')) }}
+{{ ztbformelement(questionnaireFieldset.get('description')) }}
+
+{% if edit %}
+    <h2>{{ translate("txt-questions") }}</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <p><select id="sel-question" class="form-control">
+                {% for category in categories %}
+                    <optgroup label="{{ category.category }}">
+                        {% for question in category.questions %}
+                            <option data-link="{{ affiliationQuestionLink(question, 'view')|escape }}" value="{{ question.id }}">{{ question.question }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endfor %}
+                </select></p>
+            <p><button id="btn-add" title="{{ translate("txt-add") }}" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> {{ translate("txt-add-question") }}</button></p>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-hover table-striped table-sm">
+                <thead>
+                <tr>
+                    <th class="col-md-3 col-sm-4">{{ translate("txt-sequence") }}</th>
+                    <th class="col-md-9 col-sm-8">{{ translate("txt-question") }}</th>
+                    <th></th>
+                </thead>
+                <tfoot>
+                </tfoot>
+                <tbody id="sortable-table">
+                {% for key, fieldset in questionnaireFieldset.get('questionnaireQuestions').getFieldsets() %}
+                    <tr id="question-{{ questionnaireFieldset.get('questionnaireQuestions').object[key].question.id }}">
+                        <td><span class="ui-icon ui-icon-arrowthick-2-n-s d-inline-block"></span> <span class="sequence">{{ fieldset.get('sequence').getValue() }}</span>
+                        <input class="sequence" type="hidden" name="{{ fieldset.get('sequence').getAttribute('name') }}" value="{{ fieldset.get('sequence').getValue() }}"></td>
+                        <td><input type="hidden" name="{{ fieldset.get('question').getAttribute('name') }}" value="{{ questionnaireFieldset.get('questionnaireQuestions').object[key].question.id }}">
+                            <input type="hidden" name="{{ fieldset.get('questionnaire').getAttribute('name') }}" value="{{ questionnaire.id }}">
+                            {{ affiliationQuestionLink(questionnaireFieldset.get('questionnaireQuestions').object[key].question, 'view') }}
+                        </td>
+                        <td><button title="{{ translate("txt-remove") }}" type="button" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></button></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr>
+    {{ formelement(form.get('submit')) }}
+    {{ formelement(form.get('cancel')) }}
+    {{ form().closeTag()|raw }}
+
+    <script>
+        $(function(){
+            var $table = $('#sortable-table'), $sel = $('#sel-question'), $template = $('#template');
+            var count = $table.find('tr').length;
+            var updateSequence = function(){
+                var sequence = 1;
+                $table.find('tr').each(function(){
+                    var $tr = $(this);
+                    $tr.find('span.sequence').text(sequence);
+                    $tr.find('input.sequence').val(sequence);
+                    sequence++;
+                });
+            };
+
+            $table.sortable({
+                update:  function(event, ui){ updateSequence(); }
+            });
+            $table.on('click', 'button', function(){
+                $(this).closest('tr').fadeOut(300, function(){ $(this).remove(); updateSequence(); });
+            });
+            $('#btn-add').click(function(){
+                var opt = $sel.find('option:selected');
+                if ($('#question-'+opt.val()).length === 0) {
+                    var html = $template.find('tbody').html()
+                        .replace(/__id__/g, opt.val())
+                        .replace(/__index__/g, count)
+                        .replace('__question__', opt.data('link'));
+                    $(html).hide().appendTo($table).fadeIn(300);
+                    count++;
+                    updateSequence();
+                } else {
+                    alert('{{ translate("txt-question-has-already-been-added") }}');
+                }
+            });
+        });
+    </script>
+
+    <div id="template" class="d-none">
+        <table>
+            <tbody>
+            <tr id="question-__id__">
+                <td><span class="ui-icon ui-icon-arrowthick-2-n-s d-inline-block"></span> <span class="sequence"></span>
+                    <input class="sequence" type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][sequence]" value="">
+                </td>
+                <td><input type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][question]" value="__id__">
+                    <input type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][questionnaire]" value="{{ questionnaire.id }}">
+                    __question__
+                </td>
+                <td><button title="{{ translate("txt-remove") }}" type="button" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="form-group row">
+        <div class="offset-sm-3 col-sm-9">
+            {{ formelement(form.get('submit')) }}
+            {{ formelement(form.get('cancel')) }}
+        </div>
+    </div>
+    {{ form().closeTag()|raw }}
+{% endif %}

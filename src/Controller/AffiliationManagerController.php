@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 namespace Affiliation\Controller;
@@ -16,7 +17,6 @@ use Affiliation\Form\AddAssociate;
 use Affiliation\Form\AdminAffiliation;
 use Affiliation\Form\EditAssociate;
 use Affiliation\Form\MissingAffiliationParentFilter;
-use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\Service\AffiliationService;
 use Application\Service\AssertionService;
 use Contact\Service\ContactService;
@@ -31,18 +31,17 @@ use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
 use Program\Service\CallService;
 use Project\Acl\Assertion\Project;
+use Project\Entity\Changelog;
+use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
-use Search\Form\SearchResult;
-use Search\Paginator\Adapter\SolariumPaginator;
-use Solarium\QueryType\Select\Query\Query as SolariumQuery;
-use Zend\Http\Request;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use Zend\Paginator\Paginator;
-use Zend\View\Model\ViewModel;
+use Laminas\Http\Request;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Paginator\Paginator;
+use Laminas\View\Model\ViewModel;
 
 /**
  * Class AffiliationManagerController
@@ -51,69 +50,27 @@ use Zend\View\Model\ViewModel;
  */
 final class AffiliationManagerController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var AffiliationSearchService
-     */
-    private $searchService;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var ReportService
-     */
-    private $reportService;
-    /**
-     * @var WorkpackageService
-     */
-    private $workpackageService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var ParentService
-     */
-    private $parentService;
-    /**
-     * @var CallService
-     */
-    private $callService;
-    /**
-     * @var AssertionService
-     */
-    private $assertionService;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    private AffiliationService $affiliationService;
+    private TranslatorInterface $translator;
+    private ProjectService $projectService;
+    private VersionService $versionService;
+    private ContractService $contractService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private ReportService $reportService;
+    private WorkpackageService $workpackageService;
+    private InvoiceService $invoiceService;
+    private ParentService $parentService;
+    private CallService $callService;
+    private AssertionService $assertionService;
+    private EntityManager $entityManager;
 
     public function __construct(
         AffiliationService $affiliationService,
-        AffiliationSearchService $searchService,
         TranslatorInterface $translator,
         ProjectService $projectService,
         VersionService $versionService,
+        ContractService $contractService,
         ContactService $contactService,
         OrganisationService $organisationService,
         ReportService $reportService,
@@ -125,10 +82,10 @@ final class AffiliationManagerController extends AffiliationAbstractController
         EntityManager $entityManager
     ) {
         $this->affiliationService = $affiliationService;
-        $this->searchService = $searchService;
         $this->translator = $translator;
         $this->projectService = $projectService;
         $this->versionService = $versionService;
+        $this->contractService = $contractService;
         $this->contactService = $contactService;
         $this->organisationService = $organisationService;
         $this->reportService = $reportService;
@@ -138,130 +95,6 @@ final class AffiliationManagerController extends AffiliationAbstractController
         $this->callService = $callService;
         $this->assertionService = $assertionService;
         $this->entityManager = $entityManager;
-    }
-
-
-    public function listAction(): ViewModel
-    {
-        /** @var Request $request */
-        $request = $this->getRequest();
-        $requestQuery = $request->getQuery()->toArray();
-        $data = array_merge(
-            [
-                'order'     => '',
-                'direction' => '',
-                'query'     => '',
-                'facet'     => [],
-                'fields'    => []
-            ],
-            $requestQuery
-        );
-        $searchFieldValues = [
-            'description'          => $this->translator->translate('txt-affiliation-description'),
-            'main_contribution'    => $this->translator->translate('txt-main-contribution'),
-            'market_access'        => $this->translator->translate('txt-market-access'),
-            'value_chain'          => $this->translator->translate('txt-value-chain'),
-            'strategic_importance' => $this->translator->translate('txt-strategic-importance'),
-            'project'              => $this->translator->translate('txt-project'),
-            'organisation'         => $this->translator->translate('txt-organisation'),
-        ];
-        // Set all fields enabled by default
-        if (empty($requestQuery)) {
-            $data['fields'] = array_keys($searchFieldValues);
-        }
-
-        if ($request->isGet()) {
-            $this->searchService->setSearch($data['query'], $data['fields'], $data['order'], $data['direction']);
-            if (isset($data['facet'])) {
-                foreach ($data['facet'] as $facetField => $values) {
-                    $quotedValues = [];
-                    foreach ($values as $value) {
-                        $quotedValues[] = sprintf('\'%s\'', $value);
-                    }
-
-                    $this->searchService->addFilterQuery(
-                        $facetField,
-                        implode(' ' . SolariumQuery::QUERY_OPERATOR_OR . ' ', $quotedValues)
-                    );
-                }
-            }
-        }
-
-        switch ($this->params('format', 'html')) {
-            // Csv export
-            case 'csv':
-                return $this->csvExport(
-                    $this->searchService,
-                    [
-                        'organisation_country',
-                        'organisation_type',
-                        'organisation',
-                        'project_number',
-                        'project',
-                        'project_program',
-                        'project_call',
-                        'contact',
-                    ]
-                );
-
-            // Default paginated html view
-            default:
-                $form = new SearchResult($searchFieldValues);
-
-                // Set facet data in the form
-                if ($request->isGet()) {
-                    $form->setFacetLabels(
-                        [
-                            'is_active'                  => $this->translator->translate('txt-active'),
-                            'organisation_country_group' => $this->translator->translate('txt-country'),
-                        ]
-                    );
-                    $form->addSearchResults(
-                        $this->searchService->getQuery()->getFacetSet(),
-                        $this->searchService->getResultSet()->getFacetSet()
-                    );
-                    $form->setData($data);
-                }
-
-                $viewParams = [
-                    'fullArguments' => http_build_query($data),
-                    'form'          => $form,
-                    'order'         => $data['order'],
-                    'direction'     => $data['direction'],
-                    'query'         => $data['query'],
-                ];
-
-                // Remove order and direction from the GET params to prevent duplication
-                $filteredData = array_filter(
-                    $data,
-                    function ($key) {
-                        return !\in_array($key, ['order', 'direction'], true);
-                    },
-                    ARRAY_FILTER_USE_KEY
-                );
-                $viewParams['arguments'] = http_build_query($filteredData);
-
-                $page = $this->params('page', 1);
-                $paginator = new Paginator(
-                    new SolariumPaginator($this->searchService->getSolrClient(), $this->searchService->getQuery())
-                );
-                $paginator::setDefaultItemCountPerPage(($page === 'all') ? 1000 : 20);
-                $paginator->setCurrentPageNumber($page);
-                $paginator->setPageRange(
-                    ceil($paginator->getTotalItemCount() / $paginator::getDefaultItemCountPerPage())
-                );
-                $viewParams['paginator'] = $paginator;
-                $viewParams['highlighting'] = $paginator->getCurrentItems()->getHighlighting();
-                $viewParams['highlightingFields'] = [
-                    'description'          => $this->translator->translate('txt-description'),
-                    'main_contribution'    => $this->translator->translate('txt-main-contribution'),
-                    'market_access'        => $this->translator->translate('txt-market-access'),
-                    'value_chain'          => $this->translator->translate('txt-value-chain'),
-                    'strategic_importance' => $this->translator->translate('txt-strategic-importance')
-                ];
-
-                return new ViewModel($viewParams);
-        }
     }
 
     public function viewAction(): ViewModel
@@ -282,7 +115,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 'projectService'        => $this->projectService,
                 'contactService'        => $this->contactService,
                 'workpackageService'    => $this->workpackageService,
-                'latestVersion'         => $this->projectService->getLatestProjectVersion(
+                'latestVersion'         => $this->projectService->getLatestNotRejectedProjectVersion(
                     $affiliation->getProject()
                 ),
                 'versionType'           => $this->projectService->getNextMode(
@@ -292,7 +125,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 'versionService'        => $this->versionService,
                 'invoiceService'        => $this->invoiceService,
                 'organisationService'   => $this->organisationService,
-                'callService'           => $this->callService
+                'callService'           => $this->callService,
+                'contractService'       => $this->contractService
             ]
         );
     }
@@ -359,6 +193,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
+        $data = $this->getRequest()->getPost()->toArray();
+
         $formData = [];
         $formData['affiliation'] = sprintf(
             '%s|%s',
@@ -366,6 +202,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
             $affiliation->getBranch()
         );
         $formData['contact'] = $affiliation->getContact()->getId();
+        $formData['communicationContactName'] = $affiliation->getCommunicationContactName();
+        $formData['communicationContactEmail'] = $affiliation->getCommunicationContactEmail();
         $formData['branch'] = $affiliation->getBranch();
         $formData['valueChain'] = $affiliation->getValueChain();
         $formData['marketAccess'] = $affiliation->getMarketAccess();
@@ -392,7 +230,8 @@ final class AffiliationManagerController extends AffiliationAbstractController
         if (null !== $affiliation->getDateEnd()) {
             $formData['dateEnd'] = $affiliation->getDateEnd()->format('Y-m-d');
         }
-        if (null !== $affiliation->getDateSelfFunded() || $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
+        if (
+            null !== $affiliation->getDateSelfFunded() || $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED
         ) {
             if (null === $affiliation->getDateSelfFunded()) {
                 $formData['dateSelfFunded'] = date('Y-m-d');
@@ -425,8 +264,45 @@ final class AffiliationManagerController extends AffiliationAbstractController
             $form->remove('delete');
         }
 
-        if ($this->getRequest()->isPost() && $form->setData($this->getRequest()->getPost()->toArray())) {
-            if (isset($formData['cancel'])) {
+
+        if ($this->getRequest()->isPost() && $form->setData($data)) {
+            if (isset($data['delete']) && $this->affiliationService->isActiveInVersion($affiliation)) {
+                $this->affiliationService->deactivateAffiliation($affiliation);
+
+                //Update the rationale for public funding
+                $this->affiliationService
+                    ->updateCountryRationaleByAffiliation($affiliation, AffiliationService::AFFILIATION_DEACTIVATE);
+
+                $changelogMessage = sprintf(
+                    $this->translator->translate('txt-affiliation-%s-has-successfully-been-deactivated'),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_OFFICE,
+                    $changelogMessage
+                );
+
+                return $this->redirect()->toRoute(
+                    'zfcadmin/project/project/affiliation',
+                    ['id' => $affiliation->getProject()->getId(),]
+                );
+            }
+
+            if (isset($data['delete']) && ! $this->affiliationService->isActiveInVersion($affiliation)) {
+                $this->affiliationService->delete($affiliation);
+
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/view',
+                    ['id' => $affiliation->getId(),]
+                );
+            }
+
+            if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
                     ['id' => $affiliation->getId(),]
@@ -442,7 +318,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $contact = $this->contactService->findContactById((int)$formData['contact']);
 
                 switch (true) {
-                    case !empty($formData['parentOrganisationLike']):
+                    case ! empty($formData['parentOrganisationLike']):
                         /** @var Organisation $parentOrganisation */
                         $parentOrganisation = $this->parentService->find(
                             Organisation::class,
@@ -451,7 +327,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                         $affiliation->setParentOrganisation($parentOrganisation);
                         $affiliation->setOrganisation($parentOrganisation->getOrganisation());
                         break;
-                    case !empty($formData['parentOrganisation']):
+                    case ! empty($formData['parentOrganisation']):
                         /** @var Organisation $parentOrganisation */
                         $parentOrganisation = $this->parentService->find(
                             Organisation::class,
@@ -460,7 +336,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                         $affiliation->setParentOrganisation($parentOrganisation);
                         $affiliation->setOrganisation($parentOrganisation->getOrganisation());
                         break;
-                    case !empty($formData['parent']):
+                    case ! empty($formData['parent']):
                         // When a parent is selected, use that to find the $parent
                         $parent = $this->parentService->findParentById($formData['parent']);
                         $parentOrganisation = $this->parentService->findParentOrganisationInParentByOrganisation(
@@ -501,14 +377,14 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 }
 
                 // The partner has been updated now, so we need to store the name of the organiation and the project
-                if (null !== $parentOrganisation
+                if (
+                    null !== $parentOrganisation
                     && null === $this->organisationService
                         ->findOrganisationNameByNameAndProject(
                             $parentOrganisation->getOrganisation(),
                             $organisation->getOrganisation(),
                             $affiliation->getProject()
                         )
-
                 ) {
                     $name = new Name();
                     $name->setOrganisation($parentOrganisation->getOrganisation());
@@ -519,6 +395,9 @@ final class AffiliationManagerController extends AffiliationAbstractController
 
                 // Update the affiliation based on the form information
                 $affiliation->setContact($contact);
+
+                $affiliation->setCommunicationContactName($formData['communicationContactName']);
+                $affiliation->setCommunicationContactEmail($formData['communicationContactEmail']);
 
                 $affiliation->setBranch($formData['branch']);
                 if (empty($formData['dateSelfFunded'])) {
@@ -538,7 +417,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $affiliation->setMarketAccess($formData['marketAccess']);
 
                 $affiliation->setInvoiceMethod(null);
-                if (!empty($formData['invoiceMethod'])) {
+                if (! empty($formData['invoiceMethod'])) {
                     /** @var Method $method */
                     $method = $this->invoiceService->find(Method::class, (int)$formData['invoiceMethod']);
                     $affiliation->setInvoiceMethod($method);
@@ -547,7 +426,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 $this->affiliationService->save($affiliation);
 
                 // Only update the financial when an financial organisation is chosen
-                if (!empty($formData['financialOrganisation'])) {
+                if (! empty($formData['financialOrganisation'])) {
                     if (null === ($financial = $affiliation->getFinancial())) {
                         $financial = new Financial();
                         $financial->setAffiliation($affiliation);
@@ -559,7 +438,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                     );
                     $financial->setContact($this->contactService->findContactById((int)$formData['financialContact']));
                     $financial->setBranch($formData['financialBranch']);
-                    if (!empty($formData['emailCC'])) {
+                    if (! empty($formData['emailCC'])) {
                         $financial->setEmailCC($formData['emailCC']);
                     }
 
@@ -567,7 +446,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                     $this->affiliationService->save($financial);
                 }
 
-                $this->flashMessenger()->setNamespace('success')->addMessage(
+                $this->flashMessenger()->addSuccessMessage(
                     \sprintf(
                         $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
                         $affiliation
@@ -615,7 +494,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($request->isPost()) {
-            if (!empty($data['cancel'])) {
+            if (! empty($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/view',
                     ['id' => $affiliation->getId()],
@@ -623,7 +502,7 @@ final class AffiliationManagerController extends AffiliationAbstractController
                 );
             }
 
-            if (!empty($data['delete'])) {
+            if (! empty($data['delete'])) {
                 $affiliation->removeAssociate($contact);
                 $this->affiliationService->save($affiliation);
 

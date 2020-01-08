@@ -6,7 +6,7 @@
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -15,61 +15,41 @@ namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Entity\Affiliation;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 use Project\Entity\Report\Report;
 
 /**
  * Class EffortSpentLink
  * @package Affiliation\View\Helper
  */
-class EffortSpentLink extends LinkAbstract
+final class EffortSpentLink extends AbstractLink
 {
-    /**
-     * @param Report $report
-     * @param string $action
-     * @param string $show
-     * @param Affiliation $affiliation
-     *
-     * @return string
-     */
-    public function __invoke(Affiliation $affiliation, $action, $show, Report $report): string
-    {
-        $this->setReport($report);
-        $this->setAffiliation($affiliation);
-        $this->setAction($action);
-        $this->setShow($show);
-        /*
-         * Set the non-standard options needed to give an other link value
-         */
-        $this->setShowOptions(
-            [
-                'update' => $this->translator->translate('txt-update'),
-            ]
-        );
-        if (!$this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
+    public function __invoke(
+        Affiliation $affiliation,
+        string $show,
+        Report $report
+    ): string {
+        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, 'update-effort-spent')) {
             return '';
         }
 
-        $this->addRouterParam('id', $this->getAffiliation()->getId());
-        $this->addRouterParam('report', $this->getReport()->getId());
+        $routeParams = [];
+        $routeParams['id'] = $affiliation->getId();
+        $routeParams['report'] = $report->getId();
+        $showOptions['text'] = $this->translator->translate('txt-update');
 
-        return $this->createLink();
-    }
+        $linkParams = [
+            'icon' => 'fa-pencil-square-o',
+            'route' => 'community/affiliation/edit/update-effort-spent',
+            'text' => $showOptions[$show]
+                ?? sprintf($this->translator->translate('txt-report-on-%s'), $report->parseName())
+        ];
 
+        $linkParams['action'] = 'update-effort-spent';
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
-    public function parseAction(): void
-    {
-        switch ($this->getAction()) {
-            case 'update-effort-spent':
-                $this->setRouter('community/affiliation/edit/update-effort-spent');
-                $this->setText(sprintf($this->translator->translate("txt-report-on-%s"), $this->getReport()->parseName()));
-                break;
-            default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
-        }
+        return $this->parse(Link::fromArray($linkParams));
     }
 }

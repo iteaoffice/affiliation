@@ -1,13 +1,9 @@
 <?php
+
 /**
- * ITEA Office all rights reserved
- *
- * PHP Version 7
- *
- * @category    Project
- *
+*
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/project for the canonical source repository
@@ -22,9 +18,11 @@ use Project\Form\CostPerAffiliationFieldset;
 use Project\Form\EffortPerAffiliationFieldset;
 use Project\Service\ProjectService;
 use Project\Service\WorkpackageService;
-use Zend\Form\Fieldset;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Fieldset;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Element\Csrf;
 
 /**
  * Class CostAndEffort
@@ -62,7 +60,8 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
             $affiliationFieldSet = new EffortPerAffiliationFieldset(
                 $affiliation,
                 $affiliation->getProject(),
-                $projectService
+                $projectService,
+                $workpackage
             );
 
             $workPackageFieldset->add($affiliationFieldSet);
@@ -73,28 +72,28 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Csrf',
+                'type' => Csrf::class,
                 'name' => 'csrf',
             ]
         );
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update-costs-and-effort"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update-costs-and-effort'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );

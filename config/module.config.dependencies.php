@@ -1,13 +1,8 @@
 <?php
 /**
- * ITEA Office all rights reserved
- *
- * PHP Version 7
- *
- * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/project for the canonical source repository
@@ -19,10 +14,7 @@ namespace Affiliation;
 
 use Admin\Service\AdminService;
 use Affiliation\Search\Service\AffiliationSearchService;
-use Affiliation\Service\AffiliationService;
-use Affiliation\Service\DoaService;
-use Affiliation\Service\FormService;
-use Affiliation\Service\LoiService;
+use Affiliation\Service;
 use Application\Service\AssertionService;
 use Contact\Service\ContactService;
 use Contact\Service\SelectionContactService;
@@ -41,20 +33,16 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use ZfcTwig\View\TwigRenderer;
 
 return [
     ConfigAbstractFactory::class => [
         // Controller plugins
-        Search\Service\AffiliationSearchService::class => [
-            'Config'
-        ],
-        Service\AffiliationService::class              => [
+        Service\AffiliationService::class => [
             EntityManager::class,
             SelectionContactService::class,
-            Search\Service\AffiliationSearchService::class,
             GeneralService::class,
             ProjectService::class,
             InvoiceService::class,
@@ -69,18 +57,21 @@ return [
             'ControllerPluginManager',
             TranslatorInterface::class
         ],
-        Service\DoaService::class                      => [
+        Service\QuestionnaireService::class => [
             EntityManager::class
         ],
-        Service\LoiService::class                      => [
+        Service\DoaService::class => [
+            EntityManager::class
+        ],
+        Service\LoiService::class => [
             EntityManager::class
         ],
         Controller\AffiliationManagerController::class => [
-            AffiliationService::class,
-            AffiliationSearchService::class,
+            Service\AffiliationService::class,
             TranslatorInterface::class,
             ProjectService::class,
             VersionService::class,
+            ContractService::class,
             ContactService::class,
             OrganisationService::class,
             ReportService::class,
@@ -91,8 +82,8 @@ return [
             AssertionService::class,
             EntityManager::class
         ],
-        Controller\CommunityController::class          => [
-            AffiliationService::class,
+        Controller\CommunityController::class => [
+            Service\AffiliationService::class,
             ProjectService::class,
             VersionService::class,
             ContactService::class,
@@ -104,28 +95,30 @@ return [
             ParentService::class,
             CallService::class,
             ModuleOptions::class,
-            AssertionService::class
+            AssertionService::class,
+            Service\QuestionnaireService::class
         ],
-        Controller\DoaController::class                => [
-            AffiliationService::class,
+        Controller\DoaController::class => [
+            Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
-            TranslatorInterface::class
+            TranslatorInterface::class,
+            TwigRenderer::class
         ],
-        Controller\DoaManagerController::class         => [
-            DoaService::class,
-            AffiliationService::class,
+        Controller\DoaManagerController::class => [
+            Service\DoaService::class,
+            Service\AffiliationService::class,
             ContactService::class,
             ProjectService::class,
             GeneralService::class,
             EmailService::class,
             DeeplinkService::class,
-            FormService::class,
+            Service\FormService::class,
             EntityManager::class,
             TranslatorInterface::class
         ],
-        Controller\EditController::class               => [
-            AffiliationService::class,
+        Controller\EditController::class => [
+            Service\AffiliationService::class,
             ProjectService::class,
             VersionService::class,
             ContactService::class,
@@ -134,30 +127,51 @@ return [
             ReportService::class,
             ContractService::class,
             WorkpackageService::class,
-            FormService::class,
+            Service\FormService::class,
             EntityManager::class,
             TranslatorInterface::class
         ],
-        Controller\LoiController::class                => [
-            LoiService::class,
-            AffiliationService::class,
+        Controller\LoiController::class => [
+            Service\LoiService::class,
+            Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
             TranslatorInterface::class
         ],
-        Controller\LoiManagerController::class         => [
-            LoiService::class,
+        Controller\LoiManagerController::class => [
+            Service\LoiService::class,
             ContactService::class,
-            AffiliationService::class,
+            Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
             EmailService::class,
             EntityManager::class,
-            FormService::class,
+            Service\FormService::class,
             TranslatorInterface::class
         ],
-        Controller\Plugin\RenderPaymentSheet::class    => [
-            AffiliationService::class,
+        Controller\Questionnaire\CategoryManagerController::class => [
+            Service\QuestionnaireService::class,
+            Service\FormService::class,
+            TranslatorInterface::class
+        ],
+        Controller\Questionnaire\QuestionManagerController::class => [
+            Service\QuestionnaireService::class,
+            Service\FormService::class,
+            TranslatorInterface::class
+        ],
+        Controller\Questionnaire\QuestionnaireManagerController::class => [
+            Service\QuestionnaireService::class,
+            Service\FormService::class,
+            TranslatorInterface::class
+        ],
+        Controller\Questionnaire\QuestionnaireController::class => [
+            Service\AffiliationService::class,
+            Service\QuestionnaireService::class,
+            EntityManager::class,
+            TranslatorInterface::class
+        ],
+        Controller\Plugin\RenderPaymentSheet::class => [
+            Service\AffiliationService::class,
             Options\ModuleOptions::class,
             ProjectService::class,
             VersionService::class,
@@ -167,29 +181,27 @@ return [
             InvoiceService::class,
             TranslatorInterface::class
         ],
-        Controller\Plugin\RenderDoa::class             => [
+        Controller\Plugin\RenderLoi::class => [
             Options\ModuleOptions::class,
             ContactService::class,
             TwigRenderer::class
         ],
-        Controller\Plugin\RenderLoi::class             => [
-            Options\ModuleOptions::class,
-            ContactService::class,
-            TwigRenderer::class
-        ],
-        Controller\Plugin\MergeAffiliation::class      => [
+        Controller\Plugin\MergeAffiliation::class => [
             AdminService::class,
             EntityManager::class
         ],
-        View\Helper\PaymentSheet::class                => [
+        View\Helper\PaymentSheet::class => [
             ProjectService::class,
             ContractService::class,
             InvoiceService::class,
-            AffiliationService::class,
+            Service\AffiliationService::class,
             ContactService::class,
             OrganisationService::class,
             VersionService::class,
             TwigRenderer::class,
+        ],
+        View\Helper\Questionnaire\QuestionnaireHelper::class => [
+            Service\QuestionnaireService::class,
         ]
     ]
 ];

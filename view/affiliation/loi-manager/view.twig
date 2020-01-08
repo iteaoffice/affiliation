@@ -1,7 +1,7 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-letter-of-intent")) %}
 
-<h1 class="display-4">{{ translate("txt-letter-of-intent") }}</h1>
+<h1>{{ translate("txt-letter-of-intent") }}</h1>
 
 <dl class="dl-horizontal">
     <dt>{{ translate("txt-loi-id") }}</dt>
@@ -30,7 +30,7 @@
     {% endif %}
     <dt>{{ translate("txt-date-approved") }}</dt>
     {% if loi.dateApproved %}
-        <dd>{{ loi.dateApproved|string_date }}</dd>
+        <dd>{{ loi.dateApproved|string_date }} ({{ loi.approver.parseFullname }})</dd>
     {% else %}
         <dd>{{ translate("txt-this-loi-has-not-been-approved") }}</dd>
     {% endif %}
@@ -38,8 +38,10 @@
         <dt>{{ translate("txt-content-type") }}</dt>
         <dd>{{ contentTypeIcon(loi.contentType) }} {{ loi.contentType.description }} ({{ loi.size|parse_size }})</dd>
     {% endif %}
-    <dt>{{ translate("txt-download") }}</dt>
-    <dd>{{ loiLink(loi,'download','text') }}</dd>
+    {% if loi.hasObject() %}
+        <dt>{{ translate("txt-download") }}</dt>
+        <dd>{{ loiLink(loi,'download','text') }}</dd>
+    {% endif %}
 </dl>
 
 {{ loiLink(loi,'edit-admin','button') }}

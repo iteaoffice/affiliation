@@ -17,7 +17,7 @@
 {% endif %}
 
 
-<table class="table table-striped table-hover table-condensed table-sm">
+<table class="table table-striped table-hover table-sm">
     <thead>
     <tr>
         <th colspan="2">{{ translate("txt-project-details") }}</th>
@@ -69,7 +69,7 @@
     </tr>
     <tr>
         <td>{{ translate("txt-total-person-years") }}</td>
-        <td>{{ versionContributionInformation.totalEffort|parse_effort }} {{ translate('txt-py') }}</td>
+        <td>{{ versionContributionInformation.totalEffort|parse_effort }} {{ translate("txt-py") }}</td>
     </tr>
 
     <tr>
@@ -105,7 +105,9 @@
             <td>
                 {{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch,affiliation.financial.organisation) }}
                 <br>
-                {{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName() }}<br>
+                {% if not affiliation.financial.organisation.financial.hasOmitContact %}
+                    {{ contactService.parseAttention(financialContact) }} {{ financialContact.parseFullName() }}<br>
+                {% endif %}
                 {{ financialAddress }}<br>
                 {{ financialAddress.zipCode }} {{ financialAddress.city }}<br>
                 {{ financialAddress.country|upper }}
@@ -129,7 +131,7 @@
 
 <h2>{{ translate("txt-contribution-overview") }}</h2>
 
-<table class="table table-striped table-hover table-condensed table-sm">
+<table class="table table-striped table-hover table-sm">
     <thead>
     <tr>
         <th>{{ translate("txt-period") }}</th>
@@ -203,7 +205,7 @@
                 <td>
                     <span class="pull-right">{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal() }}{% else %}{{ 0|currency_decimal() }}{% endif %}</span>
                 </td>
-                <td>{{ dueFactor|localizednumber('percent') }}</td>
+                <td>{{ dueFactor|format_number(style='percent') }}</td>
                 <td><span class="pull-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</span></td>
             {% endif %}
 
@@ -214,8 +216,8 @@
                     &euro; {% if affiliationService.isFundedInYear(affiliation, year) %}{{ projectService.findProjectFeeByYear(year).contribution|number_format(2) }}{% else %}0{% endif %}</td>
                 <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal() }}{% else %}{{ 0|currency_decimal() }}{% endif %}</td>
 
-                <td>{{ dueFactor|localizednumber('percent') }}</td>
-                <td><span class="pull-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</span></td>
+                <td>{{ dueFactor|format_number(style='percent') }}</td>
+                <td class="text-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</td>
             {% endif %}
             {% set totalDueBasedOnProjectData = totalDueBasedOnProjectData + dueInYear * dueFactor %}
         </tr>
@@ -237,14 +239,64 @@
     </tfoot>
 </table>
 
+{% set contributionPaid = affiliationService.parseContributionPaid(affiliation, year, period) %}
+{% set hasAlreadyPaidInvoices = false %}
+    {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => (affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period))) -%}
+        {% set hasAlreadyPaidInvoices = true %}
+    {% endfor %}
+
+    {% if hasAlreadyPaidInvoices %}
+        <h2>{{ translate("txt-overview-of-invoices-sent-up-to-year-%s-period-%s")|format(year, period) }}</h2>
+        {# paid invoices in the selected period#}
+        <table class="table table-striped table-hover table-sm">
+            <thead>
+            <tr>
+                <th>{{ translate("txt-invoice") }}</th>
+                <th>{{ translate("txt-period") }}</th>
+                <th>{{ translate("txt-invoice-period") }}</th>
+                <th>{{ translate("txt-date") }}</th>
+                <th>{{ translate("txt-contribution-euro") }}</th>
+                <th>{{ translate("txt-paid") }}</th>
+                <th class="text-right">{{ translate("txt-invoiced-euro") }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period)) -%}
+                <tr>
+                    <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }} {{ invoiceLink(affiliationInvoice.invoice,'view','icon') }}</td>
+                    <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
+                    <td>
+                        {% for year, periods in affiliationInvoice.years %}
+                            {{ year }} ({% for period in periods %}{{ period }}H{% if not loop.last %}, {% endif %}{% endfor %})
+                        {% endfor %}
+                    </td>
+                    <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
+                    <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                    <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
+                    <td>
+                        <span class="pull-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</span>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+                <th colspan="4" class="text-right">
+                    {{ translate("txt-total-contribution-invoiced-upto-year-%s-period-%s")|format(year,period) }}</th>
+                <th style="border-top: 2px solid black;">{{ contributionPaid|currency_decimal() }}</th>
+                <td colspan="2"></td>
+            </tr>
+            </tfoot>
+        </table>
+    {% endif %}
 
 {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
 
-    {% set total = affiliationService.parseContractTotal(affiliation, contractVersion, year, period, true) %}
+    {% set total = affiliationService.parseContractTotal(affiliation, contractVersion, year, period) %}
 
-    {% if affiliationService.findInvoiceLines(affiliation, contractVersion, year, period, true)|length > 0 %}
+    {% if affiliationService.findInvoiceLines(affiliation, contractVersion, year, period)|length > 0 %}
         <h2>{{ translate("txt-upcoming-invoice-for-year-%s-period-%s")|format(year, period) }}</h2>
-        <table class="table table-hover table-striped table-condensed table-sm">
+        <table class="table table-hover table-striped table-sm">
             <thead>
             <tr>
                 <th>{{ translate("txt-period") }}</th>
@@ -254,7 +306,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for invoiceLine in affiliationService.findInvoiceLines(affiliation, contractVersion, year, period, true) %}
+            {% for invoiceLine in affiliationService.findInvoiceLines(affiliation, contractVersion, year, period) %}
                 <tr>
                     <td>{{ invoiceLine.periodOrdinal }}</td>
                     <td>{{ invoiceLine.description }}</td>
@@ -267,12 +319,69 @@
             <tr>
                 <td></td>
                 <th class="text-right">{{ translate("txt-total") }}</th>
-                <th style="border-top: 2px solid black;"><span
-                            class="pull-right">{{ (total)|currency_decimal() }}</span>
-                </th>
+                <th style="border-top: 2px solid black;" class="text-right">{{ (total)|currency_decimal() }}</th>
                 <th>{% if  total < -0.1 %}{{ translate("txt-credit") }}{% endif %}</th>
             </tr>
             </tfoot>
+        </table>
+    {% endif %}
+
+    {% set hasInvoicesInPeriod = false %}
+    {% set hasVat = false %}
+    {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year == year and affiliationInvoice.period == period) -%}
+        {% set hasInvoicesInPeriod = true %}
+
+        {% set hasVat = invoiceService.hasVat(affiliationInvoice.invoice) %}
+    {% endfor %}
+
+    {% if hasInvoicesInPeriod %}
+        <h2>{{ translate("txt-invoice-sent-in-year-%s-period-%s")|format(year, period) }}</h2>
+        {# paid invoices in the selected period#}
+        <table class="table table-striped table-hover table-sm">
+            <thead>
+            <tr>
+                <th>{{ translate("txt-invoice") }}</th>
+                <th>{{ translate("txt-period") }}</th>
+                <th>{{ translate("txt-invoice-period") }}</th>
+                <th>{{ translate("txt-date") }}</th>
+                <th>{{ translate("txt-contribution-euro") }}</th>
+                <th>{{ translate("txt-paid") }}</th>
+                <th class="text-right">{{ translate("txt-invoiced-euro") }} {% if hasVat %}({{ translate("txt-including-vat") }}){% endif %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year == year and affiliationInvoice.period == period) -%}
+                <tr>
+                    <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }} {{ invoiceLink(affiliationInvoice.invoice,'view','icon') }}</td>
+                    <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
+                    <td>
+                        {% for year, periods in affiliationInvoice.years %}
+                            {{ year }} ({% for period in periods %}{{ period }}H{% if not loop.last %}, {% endif %}{% endfor %})
+                        {% endfor %}
+                    </td>
+                    <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
+                    <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                    <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
+                    <td class="text-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <th colspan="6">{{ translate("txt-invoiced-in-%s")|format(affiliationInvoice.invoice.invoiceNr) }}</th>
+                </tr>
+                {% for row in affiliationInvoice.invoice.row %}
+                    <tr>
+                        <td></td>
+                        <td colspan="2">{{ row.row|raw }}
+                        <td colspan="4">{{ (row.quantity * row.amount)|currency_decimal() }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td colspan="2" class="text-right">{{ translate("txt-total-excl-vat") }}</td>
+                    <th colspan="4">{{ affiliationInvoice.amountInvoiced|currency_decimal() }}</th>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
     {% endif %}
 
@@ -280,59 +389,16 @@
 
 {% else %}
 
-    {% set total =  affiliationService.parseTotal(affiliation, version, year, period) %}
+    {% set total = affiliationService.parseTotal(affiliation, version, year, period) %}
+
     {% set contributionDue =  affiliationService.parseContributionDue(affiliation, version, year, period) %}
-    {% set contributionPaid = affiliationService.parseContributionPaid(affiliation, year, period) %}
+
     {% set balance = affiliationService.parseBalance(affiliation, version, year, period) %}
 
     {% set contribution = affiliationService.parseContribution(affiliation, version, null, year, period, false) %}
     {% set contributionRaw = affiliationService.parseContribution(affiliation, version, null, year, period, false, true) %}
 
-    {% set hasAlreadyPaidInvoices = false %}
-    {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.invoice.dayBookNumber and affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period) %}
-        {% set hasAlreadyPaidInvoices = true %}
-    {% endfor %}
-
-    {% if hasAlreadyPaidInvoices %}
-        <h2>{{ translate("txt-already-paid-invoices") }}</h2>
-        {# paid invoices in the selected period#}
-        <table class="table table-striped table-hover table-condensed table-sm">
-            <thead>
-            <tr>
-                <th>{{ translate("txt-invoice") }}</th>
-                <th>{{ translate("txt-period") }}</th>
-                <th>{{ translate("txt-date") }}</th>
-                <th>{{ translate("txt-contribution-euro") }}</th>
-                <th>{{ translate("txt-paid") }}</th>
-                <th><span class="pull-right">{{ translate("txt-invoiced-euro") }}</span></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.invoice.dayBookNumber and affiliationInvoice.year < year or (affiliationInvoice.year == year and affiliationInvoice.period < period) %}
-                <tr>
-                    <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
-                    <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}H</td>
-                    <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
-                    <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
-                    <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
-                    <td>
-                        <span class="pull-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</span>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-            <tfoot>
-            <tr>
-                <th colspan="3" class="text-right">
-                    {{ translate("txt-total-contribution-invoiced-upto-year-%s-period-%s")|format(year,period) }}</th>
-                <th style="border-top: 2px solid black;">{{ contributionPaid|currency_decimal() }}</th>
-                <td colspan="2"></td>
-            </tr>
-            </tfoot>
-        </table>
-    {% endif %}
-
-    <table class="table table-striped table-hover table-condensed table-sm">
+    <table class="table table-striped table-hover table-sm">
         <thead>
         <tr>
             <th colspan="2">{{ translate("txt-correction-calculation") }}</th>
@@ -360,7 +426,7 @@
     </table>
 
     <h2>{{ translate("txt-upcoming-invoice-for-year-%s-period-%s")|format(year,period) }}</h2>
-    <table class="table table-hover table-striped table-condensed table-sm">
+    <table class="table table-hover table-striped table-sm">
         <thead>
         <tr>
             <th>{{ translate("txt-period") }}</th>
@@ -372,7 +438,7 @@
         <tbody>
         <tr>
             <td>{{ year }}-{{ period }}</td>
-            <td>{{ translate("txt-%s-contribution-for-%s")|format(affiliationService.parseContributionFactor(affiliation, year, period)|localizednumber('percent'),year) }}</td>
+            <td>{{ translate("txt-%s-contribution-for-%s")|format(affiliationService.parseContributionFactor(affiliation, year, period)|format_number(style='percent'),year) }}</td>
             <td><span class="pull-right">{{ contribution|currency_decimal() }}</span></td>
             <td></td>
         </tr>
@@ -395,14 +461,14 @@
     </table>
 
     {% set hasAlreadySentInvoices = false %}
-    {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period) %}
+    {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period)) -%}
         {% set hasAlreadySentInvoices = true %}
     {% endfor %}
 
     {% if hasAlreadySentInvoices %}
         <h2>{{ translate("txt-already-sent-invoices-after-invoice-for-year-%s-period-%s")|format(year,period) }}</h2>
 
-        <table class="table table-hover table-striped table-condensed table-sm">
+        <table class="table table-hover table-striped table-sm">
             <thead>
             <tr>
                 <th>{{ translate("txt-invoice-number") }}</th>
@@ -414,7 +480,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for affiliationInvoice in affiliation.invoice if affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period) %}
+            {% for affiliationInvoice in affiliation.invoice|filter(affiliationInvoice => affiliationInvoice.year > year or (affiliationInvoice.year == year and  affiliationInvoice.period > period)) -%}
                 {% if invoiceService.isSent(affiliationInvoice.invoice) %}
                     <tr>
                         <td>{{ affiliationInvoice.invoice.invoiceNr }} {{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
@@ -433,12 +499,4 @@
             </tbody>
         </table>
     {% endif %}
-
-
 {% endif %}
-
-
-
-
-
-

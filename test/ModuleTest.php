@@ -5,7 +5,7 @@
  * @category    ProjectTest
  * @package     Entity
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -15,10 +15,10 @@ namespace AffiliationTest;
 use Affiliation\Module;
 use Affiliation\Search\Service\AffiliationSearchService;
 use Testing\Util\AbstractServiceTest;
-use Zend\Mvc\Application;
-use Zend\Mvc\Controller\PluginManager;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Zend\View\HelperPluginManager;
+use Laminas\Mvc\Application;
+use Laminas\Mvc\Controller\PluginManager;
+use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Laminas\View\HelperPluginManager;
 
 /**
  * Class GeneralTest
@@ -32,14 +32,11 @@ class ModuleTest extends AbstractServiceTest
         $module = new Module();
         $config = $module->getConfig();
 
-        $this->assertInternalType('array', $config);
+        $this->assertIsArray($config);
         $this->assertArrayHasKey('service_manager', $config);
         $this->assertArrayHasKey(ConfigAbstractFactory::class, $config);
     }
 
-    /**
-     *
-     */
     public function testInstantiationOfConfigAbstractFactories(): void
     {
         $module = new Module();
@@ -48,10 +45,6 @@ class ModuleTest extends AbstractServiceTest
         $abstractFacories = $config[ConfigAbstractFactory::class] ?? [];
 
         foreach ($abstractFacories as $service => $dependencies) {
-
-            if ($service === AffiliationSearchService::class) {
-                continue;
-            }
 
             $instantiatedDependencies = [];
             foreach ($dependencies as $dependency) {

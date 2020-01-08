@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -13,15 +14,23 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use Contact\Form\Element\Contact;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use Invoice\Entity\Method;
 use Organisation\Entity\OParent;
+use Organisation\Form\Element\Organisation;
 use Organisation\Service\ParentService;
-use Zend\Form\Element\Radio;
-use Zend\Form\Element\Select;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Element\Checkbox;
+use Laminas\Form\Element\Date;
+use Laminas\Form\Element\Email;
+use Laminas\Form\Element\Radio;
+use Laminas\Form\Element\Select;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Element\Text;
+use Laminas\Form\Element\Textarea;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
 
 /**
  * Class AdminAffiliation
@@ -39,7 +48,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Organisation\Form\Element\Organisation',
+                'type'    => Organisation::class,
                 'name'    => 'organisation',
                 'options' => [
                     'label'      => _('txt-organisation'),
@@ -151,7 +160,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Checkbox',
+                'type'    => Checkbox::class,
                 'name'    => 'createParentFromOrganisation',
                 'options' => [
                     'label'      => _('txt-create-parent-from-organisation-label'),
@@ -162,7 +171,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Text',
+                'type'    => Text::class,
                 'name'    => 'branch',
                 'options' => [
                     'label'      => _('txt-branch'),
@@ -173,7 +182,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Date',
+                'type'    => Date::class,
                 'name'    => 'dateEnd',
                 'options' => [
                     'label'      => _('txt-date-removed'),
@@ -184,7 +193,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Date',
+                'type'    => Date::class,
                 'name'    => 'dateSelfFunded',
                 'options' => [
                     'label'      => _('txt-date-self-funded'),
@@ -195,7 +204,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Contact\Form\Element\Contact',
+                'type'    => Contact::class,
                 'name'    => 'contact',
                 'options' => [
                     'label'      => _('txt-technical-contact'),
@@ -206,7 +215,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
                 'name'       => 'valueChain',
                 'options'    => [
                     'label'      => _('txt-position-on-value-chain'),
@@ -220,7 +229,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'mainContribution',
                 'options'    => [
                     'label'      => _('txt-main-contribution-for-the-project'),
@@ -234,7 +243,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'marketAccess',
                 'options'    => [
                     'label'      => _('txt-market-access'),
@@ -249,34 +258,54 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
-                'name'       => 'strategicImportance',
-                'options'    => [
+                'type'    => Textarea::class,
+                'name'    => 'strategicImportance',
+                'options' => [
                     'label'      => _('txt-strategic-importance'),
                     'help-block' => _('txt-strategic-importance-inline-help'),
                 ],
-                'attributes' => [
-                    'class' => 'form-control',
-                ],
             ]
         );
 
         $this->add(
             [
-                'type'       => 'Contact\Form\Element\Contact',
-                'name'       => 'financialContact',
+                'type'    => Contact::class,
+                'name'    => 'financialContact',
+                'options' => [
+                    'label'      => _('txt-financial-contact'),
+                    'help-block' => _('txt-financial-contact-help-block'),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'       => Text::class,
+                'name'       => 'communicationContactName',
                 'options'    => [
-                    'label' => _('txt-financial-contact'),
+                    'label'      => _('txt-communication-contact-name'),
+                    'help-block' => _('txt-communication-contact-name-help-block'),
                 ],
                 'attributes' => [
-                    'class' => 'form-control',
-                ],
+                    'placeholder' => _('txt-communication-contact-name-placeholder'),
+                ]
             ]
         );
-
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Text',
+                'type'       => Text::class,
+                'name'       => 'communicationContactEmail',
+                'options'    => [
+                    'label'      => _('txt-communication-contact-email'),
+                    'help-block' => _('txt-communication-contact-email-help-block'),
+                ],
+                'attributes' => [
+                    'placeholder' => _('txt-communication-contact-email-placeholder'),
+                ]
+            ]
+        );
+        $this->add(
+            [
+                'type'    => Text::class,
                 'name'    => 'financialBranch',
                 'options' => [
                     'label'      => _('txt-branch'),
@@ -287,7 +316,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Organisation\Form\Element\Organisation',
+                'type'    => Organisation::class,
                 'name'    => 'financialOrganisation',
                 'options' => [
                     'label'      => _('txt-financial-organisation'),
@@ -298,7 +327,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Email',
+                'type'    => Email::class,
                 'name'    => 'emailCC',
                 'options' => [
                     'label'      => _('txt-email-cc'),
@@ -330,7 +359,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
                     'class' => 'btn btn-primary',
@@ -341,7 +370,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
                     'class' => 'btn btn-warning',
@@ -352,7 +381,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'delete',
                 'attributes' => [
                     'class' => 'btn btn-danger',

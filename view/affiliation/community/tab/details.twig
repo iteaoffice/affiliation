@@ -1,0 +1,161 @@
+<h2>{{ translate("txt-affiliation-information") }}</h2>
+
+<dl class="dl-horizontal">
+    <dt>{{ translate("txt-project-name") }}</dt>
+    <dd>{{ projectLink(affiliation.project,'view-community', 'name') }}</dd>
+    <dt>{{ translate("txt-project-title") }}</dt>
+    <dd>{{ affiliation.project.title }} ({{ projectService.parseStatus(affiliation.project) }})</dd>
+    <dt>{{ translate("txt-position-on-value-chain") }}</dt>
+    <dd>{{ affiliation.valueChain|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
+    <dd>{{ affiliation.mainContribution|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dt>{{ translate("txt-strategic-importance") }}</dt>
+    <dd>{{ affiliation.strategicImportance|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dt>{{ translate("txt-market-access") }}</dt>
+    <dd>{{ affiliation.marketAccess|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    {% if callService.requireDoaPerProgram(affiliation.project.call) %}
+        <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
+        {% if affiliation.parentOrganisation %}
+            <dd>{% for doa in affiliation.parentOrganisation.parent.doa|filter(doa => doa.program.id == project.call.program.id) -%}
+                    {% if programDoa.dateApproved is null %}
+                        {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(doa.dateCreated|date("d-m-Y"))|raw }}
+                        {{ parentDoaLink(doa,'replace','icon') }}
+                        {{ parentDoaLink(doa,'download','icon') }}
+                    {% else %}
+                        {{ translate("txt-doa-received-and-approved-on-%s")|format(doa.dateApproved|date("d-m-Y"))|raw }}
+                        {{ parentDoaLink(doa,'download','icon') }}
+                    {% endif %}
+                {% else %}
+                    {{ translate("txt-no-doa-could-be-found-for-%s")|format(project.call.program) }}
+                {% endfor %}
+            </dd>
+        {% else %}
+            <dd>{% for programDoa in affiliation.organisation.programDoa|filter(programDoa => programDoa.program.id == project.call.program.id) -%}
+                    {% if programDoa.dateApproved is null %}
+                        {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(programDoa.dateCreated|date("d-m-Y"))|raw }}
+                        {{ programDoaLink(programDoa,'replace','icon') }}
+                        {{ programDoaLink(programDoa,'download','icon') }}
+                    {% else %}
+                        {{ translate("txt-doa-received-and-approved-on-%s")|format(programDoa.dateApproved|date("d-m-Y"))|raw }}
+                        {{ programDoaLink(programDoa,'download','icon') }}
+                    {% endif %}
+                {% else %}
+                    {{ translate("txt-no-doa-could-be-found-for-%s")|format(project.call.program) }}
+                {% endfor %}
+            </dd>
+        {% endif %}
+    {% endif %}
+
+    {% if callService.requireDoaPerProject(affiliation.project.call) %}
+        <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
+        <dd>
+            {% if not affiliationService.hasDoa(affiliation) %}
+                {% set doaLinkText = doaLink(null,'submit','text', affiliation) %}
+
+                {{ doaLinkText|default(translate("txt-no-doa-uploaded-yet"))|raw }}
+            {% elseif affiliation.doa.dateApproved is null %}
+                {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
+                format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
+                {% if not affiliation.doa.object.isEmpty() %}
+                    {{ doaLink(affiliation.doa,'download','icon') }}
+                {% endif %}
+            {% else %}
+                {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date) }}
+                {% if not affiliation.doa.object.isEmpty() %}
+                    {{ doaLink(affiliation.doa,'download','icon') }}
+                {% endif %}
+            {% endif %}
+        </dd>
+    {% endif %}
+
+    {% if callService.requireLoi(affiliation.project.call) %}
+        <dt>{{ translate("txt-letter-of-intent") }}</dt>
+        <dd>
+            {% if not affiliationService.hasLoi(affiliation) %}
+                {% set loiLinkText = loiLink(null,'submit','text', affiliation) %}
+
+                {{ loiLinkText|default(translate("txt-no-loi-uploaded-yet"))|raw }}
+            {% elseif affiliation.loi.dateApproved is null %}
+                {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
+                format(affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
+                {% if not affiliation.loi.object.isEmpty() %}
+                    {{ loiLink(affiliation.loi,'download','icon') }}
+                {% endif %}
+            {% else %}
+                {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliation.loi.dateApproved|string_date) }}
+                {% if not affiliation.loi.object.isEmpty() %}
+                    {{ loiLink(affiliation.loi,'download','icon') }}
+                {% endif %}
+            {% endif %}
+        </dd>
+    {% endif %}
+    <dt>{{ translate("txt-technical-contact") }}</dt>
+    <dd>{{ affiliation.contact.displayName() }}
+        <a href="mailto:{{ affiliation.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+        {{ contactLink(affiliation.contact,'view-admin','icon') }}
+    </dd>
+
+    {% if affiliation.communicationContactName %}
+        <dt>{{ translate("txt-communication-contact") }}</dt>
+        <dd>{{ affiliation.communicationContactName }} {% if affiliation.communicationContactEmail %} <a
+                    href="mailto:{{ affiliation.communicationContactEmail }}"><i
+                    class="fa fa-envelope-o"></i> {{ affiliation.communicationContactEmail }}</a>{% endif %}</dd>
+    {% endif %}
+
+    {% if affiliation.financial %}
+        <dt>{{ translate("txt-financial-contact") }}</dt>
+        <dd>
+            {{ affiliation.financial.contact.displayName }} <a
+                    href="mailto:{{ affiliation.financial.contact.email }}"><i
+                        class="fa fa-envelope-o"></i></a>
+            {{ contactLink(affiliation.financial.contact,'view-admin','icon') }}
+        </dd>
+    {% endif %}
+</dl>
+
+<dl class="dl-horizontal">
+    <dt>{{ translate("txt-funding-status") }}</dt>
+    <dd>
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                <th>{{ translate("txt-year") }}</th>
+                <th>{{ translate("txt-partner-status") }}</th>
+                <th>{{ translate("txt-office-status") }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for year in projectService.parseYearRange(affiliation.project) %}
+
+                <tr>
+                    <td>
+                        {{ year }}</td>
+                    <td>
+                        {% if affiliationService.isSelfFunded(affiliation) %}
+                            {{ translate("txt-self-funded") }}
+                        {% elseif affiliation.selfFunded is constant("Affiliation\\Entity\\Affiliation::SELF_FUNDED") %}
+                            {{ translate("txt-self-funded-requested") }}
+                        {% elseif (affiliationService.getFundingInYear(affiliation,year)) %}
+                            {{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}
+                        {% else %}
+                            {{ translate("txt-not-set") }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if affiliationService.isSelfFunded(affiliation) %}
+                            {{ translate("txt-self-funded") }}
+                        {% elseif (affiliationService.getFundingInYear(affiliation,year)) %}
+                            <span class="badge funding-status {{ affiliationService.getFundingInYear(affiliation,year, constant("Project\\Entity\\Funding\\Source::SOURCE_OFFICE")).status.parseCssName }}">{{ affiliationService.getFundingInYear(affiliation,year).status.statusFunding }}</span>
+                        {% else %}
+                            {{ translate("txt-not-set") }}
+                        {% endif %}
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </dd>
+</dl>
+
+{{ affiliationLink|raw }} {% if affilation.organisation.hasPendingUpdate() %}{{ organisationUpdateLink(null, 'edit', 'button', affiliation.organisation) }}{% endif %}

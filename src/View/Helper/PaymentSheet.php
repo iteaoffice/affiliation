@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category   Content
  *
  * @author     Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright  Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright  Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license    https://itea3.org/license.txt proprietary
  *
  * @link       https://itea3.org
@@ -25,7 +26,7 @@ use Organisation\Service\OrganisationService;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 use ZfcTwig\View\TwigRenderer;
 
 /**
@@ -35,38 +36,14 @@ use ZfcTwig\View\TwigRenderer;
  */
 final class PaymentSheet extends AbstractHelper
 {
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var TwigRenderer
-     */
-    private $renderer;
+    private ProjectService $projectService;
+    private ContractService $contractService;
+    private InvoiceService $invoiceService;
+    private AffiliationService $affiliationService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private VersionService $versionService;
+    private TwigRenderer $renderer;
 
     public function __construct(
         ProjectService $projectService,
@@ -91,7 +68,7 @@ final class PaymentSheet extends AbstractHelper
 
     public function __invoke(Affiliation $affiliation, int $year, int $period, bool $useContractData = true): string
     {
-        $latestVersion = $this->projectService->getLatestProjectVersion($affiliation->getProject());
+        $latestVersion = $this->projectService->getLatestNotRejectedProjectVersion($affiliation->getProject());
 
         /**
          * We don't need a payment sheet, when we have no versions

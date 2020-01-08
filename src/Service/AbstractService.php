@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -7,7 +8,7 @@
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/affiliation for the canonical source repository
@@ -34,14 +35,8 @@ use Doctrine\ORM\QueryBuilder;
  */
 abstract class AbstractService
 {
-    /**
-     * @var EntityManager
-     */
-    protected $entityManager;
-    /**
-     * @var SelectionContactService
-     */
-    protected $selectionContactService;
+    protected EntityManager $entityManager;
+    protected ?SelectionContactService $selectionContactService;
 
     public function __construct(EntityManager $entityManager, SelectionContactService $selectionContactService = null)
     {
@@ -52,7 +47,7 @@ abstract class AbstractService
     public function findFilteredByContact(string $entity, $filter, Contact $contact): QueryBuilder
     {
         //The 'filter' should always be there to support the repositories
-        if (!\array_key_exists('filter', $filter)) {
+        if (! \array_key_exists('filter', $filter)) {
             $filter['filter'] = [];
         }
 
@@ -123,7 +118,7 @@ abstract class AbstractService
         $role = $this->entityManager->getRepository(Permit\Role::class)->findOneBy(
             [
                 'entity' => $permitEntity,
-                'role'   => $roleName,
+                'role' => $roleName,
             ]
         );
 
@@ -167,9 +162,19 @@ abstract class AbstractService
         return $this->entityManager->getRepository($entity)->findOneBy([$column => $name]);
     }
 
+    public function findBy(
+        string $entity,
+        array $criteria,
+        array $orderBy = null,
+        $limit = null,
+        $offset = null
+    ): ?array {
+        return $this->entityManager->getRepository($entity)->findBy($criteria, $orderBy, $limit, $offset);
+    }
+
     public function save(Entity\AbstractEntity $entity): Entity\AbstractEntity
     {
-        if (!$this->entityManager->contains($entity)) {
+        if (! $this->entityManager->contains($entity)) {
             $this->entityManager->persist($entity);
         }
 
@@ -241,43 +246,5 @@ abstract class AbstractService
     public function refresh(Entity\AbstractEntity $abstractEntity): void
     {
         $this->entityManager->refresh($abstractEntity);
-    }
-
-    public function refreshAccessRolesByContact(Contact $contact): object
-    {
-        $repository = $this->entityManager->getRepository(Access::class);
-
-        //Delete first all the access roles which are dynamically created
-        $repository->removeRolesViaSelectionByContact($contact);
-
-        //Everyone is user, so we add it default
-        $userAccessRole = $repository->findOneBy(['access' => Access::ACCESS_USER,]);
-
-        $roles = $contact->getAccess();
-
-        /** Add the user access role if not set yet */
-        if (!$roles->contains($userAccessRole)) {
-            $roles->add($userAccessRole);
-        }
-
-        /** Add the dymamic roles $access */
-        foreach ($this->findAll(Access::class) as $access) {
-            /**
-             * @var $access Access
-             */
-            if (!$roles->contains($access)
-                && $this->selectionContactService->contactInSelection(
-                    $contact,
-                    $access->getSelection()
-                )
-            ) {
-                $roles->add($access);
-            }
-        };
-
-        $this->entityManager->persist($contact);
-        $this->entityManager->flush();
-
-        return $roles;
     }
 }

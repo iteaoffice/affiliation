@@ -1,0 +1,45 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-affiliation-questionnaire-%s")|format(questionnaire)) %}
+
+<h1>{{ translate("txt-affiliation-questionnaire-%s")|format(questionnaire) }} {{ affiliationQuestionnaireLink(questionnaire,'edit-admin','button') }}</h1>
+
+<dl class="dl-horizontal">
+    <dt>{{ translate("txt-questionnaire-id") }}</dt>
+    <dd>{{ questionnaire.id }}</dd>
+    <dt>{{ translate("txt-questionnaire") }}</dt>
+    <dd>{{ questionnaire.questionnaire }}</dd>
+    <dt>{{ translate("txt-phase") }}</dt>
+    <dd>{{ questionnaire.phase.phase }}</dd>
+</dl>
+
+<h2>{{ translate("txt-questions") }}</h2>
+{%  if questionnaire.questionnaireQuestions|length > 0 %}
+<table class="table table-hover table-striped table-sm">
+    <thead>
+    <tr>
+        <th>{{ translate("txt-sequence") }}</th>
+        <th>{{ translate("txt-question") }}</th>
+        <th>{{ translate("txt-category") }}</th>
+        <th>{{ translate("txt-input-type") }}</th>
+        <th>{{ translate("txt-required") }}</th>
+        <th>{{ translate("txt-enabled") }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for questionnaireQuestion in questionnaire.questionnaireQuestions %}
+        {% set question = questionnaireQuestion.question %}
+        <tr>
+            <td>{{ questionnaireQuestion.sequence }}</td>
+            <td>{{ affiliationQuestionLink(question, 'view', 'name', 50) }}</td>
+            <td>{{ affiliationQuestionCategoryLink(question.category, 'view', 'name') }}</td>
+            <td>{{ translate(question.getInputTypeTemplates()[question.inputType]) }}</td>
+            <td>{% if question.required %}{{ translate("txt-yes") }}{% else %}{{ translate("txt-no") }}{% endif %}</td>
+            <td>{% if question.enabled %}{{ translate("txt-yes") }}{% else %}{{ translate("txt-no") }}{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    {{ ztbalert().info(translate("txt-no-questions-could-be-found"))|raw }}
+{%  endif %}

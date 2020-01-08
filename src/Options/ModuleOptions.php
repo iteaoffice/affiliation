@@ -1,28 +1,30 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Options;
 
-use Zend\Stdlib\AbstractOptions;
+use Laminas\Stdlib\AbstractOptions;
 
 /**
  * Class ModuleOptions
  *
  * @package Affiliation\Options
  */
-final class ModuleOptions extends AbstractOptions implements AffiliationOptionsInterface
+class ModuleOptions extends AbstractOptions implements AffiliationOptionsInterface
 {
-    protected $doaTemplate = '';
-    protected $loiTemplate = '';
-    protected $paymentSheetTemplate = '';
+    protected string $doaTemplate = '';
+    protected string $loiTemplate = '';
+    protected string $paymentSheetTemplate = '';
 
     public function getDoaTemplate(): string
     {

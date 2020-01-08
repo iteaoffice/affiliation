@@ -1,0 +1,11 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-affiliation-questionnaire-%s")|format(questionnaire)) %}
+
+<h1>{{ questionnaire.questionnaire }}</h1>
+{% if questionnaire.description is not empty %}
+    <p>{{ questionnaire.description }}</p>
+{% endif %}
+<hr>
+
+{% include 'affiliation/partial/form/questionnaire/answers' %}

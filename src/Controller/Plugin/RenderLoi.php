@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -15,7 +16,7 @@ namespace Affiliation\Controller\Plugin;
 use Affiliation\Entity\Loi;
 use Affiliation\Options\ModuleOptions;
 use Contact\Service\ContactService;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use ZfcTwig\View\TwigRenderer;
 
 /**
@@ -25,18 +26,9 @@ use ZfcTwig\View\TwigRenderer;
  */
 final class RenderLoi extends AbstractPlugin
 {
-    /**
-     * @var ModuleOptions
-     */
-    private $moduleOptions;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var TwigRenderer
-     */
-    private $renderer;
+    private ModuleOptions $moduleOptions;
+    private ContactService $contactService;
+    private TwigRenderer $renderer;
 
     public function __construct(ModuleOptions $moduleOptions, ContactService $contactService, TwigRenderer $renderer)
     {
@@ -51,7 +43,6 @@ final class RenderLoi extends AbstractPlugin
         $pdf->setTemplate($this->moduleOptions->getDoaTemplate());
         $pdf->AddPage();
         $pdf->SetFontSize(9);
-
 
         // Write the contact details
         $pdf->SetXY(14, 55);

@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -21,11 +22,11 @@ use Affiliation\Service\LoiService;
 use General\Service\GeneralService;
 use Project\Entity\Changelog;
 use Project\Service\ProjectService;
-use Zend\Http\Response;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Validator\File\FilesSize;
-use Zend\Validator\File\MimeType;
-use Zend\View\Model\ViewModel;
+use Laminas\Http\Response;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Validator\File\FilesSize;
+use Laminas\Validator\File\MimeType;
+use Laminas\View\Model\ViewModel;
 
 /**
  * Class LoiController
@@ -34,26 +35,11 @@ use Zend\View\Model\ViewModel;
  */
 final class LoiController extends AffiliationAbstractController
 {
-    /**
-     * @var LoiService
-     */
-    private $loiService;
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var GeneralService
-     */
-    private $generalService;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private LoiService $loiService;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private GeneralService $generalService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         LoiService $loiService,
@@ -92,7 +78,7 @@ final class LoiController extends AffiliationAbstractController
             return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
         }
 
-        if ($this->getRequest()->isPost() && !isset($data['approve']) && $form->isValid()) {
+        if ($this->getRequest()->isPost() && ! isset($data['approve']) && $form->isValid()) {
             if (isset($data['submit'])) {
                 $fileData = $form->getData('file');
                 $this->affiliationService->uploadLoi($fileData['file'], $contact, $affiliation);
@@ -249,12 +235,10 @@ final class LoiController extends AffiliationAbstractController
         $renderProjectLoi = $this->renderLoi()->renderProjectLoi($programLoi);
 
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename=\'' . $programLoi->parseFileName() . '.pdf\''
+                'attachment; filename="' . $programLoi->parseFileName() . '.pdf"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
             ->addHeaderLine('Content-Length', \strlen($renderProjectLoi->getPDFData()));
@@ -280,11 +264,9 @@ final class LoiController extends AffiliationAbstractController
 
         $response->setContent(\stream_get_contents($object));
         $response->getHeaders()
-            ->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename=\'' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '\''
+                'attachment; filename="' . $loi->parseFileName() . '.' . $loi->getContentType()->getExtension() . '"'
             )
             ->addHeaderLine('Pragma: public')
             ->addHeaderLine(

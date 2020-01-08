@@ -6,7 +6,7 @@
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -15,63 +15,39 @@ namespace Affiliation\View\Helper;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Entity\Contact;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 
 /**
- * Create a link to an affiliation.
- *
- * @category    Affiliation
+ * Class AssociateLink
+ * @package Affiliation\View\Helper
  */
-class AssociateLink extends LinkAbstract
+final class AssociateLink extends AbstractLink
 {
-    /**
-     * @param Affiliation $affiliation
-     * @param string $action
-     * @param string $show
-     * @param Contact $contact
-     *
-     * @return string
-     *
-     * @throws \RuntimeException
-     * @throws \Exception
-     */
     public function __invoke(
         Affiliation $affiliation,
-        $action = 'view',
-        $show = 'name',
-        Contact $contact = null
+        string $action,
+        string $show,
+        Contact $contact
     ): string {
-        $this->setAffiliation($affiliation);
-        $this->setAction($action);
-        $this->setShow($show);
-        $this->setContact($contact);
-        /*
-         * Set the non-standard options needed to give an other link value
-         */
-        $this->setShowOptions(
-            [
-                'contact' => $this->getContact()->getDisplayName(),
-            ]
-        );
+        $routeParams = [];
+        $showOptions = [];
 
-        $this->addRouterParam('id', $this->getAffiliation()->getId());
-        $this->addRouterParam('contact', $this->getContact()->getId());
+        $routeParams['id'] = $contact->getId();
+        $routeParams['contact'] = $contact->getId();
+        $showOptions['contact'] = $contact->parseFullName();
 
-        return $this->createLink();
-    }
+        $linkParams = [
+            'icon' => 'fa-user-o',
+            'route' => 'zfcadmin/affiliation/edit-associate',
+            'text' => $showOptions[$show]
+                ?? $this->translator->translate('txt-edit-associate')
+        ];
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
-    public function parseAction(): void
-    {
-        switch ($this->getAction()) {
-            case 'edit':
-                $this->setRouter('zfcadmin/affiliation/edit-associate');
-                break;
-            default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
-        }
+        $linkParams['action'] = $action;
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
+
+        return $this->parse(Link::fromArray($linkParams));
     }
 }

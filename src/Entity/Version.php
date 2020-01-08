@@ -1,64 +1,58 @@
 <?php
+
 /**
  * ITEA copyright message placeholder.
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\Entity;
 
+use Contact\Entity\Contact;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
+use Laminas\Form\Annotation;
+
+use function sprintf;
 
 /**
- * Entity for the Affiliation.
- *
  * @ORM\Table(name="affiliation_version")
  * @ORM\Entity
- * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
  * @Annotation\Name("affiliation_version")
- *
- * @category    Affiliation
  */
 class Version extends AbstractEntity
 {
     /**
-     * @var integer
+     * @var int
      *
-     * @ORM\Column(name="affiliation_version_id", type="integer", nullable=false)
+     * @ORM\Column(name="affiliation_version_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
     /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="version")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     * })
      *
      * @var Affiliation
      */
     private $affiliation;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliationVersion")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * })
      *
-     * @var \Contact\Entity\Contact
+     * @var Contact
      */
     private $contact;
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Version\Version", inversedBy="affiliationVersion")
-     * @ORM\JoinColumns({
      * @ORM\JoinColumn(name="version_id", referencedColumnName="version_id", nullable=false)
-     * })
      *
      * @var \Project\Entity\Version\Version
      */
@@ -81,10 +75,14 @@ class Version extends AbstractEntity
      * @var \Project\Entity\Funding\Version[]|ArrayCollection
      */
     private $fundingVersion;
-
     /**
-     * Version constructor.
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\ContractVersion", inversedBy="affiliationVersion", cascade="persist")
+     * @ORM\JoinColumn(name="affiliation_contract_version_id", referencedColumnName="affiliation_contract_version_id", nullable=true)
+     *
+     * @var ContractVersion
      */
+    private $contractVersion;
+
     public function __construct()
     {
         $this->costVersion = new ArrayCollection();
@@ -92,168 +90,107 @@ class Version extends AbstractEntity
         $this->fundingVersion = new ArrayCollection();
     }
 
-    public function __get($property)
+    public function hasContractVersion(): bool
     {
-        return $this->$property;
+        //Use the getter to avoid lazy loading issues when comparing null !== $this->contractVersion
+        return null !== $this->getContractVersion();
     }
 
-    public function __set($property, $value)
+    public function getContractVersion(): ?ContractVersion
     {
-        $this->$property = $value;
+        return $this->contractVersion;
     }
 
-    public function __isset($property)
+    public function setContractVersion(?ContractVersion $contractVersion): Version
     {
-        return isset($this->$property);
+        $this->contractVersion = $contractVersion;
+        return $this;
     }
 
     public function __toString(): string
     {
-        return \sprintf(
+        return sprintf(
             '%s in %s (%s)',
-            $this->getAffiliation()->getOrganisation(),
-            $this->getAffiliation()->getProject(),
-            $this->getVersion()->getVersionType()->getDescription()
+            $this->affiliation->getOrganisation(),
+            $this->affiliation->getProject(),
+            $this->version->getVersionType()->getDescription()
         );
     }
 
-    /**
-     * @return Affiliation
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param Affiliation $affiliation
-     *
-     * @return Version
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-
-        return $this;
-    }
-
-    /**
-     * @return \Project\Entity\Version\Version
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * @param \Project\Entity\Version\Version $version
-     *
-     * @return Version
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Version
-     */
-    public function setId($id)
+    public function setId($id): Version
     {
         $this->id = $id;
-
         return $this;
     }
 
-    /**
-     * @return \Contact\Entity\Contact
-     */
-    public function getContact()
+    public function getAffiliation(): ?Affiliation
+    {
+        return $this->affiliation;
+    }
+
+    public function setAffiliation(?Affiliation $affiliation): Version
+    {
+        $this->affiliation = $affiliation;
+        return $this;
+    }
+
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
 
-    /**
-     * @param \Contact\Entity\Contact $contact
-     *
-     * @return Version
-     */
-    public function setContact($contact)
+    public function setContact(?Contact $contact): Version
     {
         $this->contact = $contact;
-
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|\Project\Entity\Cost\Version[]
-     */
+    public function getVersion(): ?\Project\Entity\Version\Version
+    {
+        return $this->version;
+    }
+
+    public function setVersion(?\Project\Entity\Version\Version $version): Version
+    {
+        $this->version = $version;
+        return $this;
+    }
+
     public function getCostVersion()
     {
         return $this->costVersion;
     }
 
-    /**
-     * @param ArrayCollection|\Project\Entity\Cost\Version[] $costVersion
-     *
-     * @return Version
-     */
-    public function setCostVersion($costVersion)
+    public function setCostVersion($costVersion): Version
     {
         $this->costVersion = $costVersion;
-
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|\Project\Entity\Effort\Version[]
-     */
     public function getEffortVersion()
     {
         return $this->effortVersion;
     }
 
-    /**
-     * @param ArrayCollection|\Project\Entity\Effort\Version[] $effortVersion
-     *
-     * @return Version
-     */
-    public function setEffortVersion($effortVersion)
+    public function setEffortVersion($effortVersion): Version
     {
         $this->effortVersion = $effortVersion;
-
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|\Project\Entity\Funding\Version[]
-     */
     public function getFundingVersion()
     {
         return $this->fundingVersion;
     }
 
-    /**
-     * @param ArrayCollection|\Project\Entity\Funding\Version[] $fundingVersion
-     *
-     * @return Version
-     */
-    public function setFundingVersion($fundingVersion)
+    public function setFundingVersion($fundingVersion): Version
     {
         $this->fundingVersion = $fundingVersion;
-
         return $this;
     }
 }

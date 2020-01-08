@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -13,30 +14,28 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
+use Contact\Form\Element\Contact;
 use Contact\Service\ContactService;
-use Zend\Form\Element\Email;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Uri\Uri;
-use Zend\Validator\Callback;
-use Zend\Validator\EmailAddress;
+use Laminas\Form\Element\Email;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Uri\Uri;
+use Laminas\Validator\Callback;
+use Laminas\Validator\EmailAddress;
+use Laminas\Validator\NotEmpty;
+
+use function in_array;
 
 /**
  * Class AddAssociate
  *
  * @package Affiliation\Form
  */
-class AddAssociate extends Form implements InputFilterProviderInterface
+final class AddAssociate extends Form implements InputFilterProviderInterface
 {
-    /**
-     * @var array
-     */
     protected $extensions = [];
 
-    /**
-     * @param Affiliation    $affiliation
-     * @param ContactService $contactService
-     */
     public function __construct(Affiliation $affiliation, ContactService $contactService)
     {
         parent::__construct();
@@ -53,8 +52,9 @@ class AddAssociate extends Form implements InputFilterProviderInterface
         foreach ($affiliation->getOrganisation()->getContactOrganisation() as $contactOrganisation) {
             $email = $contactOrganisation->getContact()->getEmail();
             $validator = new EmailAddress();
-            if ($validator->isValid($email)
-                && !\in_array(
+            if (
+                $validator->isValid($email)
+                && ! in_array(
                     $validator->hostname,
                     ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],
                     true
@@ -79,14 +79,14 @@ class AddAssociate extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => "Contact\Form\Element\Contact",
+                'type'       => Contact::class,
                 'name'       => 'contact',
                 'options'    => [
                     'value_options' => $contacts,
                     'allow_empty'   => true,
-                    'empty_option'  => '-- ' . ("Select here the known contact"),
-                    'label'         => _("txt-add-associate-by-known-contact-label"),
-                    'help-block'    => _("txt-add-associate-by-known-contact-help-block"),
+                    'empty_option'  => '-- ' . ('Select here the known contact'),
+                    'label'         => _('txt-add-associate-by-known-contact-label'),
+                    'help-block'    => _('txt-add-associate-by-known-contact-help-block'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -99,9 +99,9 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                 'type'       => Email::class,
                 'name'       => 'email',
                 'options'    => [
-                    'label'      => _("txt-company-email-address"),
+                    'label'      => _('txt-company-email-address'),
                     'help-block' => sprintf(
-                        "Here you can add an associate via the company email address. The email address should have (one of) the following extension(s): %s",
+                        'Here you can add an associate via the company email address. The email address should have (one of) the following extension(s): %s',
                         implode(', ', $this->extensions)
                     ),
                 ],
@@ -114,65 +114,59 @@ class AddAssociate extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-submit"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-submit'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'addKnownContact',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-add-known-contact"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-add-known-contact'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'addEmail',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-add-via-company-email"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-add-via-company-email'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [
             'contact' => [
                 'required'   => false,
                 'validators' => [
-                    new \Zend\Validator\NotEmpty(\Zend\Validator\NotEmpty::INTEGER),
+                    new NotEmpty(NotEmpty::INTEGER),
                 ],
             ],
             'email'   => [
                 'required'   => false,
                 'validators' => [
-                    new \Zend\Validator\NotEmpty(\Zend\Validator\NotEmpty::NULL),
+                    new NotEmpty(NotEmpty::NULL),
                     new Callback(
                         [
                             'messages' => [
@@ -184,11 +178,11 @@ class AddAssociate extends Form implements InputFilterProviderInterface
                             ],
                             'callback' => function ($value) {
                                 $validator = new EmailAddress();
-                                if (!$validator->isValid($value)) {
+                                if (! $validator->isValid($value)) {
                                     return false;
                                 }
 
-                                return \in_array($validator->hostname, $this->extensions, true);
+                                return in_array($validator->hostname, $this->extensions, true);
                             },
                         ]
                     ),

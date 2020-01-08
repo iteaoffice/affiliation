@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  */
@@ -7,10 +8,12 @@ declare(strict_types=1);
 
 namespace Affiliation\ValueObject;
 
+use function sprintf;
+
 final class PaymentSheetPeriod
 {
-    private $year;
-    private $period;
+    private int $year;
+    private int $period;
 
     public function __construct(int $year, int $period)
     {
@@ -20,7 +23,7 @@ final class PaymentSheetPeriod
 
     public function getId(): string
     {
-        return \sprintf('payment-sheet-%s-%sh', $this->year, $this->period);
+        return sprintf('payment-sheet-%s-%sh', $this->year, $this->period);
     }
 
     public function getYear(): int
@@ -35,7 +38,7 @@ final class PaymentSheetPeriod
 
     public function getLabel(): string
     {
-        return \sprintf('%s-%sH', $this->year, $this->period);
+        return sprintf('%s-%sH', $this->year, $this->period);
     }
 
     public function isActive(): bool

@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -25,6 +26,7 @@ use Contact\Entity\Address;
 use Contact\Entity\AddressType;
 use Contact\Entity\Contact;
 use Contact\Service\ContactService;
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use DragonBe\Vies\Vies;
 use General\Entity\Country;
@@ -41,8 +43,14 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\View\Model\ViewModel;
+use Throwable;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\View\Model\ViewModel;
+
+use function array_key_exists;
+use function count;
+use function explode;
+use function str_replace;
 
 /**
  * Class EditController
@@ -51,54 +59,18 @@ use Zend\View\Model\ViewModel;
  */
 final class EditController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var CountryService
-     */
-    private $countryService;
-    /**
-     * @var ReportService
-     */
-    private $reportService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var WorkpackageService
-     */
-    private $workpackageService;
-    /**
-     * @var FormService
-     */
-    private $formService;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private VersionService $versionService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private CountryService $countryService;
+    private ReportService $reportService;
+    private ContractService $contractService;
+    private WorkpackageService $workpackageService;
+    private FormService $formService;
+    private EntityManager $entityManager;
+    private TranslatorInterface $translator;
 
     public function __construct(
         AffiliationService $affiliationService,
@@ -143,7 +115,10 @@ final class EditController extends AffiliationAbstractController
             $affiliation->getOrganisation()->getId(),
             $affiliation->getBranch()
         );
+
         $formData['technical'] = $affiliation->getContact()->getId();
+        $formData['communicationContactName'] = $affiliation->getCommunicationContactName();
+        $formData['communicationContactEmail'] = $affiliation->getCommunicationContactEmail();
         $formData['valueChain'] = $affiliation->getValueChain();
         $formData['marketAccess'] = $affiliation->getMarketAccess();
         $formData['mainContribution'] = $affiliation->getMainContribution();
@@ -160,7 +135,7 @@ final class EditController extends AffiliationAbstractController
         $form->setData($formData);
 
         //Remove the de-activate-button when partner is not active
-        if (!$affiliation->isActive()) {
+        if (! $affiliation->isActive()) {
             $form->remove('deactivate');
         }
 
@@ -253,10 +228,12 @@ final class EditController extends AffiliationAbstractController
                 /*
                  * Parse the organisation and branch
                  */
-                [$organisationId, $branch] = \explode('|', $formData['affiliation']);
+                [$organisationId, $branch] = explode('|', $formData['affiliation']);
                 $organisation = $this->organisationService->findOrganisationById((int)$organisationId);
                 $affiliation->setOrganisation($organisation);
                 $affiliation->setContact($this->contactService->findContactById((int)$formData['technical']));
+                $affiliation->setCommunicationContactName($formData['communicationContactName']);
+                $affiliation->setCommunicationContactEmail($formData['communicationContactEmail']);
                 $affiliation->setBranch($branch);
                 $this->affiliationService->save($affiliation);
                 $affiliation->setValueChain($formData['valueChain']);
@@ -279,7 +256,7 @@ final class EditController extends AffiliationAbstractController
                 //Update the mode of the project
                 $project = $affiliation->getProject();
                 $project->setMode($this->projectService->getNextMode($project)->getMode());
-                $this->projectService->save($project);
+                //$this->projectService->save($project);
 
                 $changelogMessage = sprintf(
                     $this->translator->translate('txt-affiliation-%s-has-successfully-been-updated'),
@@ -372,7 +349,6 @@ final class EditController extends AffiliationAbstractController
 
 
         $form = new FinancialForm($affiliation, $this->entityManager);
-
         $data = array_merge($formData, $this->getRequest()->getPost()->toArray());
         $form->setData($data);
 
@@ -470,7 +446,7 @@ final class EditController extends AffiliationAbstractController
                 /**
                  * The presence of a VAT number triggers the creation of a financial organisation
                  */
-                if (!empty($formData['vat'])) {
+                if (! empty($formData['vat'])) {
                     $organisationFinancial->setVat($formData['vat']);
 
                     //Do an in-situ vat check
@@ -496,17 +472,17 @@ final class EditController extends AffiliationAbstractController
 
                             //Update the financial
                             $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_VALID);
-                            $organisationFinancial->setDateVat(new \DateTime());
+                            $organisationFinancial->setDateVat(new DateTime());
                         } else {
                             //Update the financial
                             $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_INVALID);
-                            $organisationFinancial->setDateVat(new \DateTime());
+                            $organisationFinancial->setDateVat(new DateTime());
                             $this->flashMessenger()->setNamespace('error')
                                 ->addMessage(
                                     sprintf($this->translator->translate('txt-vat-number-is-invalid'), $affiliation)
                                 );
                         }
-                    } catch (\Throwable $e) {
+                    } catch (Throwable $e) {
                         $this->flashMessenger()->setNamespace('danger')
                             ->addMessage(
                                 sprintf(
@@ -627,7 +603,7 @@ final class EditController extends AffiliationAbstractController
             }
 
 
-            if (isset($data['addKnownContact']) && !empty($data['contact'])) {
+            if (isset($data['addKnownContact']) && ! empty($data['contact'])) {
 
                 /** @var Contact $contact */
                 $contact = $this->contactService->findContactById((int)$data['contact']);
@@ -651,7 +627,7 @@ final class EditController extends AffiliationAbstractController
                 );
             }
 
-            if (isset($data['addEmail']) && !empty($data['email'])) {
+            if (isset($data['addEmail']) && ! empty($data['email'])) {
                 $this->affiliationService->addAssociate($affiliation, null, $data['email']);
 
                 $changelogMessage = sprintf(
@@ -716,7 +692,7 @@ final class EditController extends AffiliationAbstractController
             }
 
             $removedContacts = [];
-            if (\array_key_exists('contact', $data)) {
+            if (array_key_exists('contact', $data)) {
                 //Find the contact
                 foreach ($data['contact'] as $contactId) {
                     $contact = $this->contactService->findContactById((int)$contactId);
@@ -734,7 +710,7 @@ final class EditController extends AffiliationAbstractController
 
             $changelogMessage = sprintf(
                 $this->translator->translate('txt-%s-associates-were-removed-from-affiliation'),
-                \count($removedContacts)
+                count($removedContacts)
             );
 
             $this->flashMessenger()->addSuccessMessage($changelogMessage);
@@ -770,9 +746,9 @@ final class EditController extends AffiliationAbstractController
         }
 
         $description = new Description();
-        if (!$affiliation->getDescription()->isEmpty()) {
+        if ($affiliation->hasDescription()) {
             /** @var Description $description */
-            $description = $affiliation->getDescription()->first();
+            $description = $affiliation->getDescription();
         }
 
         $data = $this->getRequest()->getPost()->toArray();
@@ -790,7 +766,7 @@ final class EditController extends AffiliationAbstractController
 
                 /** @var Description $description */
                 $description = $form->getData();
-                $description->setAffiliation([$affiliation]);
+                $description->setAffiliation($affiliation);
                 $description->setContact($this->identity());
                 $this->affiliationService->save($description);
 
@@ -826,10 +802,6 @@ final class EditController extends AffiliationAbstractController
         );
     }
 
-    /**
-     * @return \Zend\Http\Response|ViewModel
-     *
-     */
     public function updateEffortSpentAction()
     {
         $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
@@ -843,7 +815,7 @@ final class EditController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $latestVersion = $this->projectService->getLatestProjectVersion($affiliation->getProject());
+        $latestVersion = $this->projectService->getLatestApprovedProjectVersion($affiliation->getProject());
 
         if (null === $latestVersion) {
             return $this->notFoundAction();
@@ -856,7 +828,8 @@ final class EditController extends AffiliationAbstractController
                 $report
             );
 
-        if (!$effortSpent
+        if (
+            ! $effortSpent
             = $this->reportService->findEffortSpentByReportAndAffiliation($report, $affiliation)
         ) {
             $effortSpent = new ReportEffortSpent();
@@ -959,7 +932,7 @@ final class EditController extends AffiliationAbstractController
         $formData = [];
         foreach ($this->projectService->parseEditYearRange($project) as $year) {
             $costPerYear = $this->projectService->findTotalCostByAffiliationPerYear($affiliation);
-            if (!\array_key_exists($year, $costPerYear)) {
+            if (! array_key_exists($year, $costPerYear)) {
                 $costPerYear[$year] = 0;
             }
             $formData['costPerAffiliationAndYear']
@@ -976,7 +949,7 @@ final class EditController extends AffiliationAbstractController
                         $workpackage,
                         $affiliation
                     );
-                if (!\array_key_exists($year, $effortPerWorkpackageAndYear)) {
+                if (! array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }
                 $formData['effortPerAffiliationAndYear']
@@ -1010,23 +983,25 @@ final class EditController extends AffiliationAbstractController
             foreach ($formData['costPerAffiliationAndYear'][$affiliation->getId()] as $year => $costValue) {
                 $cost = $this->projectService->findCostByAffiliationAndYear($affiliation, $year);
 
-                if (null !== $cost && ($costValue['cost'] === '0' || empty($costValue['cost']))) {
+                $setCostValue = (float)str_replace(',', '.', $costValue['cost']);
+
+                if (null !== $cost && $setCostValue === 0.0) {
                     $this->projectService->delete($cost);
                 }
 
-                if ((float)$costValue['cost'] > 0) {
+                if ($setCostValue > 0) {
                     /*
                      * Create a new if not set yet
                      */
                     if (null === $cost) {
                         $cost = new Cost();
                         $cost->setAffiliation($affiliation);
-                        $dateStart = new \DateTime();
+                        $dateStart = new DateTime();
                         $cost->setDateStart($dateStart->modify('first day of january ' . $year));
-                        $dateEnd = new \DateTime();
+                        $dateEnd = new DateTime();
                         $cost->setDateEnd($dateEnd->modify('last day of december ' . $year));
                     }
-                    $cost->setCosts((float)$costValue['cost'] * 1000);
+                    $cost->setCosts($setCostValue * 1000);
                     $this->projectService->save($cost);
                 }
             }
@@ -1048,11 +1023,14 @@ final class EditController extends AffiliationAbstractController
                             $workpackage,
                             $year
                         );
-                    if (null !== $effort && ($effortValue['effort'] === '0' || empty($effortValue['effort']))) {
+
+                    $setEffortValue = (float)str_replace(',', '.', $effortValue['effort']);
+
+                    if (null !== $effort && $setEffortValue === 0.0) {
                         $this->projectService->delete($effort);
                     }
 
-                    if ((float)$effortValue['effort'] > 0) {
+                    if ($setEffortValue > 0) {
                         /*
                          * Create a new if not set yet
                          */
@@ -1060,19 +1038,19 @@ final class EditController extends AffiliationAbstractController
                             $effort = new Effort();
                             $effort->setAffiliation($affiliation);
                             $effort->setWorkpackage($workpackage);
-                            $dateStart = new \DateTime();
+                            $dateStart = new DateTime();
                             $effort->setDateStart($dateStart->modify('first day of january ' . $year));
-                            $dateEnd = new \DateTime();
+                            $dateEnd = new DateTime();
                             $effort->setDateEnd($dateEnd->modify('last day of december ' . $year));
                         }
-                        $effort->setEffort($effortValue['effort']);
+                        $effort->setEffort($setEffortValue);
                         $this->projectService->save($effort);
                     }
                 }
             }
             //Update the mode of the project when the saved is pressed
             $project->setMode($this->projectService->getNextMode($project)->getMode());
-            $this->projectService->save($project);
+            //$this->projectService->save($project);
 
             $changelogMessage = sprintf(
                 $this->translator->translate(

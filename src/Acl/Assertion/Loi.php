@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -17,9 +18,9 @@ use Affiliation\Entity\Loi as LoiEntity;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\LoiService;
 use Interop\Container\ContainerInterface;
-use Zend\Permissions\Acl\Acl;
-use Zend\Permissions\Acl\Resource\ResourceInterface;
-use Zend\Permissions\Acl\Role\RoleInterface;
+use Laminas\Permissions\Acl\Acl;
+use Laminas\Permissions\Acl\Resource\ResourceInterface;
+use Laminas\Permissions\Acl\Role\RoleInterface;
 
 /**
  * Class Loi
@@ -36,6 +37,10 @@ final class Loi extends AbstractAssertion
      * @var AffiliationService
      */
     private $affiliationService;
+    /**
+     * @var Affiliation
+     */
+    private $affiliationAssertion;
 
     public function __construct(ContainerInterface $container)
     {
@@ -43,6 +48,7 @@ final class Loi extends AbstractAssertion
 
         $this->loiService = $container->get(LoiService::class);
         $this->affiliationService = $container->get(AffiliationService::class);
+        $this->affiliationAssertion = $container->get(Affiliation::class);
     }
 
     public function assert(Acl $acl, RoleInterface $role = null, ResourceInterface $loi = null, $privilege = null): bool
@@ -50,7 +56,7 @@ final class Loi extends AbstractAssertion
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!$loi instanceof LoiEntity && null !== $id) {
+        if (! $loi instanceof LoiEntity && null !== $id) {
             $loi = $this->loiService->findLoiById((int)$id);
         }
 
@@ -96,15 +102,13 @@ final class Loi extends AbstractAssertion
                  */
 
                 return null === $loi->getDateApproved()
-                    && $this->contactService->contactHasPermit($this->contact, 'edit', $loi->getAffiliation());
+                    && $this->affiliationAssertion->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
             case 'download':
-                return $this->contactService->contactHasPermit($this->contact, 'view', $loi->getAffiliation());
+                return $this->affiliationAssertion->assert($acl, $role, $loi->getAffiliation(), 'view-community');
             case 'view-admin':
             case 'edit-admin':
             case 'list-admin':
             case 'missing-admin':
-            case 'remind-admin':
-            case 'reminders-admin':
             case 'approval-admin':
                 return $this->rolesHaveAccess([Access::ACCESS_OFFICE]);
         }

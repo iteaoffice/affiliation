@@ -1,31 +1,34 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;
 
 use Contact\Service\ContactService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Zend\Form\Fieldset;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
+use Laminas\Form\Element\Date;
+use Laminas\Form\Element\Select;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Fieldset;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
 
 /**
+ * Class LoiApproval
  *
+ * @package Affiliation\Form
  */
-class LoiApproval extends Form implements InputFilterProviderInterface
+final class LoiApproval extends Form implements InputFilterProviderInterface
 {
-    /**
-     * @param ArrayCollection $lois
-     * @param ContactService $contactService
-     */
     public function __construct(ArrayCollection $lois, ContactService $contactService)
     {
         parent::__construct();
@@ -33,20 +36,17 @@ class LoiApproval extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
 
-        /*
-         * Create a fieldSet per LOI (and affiliation)
-         */
         foreach ($lois as $loi) {
             $affiliationFieldset = new Fieldset('affiliation_' . $loi->getAffiliation()->getId());
 
             $contacts = $contactService->findContactsInAffiliation($loi->getAffiliation());
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Select',
+                    'type'       => Select::class,
                     'name'       => 'contact',
                     'options'    => [
                         'value_options' => $contactService->toFormValueOptions($contacts['contacts']),
-                        'label'         => _("txt-contact-name"),
+                        'label'         => _('txt-contact-name'),
                     ],
                     'attributes' => [
                         'class'    => 'form-control',
@@ -58,7 +58,7 @@ class LoiApproval extends Form implements InputFilterProviderInterface
 
             $affiliationFieldset->add(
                 [
-                    'type'       => 'Zend\Form\Element\Text',
+                    'type'       => Date::class,
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'class'    => 'form-control',
@@ -73,32 +73,26 @@ class LoiApproval extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [];

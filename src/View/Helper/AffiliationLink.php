@@ -6,7 +6,7 @@
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
@@ -15,163 +15,196 @@ namespace Affiliation\View\Helper;
 
 use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Entity\Affiliation;
+use General\ValueObject\Link\Link;
+use General\View\Helper\AbstractLink;
 
 /**
- * Create a link to an affiliation.
+ * Class AffiliationLink
  *
- * @category    Affiliation
+ * @package Affiliation\View\Helper
  */
-class AffiliationLink extends LinkAbstract
+final class AffiliationLink extends AbstractLink
 {
     public function __invoke(
         Affiliation $affiliation,
-        $action = 'view',
-        $show = 'organisation-branch',
-        $year = null,
-        $period = null,
-        $fragment = null
+        string $action = 'view',
+        string $show = 'organisation-branch',
+        int $year = null,
+        int $period = null
     ): string {
-        $this->classes = [];
-        $this->routerParams = [];
-
-        $this->setAffiliation($affiliation);
-        $this->setAction($action);
-        $this->setShow($show);
-        $this->setYear($year);
-        $this->setPeriod($period);
-        $this->setFragment($fragment);
-        /*
-         * Set the non-standard options needed to give an other link value
-         */
-        $this->setShowOptions(
-            [
-                'name'                => $this->getAffiliation(),
-                'organisation'        => $this->getAffiliation()->getOrganisation()->getOrganisation(),
-                'parent-organisation' =>
-                    \is_null($this->getAffiliation()->getParentOrganisation())
-                        ? 'Parent not known'
-                        : $this->getAffiliation()->getParentOrganisation()->getOrganisation(),
-                'organisation-branch' => $this->getAffiliation()->parseBranchedName(),
-            ]
-        );
-
-        if (!$this->hasAccess($this->getAffiliation(), AffiliationAssertion::class, $this->getAction())) {
-            return $this->getAction() !== 'view-community' ? ''
-                : $this->getAffiliation()->getOrganisation()->getOrganisation();
+        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
+            return $action !== 'view-community' ? ''
+                : $affiliation->getOrganisation()->getOrganisation();
         }
 
-        $this->addRouterParam('year', $this->getYear());
-        $this->addRouterParam('period', $this->getPeriod());
-        $this->addRouterParam('id', $this->getAffiliation()->getId());
+        $routeParams = [];
+        $showOptions = [];
 
-        return $this->createLink();
-    }
+        $routeParams['id'] = $affiliation->getId();
+        $routeParams['year'] = $year;
+        $routeParams['period'] = $period;
 
-    /**
-     * Extract the relevant parameters based on the action.
-     *
-     * @throws \Exception
-     */
-    public function parseAction(): void
-    {
-        switch ($this->getAction()) {
+        $showOptions['name'] = $affiliation->parseBranchedName();
+        $showOptions['organisation'] = $affiliation->getOrganisation()->getOrganisation();
+        $showOptions['parent-organisation'] = null === $affiliation->getParentOrganisation()
+            ? 'Parent not known'
+            : $affiliation->getParentOrganisation()->getOrganisation();
+        $showOptions['organisation-branch'] = $affiliation->parseBranchedName();
+
+
+        switch ($action) {
             case 'view-community':
-                $this->setRouter('community/affiliation/affiliation');
-                $this->setText(sprintf($this->translator->translate("txt-view-affiliation-%s"), $this->getAffiliation()));
+                $linkParams = [
+                    'icon' => 'fa-circle-o',
+                    'route' => 'community/affiliation/affiliation',
+                    'text' => $showOptions[$show]
+                        ?? sprintf($this->translator->translate('txt-view-affiliation-%s'), $affiliation->parseBranchedName())
+                ];
                 break;
             case 'edit-community':
-                $this->setRouter('community/affiliation/edit/affiliation');
-                $this->setText(sprintf($this->translator->translate("txt-edit-affiliation-%s"), $this->getAffiliation()));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'community/affiliation/edit/affiliation',
+                    'text' => $showOptions[$show]
+                        ?? sprintf($this->translator->translate('txt-edit-affiliation-%s'), $affiliation->parseBranchedName())
+                ];
+
                 break;
             case 'edit-financial':
-                $this->setRouter('community/affiliation/edit/financial');
-                $this->setText(sprintf($this->translator->translate("txt-edit-financial-affiliation-%s"), $this->getAffiliation()));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'community/affiliation/edit/financial',
+                    'text' => $showOptions[$show]
+                        ?? sprintf($this->translator->translate('txt-edit-financial-affiliation-%s'), $affiliation->parseBranchedName())
+                ];
                 break;
             case 'add-associate':
-                $this->setRouter('community/affiliation/edit/add-associate');
-                $this->setText(sprintf($this->translator->translate("txt-add-associate")));
+                $linkParams = [
+                    'icon' => 'fa-user-plus',
+                    'route' => 'community/affiliation/edit/add-associate',
+                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-add-associate')
+                ];
+
                 break;
             case 'manage-associate':
-                $this->setRouter('community/affiliation/edit/manage-associate');
-                $this->setText(sprintf($this->translator->translate("txt-manage-associates")));
+                $linkParams = [
+                    'icon' => 'fa-users',
+                    'route' => 'community/affiliation/edit/manage-associate',
+                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-manage-associates')
+                ];
                 break;
             case 'edit-cost-and-effort':
-                $this->setRouter('community/affiliation/edit/cost-and-effort');
-                $this->setText(sprintf($this->translator->translate("txt-edit-cost-and-effort-of-%s"), $this->getAffiliation()));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'community/affiliation/edit/cost-and-effort',
+                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-edit-cost-and-effort')
+                ];
                 break;
             case 'add-associate-admin':
-                $this->setRouter('zfcadmin/affiliation/add-associate');
-                $this->setText(sprintf($this->translator->translate("txt-add-associate")));
+                $linkParams = [
+                    'icon' => 'fa-user-plus',
+                    'route' => 'zfcadmin/affiliation/add-associate',
+                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-add-associate')
+                ];
+
                 break;
             case 'edit-description':
-                $this->setRouter('community/affiliation/edit/description');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate("txt-edit-description-affiliation-%s"),
-                        $this->getAffiliation()
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'community/affiliation/edit/description',
+                    'text' => $showOptions[$show] ?? sprintf(
+                        $this->translator->translate('txt-edit-description-affiliation-%s'),
+                        $affiliation->parseBranchedName()
                     )
-                );
+                ];
                 break;
             case 'view-admin':
-                $this->setRouter('zfcadmin/affiliation/view');
-                $this->setText(sprintf($this->translator->translate("txt-view-affiliation-in-admin-%s"), $this->getAffiliation()));
+                $linkParams = [
+                    'icon' => 'fa-circle-o',
+                    'route' => 'zfcadmin/affiliation/view',
+                    'text' => $showOptions[$show]
+                        ?? sprintf($this->translator->translate('txt-view-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
+                ];
+
                 break;
             case 'edit-admin':
-                $this->setRouter('zfcadmin/affiliation/edit');
-                $this->setText(sprintf($this->translator->translate("txt-edit-affiliation-in-admin-%s"), $this->getAffiliation()));
+                $linkParams = [
+                    'icon' => 'fa-pencil-square-o',
+                    'route' => 'zfcadmin/affiliation/edit',
+                    'text' => $showOptions[$show]
+                        ?? sprintf($this->translator->translate('txt-edit-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
+                ];
                 break;
             case 'merge-admin':
-                $this->setRouter('zfcadmin/affiliation/merge');
-                $this->setText(sprintf($this->translator->translate("txt-merge-affiliation-in-admin-%s"), $this->getAffiliation()));
+                $linkParams = [
+                    'icon' => 'fa-compress',
+                    'route' => 'zfcadmin/affiliation/merge',
+                    'text' => $showOptions[$show]
+                        ?? sprintf($this->translator->translate('txt-merge-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
+                ];
                 break;
             case 'payment-sheet':
-                $this->setRouter('community/affiliation/payment-sheet');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate("txt-show-payment-sheet-of-affiliation-%s-for-%s-%s"),
-                        $this->getAffiliation(),
-                        $this->getYear(),
-                        $this->getPeriod()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-eur',
+                    'route' => 'community/affiliation/payment-sheet',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate('txt-show-payment-sheet-of-affiliation-%s-for-%s-%s'),
+                            $affiliation->parseBranchedName(),
+                            $year,
+                            $period
+                        )
+                ];
                 break;
             case 'payment-sheet-contract':
-                $this->setRouter('community/affiliation/payment-sheet');
-                $this->addRouterParam('contract', 'contract');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate("txt-show-contract-based-payment-sheet-of-affiliation-%s-for-%s-%s"),
-                        $this->getAffiliation(),
-                        $this->getYear(),
-                        $this->getPeriod()
-                    )
-                );
+                $routeParams['contract'] = 'contract';
+                $linkParams = [
+                    'icon' => 'fa-eur',
+                    'route' => 'community/affiliation/payment-sheet',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate(
+                                'txt-show-contract-based-payment-sheet-of-affiliation-%s-for-%s-%s'
+                            ),
+                            $affiliation->parseBranchedName(),
+                            $year,
+                            $period
+                        )
+                ];
                 break;
             case 'payment-sheet-pdf':
-                $this->setRouter('community/affiliation/payment-sheet-pdf');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate("txt-download-payment-sheet-of-affiliation-%s-for-%s-%s"),
-                        $this->getAffiliation(),
-                        $this->getYear(),
-                        $this->getPeriod()
-                    )
-                );
+                $linkParams = [
+                    'icon' => 'fa-file-pdf-o',
+                    'route' => 'community/affiliation/payment-sheet-pdf',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate('txt-download-payment-sheet-of-affiliation-%s-for-%s-%s'),
+                            $affiliation->parseBranchedName(),
+                            $year,
+                            $period
+                        )
+                ];
                 break;
             case 'payment-sheet-pdf-contract':
-                $this->setRouter('community/affiliation/payment-sheet-pdf');
-                $this->addRouterParam('contract', 'contract');
-                $this->setText(
-                    sprintf(
-                        $this->translator->translate("txt-download-contract-payment-sheet-of-affiliation-%s-for-%s-%s"),
-                        $this->getAffiliation(),
-                        $this->getYear(),
-                        $this->getPeriod()
-                    )
-                );
+                $routeParams['contract'] = 'contract';
+                $linkParams = [
+                    'icon' => 'fa-file-pdf-o',
+                    'route' => 'community/affiliation/payment-sheet-pdf',
+                    'text' => $showOptions[$show]
+                        ?? sprintf(
+                            $this->translator->translate('txt-download-contract-payment-sheet-of-affiliation-%s-for-%s-%s'),
+                            $affiliation->parseBranchedName(),
+                            $year,
+                            $period
+                        )
+                ];
                 break;
-            default:
-                throw new \Exception(sprintf("%s is an incorrect action for %s", $this->getAction(), __CLASS__));
         }
+
+        $linkParams['action'] = $action;
+        $linkParams['show'] = $show;
+        $linkParams['routeParams'] = $routeParams;
+
+        return $this->parse(Link::fromArray($linkParams));
     }
 }

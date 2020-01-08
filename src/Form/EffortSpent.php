@@ -1,37 +1,35 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Project
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Form;
 
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilterProviderInterface;
-use Zend\Validator\Callback;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\Element\Text;
+use Laminas\Form\Element\Textarea;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Validator\Callback;
+use Laminas\Validator\NotEmpty;
 
 /**
  * Class EffortSpent
+ *
  * @package Affiliation\Form
  */
-class EffortSpent extends Form implements InputFilterProviderInterface
+final class EffortSpent extends Form implements InputFilterProviderInterface
 {
-    /**
-     * Local variable to have the effortPlanned available in the validator
-     *
-     * @var float
-     */
-    protected $effortPlanned;
+    private $effortPlanned;
 
-    /**
-     * EffortSpent constructor.
-     * @param float $effortPlanned
-     */
     public function __construct(float $effortPlanned = null)
     {
         parent::__construct();
@@ -42,22 +40,22 @@ class EffortSpent extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'    => 'Zend\Form\Element\Text',
+                'type'    => Text::class,
                 'name'    => 'effort',
                 'options' => [
-                    'label'      => _("txt-effort-spent"),
-                    'help-block' => _("txt-effort-spent-effort-help-block"),
+                    'label'      => _('txt-effort-spent'),
+                    'help-block' => _('txt-effort-spent-effort-help-block'),
                 ],
             ]
         );
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'marketAccess',
                 'options'    => [
-                    'label'      => _("txt-exploitation-prospects"),
-                    'help-block' => _("txt-market-access-inline-help"),
+                    'label'      => _('txt-exploitation-prospects'),
+                    'help-block' => _('txt-market-access-inline-help'),
                 ],
                 'attributes' => [
                     'id'    => 'marketAccess',
@@ -69,12 +67,12 @@ class EffortSpent extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'mainContribution',
                 'options'    => [
 
-                    'label'      => _("txt-main-contributions-role-and-added-value-within-the-project"),
-                    'help-block' => _("txt--main-contribution-for-the-project-inline-help"),
+                    'label'      => _('txt-main-contributions-role-and-added-value-within-the-project'),
+                    'help-block' => _('txt--main-contribution-for-the-project-inline-help'),
                 ],
                 'attributes' => [
                     'id'    => 'mainContribution',
@@ -86,12 +84,12 @@ class EffortSpent extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'summary',
                 'options'    => [
 
-                    'label'      => _("txt-main-results-during-reporting-period"),
-                    'help-block' => _("txt-brief-summary-of-partner-during-reporting-period"),
+                    'label'      => _('txt-main-results-during-reporting-period'),
+                    'help-block' => _('txt-brief-summary-of-partner-during-reporting-period'),
                 ],
                 'attributes' => [
                     'id'    => 'summary',
@@ -103,12 +101,12 @@ class EffortSpent extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Textarea',
+                'type'       => Textarea::class,
                 'name'       => 'comment',
                 'options'    => [
 
-                    'label'      => _("txt-descrepancy-explanation"),
-                    'help-block' => _("txt-effort-spent-comment-on-discrepancy-help-block"),
+                    'label'      => _('txt-descrepancy-explanation'),
+                    'help-block' => _('txt-effort-spent-comment-on-discrepancy-help-block'),
                 ],
                 'attributes' => [
                     'id'    => 'comment',
@@ -120,32 +118,26 @@ class EffortSpent extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'submit',
                 'attributes' => [
-                    'class' => "btn btn-primary",
-                    'value' => _("txt-update"),
+                    'class' => 'btn btn-primary',
+                    'value' => _('txt-update'),
                 ],
             ]
         );
         $this->add(
             [
-                'type'       => 'Zend\Form\Element\Submit',
+                'type'       => Submit::class,
                 'name'       => 'cancel',
                 'attributes' => [
-                    'class' => "btn btn-warning",
-                    'value' => _("txt-cancel"),
+                    'class' => 'btn btn-warning',
+                    'value' => _('txt-cancel'),
                 ],
             ]
         );
     }
 
-    /**
-     * Should return an array specification compatible with
-     * {@link Zend\InputFilter\Factory::createInputFilter()}.
-     *
-     * @return array
-     */
     public function getInputFilterSpecification(): array
     {
         return [
@@ -167,34 +159,37 @@ class EffortSpent extends Form implements InputFilterProviderInterface
             'comment' => [
                 'required'   => true,
                 'validators' => [
-                    new \Zend\Validator\NotEmpty(\Zend\Validator\NotEmpty::NULL),
+                    new NotEmpty(NotEmpty::NULL),
                     [
                         'name'    => 'Callback',
                         'options' => [
                             'messages' => [
                                 Callback::INVALID_VALUE => sprintf(
-                                    "Please give a comment to explain the strong descripency (> 20 percent) between the real and planned value (%s)",
+                                    'Please give a comment to explain the strong descripency (> 20 percent) between the real and planned value (%s)',
                                     $this->effortPlanned
                                 ),
                             ],
                             'callback' => function ($value, $context = []) {
-                                if ($this->effortPlanned == 0
+                                if (
+                                    $this->effortPlanned == 0
                                     && $context['effort'] == 0
                                 ) {
                                     return true;
                                 }
 
-                                if ($this->effortPlanned == 0
+                                if (
+                                    $this->effortPlanned == 0
                                     && $context['effort'] != 0
                                 ) {
                                     return strlen($value) > 0;
                                 }
 
-                                if (abs(
-                                    ($context['effort']
+                                if (
+                                    abs(
+                                        ($context['effort']
                                             - $this->effortPlanned)
                                         / $this->effortPlanned
-                                ) > 0.2
+                                    ) > 0.2
                                 ) {
                                     return strlen($value) > 0;
                                 }

@@ -1,0 +1,22 @@
+{% do form.prepare() %}
+{% do form.setAttribute('class','form-horizontal') %}
+
+{{ form().openTag(form)|raw }}
+{{ formelement(form.get('csrf')) }}
+
+{% set category = form.get('affiliation_entity_questionnaire_category') %}
+
+{{ ztbformelement(category.get('sequence')) }}
+{{ ztbformelement(category.get('category')) }}
+
+<div class="form-group row">
+    <div class="offset-sm-3 col-sm-9">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+        {% if form.has('delete') %}
+            {{ ztbformelement(form.get('delete')) }}
+        {% endif %}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

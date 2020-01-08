@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -7,11 +8,12 @@
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2018 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/main for the canonical source repository
  */
+
 declare(strict_types=1);
 
 namespace Affiliation\Service;
@@ -19,29 +21,24 @@ namespace Affiliation\Service;
 use Affiliation\Entity\AbstractEntity;
 use Affiliation\Form\CreateObject;
 use Doctrine\ORM\EntityManager;
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilter;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilter;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Class FormService
  *
  * @package Affiliation\Service
  */
-final class FormService
+class FormService
 {
-    /**
-     * @var ServiceLocatorInterface
-     */
-    private $serviceLocator;
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    private ContainerInterface $container;
+    private EntityManager $entityManager;
 
-    public function __construct(ServiceLocatorInterface $serviceLocator, EntityManager $entityManager)
+    public function __construct(ContainerInterface $container, EntityManager $entityManager)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->container = $container;
         $this->entityManager = $entityManager;
     }
 
@@ -53,13 +50,12 @@ final class FormService
          *
          * But if the class a class is injected, we will change it into the className but hint the user to use a string
          */
-        if (!$classNameOrEntity instanceof AbstractEntity) {
+        if (! $classNameOrEntity instanceof AbstractEntity) {
             $classNameOrEntity = new $classNameOrEntity();
         }
 
         $form = $this->getForm($classNameOrEntity, $options);
         $form->setData($data);
-
         return $form;
     }
 
@@ -72,15 +68,15 @@ final class FormService
          * The filter and the form can dynamically be created by pulling the form from the serviceManager
          * if the form or filter is not give in the serviceManager we will create it by default
          */
-        if ($this->serviceLocator->has($formName)) {
-            $form = $this->serviceLocator->build($formName, $options);
+        if ($this->container->has($formName)) {
+            $form = $this->container->build($formName, $options);
         } else {
             $form = new CreateObject($this->entityManager, $entity);
         }
 
-        if ($this->serviceLocator->has($filterName)) {
+        if ($this->container->has($filterName)) {
             /** @var InputFilter $filter */
-            $filter = $this->serviceLocator->get($filterName);
+            $filter = $this->container->get($filterName);
             $form->setInputFilter($filter);
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -7,7 +8,7 @@
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
  *
  * @link        http://github.com/iteaoffice/affiliation for the canonical source repository
@@ -25,7 +26,7 @@ use Doctrine\ORM\ORMException;
 use Project\Entity\Cost\Version as CostVersion;
 use Project\Entity\Effort\Version as EffortVersion;
 use Project\Entity\Version\Version as ProjectVersion;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Class MergeAffiliation
@@ -38,30 +39,13 @@ final class MergeAffiliation extends AbstractPlugin
     public const STRATEGY_SUM = 0;       // Add other cost and effort to main
     public const STRATEGY_USE_MAIN = 1;  // Use cost and effort of main affiliation
     public const STRATEGY_USE_OTHER = 2; // Use cost and effort of other affiliation
-    /**
-     * @var array
-     */
-    protected $debug = [];
-    /**
-     * @var AdminService
-     */
-    protected $adminService;
-    /**
-     * @var EntityManager
-     */
-    protected $entityManager;
-    /**
-     * @var Affiliation
-     */
-    private $otherAffiliation;
-    /**
-     * @var Affiliation
-     */
-    private $mainAffiliation;
-    /**
-     * @var int
-     */
-    private $costAndEffortStrategy;
+
+    protected array $debug = [];
+    protected AdminService $adminService;
+    protected EntityManager $entityManager;
+    private Affiliation $otherAffiliation;
+    private Affiliation $mainAffiliation;
+    private int $costAndEffortStrategy;
 
     public function __construct(AdminService $adminService, EntityManager $entityManager)
     {
@@ -145,7 +129,7 @@ final class MergeAffiliation extends AbstractPlugin
 
             // Step 11: Move the associates
             foreach ($otherAffiliation->getAssociate() as $key => $associate) {
-                if (!$mainAffiliation->getAssociate()->contains($associate)) {
+                if (! $mainAffiliation->getAssociate()->contains($associate)) {
                     $mainAffiliation->getAssociate()->add($associate);
                 }
                 $otherAffiliation->getAssociate()->remove($key);
@@ -172,7 +156,8 @@ final class MergeAffiliation extends AbstractPlugin
             // Check whether the main affiliation already has cost in the same period
             $matched = false;
             foreach ($this->getMainAffiliation()->getCost() as &$mainCost) {
-                if ($otherCost->getDateStart()->format('dmY') === $mainCost->getDateStart()->format('dmY')
+                if (
+                    $otherCost->getDateStart()->format('dmY') === $mainCost->getDateStart()->format('dmY')
                     && $otherCost->getDateEnd()->format('dmY') === $mainCost->getDateEnd()->format('dmY')
                 ) {
                     switch ($this->getCostAndEffortStrategy()) {
@@ -195,7 +180,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if (! $matched) {
                 $otherCost->setAffiliation($this->getMainAffiliation());
                 $this->entityManager->persist($otherCost);
                 $this->getMainAffiliation()->getCost()->add($otherCost);
@@ -247,7 +232,8 @@ final class MergeAffiliation extends AbstractPlugin
             // Check whether the main affiliation already has effort in the same period for the same workpackage
             $matched = false;
             foreach ($this->getMainAffiliation()->getEffort() as &$mainEffort) {
-                if ($otherEffort->getDateStart()->format('dmY') === $mainEffort->getDateStart()->format('dmY')
+                if (
+                    $otherEffort->getDateStart()->format('dmY') === $mainEffort->getDateStart()->format('dmY')
                     && $otherEffort->getDateEnd()->format('dmY') === $mainEffort->getDateEnd()->format('dmY')
                     && $otherEffort->getWorkpackage()->getId() === $mainEffort->getWorkpackage()->getId()
                 ) {
@@ -283,7 +269,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if (! $matched) {
                 $otherEffort->setAffiliation($this->getMainAffiliation());
                 $this->entityManager->persist($otherEffort);
                 $this->getMainAffiliation()->getEffort()->add($otherEffort);
@@ -307,7 +293,8 @@ final class MergeAffiliation extends AbstractPlugin
             // same period for the same workpackage
             $matched = false;
             foreach ($this->getMainAffiliation()->getSpent() as &$mainSpent) {
-                if ($otherSpent->getDateStart()->format('dmY') === $mainSpent->getDateStart()->format('dmY')
+                if (
+                    $otherSpent->getDateStart()->format('dmY') === $mainSpent->getDateStart()->format('dmY')
                     && $otherSpent->getDateEnd()->format('dmY') === $mainSpent->getDateEnd()->format('dmY')
                     && $otherSpent->getWorkpackage()->getId() === $mainSpent->getWorkpackage()->getId()
                 ) {
@@ -343,7 +330,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // No match, just transfer to main affiliation
-            if (!$matched) {
+            if (! $matched) {
                 $otherSpent->setAffiliation($this->getMainAffiliation());
                 $this->entityManager->persist($otherSpent);
                 $this->getMainAffiliation()->getSpent()->add($otherSpent);
@@ -389,7 +376,7 @@ final class MergeAffiliation extends AbstractPlugin
             }
 
             // Not matched with main affiliation version, add it to main
-            if (!$matched) {
+            if (! $matched) {
                 // No match with a main affiliation version, add it to main affiliation
                 $otherAffiliationVersion->setAffiliation($this->getMainAffiliation());
                 $this->getMainAffiliation()->getVersion()->add($otherAffiliationVersion);
@@ -406,7 +393,8 @@ final class MergeAffiliation extends AbstractPlugin
             /** @var CostVersion $mainCostVersion */
             foreach ($mainVersion->getCostVersion() as &$mainCostVersion) {
                 // Check for a match with main cost version on start and end date
-                if ($otherCostVersion->getDateStart()->format('dmY') === $mainCostVersion->getDateStart()
+                if (
+                    $otherCostVersion->getDateStart()->format('dmY') === $mainCostVersion->getDateStart()
                         ->format('dmY')
                     && $otherCostVersion->getDateEnd()->format('dmY') === $mainCostVersion->getDateEnd()
                         ->format('dmY')
@@ -429,7 +417,7 @@ final class MergeAffiliation extends AbstractPlugin
                 }
             }
 
-            if (!$matched) {
+            if (! $matched) {
                 // No match with a main affiliation version cost, add it to main version
                 $otherCostVersion->setAffiliationVersion($mainVersion);
                 $mainVersion->getCostVersion()->add($otherCostVersion);
@@ -446,7 +434,8 @@ final class MergeAffiliation extends AbstractPlugin
             /** @var EffortVersion $mainCostVersion */
             foreach ($mainVersion->getEffortVersion() as &$mainEffortVersion) {
                 // Check for a match with main effort version on start date, end date and workpackage
-                if ($otherEffortVersion->getDateStart()->format('dmY') === $mainEffortVersion->getDateStart()
+                if (
+                    $otherEffortVersion->getDateStart()->format('dmY') === $mainEffortVersion->getDateStart()
                         ->format('dmY')
                     && $otherEffortVersion->getDateEnd()->format('dmY') === $mainEffortVersion->getDateEnd()
                         ->format('dmY')
@@ -473,7 +462,7 @@ final class MergeAffiliation extends AbstractPlugin
                 }
             }
 
-            if (!$matched) {
+            if (! $matched) {
                 // No match with a main affiliation version effort, add it to main version
                 $otherEffortVersion->setAffiliationVersion($mainVersion);
                 $mainVersion->getEffortVersion()->add($otherEffortVersion);

@@ -1,18 +1,21 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
  * @category    Affiliation
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2004-2017 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\Controller;
 
+use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
 use Affiliation\Service\AffiliationService;
+use Affiliation\Service\QuestionnaireService;
 use Application\Service\AssertionService;
 use Contact\Service\ContactService;
 use Invoice\Options\ModuleOptions;
@@ -26,8 +29,8 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
-use Zend\Http\Response;
-use Zend\View\Model\ViewModel;
+use Laminas\Http\Response;
+use Laminas\View\Model\ViewModel;
 
 /**
  * Class CommunityController
@@ -36,58 +39,20 @@ use Zend\View\Model\ViewModel;
  */
 final class CommunityController extends AffiliationAbstractController
 {
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var VersionService
-     */
-    private $versionService;
-    /**
-     * @var ContactService
-     */
-    private $contactService;
-    /**
-     * @var OrganisationService
-     */
-    private $organisationService;
-    /**
-     * @var ReportService
-     */
-    private $reportService;
-    /**
-     * @var ContractService
-     */
-    private $contractService;
-    /**
-     * @var WorkpackageService
-     */
-    private $workpackageService;
-    /**
-     * @var InvoiceService
-     */
-    private $invoiceService;
-    /**
-     * @var ParentService
-     */
-    private $parentService;
-    /**
-     * @var CallService
-     */
-    private $callService;
-    /**
-     * @var ModuleOptions
-     */
-    private $invoiceModuleOptions;
-    /**
-     * @var AssertionService
-     */
-    private $assertionService;
+    private AffiliationService $affiliationService;
+    private ProjectService $projectService;
+    private VersionService $versionService;
+    private ContactService $contactService;
+    private OrganisationService $organisationService;
+    private ReportService $reportService;
+    private ContractService $contractService;
+    private WorkpackageService $workpackageService;
+    private InvoiceService $invoiceService;
+    private ParentService $parentService;
+    private CallService $callService;
+    private ModuleOptions $invoiceModuleOptions;
+    private AssertionService $assertionService;
+    private QuestionnaireService $questionnaireService;
 
     public function __construct(
         AffiliationService $affiliationService,
@@ -102,7 +67,8 @@ final class CommunityController extends AffiliationAbstractController
         ParentService $parentService,
         CallService $callService,
         ModuleOptions $invoiceModuleOptions,
-        AssertionService $assertionService
+        AssertionService $assertionService,
+        QuestionnaireService $questionnaireService
     ) {
         $this->affiliationService = $affiliationService;
         $this->projectService = $projectService;
@@ -117,6 +83,7 @@ final class CommunityController extends AffiliationAbstractController
         $this->callService = $callService;
         $this->invoiceModuleOptions = $invoiceModuleOptions;
         $this->assertionService = $assertionService;
+        $this->questionnaireService = $questionnaireService;
     }
 
 
@@ -131,34 +98,42 @@ final class CommunityController extends AffiliationAbstractController
         $this->assertionService->addResource($affiliation->getProject(), Project::class);
         $hasProjectEditRights = $this->isAllowed($affiliation->getProject(), 'edit-community');
 
-        return new ViewModel(
-            [
-                'affiliationService'    => $this->affiliationService,
-                'affiliation'           => $affiliation,
-                'contactsInAffiliation' => $this->contactService->findContactsInAffiliation($affiliation),
-                'projectService'        => $this->projectService,
-                'contractService'       => $this->contractService,
-                'workpackageService'    => $this->workpackageService,
-                'latestVersion'         => $this->projectService->getLatestProjectVersion(
-                    $affiliation->getProject()
-                ),
-                'contractVersion'       => $this->contractService->findLatestContractVersionByAffiliation(
-                    $affiliation
-                ),
-                'versionType'           => $this->projectService->getNextMode(
-                    $affiliation->getProject()
-                )->getVersionType(),
-                'hasProjectEditRights'  => $hasProjectEditRights,
-                'reportService'         => $this->reportService,
-                'versionService'        => $this->versionService,
-                'invoiceService'        => $this->invoiceService,
-                'contactService'        => $this->contactService,
-                'organisationService'   => $this->organisationService,
-                'parentService'         => $this->parentService,
-                'callService'           => $this->callService,
-                'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent()
-            ]
+        /*
+         * Create the checklist already now, since we need it in every method
+         */
+        $projectChecklist = $this->projectChecklist(
+            $affiliation->getProject(),
+            $this->callService->getCallStatus($affiliation->getProject()->getCall())->getVersionType()
         );
+
+        $params = [
+            'affiliationService'    => $this->affiliationService,
+            'affiliation'           => $affiliation,
+            'contactsInAffiliation' => $this->contactService->findContactsInAffiliation($affiliation),
+            'projectService'        => $this->projectService,
+            'contractService'       => $this->contractService,
+            'workpackageService'    => $this->workpackageService,
+            'latestVersion'         => $this->projectService->getLatestNotRejectedProjectVersion($affiliation->getProject()),
+            'latestContractVersion'       => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
+            'versionType'           => $this->projectService->getNextMode($affiliation->getProject())->getVersionType(),
+            'hasProjectEditRights'  => $hasProjectEditRights,
+            'reportService'         => $this->reportService,
+            'versionService'        => $this->versionService,
+            'invoiceService'        => $this->invoiceService,
+            'contactService'        => $this->contactService,
+            'organisationService'   => $this->organisationService,
+            'parentService'         => $this->parentService,
+            'callService'           => $this->callService,
+            'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
+            'projectChecklist'             => $projectChecklist,
+            'project'               => $affiliation->getProject()
+        ];
+
+        $this->assertionService->addResource($affiliation, AffiliationAssertion::class);
+        if ($this->isAllowed($affiliation, 'list-questionnaire')) {
+            $params['questionnaires'] = $this->questionnaireService->getAvailableQuestionnaires($affiliation);
+        }
+        return new ViewModel($params);
     }
 
     public function paymentSheetAction(): ViewModel
@@ -206,20 +181,21 @@ final class CommunityController extends AffiliationAbstractController
             null !== $this->params('contract')
         );
 
-        $response->getHeaders()->addHeaderLine('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 36000))
-            ->addHeaderLine('Cache-Control: max-age=36000, must-revalidate')->addHeaderLine('Pragma: public')
+        $pdfData = $renderPaymentSheet->getPDFData();
+        $response->getHeaders()
+            ->addHeaderLine('Pragma: public')
             ->addHeaderLine(
                 'Content-Disposition',
-                'attachment; filename=\'' . sprintf(
+                'attachment; filename="' . \sprintf(
                     'payment_sheet_%s_%s_%sH.pdf',
                     $affiliation->getOrganisation()->getDocRef(),
                     $year,
                     $period
-                ) . '\''
+                ) . '"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
-            ->addHeaderLine('Content-Length', \strlen($renderPaymentSheet->getPDFData()));
-        $response->setContent($renderPaymentSheet->getPDFData());
+            ->addHeaderLine('Content-Length', \strlen($pdfData));
+        $response->setContent($pdfData);
 
         return $response;
     }
