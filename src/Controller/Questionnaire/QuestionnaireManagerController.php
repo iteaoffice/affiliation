@@ -18,6 +18,7 @@ use Affiliation\Entity\Questionnaire\Category;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Form\Questionnaire\QuestionnaireFilter;
+use Affiliation\Form\Questionnaire\QuestionnaireForm;
 use Affiliation\Service\QuestionnaireService;
 use Affiliation\Service\FormService;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
@@ -131,6 +132,9 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
         $request = $this->getRequest();
         $data    = $request->getPost()->toArray();
         $form    = $this->formService->prepare($questionnaire, $data);
+        if ($this->questionnaireService->hasAnswers($questionnaire)) {
+            $form->remove('delete');
+        }
 
         if ($request->isPost()) {
             if (isset($data['cancel'])) {
@@ -155,6 +159,48 @@ final class QuestionnaireManagerController extends AffiliationAbstractController
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/questionnaire/view',
                     ['id' => $questionnaire->getId()]
+                );
+            }
+        }
+
+        return new ViewModel([
+            'form'          => $form,
+            'questionnaire' => $questionnaire,
+            'categories'    => $this->questionnaireService->findBy(Category::class, [], ['sequence' => 'ASC'])
+        ]);
+    }
+
+    public function copyAction()
+    {
+        /** @var Request $request */
+        $request = $this->getRequest();
+        /** @var Questionnaire $questionnaire */
+        $questionnaire = $this->questionnaireService->find(Questionnaire::class, (int) $this->params('id'));
+
+        if ($questionnaire === null) {
+            return $this->notFoundAction();
+        }
+
+        $questionnaireCopy = $this->questionnaireService->copyQuestionnaire($questionnaire);
+        $data              = $request->getPost()->toArray();
+        $form              = $this->formService->prepare($questionnaireCopy, $data);
+        $form->remove('delete');
+
+        if ($request->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute('zfcadmin/affiliation/questionnaire/list');
+            }
+
+            if ($form->isValid()) {
+                /** @var Questionnaire $questionnaireCopy */
+                $questionnaireCopy = $form->getData();
+                $this->questionnaireService->save($questionnaireCopy);
+                $this->flashMessenger()->addSuccessMessage(
+                    $this->translator->translate('txt-questionnaire-has-successfully-been-copied')
+                );
+                return $this->redirect()->toRoute(
+                    'zfcadmin/affiliation/questionnaire/view',
+                    ['id' => $questionnaireCopy->getId()]
                 );
             }
         }

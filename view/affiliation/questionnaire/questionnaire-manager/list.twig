@@ -34,6 +34,8 @@
                 <tr>
                     <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/questionnaire/question/list', 'criteria': 'id', 'text': translate("txt-id")} %}</th>
                     <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/questionnaire/question/list', 'criteria': 'questionnaire', 'text': translate("txt-questionnaire")} %}</th>
+                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/questionnaire/question/list', 'criteria': 'type', 'text': translate("txt-organisation-type")} %}</th>
+                    <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/questionnaire/question/list', 'criteria': 'call', 'text': translate("txt-call")} %}</th>
                     <th>{% include 'application/partial/sortable-table-header' with {'route': 'zfcadmin/affiliation/questionnaire/question/list', 'criteria': 'phase', 'text': translate("txt-phase")} %}</th>
                     <th>{{ translate("txt-questions") }}</th>
                 </tr>
@@ -44,8 +46,11 @@
                         <td>
                             {{ questionnaire.id }}
                             {{ affiliationQuestionnaireLink(questionnaire, 'edit-admin', 'icon') }}
+                            {{ affiliationQuestionnaireLink(questionnaire, 'copy-admin', 'icon') }}
                         </td>
                         <td>{{ affiliationQuestionnaireLink(questionnaire, 'view-admin', 'name') }}</td>
+                        <td>{{ organisationTypeLink(questionnaire.organisationType, 'view') }}</td>
+                        <td>{{ callLink(questionnaire.programCall, 'view-admin') }}</td>
                         <td>{{ questionnaire.phase.phase }}</td>
                         <td>{{ questionnaire.questionnaireQuestions|length }}</td>
                     </tr>

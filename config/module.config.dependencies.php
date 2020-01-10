@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Affiliation;
 
 use Admin\Service\AdminService;
-use Affiliation\Search\Service\AffiliationSearchService;
 use Affiliation\Service;
 use Application\Service\AssertionService;
 use Contact\Service\ContactService;
@@ -58,7 +57,8 @@ return [
             TranslatorInterface::class
         ],
         Service\QuestionnaireService::class => [
-            EntityManager::class
+            EntityManager::class,
+            VersionService::class
         ],
         Service\DoaService::class => [
             EntityManager::class

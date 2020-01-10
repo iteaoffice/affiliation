@@ -32,19 +32,20 @@ final class QuestionnaireLink extends AbstractLink
         Affiliation $affiliation = null
     ): string {
         $questionnaire ??= new Questionnaire();
+        $affiliation   ??= new Affiliation();
 
-        if (! $this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
+        if (!$this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
         if (! $questionnaire->isEmpty()) {
-            $routeParams['id'] = $questionnaire->getId();
+            $routeParams['id']   = $questionnaire->getId();
             $showOptions['name'] = $questionnaire->getQuestionnaire();
         }
 
-        if (null !== $affiliation) {
+        if (!$affiliation->isEmpty()) {
             $routeParams['affiliationId'] = $affiliation->getId();
         }
 
@@ -87,6 +88,14 @@ final class QuestionnaireLink extends AbstractLink
                         ?? $this->translator->translate('txt-edit-questionnaire')
                 ];
                 break;
+            case 'copy-admin':
+                $linkParams = [
+                    'icon' => 'fa-copy',
+                    'route' => 'zfcadmin/affiliation/questionnaire/copy',
+                    'text' => $showOptions[$show]
+                        ?? $this->translator->translate('txt-copy-questionnaire')
+                ];
+                break;
             case 'new-admin':
                 $linkParams = [
                     'icon' => 'fa-plus',
@@ -97,8 +106,8 @@ final class QuestionnaireLink extends AbstractLink
                 break;
         }
 
-        $linkParams['action'] = $action;
-        $linkParams['show'] = $show;
+        $linkParams['action']      = $action;
+        $linkParams['show']        = $show;
         $linkParams['routeParams'] = $routeParams;
 
         return $this->parse(Link::fromArray($linkParams));

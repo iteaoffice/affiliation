@@ -1,0 +1,18 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-affiliation")) %}
+{% do headTitle().append(translate("txt-new-questionnaire")) %}
+
+<h1>{{ translate("txt-create-new-questionnaire") }}</h1>
+<p class="lead">{{ translate("txt-copied-from") }} {{ affiliationQuestionnaireLink(questionnaire,'view-admin') }}</p>
+<h2>{{ translate("txt-general") }}</h2>
+{% include 'affiliation/partial/form/questionnaire/questionnaire' with {'edit':true} %}
+
+<h2>{{ translate("txt-questions") }}</h2>
+
+{% include 'affiliation/questionnaire/questionnaire-manager/partial/questions' %}
+
+<hr>
+{{ formelement(form.get('submit')) }}
+{{ formelement(form.get('cancel')) }}
+
+{{ form().closeTag()|raw }}

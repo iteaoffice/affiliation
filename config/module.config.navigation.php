@@ -451,6 +451,16 @@ return [
                                             ],
                                         ],
                                     ],
+                                    'copy-questionnaire' => [
+                                        'label'   => _('txt-copy'),
+                                        'route'   => 'zfcadmin/affiliation/questionnaire/copy',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Questionnaire\Questionnaire::class,
+                                            ],
+                                        ],
+                                    ],
                                 ],
                             ],
                             'new-questionnaire'  => [

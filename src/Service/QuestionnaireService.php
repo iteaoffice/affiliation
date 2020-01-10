@@ -67,7 +67,7 @@ class QuestionnaireService extends AbstractService
             $answer = $questionnaireQuestion->getAnswers()->first();
         }
 
-        // No, or not from this affiliation or new answers
+        // No answers, or not from this affiliation or new answers
         if (!$answer || $answer->getAffiliation() !== $affiliation || $answer->isEmpty()) {
             static $sortedQuestionnaireQuestions = [];
             if (!isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
@@ -84,7 +84,7 @@ class QuestionnaireService extends AbstractService
                 $answer->setQuestionnaireQuestion($questionnaireQuestion);
                 $answer->setAffiliation($affiliation);
 
-                //Persist the $answer to be able to only flush at the end
+                // Persist the $answer to be able to only flush at the end
                 $this->entityManager->persist($answer);
 
                 $answers[] = $answer;
@@ -119,11 +119,15 @@ class QuestionnaireService extends AbstractService
     public function getAvailableQuestionnaires(Affiliation $affiliation): array
     {
         $availableQuestionnaires = [];
-        $now                     = new \DateTime();
+        $now                     = new DateTime();
         if ($now >= $affiliation->getDateCreated()) {
             /** @var Phase $startPhase */
             $startPhase = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_START);
-            $availableQuestionnaires += $startPhase->getQuestionnaires()->toArray();
+            $availableQuestionnaires += $this->entityManager->getRepository(Questionnaire::class)->findBy([
+                'phase'            => $startPhase,
+                'organisationType' => $affiliation->getOrganisation()->getType(),
+                'programCall'      => $affiliation->getProject()->getCall()
+            ]);
         }
         /** @var ProjectCalendar $lastProjectCalendar */
         $lastProjectCalendar = $affiliation->getProject()->getProjectCalendar()->last();
@@ -131,7 +135,11 @@ class QuestionnaireService extends AbstractService
         if ($lastProjectCalendar && preg_match('/final/i', $lastProjectCalendar->getCalendar()->getCalendar())) {
             /** @var Phase $endPhase */
             $endPhase = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_END);
-            $availableQuestionnaires += $endPhase->getQuestionnaires()->toArray();
+            $availableQuestionnaires += $this->entityManager->getRepository(Questionnaire::class)->findBy([
+                'phase'            => $endPhase,
+                'organisationType' => $affiliation->getOrganisation()->getType(),
+                'programCall'      => $affiliation->getProject()->getCall()
+            ]);
         }
 
         return $availableQuestionnaires;
@@ -197,7 +205,7 @@ class QuestionnaireService extends AbstractService
      */
     public function isOpen(Questionnaire $questionnaire, Affiliation $affiliation): bool
     {
-        $now       = new \DateTime();
+        $now       = new DateTime();
         $startDate = $this->getStartDate($questionnaire, $affiliation);
         $endDate   = $this->getEndDate($questionnaire, $affiliation);
         return (
@@ -219,5 +227,25 @@ class QuestionnaireService extends AbstractService
         }
 
         return false;
+    }
+
+    public function copyQuestionnaire(Questionnaire $questionnaire): Questionnaire
+    {
+        $copy = new Questionnaire();
+        $copy->setQuestionnaire($questionnaire->getQuestionnaire());
+        $copy->setDescription($questionnaire->getDescription());
+        $copy->setOrganisationType($questionnaire->getOrganisationType());
+        $copy->setProgramCall($questionnaire->getProgramCall());
+        $copy->setPhase($questionnaire->getPhase());
+        /** @var QuestionnaireQuestion $questionnaireQuestion */
+        foreach ($questionnaire->getQuestionnaireQuestions() as $questionnaireQuestion) {
+            $newQuestionnaireQuestion = new QuestionnaireQuestion();
+            $newQuestionnaireQuestion->setQuestionnaire($copy);
+            $newQuestionnaireQuestion->setQuestion($questionnaireQuestion->getQuestion());
+            $newQuestionnaireQuestion->setSequence($questionnaireQuestion->getSequence());
+            $copy->getQuestionnaireQuestions()->add($newQuestionnaireQuestion);
+        }
+
+        return $copy;
     }
 }

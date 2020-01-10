@@ -308,6 +308,15 @@ return [
                                             ],
                                         ],
                                     ],
+                                    'copy'     => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/copy/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'copy',
+                                            ],
+                                        ],
+                                    ],
                                     'new'      => [
                                         'type'    => Segment::class,
                                         'options' => [

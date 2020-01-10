@@ -126,6 +126,10 @@ return [
                     'roles' => ['office'],
                 ],
                 [
+                    'route' => 'zfcadmin/affiliation/questionnaire/copy',
+                    'roles' => ['office'],
+                ],
+                [
                     'route' => 'zfcadmin/affiliation/questionnaire/question/list',
                     'roles' => ['office'],
                 ],

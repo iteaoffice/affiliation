@@ -18,6 +18,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Laminas\Form\Annotation;
+use Organisation\Entity\Type;
+use Program\Entity\Call\Call;
 
 /**
  * Category
@@ -38,8 +40,36 @@ class Questionnaire extends AbstractEntity
     private $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Organisation\Entity\Type", cascade={"persist"}, inversedBy="questionnaires")
+     * @ORM\JoinColumn(name="organisation_type_id", referencedColumnName="type_id", nullable=false)
+     * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
+     * @Annotation\Options({
+     *     "target_class":"Organisation\Entity\Type",
+     *     "help-block":"txt-questionnaire-organisation-type-help-block",
+     *     "label":"txt-organisation-type"
+     * })
+     *
+     * @var Type
+     */
+    private $organisationType;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Program\Entity\Call\Call", cascade={"persist"}, inversedBy="questionnaires")
+     * @ORM\JoinColumn(name="programcall_id", referencedColumnName="programcall_id", nullable=false)
+     * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
+     * @Annotation\Options({
+     *     "target_class":"Program\Entity\Call\Call",
+     *     "help-block":"txt-questionnaire-program-call-help-block",
+     *     "label":"txt-program-call"
+     * })
+     *
+     * @var Call
+     */
+    private $programCall;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Questionnaire\Phase", cascade={"persist"}, inversedBy="questionnaires")
-     * @ORM\JoinColumn(name="phase_id", referencedColumnName="phase_id")
+     * @ORM\JoinColumn(name="phase_id", referencedColumnName="phase_id", nullable=false)
      * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
      * @Annotation\Options({
      *     "target_class":"Affiliation\Entity\Questionnaire\Phase",
@@ -93,19 +123,11 @@ class Questionnaire extends AbstractEntity
      */
     private $questionnaireQuestions;
 
-    /**
-     * Category constructor.
-     */
     public function __construct()
     {
         $this->questionnaireQuestions = new ArrayCollection();
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __toString(): string
     {
         return (string) $this->questionnaire;
@@ -119,6 +141,28 @@ class Questionnaire extends AbstractEntity
     public function setId(int $id): Questionnaire
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function getOrganisationType(): ?Type
+    {
+        return $this->organisationType;
+    }
+
+    public function setOrganisationType(Type $organisationType): Questionnaire
+    {
+        $this->organisationType = $organisationType;
+        return $this;
+    }
+
+    public function getProgramCall(): ?Call
+    {
+        return $this->programCall;
+    }
+
+    public function setProgramCall(Call $programCall): Questionnaire
+    {
+        $this->programCall = $programCall;
         return $this;
     }
 
