@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -35,7 +36,6 @@ class DescriptionFilterTest extends AbstractInputFilterTest
     public function testCanCreateAffiliationInputFilter()
     {
         $descriptionFilter = new DescriptionFilter();
-
         $this->assertInstanceOf(DescriptionFilter::class, $descriptionFilter);
     }
 
@@ -46,7 +46,6 @@ class DescriptionFilterTest extends AbstractInputFilterTest
     public function testAffiliationInputFilterHasElements()
     {
         $descriptionFilter = new DescriptionFilter();
-
         $this->assertNotNull($descriptionFilter->get('affiliation_entity_description'));
         $this->assertNotNull($descriptionFilter->get('affiliation_entity_description')->get('description'));
     }

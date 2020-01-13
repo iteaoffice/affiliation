@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -37,9 +38,7 @@ class AffiliationFilterTest extends AbstractInputFilterTest
     {
         /** @var EntityManager $entityManager */
         $entityManager = $this->getEntityManagerMock();
-
         $affiliationFilter = new AffiliationFilter($entityManager);
-
         $this->assertInstanceOf(AffiliationFilter::class, $affiliationFilter);
     }
 
@@ -51,9 +50,7 @@ class AffiliationFilterTest extends AbstractInputFilterTest
     {
         /** @var EntityManager $entityManager */
         $entityManager = $this->getEntityManagerMock();
-
         $affiliationFilter = new AffiliationFilter($entityManager);
-
         $this->assertNotNull($affiliationFilter->get('affiliation_entity_affiliation'));
         $this->assertNotNull($affiliationFilter->get('affiliation_entity_affiliation')->get('branch'));
         $this->assertNotNull($affiliationFilter->get('affiliation_entity_affiliation')->get('note'));

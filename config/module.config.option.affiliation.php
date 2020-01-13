@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Program Options
  *
  * If you have a ./config/autoload/ directory set up for your project, you can
  * drop this config file in it and change the values as you wish.
  */
+
 $options = [
     /**
      * Indicate here if a project has versions

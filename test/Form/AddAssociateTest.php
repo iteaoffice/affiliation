@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -32,8 +33,7 @@ class AddAssociateTest extends AbstractFormTest
      * @var Affiliation
      */
     protected $affiliation;
-
-    /**
+/**
      * Set up basic properties
      */
     public function setUp(): void
@@ -51,10 +51,8 @@ class AddAssociateTest extends AbstractFormTest
     {
         /** @var EntityManager $entityManager */
         $entityManager = $this->getEntityManagerMock();
-
         $contactService = $this->setUpContactServiceMock();
         $addAssociate = new AddAssociate($this->affiliation, $contactService);
-
         $this->assertInstanceOf(AddAssociate::class, $addAssociate);
         $this->assertArrayHasKey('contact', $addAssociate->getInputFilterSpecification());
     }
@@ -69,20 +67,13 @@ class AddAssociateTest extends AbstractFormTest
     {
         $contact = new Contact();
         $contact->setId(1);
-
         $contactServiceMock = $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()
             ->setMethods(['findContactsInOrganisation'])
             ->getMock();
-
         $contactServiceMock->expects($this->exactly(1))
             ->method('findContactsInOrganisation')
             ->with($this->affiliation->getOrganisation())
-            ->will(
-                $this->returnValue(
-                    [$contact]
-                )
-            );
-
+            ->will($this->returnValue([$contact]));
         return $contactServiceMock;
     }
 }

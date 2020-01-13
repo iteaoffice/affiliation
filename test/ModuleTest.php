@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA copyright message placeholder
  *
@@ -45,10 +46,8 @@ class ModuleTest extends AbstractServiceTest
         $abstractFacories = $config[ConfigAbstractFactory::class] ?? [];
 
         foreach ($abstractFacories as $service => $dependencies) {
-
             $instantiatedDependencies = [];
             foreach ($dependencies as $dependency) {
-
                 if ($dependency === 'Application') {
                     $dependency = Application::class;
                 }
@@ -67,6 +66,5 @@ class ModuleTest extends AbstractServiceTest
 
             $this->assertInstanceOf($service, $instance);
         }
-
     }
 }
