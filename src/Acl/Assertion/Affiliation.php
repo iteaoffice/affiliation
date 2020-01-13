@@ -92,9 +92,6 @@ final class Affiliation extends AbstractAssertion
             case 'edit-affiliation':
             case 'edit-description':
             case 'edit-community':
-                if ($this->projectService->isStopped($affiliation->getProject())) {
-                    return false;
-                }
                 return $this->contactService->contactHasPermit(
                     $this->contact,
                     ['edit', 'edit_proxy', 'financial'],
@@ -112,13 +109,11 @@ final class Affiliation extends AbstractAssertion
                         return false;
                     }
                 }
-
-                if ($this->projectService->isStopped($affiliation->getProject())) {
-                    return false;
-                }
-                if ($this->contactService->contactHasPermit($this->contact, 'edit', $affiliation)) {
-                    return true;
-                }
+                return $this->contactService->contactHasPermit(
+                    $this->contact,
+                    ['edit', 'edit_proxy', 'financial'],
+                    $affiliation
+                );
 
                 break;
             case 'edit-financial':

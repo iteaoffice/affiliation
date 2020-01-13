@@ -11,6 +11,11 @@
             <th></th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+            <td colspan="5"></td>
+        </tr>
+        </tfoot>
         <tbody>
         {% for report in affiliation.project.report %}
 
@@ -23,7 +28,7 @@
                     report) %}
             {% endif %}
 
-            <tr {% if report.dateFinal %}class="success table-success"{% endif %}>
+            <tr {% if report.dateFinal %}class="table-success"{% endif %}>
                 <td colspan="5">{{ report.parseName() }}</td>
             </tr>
             <tr>
@@ -35,10 +40,10 @@
                         [{{ translate("txt-py") }}]
                     </td>
                     <td>
-                        {% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliation, 'text', report) }}{% endif %}</td>
+                        {% if not report.isFinal() %}{{ affiliationEffortSpentLink(affiliation, 'text', report) }}{% endif %}</td>
                 {% else %}
                     <td></td>
-                    <td>{% if not report.dateFinal %}{{ affiliationEffortSpentLink(affiliation, 'button', report) }}{% endif %}</td>
+                    <td>{% if not report.isFinal() %}{{ affiliationEffortSpentLink(affiliation, 'button', report) }}{% endif %}</td>
                 {% endif %}
             </tr>
             {% if effortSpent %}
@@ -74,6 +79,7 @@
     <table class="table table-hover table-striped table-sm">
         <thead>
         <tr>
+            <th>{{ translate("txt-no") }}</th>
             <th>{{ translate("txt-achievement") }}</th>
             <th>{{ translate("txt-date") }}</th>
             <th>{{ translate("txt-status") }}</th>
@@ -82,9 +88,15 @@
             <th>{{ translate("txt-contact") }}</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+            <td colspan="7"></td>
+        </tr>
+        </tfoot>
         <tbody>
         {% for achievement in affiliation.achievement %}
             <tr>
+                <td><small class="text-muted">{{ loop.index }}</small></td>
                 <td>
                     {{ achievementLink(achievement,'view-community', 'name') }}
                 </td>

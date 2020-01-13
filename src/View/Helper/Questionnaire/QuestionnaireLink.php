@@ -34,7 +34,7 @@ final class QuestionnaireLink extends AbstractLink
         $questionnaire ??= new Questionnaire();
         $affiliation   ??= new Affiliation();
 
-        if (!$this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
+        if (! $this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
             return '';
         }
 
@@ -45,7 +45,7 @@ final class QuestionnaireLink extends AbstractLink
             $showOptions['name'] = $questionnaire->getQuestionnaire();
         }
 
-        if (!$affiliation->isEmpty()) {
+        if (! $affiliation->isEmpty()) {
             $routeParams['affiliationId'] = $affiliation->getId();
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -27,6 +28,7 @@ use Project\Entity\Version\Type;
 use Project\Entity\Version\Version;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
+
 use function count;
 use function preg_match;
 use function round;
@@ -40,7 +42,7 @@ class QuestionnaireService extends AbstractService
     private VersionService $versionService;
 
     public function __construct(
-        EntityManager  $entityManager,
+        EntityManager $entityManager,
         VersionService $versionService
     ) {
         parent::__construct($entityManager);
@@ -68,9 +70,9 @@ class QuestionnaireService extends AbstractService
         }
 
         // No answers, or not from this affiliation or new answers
-        if (!$answer || $answer->getAffiliation() !== $affiliation || $answer->isEmpty()) {
+        if (! $answer || $answer->getAffiliation() !== $affiliation || $answer->isEmpty()) {
             static $sortedQuestionnaireQuestions = [];
-            if (!isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
+            if (! isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
                 $sortedQuestionnaireQuestions[$questionnaire->getId()] =
                     $this->entityManager->getRepository(QuestionnaireQuestion::class)->getSorted(
                         $questionnaire
@@ -108,7 +110,7 @@ class QuestionnaireService extends AbstractService
         /** @var Answer $answer */
         foreach ($answers as $answer) {
             $value = $answer->getValue();
-            if (!empty($value) || !$answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
+            if (! empty($value) || ! $answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
                 $answerCount++;
             }
         }
@@ -154,7 +156,8 @@ class QuestionnaireService extends AbstractService
                         $affiliation->getProject(),
                         $this->versionService->findVersionTypeById(Type::TYPE_PO)
                     );
-                    if (($poVersion instanceof Version)
+                    if (
+                        ($poVersion instanceof Version)
                         && ($this->versionService->parseStatus($poVersion) === ProjectService::STATUS_PO_INVITED_FOR_FPP)
                     ) {
                         return $poVersion->getDateReviewed();
@@ -218,7 +221,8 @@ class QuestionnaireService extends AbstractService
     {
         foreach ($contact->getAffiliation() as $affiliation) {
             foreach ($this->getAvailableQuestionnaires($affiliation) as $questionnaire) {
-                if ($this->isOpen($questionnaire, $affiliation)
+                if (
+                    $this->isOpen($questionnaire, $affiliation)
                     && ($this->parseCompletedPercentage($questionnaire, $affiliation) < 100)
                 ) {
                     return true;
