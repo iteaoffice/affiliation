@@ -288,6 +288,10 @@
         {% endif %}
 
         {{ affiliationLink(affiliation,'add-associate-admin','button') }}
+        {% if affiliation.associate.count() > 0 %}
+            {{ affiliationLink(affiliation,'manage-associate','button') }}
+        {% endif %}
+
 
     </div>
     <div class="tab-pane" role="tabpanel" id="financial">
@@ -428,9 +432,9 @@
             </tr>
             </thead>
             <tfoot>
-                <tr>
-                    <td colspan="{{ 3 + projectService.parseYearRange(project, true)|length }}"></td>
-                </tr>
+            <tr>
+                <td colspan="{{ 3 + projectService.parseYearRange(project, true)|length }}"></td>
+            </tr>
             </tfoot>
             <tbody>
             {% for affiliationVersion in affiliation.version %}
@@ -441,7 +445,9 @@
                         {{ versionLink(version,'view-admin','description') }}</th>
                 </tr>
                 <tr>
-                    <td><small class="text-muted">{{ version.id }}</small> {{ versionService.parseStatus(affiliationVersion.version) }}</td>
+                    <td>
+                        <small class="text-muted">{{ version.id }}</small> {{ versionService.parseStatus(affiliationVersion.version) }}
+                    </td>
                     <td>{{ translate("txt-effort") }}</td>
 
                     {% for year in projectService.parseYearRange(project, true) %}

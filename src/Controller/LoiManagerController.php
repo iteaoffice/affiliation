@@ -164,7 +164,7 @@ final class LoiManagerController extends AffiliationAbstractController
 
                 $this->loiService->delete($loi);
 
-                return $this->redirect()->toRoute('zfcadmin/affiliation/loi/list');
+                return $this->redirect()->toRoute('zfcadmin/affiliation/view', ['id' => $loi->getAffiliation()->getId()]);
             }
 
 
