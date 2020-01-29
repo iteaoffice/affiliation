@@ -1,6 +1,6 @@
 <?php
 
-use Admin\Navigation\Factory\NavigationInvokableFactory;
+use General\Navigation\Factory\NavigationInvokableFactory;
 use Affiliation\Acl;
 use Affiliation\Controller;
 use Affiliation\Factory;
