@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Navigation\Invokable\Questionnaire;
 
-use Admin\Navigation\Invokable\AbstractNavigationInvokable;
+use General\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Questionnaire\Category;
 use Laminas\Navigation\Page\Mvc;
 

@@ -1,21 +1,5 @@
 <?php
 
-use Affiliation\Acl;
-use Affiliation\Controller;
-use Affiliation\Factory;
-use Affiliation\InputFilter;
-use Affiliation\Navigation;
-use Affiliation\Options;
-use Affiliation\Search;
-use Affiliation\Service;
-use Affiliation\View;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Gedmo\Sluggable\SluggableListener;
-use Gedmo\Timestampable\TimestampableListener;
-use General\View\Factory\LinkHelperFactory;
-use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Laminas\Stdlib;
-
 /**
  * ITEA Office copyright message placeholder
  *
@@ -24,6 +8,22 @@ use Laminas\Stdlib;
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  */
+
+use Affiliation\Acl;
+use Affiliation\Controller;
+use Affiliation\Factory;
+use Affiliation\InputFilter;
+use Affiliation\Navigation;
+use Affiliation\Options;
+use Affiliation\Service;
+use Affiliation\View;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Gedmo\Sluggable\SluggableListener;
+use Gedmo\Timestampable\TimestampableListener;
+use General\Navigation\Factory\NavigationInvokableFactory;
+use General\View\Factory\LinkHelperFactory;
+use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Laminas\Stdlib;
 
 $config = [
     'controllers'        => [
@@ -55,12 +55,12 @@ $config = [
             Acl\Assertion\Doa::class                                     => Factory\InvokableFactory::class,
             Acl\Assertion\Loi::class                                     => Factory\InvokableFactory::class,
             Acl\Assertion\QuestionnaireAssertion::class                  => Factory\InvokableFactory::class,
-            Navigation\Invokable\AffiliationLabel::class                 => Factory\InvokableFactory::class,
-            Navigation\Invokable\DoaLabel::class                         => Factory\InvokableFactory::class,
-            Navigation\Invokable\LoiLabel::class                         => Factory\InvokableFactory::class,
-            Navigation\Invokable\Questionnaire\CategoryLabel::class      => Factory\InvokableFactory::class,
-            Navigation\Invokable\Questionnaire\QuestionLabel::class      => Factory\InvokableFactory::class,
-            Navigation\Invokable\Questionnaire\QuestionnaireLabel::class => Factory\InvokableFactory::class,
+            Navigation\Invokable\AffiliationLabel::class                 => NavigationInvokableFactory::class,
+            Navigation\Invokable\DoaLabel::class                         => NavigationInvokableFactory::class,
+            Navigation\Invokable\LoiLabel::class                         => NavigationInvokableFactory::class,
+            Navigation\Invokable\Questionnaire\CategoryLabel::class      => NavigationInvokableFactory::class,
+            Navigation\Invokable\Questionnaire\QuestionLabel::class      => NavigationInvokableFactory::class,
+            Navigation\Invokable\Questionnaire\QuestionnaireLabel::class => NavigationInvokableFactory::class
         ],
     ],
     'controller_plugins' => [

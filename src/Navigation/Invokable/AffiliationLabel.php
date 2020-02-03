@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Navigation\Invokable;
 
-use Admin\Navigation\Invokable\AbstractNavigationInvokable;
+use General\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Affiliation;
 use Project\Entity\Project;
 use Laminas\Navigation\Page\Mvc;

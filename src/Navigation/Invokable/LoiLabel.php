@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Navigation\Invokable;
 
-use Admin\Navigation\Invokable\AbstractNavigationInvokable;
+use General\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Loi;
 use Project\Entity\Project;
