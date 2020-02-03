@@ -7,7 +7,9 @@
     <table class="table table-striped table-sm table-hover">
         <thead>
         <tr>
+            <th>{{ translate("txt-no") }}</th>
             <th>{{ translate("txt-organisation") }}</th>
+            <th>{{ translate("txt-organisation-type") }}</th>
             <th>{{ translate("txt-technical-contact") }}</th>
             <th>{{ translate("txt-country") }}</th>
             <th>{{ translate("txt-project") }}</th>
@@ -15,13 +17,15 @@
         </thead>
         <tfoot>
         <tr>
-            <td colspan="3"></td>
+            <td colspan="6"></td>
         </tr>
         </tfoot>
         <tbody>
         {% for affiliation in paginator.getCurrentItems() %}
             <tr>
+                <td><small class="text-muted">{{ loop.index }}</small></td>
                 <td>{{ affiliationLink(affiliation,'view-admin','name') }}</td>
+                <td>{{ affiliation.organisation.type.type }}</td>
                 <td>{{ contactLink(affiliation.contact,'view-admin','name') }}</td>
                 <td>{{ affiliation.organisation.country }}</td>
                 <td>{{ projectLink(affiliation.project,'view-admin','name') }}</td>

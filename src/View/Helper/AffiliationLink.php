@@ -31,8 +31,9 @@ final class AffiliationLink extends AbstractLink
         string $show = 'organisation-branch',
         int $year = null,
         int $period = null
-    ): string {
-        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
+    ): string
+    {
+        if (!$this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
             return $action !== 'view-community' ? ''
                 : $affiliation->getOrganisation()->getOrganisation();
         }
@@ -55,7 +56,7 @@ final class AffiliationLink extends AbstractLink
         switch ($action) {
             case 'view-community':
                 $linkParams = [
-                    'icon'  => 'fa-circle-o',
+                    'icon'  => 'far fa-circle',
                     'route' => 'community/affiliation/affiliation',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-view-affiliation-%s'), $affiliation->parseBranchedName())
@@ -63,7 +64,7 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'edit-community':
                 $linkParams = [
-                    'icon'  => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/affiliation',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-edit-affiliation-%s'), $affiliation->parseBranchedName())
@@ -72,7 +73,7 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'edit-financial':
                 $linkParams = [
-                    'icon'  => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/financial',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-edit-financial-affiliation-%s'), $affiliation->parseBranchedName())
@@ -80,7 +81,7 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'add-associate':
                 $linkParams = [
-                    'icon'  => 'fa-user-plus',
+                    'icon'  => 'fas fa-user-plus',
                     'route' => 'community/affiliation/edit/add-associate',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-add-associate')
                 ];
@@ -88,21 +89,21 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'manage-associate':
                 $linkParams = [
-                    'icon'  => 'fa-users',
+                    'icon'  => 'fas fa-users',
                     'route' => 'community/affiliation/edit/manage-associate',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-manage-associates')
                 ];
                 break;
             case 'edit-cost-and-effort':
                 $linkParams = [
-                    'icon'  => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/cost-and-effort',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-edit-cost-and-effort')
                 ];
                 break;
             case 'add-associate-admin':
                 $linkParams = [
-                    'icon'  => 'fa-user-plus',
+                    'icon'  => 'fas fa-user-plus',
                     'route' => 'zfcadmin/affiliation/add-associate',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-add-associate')
                 ];
@@ -110,17 +111,17 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'edit-description':
                 $linkParams = [
-                    'icon'  => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/description',
                     'text'  => $showOptions[$show] ?? sprintf(
-                        $this->translator->translate('txt-edit-description-affiliation-%s'),
-                        $affiliation->parseBranchedName()
-                    )
+                            $this->translator->translate('txt-edit-description-affiliation-%s'),
+                            $affiliation->parseBranchedName()
+                        )
                 ];
                 break;
             case 'view-admin':
                 $linkParams = [
-                    'icon'  => 'fa-circle-o',
+                    'icon'  => 'far fa-circle',
                     'route' => 'zfcadmin/affiliation/view',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-view-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
@@ -129,7 +130,7 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'edit-admin':
                 $linkParams = [
-                    'icon'  => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'zfcadmin/affiliation/edit',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-edit-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
@@ -145,7 +146,7 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'payment-sheet':
                 $linkParams = [
-                    'icon'  => 'fa-eur',
+                    'icon'  => 'fas fa-euro-sign',
                     'route' => 'community/affiliation/payment-sheet',
                     'text'  => $showOptions[$show]
                         ?? sprintf(
@@ -159,7 +160,7 @@ final class AffiliationLink extends AbstractLink
             case 'payment-sheet-contract':
                 $routeParams['contract'] = 'contract';
                 $linkParams              = [
-                    'icon'  => 'fa-eur',
+                    'icon'  => 'fas fa-euro-sign',
                     'route' => 'community/affiliation/payment-sheet',
                     'text'  => $showOptions[$show]
                         ?? sprintf(
@@ -174,7 +175,7 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'payment-sheet-pdf':
                 $linkParams = [
-                    'icon'  => 'fa-file-pdf-o',
+                    'icon'  => 'far fa-file-pdf',
                     'route' => 'community/affiliation/payment-sheet-pdf',
                     'text'  => $showOptions[$show]
                         ?? sprintf(
@@ -188,7 +189,7 @@ final class AffiliationLink extends AbstractLink
             case 'payment-sheet-pdf-contract':
                 $routeParams['contract'] = 'contract';
                 $linkParams              = [
-                    'icon'  => 'fa-file-pdf-o',
+                    'icon'  => 'far fa-file-pdf',
                     'route' => 'community/affiliation/payment-sheet-pdf',
                     'text'  => $showOptions[$show]
                         ?? sprintf(

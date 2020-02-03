@@ -115,7 +115,7 @@
 
         let btn = $(this);
         btn.data('original-text', btn.html());
-        btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> loading...');
+        btn.html('<i class="far fa-circle-notch fa-spin"></i> loading...');
 
         //DoaId
         let doaId = btn.data('doa-id');
@@ -133,7 +133,7 @@
             success: function (response) {
                 if (response.result === 'success') {
                     btn.attr('class', 'btn btn-success btn-sm');
-                    btn.html('<i class="fa fa-check"></i> Approved');
+                    btn.html('<i class="fas fa-check"></i> Approved');
                     $("#doa-" + doaId).addClass('table-success');
                 }
 
@@ -155,7 +155,7 @@
 
         let btn = $(this);
         btn.data('original-text', btn.html());
-        btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> loading...');
+        btn.html('<i class="far fa-circle-notch fa-spin"></i> loading...');
 
         //DoaId
         let doaId = btn.data('doa-id');
@@ -170,7 +170,7 @@
             success: function (response) {
                 if (response.result === 'success') {
                     btn.attr('class', 'btn btn-success btn-sm');
-                    btn.html('<i class="fa fa-check"></i> Declined');
+                    btn.html('<i class="fas fa-check"></i> Declined');
                     $("#doa-" + doaId).addClass('table-danger');
                 }
 

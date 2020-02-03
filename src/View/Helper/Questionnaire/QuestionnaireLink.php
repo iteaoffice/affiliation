@@ -30,77 +30,69 @@ final class QuestionnaireLink extends AbstractLink
         string $action = 'view',
         string $show = 'name',
         Affiliation $affiliation = null
-    ): string {
+    ): string
+    {
         $questionnaire ??= new Questionnaire();
-        $affiliation   ??= new Affiliation();
 
-        if (! $this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
+        if (!$this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
-        if (! $questionnaire->isEmpty()) {
+        if (!$questionnaire->isEmpty()) {
             $routeParams['id']   = $questionnaire->getId();
             $showOptions['name'] = $questionnaire->getQuestionnaire();
         }
 
-        if (! $affiliation->isEmpty()) {
+        if (null !== $affiliation) {
             $routeParams['affiliationId'] = $affiliation->getId();
         }
 
         switch ($action) {
             case 'overview':
                 $linkParams = [
-                    'icon' => 'fa-plus',
+                    'icon'  => 'fas fa-plus',
                     'route' => 'community/affiliation/questionnaire/overview',
-                    'text' => $showOptions[$show] ?? $this->translator->translate('txt-view-questionnaire')
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-view-questionnaire')
                 ];
                 break;
             case 'view-community':
                 $linkParams = [
-                    'icon' => 'fa-question-circle-o',
+                    'icon'  => 'far fa-question-circle',
                     'route' => 'community/affiliation/questionnaire/view',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-view-answers')
                 ];
                 break;
             case 'edit-community':
                 $linkParams = [
-                    'icon' => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/questionnaire/edit',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-update-answers')
                 ];
                 break;
             case 'view-admin':
                 $linkParams = [
-                    'icon' => 'fa-question-circle-o',
+                    'icon'  => 'far fa-question-circle',
                     'route' => 'zfcadmin/affiliation/questionnaire/view',
-                    'text' => $showOptions[$show] ?? $questionnaire->getQuestionnaire()
+                    'text'  => $showOptions[$show] ?? $questionnaire->getQuestionnaire()
                 ];
                 break;
             case 'edit-admin':
                 $linkParams = [
-                    'icon' => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'zfcadmin/affiliation/questionnaire/edit',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-questionnaire')
-                ];
-                break;
-            case 'copy-admin':
-                $linkParams = [
-                    'icon' => 'fa-copy',
-                    'route' => 'zfcadmin/affiliation/questionnaire/copy',
-                    'text' => $showOptions[$show]
-                        ?? $this->translator->translate('txt-copy-questionnaire')
                 ];
                 break;
             case 'new-admin':
                 $linkParams = [
-                    'icon' => 'fa-plus',
+                    'icon'  => 'fas fa-plus',
                     'route' => 'zfcadmin/affiliation/questionnaire/new',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-new-questionnaire')
                 ];
                 break;

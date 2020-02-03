@@ -61,7 +61,7 @@ report.parseName()
             <p class="form-control-plaintext">{{ achievementLink(achievement,'view-community', 'name') }}</p>
         {% else %}
             <p class="form-control-plaintext"><i
-                        class="fa fa-exclamation-circle text-warning warning"></i> {{ translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()) }}
+                        class="fas fa-exclamation-circle text-warning warning"></i> {{ translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()) }}
             </p>
         {% endfor %}
     </div>

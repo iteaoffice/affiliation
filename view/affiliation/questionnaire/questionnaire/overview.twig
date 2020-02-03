@@ -21,7 +21,7 @@
             <tr>
                 <td>
                     {% if not questionnaireHelper().isOpen(questionnaire, affiliationData.affiliation) %}
-                        <i class="fa fa-lock"></i>
+                        <i class="fas fa-lock"></i>
                     {% endif %}
                     {{ affiliationQuestionnaireLink(questionnaire, 'view-community', 'name', affiliationData.affiliation) }}
                     {{ affiliationQuestionnaireLink(questionnaire, 'edit-community', 'icon', affiliationData.affiliation) }}

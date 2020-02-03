@@ -42,7 +42,7 @@
 
         var btn = $(this);
         btn.data('original-text', btn.html());
-        btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> loading...');
+        btn.html('<i class="far fa-circle-notch fa-spin"></i> loading...');
 
         //LoiId
         var loiId = btn.data('loi-id');
@@ -59,7 +59,7 @@
             success: function (response) {
                 if (response.result === 'success') {
                     btn.attr('class', 'btn btn-success');
-                    btn.html('<i class="fa fa-check"></i> Approved');
+                    btn.html('<i class="fas fa-check"></i> Approved');
                     $("#loi-" + loiId).addClass('table-success');
                 }
 

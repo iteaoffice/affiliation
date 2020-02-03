@@ -4,7 +4,7 @@
 {% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
 
 {% set years = projectService.parseYearRange(affiliation.project) %}
-{% set projectYears = projectService.parseYearRange(affiliation.project) %}
+
 
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
@@ -134,22 +134,3 @@
         {% include 'affiliation/partial/checklist' %}
     </div>
 </div>
-
-<script type="text/javascript">
-    $(document).on("ajaxComplete", function () {
-        $(document).updateEffort();
-        $(document).updateCost();
-    });
-
-    /**
-     * Calculate the sum per year
-     */
-    $(document).ready(function () {
-        $(document).updateEffort();
-        $(document).updateCost();
-        //turn to inline mode
-        $.fn.editable.defaults.mode = 'popup';
-        $('.affiliation').editable();
-        $('.workpackage-edit').editable();
-    });
-</script>

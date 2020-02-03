@@ -31,22 +31,23 @@ final class DoaLink extends AbstractLink
         $action = 'view',
         $show = 'name',
         Affiliation $affiliation = null
-    ): string {
+    ): string
+    {
         $doa ??= (new Doa())->setAffiliation($affiliation);
 
-        if (! $this->hasAccess($doa, DoaAssertion::class, $action)) {
+        if (!$this->hasAccess($doa, DoaAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
 
-        if (! $doa->isEmpty()) {
+        if (!$doa->isEmpty()) {
             $routeParams['id'] = $doa->getId();
 
             $showOptions['name'] = $doa->parseFileName();
 
-            if (! $doa->getObject()->isEmpty()) {
+            if (!$doa->getObject()->isEmpty()) {
                 $routeParams['ext'] = $doa->getContentType()->getExtension();
             }
         }
@@ -58,9 +59,9 @@ final class DoaLink extends AbstractLink
         switch ($action) {
             case 'submit':
                 $linkParams = [
-                    'icon' => 'fa-share-square-o',
+                    'icon'  => 'far fa-share-square',
                     'route' => 'community/affiliation/doa/submit',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-submit-doa-for-organisation-%s-in-project-%s-link-title'),
                             $affiliation->parseBranchedName(),
@@ -70,9 +71,9 @@ final class DoaLink extends AbstractLink
                 break;
             case 'render':
                 $linkParams = [
-                    'icon' => 'fa-file-pdf-o',
+                    'icon'  => 'far fa-file-pdf',
                     'route' => 'community/affiliation/doa/render',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-render-doa-for-organisation-%s-in-project-%s-link-title'),
                             $affiliation->parseBranchedName(),
@@ -83,9 +84,9 @@ final class DoaLink extends AbstractLink
                 break;
             case 'replace':
                 $linkParams = [
-                    'icon' => 'fa-refresh',
+                    'icon'  => 'fa-refresh',
                     'route' => 'community/affiliation/doa/replace',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-replace-doa-for-organisation-%s-in-project-%s-link-title'),
                             $doa->getAffiliation()->parseBranchedName(),
@@ -96,9 +97,9 @@ final class DoaLink extends AbstractLink
                 break;
             case 'download':
                 $linkParams = [
-                    'icon' => 'fa-file-pdf-o',
+                    'icon'  => 'far fa-file-pdf',
                     'route' => 'community/affiliation/doa/download',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-download-doa-for-organisation-%s-in-project-%s-link-title'),
                             $doa->getAffiliation()->parseBranchedName(),
@@ -107,53 +108,61 @@ final class DoaLink extends AbstractLink
                 ];
 
                 break;
+            case 'reminders-admin':
+                $linkParams = [
+                    'icon'  => 'far fa-bell',
+                    'route' => 'zfcadmin/affiliation/doa/reminders',
+                    'text'  => $showOptions[$show]
+                        ?? $this->translator->translate('txt-see-reminders')
+                ];
+                break;
             case 'remind-admin':
                 $linkParams = [
-                    'icon' => 'fa-bell-o',
+                    'icon'  => 'far fa-bell',
                     'route' => 'zfcadmin/affiliation/doa/remind',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-send-reminder')
                 ];
                 break;
             case 'approval-admin':
                 $linkParams = [
-                    'icon' => 'fa-thumbs-o-up',
+                    'icon'  => 'far fa-thumbs-up',
                     'route' => 'zfcadmin/affiliation/doa/approval',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-approval-doa')
                 ];
 
                 break;
             case 'missing-admin':
                 $linkParams = [
-                    'icon' => 'fa-star-half-o',
+                    'icon'  => 'far fa-star-half-alt',
                     'route' => 'zfcadmin/affiliation/doa/missing',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-missing-doa')
                 ];
 
                 break;
             case 'view-admin':
                 $linkParams = [
-                    'icon' => 'fa-file-o',
+                    'icon'  => 'far fa-file',
                     'route' => 'zfcadmin/affiliation/doa/view',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-view-doa')
                 ];
 
                 break;
             case 'edit-admin':
                 $linkParams = [
-                    'icon' => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'zfcadmin/affiliation/doa/edit',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-doa')
                 ];
                 break;
         }
 
-        $linkParams['action'] = $action;
-        $linkParams['show'] = $show;
+        $linkParams['action']      = $action;
+        $linkParams['show']        = $show;
         $linkParams['routeParams'] = $routeParams;
 
         return $this->parse(Link::fromArray($linkParams));

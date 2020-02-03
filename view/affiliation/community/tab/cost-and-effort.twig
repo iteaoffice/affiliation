@@ -10,14 +10,23 @@
         <tr class="table-success">
             <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
             {% for year in years %}
-                <th>{% if year in projectYears %}{{ year }}{% else %}<span
-                        class="warning text-danger"
-                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
+                <th class="text-right">
+                    {% if projectService.isOutOfBounds(project, year) %}<span
+                        class="text-danger"
+                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
+                    {% else %}
+                        {{ year }}
+                    {% endif %}
                 </th>
             {% endfor %}
-            <th>{{ translate("txt-total") }}</th>
+            <th class="text-right">{{ translate("txt-total") }}</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+            <td colspan="{{ 3 + years|length }}"></td>
+        </tr>
+        </tfoot>
         <tbody>
         {% set costPerYear = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(
             affiliation,
@@ -32,41 +41,43 @@
             <tr>
                 <td colspan="2"></td>
                 {% for year in years %}
-                    <td class="cost_version_value"
-                        rel="cost_version_{{ year }}">{{ costPerYear[year]|currency_decimal() }}</td>
+                    <td class="cost-version text-right"
+                        data-affiliation="{{ affiliation.id }}"
+                        data-year="{{ year }}">{{ costPerYear[year]|kilo_currency_decimal(null, false) }}</td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
-                <th id="cost_version_total">{{ totalPerYear|currency_decimal() }}</th>
+                <th class="text-right">{{ totalPerYear|kilo_currency_decimal(null, false) }}</th>
             </tr>
         {% else %}
             {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
             <tr>
-                <td colspan="2">{{ translate("txt-contract-costs") }} <i class="fa fa-handshake-o"
-                                                                         aria-hidden="true"></i></td>
+                <td colspan="2">{{ translate("txt-contract-costs") }} <i class="far fa-handshake"></i></td>
                 {% for year in years %}
-                    <td>{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
+                    <td class="text-right">{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
                     {% set totalPerYear = totalPerYear + contractVersionCost[year] %}
                 {% endfor %}
-                <th>{{ totalPerYear|currency_decimal(contractVersion.contract.currency) }}</th>
+                <th class="text-right">{{ totalPerYear|currency_decimal(contractVersion.contract.currency) }}</th>
             </tr>
         {% endif %}
-
-
         </tbody>
         <thead>
         <tr class="table-success">
             <th colspan="2">{{ translate("txt-effort") }} [{{ translate("txt-py") }}]</th>
             {% for year in years %}
-                <th>{% if year in projectYears %}{{ year }}{% else %}<span
-                        class="warning"
-                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
-
+                <th class="text-right">
+                    {% if projectService.isOutOfBounds(project, year) %}<span
+                        class="text-danger"
+                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
+                    {% else %}
+                        {{ year }}
+                    {% endif %}
                 </th>
             {% endfor %}
-            <th>{{ translate("txt-total") }}</th>
+            <th class="text-right">{{ translate("txt-total") }}</th>
         </tr>
         </thead>
         <tbody>
+
         {% set grandTotal = 0 %}
         {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
             {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
@@ -80,18 +91,21 @@
                 <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
                 <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                 {% for year in years %}
-                    <td class="effort_version_value"
-                        rel="effort_version_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}">{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
+                    <td class="effort-version text-right"
+                        data-affiliation="{{ affiliation.id }}"
+                        data-workpackage="{{ workpackage.id }}"
+                        data-year="{{ year }}"
+                    >{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
                     {% set totalPerWP = totalPerWP + effortPerYear[year].effort %}
                 {% endfor %}
                 {% set grandTotal = grandTotal + totalPerWP %}
-                <th id="effort_version_total_{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
+                <th class="text-right">{{ totalPerWP|parse_effort }}</th>
             </tr>
         {% endfor %}
 
         <tr>
             <td colspan="{{ 2 + years|length }}"></td>
-            <th>{{ grandTotal|parse_effort }}</th>
+            <th class="text-right">{{ grandTotal|parse_effort }}</th>
         </tr>
 
         </tbody>
@@ -110,33 +124,32 @@
         <tr class="table-success">
             <th colspan="2">{{ translate("txt-costs") }} {% if not useContract %}[k&euro;]{% endif %}</th>
             {% for year in years %}
-                <th>{% if year in projectYears %}{{ year }}{% else %}<span
-                        class="warning"
-                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
+                <th class="text-right">
+                    {% if projectService.isOutOfBounds(project, year) %}<span
+                        class="text-danger"
+                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
+                    {% else %}
+                        {{ year }}
+                    {% endif %}
                 </th>
             {% endfor %}
-            <th>{{ translate("txt-total") }}</th>
+            <th class="text-right">{{ translate("txt-total") }}</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+            <td colspan="{{ 3 + years|length }}"></td>
+        </tr>
+        </tfoot>
         <tbody>
         {% set costPerYear = projectService.findTotalCostByAffiliationPerYear(affiliation) %}
-
-        {# do a second iteration over the previous version to highlight the difference#}
-        {% if latestVersion %}
-            {% set costPerYearInVersion = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(
-                affiliation,
-                latestVersion
-                ) %}
-        {% endif %}
-
-
         {% set totalPerYear = 0 %}
 
         {% if not useContract %}
-            <tr class="cost_row">
+            <tr>
                 <td colspan="2"></td>
                 {% for year in years %}
-                    <td>
+                    <td class="text-right {% if projectService.isOutOfBounds(project, year) %}table-danger{% endif %}">
                         {% if
                             year in projectService.parseEditYearRange(affiliation.project) and
                             (
@@ -146,50 +159,55 @@
 
                             {% set hasSomeCostAndEffortEditRights = true %}
 
-                            <i class="fa pull-left"></i>
-                            <a id="cost_{{ year }}"
-                               href="#" class="affiliation" data-type="text"
-                               data-pk="{{ affiliation.id }},{{ year }}"
-                               data-url="{{ url('json/project/update-cost') }}"
-                               data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost }}</a>
+                            <a
+                                    data-affiliation="{{ affiliation.id }}"
+                                    data-year="{{ year }}"
+                                    class="text-primary cost-edit single-cost"
+                                    data-type="text"
+                                    data-pk=""
+                                    data-params="{'affiliation':{{ affiliation.id }},'year':{{ year }}}"
+                                    data-url="{{ url('json/project/cost/update-draft') }}"
+                                    data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost }}</a>
                         {% else %}
-                            <i class="fa pull-left"></i>
-                            <span id="cost_{{ year }}" rel="{{ year }}">{{ costPerYear[year]|parse_cost }}</span>
+                            <span data-affilation="{{ affiliation.id }}"
+                                  data-year="{{ year }}">{{ costPerYear[year]|parse_cost }}</span>
                         {% endif %}
                     </td>
                     {% set totalPerYear = totalPerYear + costPerYear[year] %}
                 {% endfor %}
-                <th class="cost_total"><i
-                            class="fa pull-left"></i>{{ totalPerYear|parse_cost }}
+                <th class="cost-total text-right">{{ totalPerYear|parse_cost }}</th>
             </tr>
         {% else %}
-
             {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(latestContractVersion, affiliation) %}
-
             <tr>
-                <td colspan="2">{{ translate("txt-contract-costs") }} <i class="fa fa-handshake-o"
-                                                                         aria-hidden="true"></i></td>
+                <td colspan="2">{{ translate("txt-contract-costs") }} <i class="far fa-handshake"></i></td>
                 {% for year in years %}
-                    <td>{{ contractVersionCost[year]|currency_decimal(latestContractVersion.contract.currency) }}</td>
+                    <td class="text-right">{{ contractVersionCost[year]|currency_decimal(latestContractVersion.contract.currency) }}</td>
                     {% set totalPerYear = totalPerYear + contractVersionCost[year] %}
                 {% endfor %}
-                <th>{{ totalPerYear|currency_decimal(latestContractVersion.contract.currency) }}</th>
+                <th class="text-right">{{ totalPerYear|currency_decimal(latestContractVersion.contract.currency) }}</th>
             </tr>
         {% endif %}
-
-
         </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="{{ 3 + years|length }}"></td>
+        </tr>
+        </tfoot>
         <thead>
         <tr class="table-success">
             <th colspan="2">{{ translate("txt-effort") }} [{{ translate("txt-py") }}]</th>
             {% for year in years %}
-                <th>{% if year in projectYears %}{{ year }}{% else %}<span
-                        class="warning"
-                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>{% endif %}
-
+                <th class="text-right">
+                    {% if projectService.isOutOfBounds(project, year) %}<span
+                        class="text-danger"
+                        title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
+                    {% else %}
+                        {{ year }}
+                    {% endif %}
                 </th>
             {% endfor %}
-            <th>{{ translate("txt-total") }}</th>
+            <th class="text-right">{{ translate("txt-total") }}</th>
         </tr>
         </thead>
         <tbody>
@@ -211,13 +229,13 @@
             {% endif %}
 
 
-            <tr class="workpackage_row" rel="{{ workpackage.id }}">
+            <tr>
                 <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
                 <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
                 {% for year in years %}
                 {% set effortInCurrentYear = effortPerYear[year].effort %}
 
-                <td>
+                <td class="text-right {% if projectService.isOutOfBounds(project, year) %}table-danger{% endif %}">
                     {% if
                         year in projectService.parseEditYearRange(affiliation.project) and
                         (
@@ -228,38 +246,183 @@
 
                         {% set hasSomeCostAndEffortEditRights = true %}
 
-                        <i class="fa pull-left"></i>
-                        <a id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
-                           href="#" class="workpackage workpackage-edit" data-type="text"
-                           data-pk="{{ affiliation.id }},{{ workpackage.id }},{{ year }}"
-                           data-url="{{ url('json/project/update-effort') }}"
-                           data-title="{{ translate("txt-update-effort") }}">{{ effortInCurrentYear|parse_effort }}</a>
+                        <a data-affiliation="{{ affiliation.id }}"
+                           data-workpackage="{{ workpackage.id }}"
+                           data-year="{{ year }}"
+                           class="text-primary effort-edit single-effort"
+                           data-type="text"
+                           data-pk=""
+                           data-params="{'affiliation':{{ affiliation.id }},'year':{{ year }},'workpackage':{{ workpackage.id }}}"
+                           data-url="{{ url('json/project/effort/update-draft') }}"
+                           data-title="{{ translate("txt-update-effort") }}"
+                        >{{ effortInCurrentYear|parse_effort }}</a>
                     {% else %}
-                        <i class="fa pull-left"></i>
-                        <span class="workpackage" id="effort_{{ affiliation.id }}_{{ workpackage.id }}_{{ year }}"
-                              rel="{{ year }}">{{ effortInCurrentYear|parse_effort }}</span>
+                        <span class="single-effort"
+                              data-affiliation="{{ affiliation.id }}"
+                              data-workpackage="{{ workpackage.id }}"
+                              data-year="{{ year }}"
+                        >
+                            {{ effortInCurrentYear|parse_effort }}</span>
                     {% endif %}
                     {% set totalPerWP = totalPerWP + effortInCurrentYear %}
                     {% endfor %}
-                <th class="effort_total"><i class="fa pull-left"></i><span>{{ totalPerWP|parse_effort }}</span>
-                </th>
+                <th class="effort-wp-total text-right"
+                    data-workpackage="{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
             </tr>
         {% endfor %}
         </tbody>
         <tfoot>
         <tr>
             <td colspan="{{ 2 + years|length }}"></td>
-            <th>{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
+            <th class="text-right effort-total">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
         </tr>
-
         </tfoot>
     </table>
 
     {% if hasSomeCostAndEffortEditRights %}
         {{ affiliationLink(affiliation, 'edit-cost-and-effort', 'button') }}
 
-        <span class="pull-right">
+        <span class="float-right">
          {{ projectLink(affiliation.project, 'edit-cost-and-effort-community', 'button') }}
     </span>
     {% endif %}
 {% endif %}
+
+
+<script type="text/javascript">
+
+    $.fn.setEffortCellHighlight = function ($newValue) {
+
+        let $editEffortElement = $(this);
+
+        let $affiliation = $editEffortElement.data('affiliation');
+        let $workPackage = $editEffortElement.data('workpackage');
+        let $year = $editEffortElement.data('year');
+
+        let $effortVersion = $('.effort-version[data-affiliation="' + $affiliation + '"][data-year="' + $year + '"][data-workpackage="' + $workPackage + '"]');
+        let $oldValue = $effortVersion.html();
+
+        if ($newValue == null) {
+            $newValue = $editEffortElement.html();
+        }
+
+        if ($newValue != null) {
+            $editEffortElement.html($newValue);
+        }
+
+        let $upIcon = $('<i class="fas fa-angle-double-up text-increase">');
+        let $downIcon = $('<i class="fas fa-angle-double-down text-decrease">');
+
+        $editEffortElement.siblings().remove();
+        if (parseFloat($oldValue) > parseFloat($newValue)) {
+            $editEffortElement.parent().prepend($downIcon);
+        } else if (parseFloat($oldValue) < parseFloat($newValue)) {
+            $editEffortElement.parent().prepend($upIcon);
+        }
+
+    };
+
+    $.fn.setCostCellHighlight = function ($newValue) {
+
+        let $editCostElement = $(this);
+
+        let $affiliation = $editCostElement.data('affiliation');
+        let $year = $editCostElement.data('year');
+
+        let $costVersion = $('.cost-version[data-affiliation="' + $affiliation + '"][data-year="' + $year + '"]');
+        let $oldValue = $costVersion.html();
+
+        if ($newValue == null) {
+            $newValue = $editCostElement.html();
+        }
+
+        if ($newValue != null) {
+            $editCostElement.html($newValue);
+        }
+
+        let $upIcon = $('<i class="fas fa-angle-double-up text-increase">');
+        let $downIcon = $('<i class="fas fa-angle-double-down text-decrease">');
+
+        $editCostElement.siblings().remove();
+        if (parseFloat($oldValue) > parseFloat($newValue)) {
+            $editCostElement.parent().prepend($downIcon);
+        } else if (parseFloat($oldValue) < parseFloat($newValue)) {
+            $editCostElement.parent().prepend($upIcon);
+        }
+
+    };
+
+    $(document).ready(function () {
+        updateEffort();
+        updateTotalEffort();
+
+        updateCost();
+        updateTotalCost();
+
+        //turn to inline mode
+        $.fn.editable.defaults.mode = 'popup';
+
+        $('.cost-edit').editable({
+            'success': function (response, value) {
+                if (!response.success) {
+                    return response.errors;
+                }
+                $(this).setCostCellHighlight(value);
+                updateTotalCost();
+            }
+        });
+        $('.effort-edit').editable({
+            'success': function (response, value) {
+                if (!response.success) {
+                    return response.errors;
+                }
+                $(this).setEffortCellHighlight(value);
+                updateTotalEffort();
+            }
+        });
+
+        function updateEffort() {
+            $('.single-effort').each(function (key, singleEffort) {
+                $(singleEffort).setEffortCellHighlight();
+            });
+        }
+
+        function updateCost() {
+            $('.single-cost').each(function (key, singleCost) {
+                $(singleCost).setCostCellHighlight();
+            });
+        }
+
+        function updateTotalEffort() {
+            let $totalEffort = 0;
+            let $totalPerWorkpackage = [];
+            $('.single-effort').each(function (key, singleEffort) {
+                let $singleEffort = $(singleEffort);
+                let $val = parseFloat($singleEffort.html());
+                let $workpackage = parseInt($singleEffort.data('workpackage'));
+
+                if (!($workpackage in $totalPerWorkpackage)) {
+                    $totalPerWorkpackage[$workpackage] = 0;
+                }
+
+                $totalEffort += $val;
+                $totalPerWorkpackage[$workpackage] += $val;
+            });
+            $totalPerWorkpackage.forEach(function ($totalEffort, $workpackageId) {
+                $('.effort-wp-total[data-workpackage="' + $workpackageId + '"]').html($totalEffort.toFixed(2));
+            });
+
+            $('.effort-total').html($totalEffort.toFixed(2));
+        }
+
+        function updateTotalCost() {
+            let $totalCost = 0;
+            $('.single-cost').each(function (key, singleCost) {
+                let $singleCost = $(singleCost);
+                $totalCost += parseFloat($singleCost.html());
+            });
+
+            $('.cost-total').html($totalCost.toFixed(2));
+        }
+    });
+</script>

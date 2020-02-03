@@ -28,7 +28,8 @@ final class QuestionLink extends AbstractLink
         string $action = 'view',
         string $show = 'name',
         int $length = null
-    ): string {
+    ): string
+    {
         $question ??= new Question();
 
         $label = (($length !== null) && (strlen((string)$question->getQuestion()) > ($length + 3)))
@@ -37,39 +38,39 @@ final class QuestionLink extends AbstractLink
 
         $routeParams = [];
         $showOptions = [];
-        if (! $question->isEmpty()) {
-            $routeParams['id'] = $question->getId();
+        if (!$question->isEmpty()) {
+            $routeParams['id']   = $question->getId();
             $showOptions['name'] = $label;
         }
 
         switch ($action) {
             case 'new':
                 $linkParams = [
-                    'icon' => 'fa-plus',
+                    'icon'  => 'fas fa-plus',
                     'route' => 'zfcadmin/affiliation/questionnaire/question/new',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-new-question')
                 ];
                 break;
             case 'edit':
                 $linkParams = [
-                    'icon' => 'fa-pencil-square-o',
+                    'icon'  => 'far fa-edit',
                     'route' => 'zfcadmin/affiliation/questionnaire/question/edit',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-question')
                 ];
                 break;
             case 'view':
                 $linkParams = [
-                    'icon' => 'fa-question-circle-o',
+                    'icon'  => 'far fa-question-circle',
                     'route' => 'zfcadmin/affiliation/questionnaire/question/view',
-                    'text' => $showOptions[$show] ?? $label
+                    'text'  => $showOptions[$show] ?? $label
                 ];
                 break;
         }
 
-        $linkParams['action'] = $action;
-        $linkParams['show'] = $show;
+        $linkParams['action']      = $action;
+        $linkParams['show']        = $show;
         $linkParams['routeParams'] = $routeParams;
 
         return $this->parse(Link::fromArray($linkParams));

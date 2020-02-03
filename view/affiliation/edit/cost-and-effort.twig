@@ -48,10 +48,12 @@
     <tr class="table-success">
         <th>{{ translate("txt-costs") }} {% if useContract %}({{ translate("txt-from-contract") }}){% else %}[k&euro;]{% endif %}</th>
         {% for year in yearRange %}
-            <th>{{ year }}
-                {% if projectService.isOutOfBounds(project, year) %}
-                    <i class="fa fa-exclamation-triangle text-danger"
-                       title="{{ translate("txt-cost-and-effort-data-outside-project-time-span") }}"></i>
+            <th class="text-right">
+                {% if projectService.isOutOfBounds(project, year) %}<span
+                    class="text-danger"
+                    title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
+                {% else %}
+                    {{ year }}
                 {% endif %}
             </th>
         {% endfor %}
@@ -61,7 +63,7 @@
     {# Rows for the costs #}
     <tr>
         {% if useContract %}
-            <td><i class="fa fa-handshake-o" aria-hidden="true"
+            <td><i class="far fa-handshake"
                    title="{{ translate("txt-values-are-taken-from-the-contract") }}"></i>
             </td>
 
@@ -92,7 +94,7 @@
             <td></td>
             {% for year in yearRange %}
                 {% if projectService.isOutOfBounds(project, year) %}
-                    <td class="bg-danger">
+                    <td class="table-danger">
                 {% else %}
                     <td>
                 {% endif %}
@@ -121,7 +123,14 @@
     <tr class="table-success">
         <th>{{ translate("txt-effort") }} [PY]</th>
         {% for year in yearRange %}
-            <th>{{ year }}         </th>
+            <th class="text-right">
+                {% if projectService.isOutOfBounds(project, year) %}<span
+                    class="text-danger"
+                    title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
+                {% else %}
+                    {{ year }}
+                {% endif %}
+            </th>
         {% endfor %}
         <th class="text-right">{{ translate("txt-total") }}</th>
     </tr>
@@ -132,7 +141,7 @@
             <td>{{ workpackage }}</td>
             {% for year in yearRange %}
                 {% if projectService.isOutOfBounds(project, year) %}
-                    <td class="bg-danger">
+                    <td class="table-danger">
                 {% else %}
                     <td>
                 {% endif %}

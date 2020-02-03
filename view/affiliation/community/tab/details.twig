@@ -6,13 +6,13 @@
     <dt>{{ translate("txt-project-title") }}</dt>
     <dd>{{ affiliation.project.title }} ({{ projectService.parseStatus(affiliation.project) }})</dd>
     <dt>{{ translate("txt-position-on-value-chain") }}</dt>
-    <dd>{{ affiliation.valueChain|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dd>{{ affiliation.valueChain|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
     <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
-    <dd>{{ affiliation.mainContribution|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dd>{{ affiliation.mainContribution|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
     <dt>{{ translate("txt-strategic-importance") }}</dt>
-    <dd>{{ affiliation.strategicImportance|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dd>{{ affiliation.strategicImportance|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
     <dt>{{ translate("txt-market-access") }}</dt>
-    <dd>{{ affiliation.marketAccess|default('<i class="fa fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dd>{{ affiliation.marketAccess|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
     {% if callService.requireDoaPerProgram(affiliation.project.call) %}
         <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
         {% if affiliation.parentOrganisation %}
@@ -91,7 +91,7 @@
     {% endif %}
     <dt>{{ translate("txt-technical-contact") }}</dt>
     <dd>{{ affiliation.contact.displayName() }}
-        <a href="mailto:{{ affiliation.contact.email }}"><i class="fa fa-envelope-o"></i></a>
+        <a href="mailto:{{ affiliation.contact.email }}"><i class="far fa-envelope"></i></a>
         {{ contactLink(affiliation.contact,'view-admin','icon') }}
     </dd>
 
@@ -99,7 +99,7 @@
         <dt>{{ translate("txt-communication-contact") }}</dt>
         <dd>{{ affiliation.communicationContactName }} {% if affiliation.communicationContactEmail %} <a
                     href="mailto:{{ affiliation.communicationContactEmail }}"><i
-                    class="fa fa-envelope-o"></i> {{ affiliation.communicationContactEmail }}</a>{% endif %}</dd>
+                    class="far fa-envelope"></i> {{ affiliation.communicationContactEmail }}</a>{% endif %}</dd>
     {% endif %}
 
     {% if affiliation.financial %}
@@ -107,7 +107,7 @@
         <dd>
             {{ affiliation.financial.contact.displayName }} <a
                     href="mailto:{{ affiliation.financial.contact.email }}"><i
-                        class="fa fa-envelope-o"></i></a>
+                        class="far fa-envelope"></i></a>
             {{ contactLink(affiliation.financial.contact,'view-admin','icon') }}
         </dd>
     {% endif %}

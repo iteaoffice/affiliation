@@ -7,26 +7,36 @@
     <table class="table table-striped table-sm table-hover">
         <thead>
         <tr>
+            <th>{{ translate("txt-no") }}</th>
             <th>{{ translate("txt-partner") }}</th>
+            <th>{{ translate("txt-partner-type") }}</th>
             <th>{{ translate("txt-country") }}</th>
             <th>{{ translate("txt-project") }}</th>
             <th>{{ translate("txt-reminders") }}</th>
+            <th>{{ translate("txt-latest-reminder-send") }}</th>
             <th>{{ translate("txt-remind") }}</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+            <td colspan="8"></td>
+        </tr>
+        </tfoot>
         <tbody>
         {% for affiliation in affiliation %}
-            <tr id="affiliation-{{ affiliation.id }}">
-                <td>{{ affiliationLink(affiliation,'view-admin','name') }} ({{ affiliation.organisation.type.type }})
-                </td>
+            <tr>
+                <td><small class="text-muted">{{ loop.index }}</small></td>
+                <td>{{ affiliationLink(affiliation,'view-admin','name') }}</td>
+                <td>{{ affiliation.organisation.type.type }}</td>
                 <td>{{ affiliation.organisation.country.iso3 }}</td>
                 <td>{{ projectLink(affiliation.project,'view-admin','name') }}</td>
-                <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}<br>
+                <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}</td>
+                <td>
                     {% if affiliation.doaReminder.last.dateCreated %}
-                        <small>{{ affiliation.doaReminder.last.dateCreated|string_date }}</small>
+                        {{ affiliation.doaReminder.last.dateCreated|string_date }}
                     {% endif %}
                 </td>
-                <td>{{ doaLink(null, 'remind-admin', 'button', affiliation) }}</td>
+                <td>{{ doaLink(null, 'remind-admin', 'text', affiliation) }}</td>
             </tr>
         {% endfor %}
         </tbody>

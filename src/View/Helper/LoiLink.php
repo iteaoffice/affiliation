@@ -34,14 +34,14 @@ final class LoiLink extends AbstractLink
     ): string {
         $loi ??= (new Loi())->setAffiliation($affiliation);
 
-        if (! $this->hasAccess($loi, LoiAssertion::class, $action)) {
+        if (!$this->hasAccess($loi, LoiAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
 
-        if (! $loi->isEmpty()) {
+        if (!$loi->isEmpty()) {
             $routeParams['id'] = $loi->getId();
             $showOptions['name'] = $loi->parseFileName();
         }
@@ -53,7 +53,7 @@ final class LoiLink extends AbstractLink
         switch ($action) {
             case 'submit':
                 $linkParams = [
-                    'icon' => 'fa-share-square-o',
+                    'icon' => 'far fa-share-square',
                     'route' => 'community/affiliation/loi/submit',
                     'text' => $showOptions[$show]
                         ?? sprintf(
@@ -65,7 +65,7 @@ final class LoiLink extends AbstractLink
                 break;
             case 'render':
                 $linkParams = [
-                    'icon' => 'fa-file-pdf-o',
+                    'icon' => 'far fa-file-pdf',
                     'route' => 'community/affiliation/loi/render',
                     'text' => $showOptions[$show]
                         ?? sprintf(
@@ -91,7 +91,7 @@ final class LoiLink extends AbstractLink
                 break;
             case 'download':
                 $linkParams = [
-                    'icon' => 'fa-file-pdf-o',
+                    'icon' => 'far fa-file-pdf',
                     'route' => 'community/affiliation/loi/download',
                     'text' => $showOptions[$show]
                         ?? sprintf(
@@ -104,7 +104,7 @@ final class LoiLink extends AbstractLink
                 break;
             case 'remind-admin':
                 $linkParams = [
-                    'icon' => 'fa-bell-o',
+                    'icon' => 'far fa-bell',
                     'route' => 'zfcadmin/affiliation/loi/remind',
                     'text' => $showOptions[$show]
                         ?? $this->translator->translate('txt-send-reminder')
@@ -112,7 +112,7 @@ final class LoiLink extends AbstractLink
                 break;
             case 'approval-admin':
                 $linkParams = [
-                    'icon' => 'fa-thumbs-o-up',
+                    'icon' => 'far fa-thumbs-up',
                     'route' => 'zfcadmin/affiliation/loi/approval',
                     'text' => $showOptions[$show]
                         ?? $this->translator->translate('txt-approval-loi')
@@ -121,7 +121,7 @@ final class LoiLink extends AbstractLink
                 break;
             case 'missing-admin':
                 $linkParams = [
-                    'icon' => 'fa-star-half-o',
+                    'icon' => 'var fa-star-half-alt',
                     'route' => 'zfcadmin/affiliation/loi/missing',
                     'text' => $showOptions[$show]
                         ?? $this->translator->translate('txt-missing-loi')
@@ -130,7 +130,7 @@ final class LoiLink extends AbstractLink
                 break;
             case 'view-admin':
                 $linkParams = [
-                    'icon' => 'fa-file-o',
+                    'icon' => 'far fa-file',
                     'route' => 'zfcadmin/affiliation/loi/view',
                     'text' => $showOptions[$show]
                         ?? $this->translator->translate('txt-view-loi')
@@ -139,7 +139,7 @@ final class LoiLink extends AbstractLink
                 break;
             case 'edit-admin':
                 $linkParams = [
-                    'icon' => 'fa-pencil-square-o',
+                    'icon' => 'far fa-edit',
                     'route' => 'zfcadmin/affiliation/loi/edit',
                     'text' => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-loi')

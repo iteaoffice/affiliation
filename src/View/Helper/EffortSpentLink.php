@@ -30,7 +30,7 @@ final class EffortSpentLink extends AbstractLink
         string $show,
         Report $report
     ): string {
-        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, 'update-effort-spent')) {
+        if (!$this->hasAccess($affiliation, AffiliationAssertion::class, 'update-effort-spent')) {
             return '';
         }
 
@@ -40,7 +40,7 @@ final class EffortSpentLink extends AbstractLink
         $showOptions['text'] = $this->translator->translate('txt-update');
 
         $linkParams = [
-            'icon' => 'fa-pencil-square-o',
+            'icon' => 'far fa-edit',
             'route' => 'community/affiliation/edit/update-effort-spent',
             'text' => $showOptions[$show]
                 ?? sprintf($this->translator->translate('txt-report-on-%s'), $report->parseName())

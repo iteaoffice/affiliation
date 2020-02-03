@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ITEA Office all rights reserved
  *
@@ -20,6 +19,8 @@ use Application\Service\AssertionService;
 use Contact\Service\ContactService;
 use Invoice\Options\ModuleOptions;
 use Invoice\Service\InvoiceService;
+use Laminas\Http\Response;
+use Laminas\View\Model\ViewModel;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
 use Program\Service\CallService;
@@ -29,8 +30,6 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
-use Laminas\Http\Response;
-use Laminas\View\Model\ViewModel;
 
 /**
  * Class CommunityController
@@ -69,20 +68,21 @@ final class CommunityController extends AffiliationAbstractController
         ModuleOptions $invoiceModuleOptions,
         AssertionService $assertionService,
         QuestionnaireService $questionnaireService
-    ) {
-        $this->affiliationService = $affiliationService;
-        $this->projectService = $projectService;
-        $this->versionService = $versionService;
-        $this->contactService = $contactService;
-        $this->organisationService = $organisationService;
-        $this->reportService = $reportService;
-        $this->contractService = $contractService;
-        $this->workpackageService = $workpackageService;
-        $this->invoiceService = $invoiceService;
-        $this->parentService = $parentService;
-        $this->callService = $callService;
+    )
+    {
+        $this->affiliationService   = $affiliationService;
+        $this->projectService       = $projectService;
+        $this->versionService       = $versionService;
+        $this->contactService       = $contactService;
+        $this->organisationService  = $organisationService;
+        $this->reportService        = $reportService;
+        $this->contractService      = $contractService;
+        $this->workpackageService   = $workpackageService;
+        $this->invoiceService       = $invoiceService;
+        $this->parentService        = $parentService;
+        $this->callService          = $callService;
         $this->invoiceModuleOptions = $invoiceModuleOptions;
-        $this->assertionService = $assertionService;
+        $this->assertionService     = $assertionService;
         $this->questionnaireService = $questionnaireService;
     }
 
@@ -114,7 +114,7 @@ final class CommunityController extends AffiliationAbstractController
             'contractService'       => $this->contractService,
             'workpackageService'    => $this->workpackageService,
             'latestVersion'         => $this->projectService->getLatestNotRejectedProjectVersion($affiliation->getProject()),
-            'latestContractVersion'       => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
+            'latestContractVersion' => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
             'versionType'           => $this->projectService->getNextMode($affiliation->getProject())->getVersionType(),
             'hasProjectEditRights'  => $hasProjectEditRights,
             'reportService'         => $this->reportService,
@@ -125,7 +125,8 @@ final class CommunityController extends AffiliationAbstractController
             'parentService'         => $this->parentService,
             'callService'           => $this->callService,
             'invoiceViaParent'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
-            'projectChecklist'             => $projectChecklist,
+            'projectYears'          => $this->projectService->parseYearRange($affiliation->getProject()),
+            'projectChecklist'      => $projectChecklist,
             'project'               => $affiliation->getProject()
         ];
 
@@ -139,13 +140,13 @@ final class CommunityController extends AffiliationAbstractController
     public function paymentSheetAction(): ViewModel
     {
         $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
-        $contract = $this->params('contract');
+        $contract    = $this->params('contract');
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $year = (int)$this->params('year');
+        $year   = (int)$this->params('year');
         $period = (int)$this->params('period');
 
         return new ViewModel(
@@ -171,7 +172,7 @@ final class CommunityController extends AffiliationAbstractController
             return $response->setStatusCode(Response::STATUS_CODE_404);
         }
 
-        $year = (int)$this->params('year');
+        $year   = (int)$this->params('year');
         $period = (int)$this->params('period');
 
         $renderPaymentSheet = $this->renderPaymentSheet(

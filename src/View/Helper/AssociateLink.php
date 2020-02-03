@@ -29,7 +29,8 @@ final class AssociateLink extends AbstractLink
         string $action,
         string $show,
         Contact $contact
-    ): string {
+    ): string
+    {
         $routeParams = [];
         $showOptions = [];
 
@@ -38,7 +39,7 @@ final class AssociateLink extends AbstractLink
         $showOptions['contact'] = $contact->parseFullName();
 
         $linkParams = [
-            'icon'  => 'fa-user-o',
+            'icon'  => 'far fa-user',
             'route' => 'zfcadmin/affiliation/edit-associate',
             'text'  => $showOptions[$show]
                 ?? $this->translator->translate('txt-edit-associate')
