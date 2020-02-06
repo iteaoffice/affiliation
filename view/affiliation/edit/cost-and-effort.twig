@@ -210,9 +210,9 @@
     function getValue($element) {
         let $value = 0;
         if ($element.hasClass('form-control')) {
-            $value = parseFloat($element.val());
+            $value = parseFloat($element.val() === '' ? 0 : $element.val());
         } else {
-            $value = parseFloat($element.html());
+            $value = parseFloat($element.html() === '' ? 0 : $element.html());
         }
 
         return $value;

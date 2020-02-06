@@ -28,8 +28,7 @@ final class QuestionLink extends AbstractLink
         string $action = 'view',
         string $show = 'name',
         int $length = null
-    ): string
-    {
+    ): string {
         $question ??= new Question();
 
         $label = (($length !== null) && (strlen((string)$question->getQuestion()) > ($length + 3)))
@@ -38,7 +37,7 @@ final class QuestionLink extends AbstractLink
 
         $routeParams = [];
         $showOptions = [];
-        if (!$question->isEmpty()) {
+        if (! $question->isEmpty()) {
             $routeParams['id']   = $question->getId();
             $showOptions['name'] = $label;
         }

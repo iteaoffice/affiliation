@@ -104,7 +104,12 @@
         {% endfor %}
 
         <tr>
-            <td colspan="{{ 2 + years|length }}"></td>
+            <th colspan="2">{{ translate("txt-totals") }}</th>
+            {% for year in years %}
+                <th class="text-right">
+                    {{ versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, latestVersion)[year]|parse_effort }}
+                </th>
+            {% endfor %}
             <th class="text-right">{{ grandTotal|parse_effort }}</th>
         </tr>
 
@@ -273,7 +278,10 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="{{ 2 + years|length }}"></td>
+            <th colspan="2">{{ translate("txt-total") }}</th>
+            {% for year in years %}
+                <th class="text-right effort-year-total" data-year="{{ year }}"></th>
+            {% endfor %}
             <th class="text-right effort-total">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
         </tr>
         </tfoot>
@@ -352,7 +360,7 @@
 
     };
 
-    $(document).ready(function () {
+    $(function () {
         updateEffort();
         updateTotalEffort();
 
@@ -363,6 +371,7 @@
         $.fn.editable.defaults.mode = 'popup';
 
         $('.cost-edit').editable({
+            'emptytext': 0,
             'success': function (response, value) {
                 if (!response.success) {
                     return response.errors;
@@ -372,6 +381,7 @@
             }
         });
         $('.effort-edit').editable({
+            'emptytext': 0,
             'success': function (response, value) {
                 if (!response.success) {
                     return response.errors;
@@ -396,20 +406,29 @@
         function updateTotalEffort() {
             let $totalEffort = 0;
             let $totalPerWorkpackage = [];
+            let $totalPerYear = [];
             $('.single-effort').each(function (key, singleEffort) {
                 let $singleEffort = $(singleEffort);
-                let $val = parseFloat($singleEffort.html());
+                let $val = parseFloat($singleEffort.html() === '' ? 0 : $singleEffort.html());
                 let $workpackage = parseInt($singleEffort.data('workpackage'));
+                let $year = parseInt($singleEffort.data('year'));
 
                 if (!($workpackage in $totalPerWorkpackage)) {
                     $totalPerWorkpackage[$workpackage] = 0;
                 }
+                if (!($year in $totalPerYear)) {
+                    $totalPerYear[$year] = 0;
+                }
 
                 $totalEffort += $val;
                 $totalPerWorkpackage[$workpackage] += $val;
+                $totalPerYear[$year] += $val;
             });
             $totalPerWorkpackage.forEach(function ($totalEffort, $workpackageId) {
                 $('.effort-wp-total[data-workpackage="' + $workpackageId + '"]').html($totalEffort.toFixed(2));
+            });
+            $totalPerYear.forEach(function ($totalEffort, $year) {
+                $('.effort-year-total[data-year="' + $year + '"]').html($totalEffort.toFixed(2));
             });
 
             $('.effort-total').html($totalEffort.toFixed(2));
@@ -419,7 +438,7 @@
             let $totalCost = 0;
             $('.single-cost').each(function (key, singleCost) {
                 let $singleCost = $(singleCost);
-                $totalCost += parseFloat($singleCost.html());
+                $totalCost += parseFloat($singleCost.html() === '' ? 0 : $singleCost.html());
             });
 
             $('.cost-total').html($totalCost.toFixed(2));

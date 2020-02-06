@@ -29,8 +29,7 @@ final class AssociateLink extends AbstractLink
         string $action,
         string $show,
         Contact $contact
-    ): string
-    {
+    ): string {
         $routeParams = [];
         $showOptions = [];
 

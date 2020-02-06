@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ITEA Office all rights reserved
  *
@@ -68,8 +69,7 @@ final class CommunityController extends AffiliationAbstractController
         ModuleOptions $invoiceModuleOptions,
         AssertionService $assertionService,
         QuestionnaireService $questionnaireService
-    )
-    {
+    ) {
         $this->affiliationService   = $affiliationService;
         $this->projectService       = $projectService;
         $this->versionService       = $versionService;

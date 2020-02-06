@@ -31,9 +31,8 @@ final class AffiliationLink extends AbstractLink
         string $show = 'organisation-branch',
         int $year = null,
         int $period = null
-    ): string
-    {
-        if (!$this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
+    ): string {
+        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
             return $action !== 'view-community' ? ''
                 : $affiliation->getOrganisation()->getOrganisation();
         }
@@ -114,9 +113,9 @@ final class AffiliationLink extends AbstractLink
                     'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/description',
                     'text'  => $showOptions[$show] ?? sprintf(
-                            $this->translator->translate('txt-edit-description-affiliation-%s'),
-                            $affiliation->parseBranchedName()
-                        )
+                        $this->translator->translate('txt-edit-description-affiliation-%s'),
+                        $affiliation->parseBranchedName()
+                    )
                 ];
                 break;
             case 'view-admin':
@@ -138,7 +137,7 @@ final class AffiliationLink extends AbstractLink
                 break;
             case 'merge-admin':
                 $linkParams = [
-                    'icon'  => 'fa-compress',
+                    'icon'  => 'fas fa-compress-alt',
                     'route' => 'zfcadmin/affiliation/merge',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-merge-affiliation-in-admin-%s'), $affiliation->parseBranchedName())

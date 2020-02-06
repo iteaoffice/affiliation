@@ -471,35 +471,28 @@
 
                         {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
 
-                        <td class="text-right">{% if yearTotal %}
-                                <a id="cost_{{ year }}"
-                                   class="text-primary cost" data-type="text"
-                                   data-pk=""
-                                   data-params="{'year':{{ year }},'affiliationVersionId':{{ affiliationVersionId }}}"
-                                   data-url="{{ url('json/project/cost/update-version') }}"
-                                   data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost }}</a>
-                            {% else %}
-                                {# find the affiliationVersion by going over the versions, #}
-                                {% set affiliationVersionId = null %}
-                                {% for affiliationVersion in version.affiliationVersion|filter(affiliationVersion => affiliationVersion.affiliation.id == affiliation.id) -%}
-                                    {% set affiliationVersionId = affiliationVersion.id %}
-                                {% endfor %}
+                        <td class="text-right">
 
-                                {% if affiliationVersionId %}
-                                    <a id="cost_{{ year }}"
-                                       class="text-primary cost"
-                                       data-type="text"
-                                       data-params="{'year':{{ year }},'affiliationVersionId':{{ affiliationVersionId }}}"
-                                       data-pk=""
-                                       data-url="{{ url('json/project/cost/update-version') }}"
-                                       data-title="{{ translate("txt-new-cost") }}">{{ 0|parse_cost }}</a>
-                                {% else %}
-                                    0
-                                {% endif %}
-                            {% endif %}
+                            {# find the affiliationVersion by going over the versions, #}
+                            {% set affiliationVersionId = null %}
+                            {% for affiliationVersion in version.affiliationVersion|filter(affiliationVersion => affiliationVersion.affiliation.id == affiliation.id) -%}
+                                {% set affiliationVersionId = affiliationVersion.id %}
+                            {% endfor %}
+
+                            <a
+                                    class="text-primary cost-edit single-cost"
+                                    data-year="{{ year }}"
+                                    data-version="{{ version.id }}"
+                                    data-affiliation-version="{{ affiliationVersionId }}"
+                                    data-type="text"
+                                    data-pk=""
+                                    data-params="{'year':{{ year }},'affiliationVersion':{{ affiliationVersionId }}}"
+                                    data-url="{{ url('json/project/cost/update-version') }}"
+                                    data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost }}</a>
                         </td>
                     {% endfor %}
-                    <td class="text-right">{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</td>
+                    <th class="text-right cost-version-total"
+                        data-version="{{ version.id }}">{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</th>
                 </tr>
 
                 {% if affiliationVersion.hasContractVersion %}
@@ -512,7 +505,7 @@
                             {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion.version, affiliation) %}
                             <td class="text-right">{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
                         {% endfor %}
-                        <td class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion.version)|currency_decimal(contractVersion.contract.currency) }}</td>
+                        <th class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion.version)|currency_decimal(contractVersion.contract.currency) }}</th>
                     </tr>
                 {% endif %}
 
@@ -530,7 +523,7 @@
 
                     <td class="text-right">{{ yearTotal|parse_effort }}</td>
                 {% endfor %}
-                <td class="text-right">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</td>
+                <th class="text-right">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
             </tr>
             <tr>
                 <td></td>
@@ -540,15 +533,19 @@
                     {% set yearTotal = projectService.findCostByAffiliationAndYear(affiliation, year) %}
 
                     <td class="text-right">
-                        <a
-                                class="cost text-primary" data-type="text"
-                                data-pk=""
-                                data-params="{'affiliation':{{ affiliation.id }},'year':{{ year }}}"
-                                data-url="{{ url('json/project/cost/update-draft') }}"
-                                data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost }}</a>
+                        <a class="text-primary cost-edit single-cost"
+                           data-year="{{ year }}"
+                           data-version="0"
+                           data-affiliation-version="{{ affiliationVersionId }}"
+                           data-type="text"
+                           data-pk=""
+                           data-params="{'year':{{ year }},'affiliation':{{ affiliation.id }}}"
+                           data-url="{{ url('json/project/cost/update-draft') }}"
+                           data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost }}</a>
                     </td>
                 {% endfor %}
-                <td class="text-right">{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</td>
+                <th class="text-right cost-version-total"
+                    data-version="0">{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</th>
             </tr>
             {% if affiliationService.useActiveContract(affiliation) %}
                 {% set contractVersion = contractService.findLatestContractVersionByAffiliation(affiliation) %}
@@ -560,19 +557,18 @@
                         {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
                         <td class="text-right">{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
                     {% endfor %}
-                    <td class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion)|currency_decimal(contractVersion.contract.currency) }}</td>
+                    <th class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion)|currency_decimal(contractVersion.contract.currency) }}</th>
                 </tr>
             {% endif %}
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-national") }}</td>
-                <td colspan="{{ years|length }}"></td>
-                <td class="text-right">
+                <td colspan="{{ years|length + 1 }}">
                     &euro; <a
-                            class="text-primary funding"
+                            class="text-primary funding-edit"
                             data-type="text"
-                            data-params="{'type': 'funding_national'}"
-                            data-pk="{{ affiliation.id }}"
+                            data-params="{'affiliation':{{ affiliation.id }}, 'type': 'funding_national'}"
+                            data-pk=""
                             data-url="{{ url('json/project/funding/update-draft') }}"
                             data-title="{{ translate("txt-update-funding-eu") }}">{{ projectService.findTotalFundingNationalByAffiliation(affiliation) }}
                     </a>
@@ -581,13 +577,12 @@
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-eu") }}</td>
-                <td colspan="{{ years|length }}"></td>
-                <td class="text-right">
+                <td colspan="{{ years|length  + 1 }}">
                     &euro; <a
-                            class="text-primary funding"
+                            class="text-primary funding-edit"
                             data-type="text"
-                            data-params="{'type': 'funding_eu'}"
-                            data-pk="{{ affiliation.id }}"
+                            data-params="{'affiliation':{{ affiliation.id }}, 'type': 'funding_eu'}"
+                            data-pk=""
                             data-url="{{ url('json/project/funding/update-draft') }}"
                             data-title="{{ translate("txt-update-funding-eu") }}">{{ projectService.findTotalFundingEuByAffiliation(affiliation) }}
                     </a>
@@ -595,8 +590,6 @@
             </tr>
             </tbody>
         </table>
-
-
     </div>
     <div class="tab-pane" role="tabpanel" id="contract">
 
@@ -770,6 +763,11 @@
                     <th>{{ translate("txt-download") }}</th>
                 </tr>
                 </thead>
+                <tfoot>
+                <tr>
+                    <td colspan="6"></td>
+                </tr>
+                </tfoot>
                 <tbody>
                 {% for affilaitionInvoice in affiliation.invoice %}
                     <tr>
@@ -789,14 +787,46 @@
     </div>
 </div>
 
-<script type="text/javascript">
+
+<script>
     /**
      * Calculate the sum per year
      */
-    $(document).ready(function () {
+    $(function () {
         //turn to inline mode
         $.fn.editable.defaults.mode = 'popup';
-        $('.cost').editable();
-        $('.funding').editable();
+
+        $('.cost-edit').editable({
+            'emptytext': 0,
+            'success': function (response, value) {
+                if (!response.success) {
+                    return response.errors;
+                }
+                //Inject the value in the element (needed for sum)
+                $(this).html(response.data.value);
+                updateTotalCosts();
+            }
+        });
+
+        function updateTotalCosts() {
+            let $totalPerVersion = [];
+            $('.single-cost').each(function (key, singleCost) {
+                let $singleCost = $(singleCost);
+                let $val = parseFloat($singleCost.html() === '' ? 0 : $singleCost.html());
+                let $version = $(singleCost).data('version');
+
+                if (!($version in $totalPerVersion)) {
+                    $totalPerVersion[$version] = 0;
+                }
+
+                $totalPerVersion[$version] += $val;
+            });
+
+            $totalPerVersion.forEach(function ($totalCost, $version) {
+                $('.cost-version-total[data-version="' + $version + '"]').html($totalCost.toFixed(2));
+            });
+        }
+
+        $('.funding-edit').editable();
     });
 </script>

@@ -31,23 +31,22 @@ final class DoaLink extends AbstractLink
         $action = 'view',
         $show = 'name',
         Affiliation $affiliation = null
-    ): string
-    {
+    ): string {
         $doa ??= (new Doa())->setAffiliation($affiliation);
 
-        if (!$this->hasAccess($doa, DoaAssertion::class, $action)) {
+        if (! $this->hasAccess($doa, DoaAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
 
-        if (!$doa->isEmpty()) {
+        if (! $doa->isEmpty()) {
             $routeParams['id'] = $doa->getId();
 
             $showOptions['name'] = $doa->parseFileName();
 
-            if (!$doa->getObject()->isEmpty()) {
+            if (! $doa->getObject()->isEmpty()) {
                 $routeParams['ext'] = $doa->getContentType()->getExtension();
             }
         }
