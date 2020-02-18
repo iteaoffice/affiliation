@@ -22,8 +22,8 @@ use Affiliation\Entity\Questionnaire\QuestionnaireQuestion;
 use Contact\Entity\Contact;
 use DateInterval;
 use DateTime;
-use Project\Entity\Calendar\Calendar as ProjectCalendar;
 use Doctrine\ORM\EntityManager;
+use Project\Entity\Calendar\Calendar as ProjectCalendar;
 use Project\Entity\Version\Type;
 use Project\Entity\Version\Version;
 use Project\Service\ProjectService;
@@ -44,7 +44,8 @@ class QuestionnaireService extends AbstractService
     public function __construct(
         EntityManager $entityManager,
         VersionService $versionService
-    ) {
+    )
+    {
         parent::__construct($entityManager);
         $this->versionService = $versionService;
     }
@@ -61,18 +62,24 @@ class QuestionnaireService extends AbstractService
 
     public function getSortedAnswers(Questionnaire $questionnaire, Affiliation $affiliation): array
     {
-        $answer = false;
+        $hasAnswers = false;
         /** @var QuestionnaireQuestion $questionnaireQuestion */
         $questionnaireQuestion = $questionnaire->getQuestionnaireQuestions()->first();
+
+        //Check the first answer
         if ($questionnaireQuestion) {
             /** @var Answer $answer */
-            $answer = $questionnaireQuestion->getAnswers()->first();
+            $hasAnswers = !$questionnaireQuestion->getAnswers()->filter(
+                static function (Answer $answer) use ($affiliation) {
+                    return $answer->getAffiliation() === $affiliation;
+                }
+            )->isEmpty();
         }
 
         // No answers, or not from this affiliation or new answers
-        if (! $answer || $answer->getAffiliation() !== $affiliation || $answer->isEmpty()) {
+        if (!$hasAnswers) {
             static $sortedQuestionnaireQuestions = [];
-            if (! isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
+            if (!isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
                 $sortedQuestionnaireQuestions[$questionnaire->getId()] =
                     $this->entityManager->getRepository(QuestionnaireQuestion::class)->getSorted(
                         $questionnaire
@@ -91,31 +98,27 @@ class QuestionnaireService extends AbstractService
 
                 $answers[] = $answer;
             }
+
             return $answers;
         }
 
         return $this->entityManager->getRepository(Answer::class)->getSorted($questionnaire, $affiliation);
     }
 
-    public function parseCompletedPercentage(Questionnaire $questionnaire, Affiliation $affiliation): int
+    public function hasPendingQuestionnaires(Contact $contact): bool
     {
-        $questionCount = count($questionnaire->getQuestionnaireQuestions());
-        if ($questionCount === 0) { // Prevent division by zero
-            return 100;
-        }
-        $answers       = $this->entityManager->getRepository(Answer::class)
-            ->getSorted($questionnaire, $affiliation);
-        $answerCount   = 0;
-
-        /** @var Answer $answer */
-        foreach ($answers as $answer) {
-            $value = $answer->getValue();
-            if (! empty($value) || ! $answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
-                $answerCount++;
+        foreach ($contact->getAffiliation() as $affiliation) {
+            foreach ($this->getAvailableQuestionnaires($affiliation) as $questionnaire) {
+                if (
+                    $this->isOpen($questionnaire, $affiliation)
+                    && ($this->parseCompletedPercentage($questionnaire, $affiliation) < 100)
+                ) {
+                    return true;
+                }
             }
         }
 
-        return ($answerCount === 0) ? 0 : (int) round((($answerCount / $questionCount) * 100));
+        return false;
     }
 
     public function getAvailableQuestionnaires(Affiliation $affiliation): array
@@ -124,7 +127,7 @@ class QuestionnaireService extends AbstractService
         $now                     = new DateTime();
         if ($now >= $affiliation->getDateCreated()) {
             /** @var Phase $startPhase */
-            $startPhase = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_START);
+            $startPhase              = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_START);
             $availableQuestionnaires += $this->entityManager->getRepository(Questionnaire::class)->findBy([
                 'phase'            => $startPhase,
                 'organisationType' => $affiliation->getOrganisation()->getType(),
@@ -136,7 +139,7 @@ class QuestionnaireService extends AbstractService
         // Last calendar item is a final review
         if ($lastProjectCalendar && preg_match('/final/i', $lastProjectCalendar->getCalendar()->getCalendar())) {
             /** @var Phase $endPhase */
-            $endPhase = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_END);
+            $endPhase                = $this->entityManager->getRepository(Phase::class)->find(Phase::PHASE_PROJECT_END);
             $availableQuestionnaires += $this->entityManager->getRepository(Questionnaire::class)->findBy([
                 'phase'            => $endPhase,
                 'organisationType' => $affiliation->getOrganisation()->getType(),
@@ -145,6 +148,17 @@ class QuestionnaireService extends AbstractService
         }
 
         return $availableQuestionnaires;
+    }
+
+    public function isOpen(Questionnaire $questionnaire, Affiliation $affiliation): bool
+    {
+        $now       = new DateTime();
+        $startDate = $this->getStartDate($questionnaire, $affiliation);
+        $endDate   = $this->getEndDate($questionnaire, $affiliation);
+        return (
+            (($startDate !== null) && ($now >= $startDate))
+            && (($endDate === null) || ($now <= $endDate))
+        );
     }
 
     public function getStartDate(Questionnaire $questionnaire, Affiliation $affiliation): ?DateTime
@@ -177,6 +191,11 @@ class QuestionnaireService extends AbstractService
         return null;
     }
 
+    /*
+     * Checks whether a questionnaire is open purely based on the current state of the project/affiliation.
+     * Whether the user has rights (Technical Contact or Office) should be checked via the Questionnaire assertion class.
+     */
+
     public function getEndDate(Questionnaire $questionnaire, Affiliation $affiliation): ?DateTime
     {
         if ($questionnaire->getPhase() !== null) {
@@ -202,35 +221,25 @@ class QuestionnaireService extends AbstractService
         return null;
     }
 
-    /*
-     * Checks whether a questionnaire is open purely based on the current state of the project/affiliation.
-     * Whether the user has rights (Technical Contact or Office) should be checked via the Questionnaire assertion class.
-     */
-    public function isOpen(Questionnaire $questionnaire, Affiliation $affiliation): bool
+    public function parseCompletedPercentage(Questionnaire $questionnaire, Affiliation $affiliation): int
     {
-        $now       = new DateTime();
-        $startDate = $this->getStartDate($questionnaire, $affiliation);
-        $endDate   = $this->getEndDate($questionnaire, $affiliation);
-        return (
-            (($startDate !== null) && ($now >= $startDate))
-            && (($endDate === null) || ($now <= $endDate))
-        );
-    }
+        $questionCount = count($questionnaire->getQuestionnaireQuestions());
+        if ($questionCount === 0) { // Prevent division by zero
+            return 100;
+        }
+        $answers     = $this->entityManager->getRepository(Answer::class)
+            ->getSorted($questionnaire, $affiliation);
+        $answerCount = 0;
 
-    public function hasPendingQuestionnaires(Contact $contact): bool
-    {
-        foreach ($contact->getAffiliation() as $affiliation) {
-            foreach ($this->getAvailableQuestionnaires($affiliation) as $questionnaire) {
-                if (
-                    $this->isOpen($questionnaire, $affiliation)
-                    && ($this->parseCompletedPercentage($questionnaire, $affiliation) < 100)
-                ) {
-                    return true;
-                }
+        /** @var Answer $answer */
+        foreach ($answers as $answer) {
+            $value = $answer->getValue();
+            if (!empty($value) || !$answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
+                $answerCount++;
             }
         }
 
-        return false;
+        return ($answerCount === 0) ? 0 : (int)round((($answerCount / $questionCount) * 100));
     }
 
     public function copyQuestionnaire(Questionnaire $questionnaire): Questionnaire

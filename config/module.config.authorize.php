@@ -177,6 +177,11 @@ return [
                     'assertion' => AffiliationAssertion::class,
                 ],
                 [
+                    'route'     => 'community/affiliation/technical-contact',
+                    'roles'     => [],
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
                     'route'     => 'community/affiliation/edit/affiliation',
                     'roles'     => ['user'],
                     'assertion' => AffiliationAssertion::class,

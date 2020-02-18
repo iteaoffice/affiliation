@@ -28,12 +28,13 @@ final class CategoryLink extends AbstractLink
         string $action = 'view',
         string $show = 'name',
         int $length = null
-    ): string {
+    ): string
+    {
         $category ??= new Category();
 
         $routeParams = [];
         $showOptions = [];
-        if (! $category->isEmpty()) {
+        if (!$category->isEmpty()) {
             $routeParams['id']   = $category->getId();
             $showOptions['name'] = $category->getCategory();
         }

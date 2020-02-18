@@ -20,6 +20,7 @@ use Doctrine\Common\Collections;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Invoice\Entity\Method;
+use Laminas\Form\Annotation;
 use Organisation\Entity\Parent\Organisation;
 use Organisation\Service\OrganisationService;
 use Project\Entity\Achievement;
@@ -33,7 +34,6 @@ use Project\Entity\Funding\Funded;
 use Project\Entity\Funding\Funding;
 use Project\Entity\Project;
 use Project\Entity\Report\EffortSpent;
-use Laminas\Form\Annotation;
 
 /**
  * @ORM\Table(name="affiliation")
@@ -44,7 +44,7 @@ use Laminas\Form\Annotation;
 class Affiliation extends AbstractEntity
 {
     public const NOT_SELF_FUNDED = 0;
-    public const SELF_FUNDED = 1;
+    public const SELF_FUNDED     = 1;
 
     protected static array $selfFundedTemplates
         = [
@@ -163,6 +163,17 @@ class Affiliation extends AbstractEntity
      * @var Contact
      */
     private $contact;
+    /**
+     * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="proxyAffiliation", orphanRemoval=true)
+     * @ORM\JoinTable(name="affiliation_contact_proxy",
+     *            joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
+     *            inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id")}
+     * )
+     * @Annotation\Exclude()
+     *
+     * @var Contact[]|Collections\ArrayCollection
+     */
+    private $proxyContact;
     /**
      * @ORM\Column(name="communication_contact_name", type="string", nullable=true)
      * @Annotation\Type("\Laminas\Form\Element\Text")
@@ -396,25 +407,26 @@ class Affiliation extends AbstractEntity
 
     public function __construct()
     {
-        $this->invoice = new Collections\ArrayCollection();
-        $this->log = new Collections\ArrayCollection();
-        $this->version = new Collections\ArrayCollection();
-        $this->contractVersion = new Collections\ArrayCollection();
-        $this->contract = new Collections\ArrayCollection();
-        $this->associate = new Collections\ArrayCollection();
-        $this->funding = new Collections\ArrayCollection();
-        $this->cost = new Collections\ArrayCollection();
-        $this->contractCost = new Collections\ArrayCollection();
-        $this->funded = new Collections\ArrayCollection();
-        $this->effort = new Collections\ArrayCollection();
-        $this->spent = new Collections\ArrayCollection();
-        $this->doaReminder = new Collections\ArrayCollection();
-        $this->achievement = new Collections\ArrayCollection();
+        $this->invoice                  = new Collections\ArrayCollection();
+        $this->log                      = new Collections\ArrayCollection();
+        $this->version                  = new Collections\ArrayCollection();
+        $this->contractVersion          = new Collections\ArrayCollection();
+        $this->contract                 = new Collections\ArrayCollection();
+        $this->associate                = new Collections\ArrayCollection();
+        $this->funding                  = new Collections\ArrayCollection();
+        $this->cost                     = new Collections\ArrayCollection();
+        $this->contractCost             = new Collections\ArrayCollection();
+        $this->funded                   = new Collections\ArrayCollection();
+        $this->effort                   = new Collections\ArrayCollection();
+        $this->spent                    = new Collections\ArrayCollection();
+        $this->doaReminder              = new Collections\ArrayCollection();
+        $this->achievement              = new Collections\ArrayCollection();
         $this->projectReportEffortSpent = new Collections\ArrayCollection();
-        $this->changeRequestCostChange = new Collections\ArrayCollection();
-        $this->changeRequestCountry = new Collections\ArrayCollection();
-        $this->projectLog = new Collections\ArrayCollection();
-        $this->answers = new Collections\ArrayCollection();
+        $this->changeRequestCostChange  = new Collections\ArrayCollection();
+        $this->changeRequestCountry     = new Collections\ArrayCollection();
+        $this->projectLog               = new Collections\ArrayCollection();
+        $this->answers                  = new Collections\ArrayCollection();
+        $this->proxyContact             = new Collections\ArrayCollection();
         /*
          * Self-funded is default NOT
          */
@@ -495,12 +507,12 @@ class Affiliation extends AbstractEntity
 
     public function hasContractVersion(): bool
     {
-        return null !== $this->contract && ! $this->contractVersion->isEmpty();
+        return null !== $this->contract && !$this->contractVersion->isEmpty();
     }
 
     public function addAssociate(Contact $contact): void
     {
-        if (! $this->associate->contains($contact)) {
+        if (!$this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }
@@ -930,6 +942,17 @@ class Affiliation extends AbstractEntity
     public function setCommunicationContactEmail(?string $communicationContactEmail): Affiliation
     {
         $this->communicationContactEmail = $communicationContactEmail;
+        return $this;
+    }
+
+    public function getProxyContact()
+    {
+        return $this->proxyContact;
+    }
+
+    public function setProxyContact($proxyContact): Affiliation
+    {
+        $this->proxyContact = $proxyContact;
         return $this;
     }
 }

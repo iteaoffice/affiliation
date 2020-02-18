@@ -17,6 +17,7 @@
 
     {% endif %}
     <p><strong>{{ loop.index }}. {{ answer.questionnaireQuestion.question.question }}</strong></p>
+
     {% if answer.value is not null %}
         <p>{{ answer.value }}</p>
     {% elseif not answer.questionnaireQuestion.question.required %}

@@ -20,6 +20,7 @@ use Affiliation\Form\Affiliation as AffiliationForm;
 use Affiliation\Form\CostAndEffort;
 use Affiliation\Form\EffortSpent;
 use Affiliation\Form\Financial as FinancialForm;
+use Affiliation\Form\ManageTechnicalContact;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\FormService;
 use Contact\Entity\Address;
@@ -85,7 +86,8 @@ final class EditController extends AffiliationAbstractController
         FormService $formService,
         EntityManager $entityManager,
         TranslatorInterface $translator
-    ) {
+    )
+    {
         $this->affiliationService  = $affiliationService;
         $this->projectService      = $projectService;
         $this->versionService      = $versionService;
@@ -135,7 +137,7 @@ final class EditController extends AffiliationAbstractController
         $form->setData($formData);
 
         //Remove the de-activate-button when partner is not active
-        if (! $affiliation->isActive()) {
+        if (!$affiliation->isActive()) {
             $form->remove('deactivate');
         }
 
@@ -446,7 +448,7 @@ final class EditController extends AffiliationAbstractController
                 /**
                  * The presence of a VAT number triggers the creation of a financial organisation
                  */
-                if (! empty($formData['vat'])) {
+                if (!empty($formData['vat'])) {
                     $organisationFinancial->setVat($formData['vat']);
 
                     //Do an in-situ vat check
@@ -603,7 +605,7 @@ final class EditController extends AffiliationAbstractController
             }
 
 
-            if (isset($data['addKnownContact']) && ! empty($data['contact'])) {
+            if (isset($data['addKnownContact']) && !empty($data['contact'])) {
 
                 /** @var Contact $contact */
                 $contact = $this->contactService->findContactById((int)$data['contact']);
@@ -627,7 +629,7 @@ final class EditController extends AffiliationAbstractController
                 );
             }
 
-            if (isset($data['addEmail']) && ! empty($data['email'])) {
+            if (isset($data['addEmail']) && !empty($data['email'])) {
                 $this->affiliationService->addAssociate($affiliation, null, $data['email']);
 
                 $changelogMessage = sprintf(
@@ -829,7 +831,7 @@ final class EditController extends AffiliationAbstractController
             );
 
         if (
-            ! $effortSpent
+        !$effortSpent
             = $this->reportService->findEffortSpentByReportAndAffiliation($report, $affiliation)
         ) {
             $effortSpent = new ReportEffortSpent();
@@ -932,7 +934,7 @@ final class EditController extends AffiliationAbstractController
         $formData = [];
         foreach ($this->projectService->parseEditYearRange($project) as $year) {
             $costPerYear = $this->projectService->findTotalCostByAffiliationPerYear($affiliation);
-            if (! array_key_exists($year, $costPerYear)) {
+            if (!array_key_exists($year, $costPerYear)) {
                 $costPerYear[$year] = 0;
             }
             $formData['costPerAffiliationAndYear']
@@ -946,10 +948,10 @@ final class EditController extends AffiliationAbstractController
             foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
                 $effortPerWorkpackageAndYear
                     = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                        $workpackage,
-                        $affiliation
-                    );
-                if (! array_key_exists($year, $effortPerWorkpackageAndYear)) {
+                    $workpackage,
+                    $affiliation
+                );
+                if (!array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }
                 $formData['effortPerAffiliationAndYear']
@@ -1086,5 +1088,100 @@ final class EditController extends AffiliationAbstractController
                 'form'               => $form
             ]
         );
+    }
+
+    public function technicalContactAction()
+    {
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
+
+        if (null === $affiliation) {
+            return $this->notFoundAction();
+        }
+
+        //Create an array for the proxies, but not on submission
+        $proxyContacts = [];
+        if (!$this->getRequest()->isPost()) {
+            foreach ($affiliation->getProxyContact() as $contact) {
+                $proxyContacts[] = $contact->getId();
+            }
+        }
+
+        $data = array_merge(
+            [
+                'technicalContact'      => $affiliation->getContact()->getId(),
+                'proxyTechnicalContact' => $proxyContacts,
+            ],
+            $this->getRequest()->getPost()->toArray()
+        );
+
+        $form = new ManageTechnicalContact($this->contactService, $affiliation, $this->identity());
+        $form->setData($data);
+
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()]
+                );
+            }
+
+            if ($form->isValid()) {
+                //Save the technical contact
+                $technicalContact = $this->contactService->findContactById((int)$data['technicalContact']);
+                if (null !== $technicalContact) {
+                    $affiliation->setContact($technicalContact);
+                }
+
+                //Save the proxies
+                $proxies    = [];
+                $proxyNames = [];
+                if (isset($data['proxyTechnicalContact'])) {
+                    foreach ((array)$data['proxyTechnicalContact'] as $proxyTechnicalContact) {
+                        $proxyTechnicalContact = $this->contactService->findContactById((int)$proxyTechnicalContact);
+                        if (null !== $proxyTechnicalContact) {
+                            $proxies[]    = $proxyTechnicalContact;
+                            $proxyNames[] = $proxyTechnicalContact->parseFullName();
+                        }
+                    }
+                }
+                $affiliation->setProxyContact($proxies);
+
+                $this->affiliationService->save($affiliation);
+                $this->projectService->save($affiliation->getProject());
+
+                if (count($proxyNames) > 0) {
+                    $changelogMessage = sprintf(
+                        $this->translator->translate(
+                            'txt-technical-contact-and-proxy-technical-contacts-have-been-updated-project-leader-is-%s-proxy-are-%s'
+                        ),
+                        $affiliation->getContact()->parseFullName(),
+                        implode(', ', $proxyNames)
+                    );
+                } else {
+                    $changelogMessage = sprintf(
+                        $this->translator->translate(
+                            'txt-technical-contact-and-proxy-technical-contact-have-been-updated-project-leader-is-%s-and-there-are-no-proxies'
+                        ),
+                        $affiliation->getContact()->parseFullName()
+                    );
+                }
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()]
+                );
+            }
+        }
+
+        return new ViewModel(['form' => $form, 'affiliation' => $affiliation]);
     }
 }

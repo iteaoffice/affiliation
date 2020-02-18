@@ -37,17 +37,31 @@
         {% set affiliationVersion = affiliationService.findAffiliationVersion(affiliation,latestVersion) %}
         {% set contractVersion = affiliationVersion.contractVersion.version %}
 
-        {% if not affiliationVersion.hasContractVersion() or contractVersion is null or not useContract %}
-            <tr>
-                <td colspan="2"></td>
-                {% for year in years %}
-                    <td class="cost-version text-right"
-                        data-affiliation="{{ affiliation.id }}"
-                        data-year="{{ year }}">{{ costPerYear[year]|kilo_currency_decimal(null, false) }}</td>
-                    {% set totalPerYear = totalPerYear + costPerYear[year] %}
-                {% endfor %}
-                <th class="text-right">{{ totalPerYear|kilo_currency_decimal(null, false) }}</th>
-            </tr>
+        {% if affiliationVersion.hasContractVersion() or contractVersion is null %}
+
+            {% if not useContract %}
+                <tr>
+                    <td colspan="2"></td>
+                    {% for year in years %}
+                        <td class="cost-version text-right"
+                            data-affiliation="{{ affiliation.id }}"
+                            data-year="{{ year }}">{{ costPerYear[year]|kilo_currency_decimal(null, false) }}</td>
+                        {% set totalPerYear = totalPerYear + costPerYear[year] %}
+                    {% endfor %}
+                    <th class="text-right">{{ totalPerYear|kilo_currency_decimal(null, false) }}</th>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2"></td>
+                    {% for year in years %}
+                        <td class="cost-version text-right"
+                            data-affiliation="{{ affiliation.id }}"
+                            data-year="{{ year }}">{{ costPerYear[year]|currency_decimal }}</td>
+                        {% set totalPerYear = totalPerYear + costPerYear[year] %}
+                    {% endfor %}
+                    <th class="text-right">{{ totalPerYear|currency_decimal }}</th>
+                </tr>
+            {% endif %}
         {% else %}
             {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
             <tr>

@@ -30,16 +30,17 @@ final class QuestionnaireLink extends AbstractLink
         string $action = 'view',
         string $show = 'name',
         Affiliation $affiliation = null
-    ): string {
+    ): string
+    {
         $questionnaire ??= new Questionnaire();
 
-        if (! $this->hasAccess($affiliation, QuestionnaireAssertion::class, $action)) {
+        if (!$this->hasAccess($questionnaire, QuestionnaireAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
-        if (! $questionnaire->isEmpty()) {
+        if (!$questionnaire->isEmpty()) {
             $routeParams['id']   = $questionnaire->getId();
             $showOptions['name'] = $questionnaire->getQuestionnaire();
         }
@@ -77,6 +78,13 @@ final class QuestionnaireLink extends AbstractLink
                     'icon'  => 'far fa-question-circle',
                     'route' => 'zfcadmin/affiliation/questionnaire/view',
                     'text'  => $showOptions[$show] ?? $questionnaire->getQuestionnaire()
+                ];
+                break;
+            case 'copy-admin':
+                $linkParams = [
+                    'icon'  => 'far fa-clone',
+                    'route' => 'zfcadmin/affiliation/questionnaire/copy',
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-copy-questionnaire')
                 ];
                 break;
             case 'edit-admin':

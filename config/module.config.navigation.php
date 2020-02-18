@@ -35,7 +35,7 @@ $communityNavigation = [
                                     ],
                                 ],
                                 'pages'   => [
-                                    'edit-affiliation'    => [
+                                    'edit-affiliation'         => [
                                         'label'   => _('txt-edit-affiliation'),
                                         'route'   => 'community/affiliation/edit/affiliation',
                                         'visible' => false,
@@ -45,7 +45,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'edit-description'    => [
+                                    'edit-description'         => [
                                         'label'   => _('txt-edit-description'),
                                         'route'   => 'community/affiliation/edit/description',
                                         'visible' => false,
@@ -55,7 +55,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'edit-financial'      => [
+                                    'edit-financial'           => [
                                         'label'   => _('txt-edit-financial'),
                                         'route'   => 'community/affiliation/edit/financial',
                                         'visible' => false,
@@ -65,7 +65,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'add-associate'       => [
+                                    'add-associate'            => [
                                         'label'   => _('txt-add-associate'),
                                         'route'   => 'community/affiliation/edit/add-associate',
                                         'visible' => false,
@@ -75,7 +75,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'manage-associate'    => [
+                                    'manage-associate'         => [
                                         'label'   => _('txt-manage-associate'),
                                         'route'   => 'community/affiliation/edit/manage-associate',
                                         'visible' => false,
@@ -85,7 +85,17 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'cost-and-effort'     => [
+                                    'technical-contact-leader' => [
+                                        'label'   => _('txt-manage-technical-contacts'),
+                                        'route'   => 'community/affiliation/technical-contact',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Affiliation::class,
+                                            ],
+                                        ],
+                                    ],
+                                    'cost-and-effort'          => [
                                         'label'   => _('txt-edit-cost-and-effort'),
                                         'route'   => 'community/affiliation/edit/cost-and-effort',
                                         'visible' => false,
@@ -95,7 +105,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'submit-doa'          => [
+                                    'submit-doa'               => [
                                         'label'   => _('txt-submit-doa'),
                                         'route'   => 'community/affiliation/doa/submit',
                                         'visible' => false,
@@ -108,7 +118,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'replace-doa'         => [
+                                    'replace-doa'              => [
                                         'label'   => _('txt-replace-doa'),
                                         'route'   => 'community/affiliation/doa/replace',
                                         'visible' => false,
@@ -121,7 +131,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'submit-loi'          => [
+                                    'submit-loi'               => [
                                         'label'   => _('txt-submit-loi'),
                                         'route'   => 'community/affiliation/loi/submit',
                                         'visible' => false,
@@ -134,7 +144,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'replace-loi'         => [
+                                    'replace-loi'              => [
                                         'label'   => _('txt-replace-loi'),
                                         'route'   => 'community/affiliation/loi/replace',
                                         'visible' => false,
@@ -147,7 +157,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'payment-sheet'       => [
+                                    'payment-sheet'            => [
                                         'label'   => _('txt-affiliation-payment-sheet'),
                                         'route'   => 'community/affiliation/payment-sheet',
                                         'visible' => false,
@@ -157,7 +167,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'update-effort-spent' => [
+                                    'update-effort-spent'      => [
                                         'label'   => _('txt-update-effort-spent'),
                                         'route'   => 'community/affiliation/edit/update-effort-spent',
                                         'visible' => false,
@@ -167,7 +177,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'view-questionnaire'  => [
+                                    'view-questionnaire'       => [
                                         'label'   => _('txt-view-questionnaire'),
                                         'route'   => 'community/affiliation/questionnaire/view',
                                         'visible' => false,
@@ -180,7 +190,7 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
-                                    'edit-questionnaire'  => [
+                                    'edit-questionnaire'       => [
                                         'label'   => _('txt-edit-questionnaire'),
                                         'route'   => 'community/affiliation/questionnaire/edit',
                                         'visible' => false,

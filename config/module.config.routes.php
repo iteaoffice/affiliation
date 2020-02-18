@@ -43,6 +43,17 @@ return [
                                     ],
                                 ],
                             ],
+                            'technical-contact' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/technical-contact.html',
+                                    'defaults' => [
+                                        'controller' => Controller\EditController::class,
+                                        'action'     => 'technical-contact',
+                                        'privilege'  => 'technical-contact',
+                                    ],
+                                ],
+                            ],
                             'payment-sheet'     => [
                                 'type'    => 'Segment',
                                 'options' => [
@@ -251,8 +262,8 @@ return [
                                 ],
                             ],
                             'questionnaire'     => [
-                                'type'         => 'Segment',
-                                'options'      => [
+                                'type'          => 'Segment',
+                                'options'       => [
                                     'route'    => '/questionnaire',
                                     'defaults' => [
                                         'controller' => Controller\Questionnaire\QuestionnaireController::class,
@@ -260,8 +271,8 @@ return [
                                     ],
                                 ],
                                 'may_terminate' => false,
-                                'child_routes' => [
-                                    'view'   => [
+                                'child_routes'  => [
+                                    'view'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/view[/:affiliationId]/q-[:id].html',
@@ -271,7 +282,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'edit'  => [
+                                    'edit'     => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/edit[/:affiliationId]/q-[:id].html',
@@ -281,7 +292,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'overview'  => [
+                                    'overview' => [
                                         'type'    => 'Segment',
                                         'options' => [
                                             'route'    => '/overview.html',

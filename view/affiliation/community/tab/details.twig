@@ -93,7 +93,18 @@
     <dd>{{ affiliation.contact.displayName() }}
         <a href="mailto:{{ affiliation.contact.email }}"><i class="far fa-envelope"></i></a>
         {{ contactLink(affiliation.contact,'view-admin','icon') }}
+        {{ affiliationLink(affiliation,'technical-contact','button-small') }}
     </dd>
+
+    {% if affiliation.proxyContact.count() > 0 %}
+        <dt>{{ translate("txt-proxy-technical-contact") }}</dt>
+        {% for contact in affiliation.proxyContact %}
+            <dd>{{ contact.displayName() }}
+                ({{ contact.contactOrganisation.organisation|trim }})
+                <a href="mailto:{{ contact.email }}"><i class="far fa-envelope"></i></a>
+                {{ contactLink(contact,'view-admin','icon') }}</dd>
+        {% endfor %}
+    {% endif %}
 
     {% if affiliation.communicationContactName %}
         <dt>{{ translate("txt-communication-contact") }}</dt>

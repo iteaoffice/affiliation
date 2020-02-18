@@ -54,10 +54,10 @@ final class Affiliation extends AbstractAssertion
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-        $this->affiliationService = $container->get(AffiliationService::class);
-        $this->projectService = $container->get(ProjectService::class);
-        $this->reportService = $container->get(ReportService::class);
-        $this->projectAssertion = $container->get(Project::class);
+        $this->affiliationService     = $container->get(AffiliationService::class);
+        $this->projectService         = $container->get(ProjectService::class);
+        $this->reportService          = $container->get(ReportService::class);
+        $this->projectAssertion       = $container->get(Project::class);
         $this->questionnaireAssertion = $container->get(QuestionnaireAssertion::class);
     }
 
@@ -66,11 +66,12 @@ final class Affiliation extends AbstractAssertion
         RoleInterface $role = null,
         ResourceInterface $affiliation = null,
         $privilege = null
-    ): bool {
+    ): bool
+    {
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (! ($affiliation instanceof AffiliationEntity) && (null !== $id)) {
+        if (!($affiliation instanceof AffiliationEntity) && (null !== $id)) {
             $affiliation = $this->affiliationService->findAffiliationById((int)$id);
         }
 
@@ -95,6 +96,12 @@ final class Affiliation extends AbstractAssertion
                 return $this->contactService->contactHasPermit(
                     $this->contact,
                     ['edit', 'edit_proxy', 'financial'],
+                    $affiliation
+                );
+            case 'technical-contact':
+                return $this->contactService->contactHasPermit(
+                    $this->contact,
+                    ['edit'],
                     $affiliation
                 );
             case 'list-questionnaire':
