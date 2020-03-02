@@ -39,11 +39,12 @@ final class QuestionnaireController extends AffiliationAbstractController
         QuestionnaireService $questionnaireService,
         EntityManager $entityManager,
         TranslatorInterface $translator
-    ) {
-        $this->affiliationService = $affiliationService;
+    )
+    {
+        $this->affiliationService   = $affiliationService;
         $this->questionnaireService = $questionnaireService;
-        $this->entityManager = $entityManager;
-        $this->translator = $translator;
+        $this->entityManager        = $entityManager;
+        $this->translator           = $translator;
     }
 
     public function overviewAction(): ViewModel
@@ -107,7 +108,8 @@ final class QuestionnaireController extends AffiliationAbstractController
         $form = new QuestionnaireForm(
             $questionnaire,
             $affiliation,
-            $this->questionnaireService
+            $this->questionnaireService,
+            $this->entityManager
         );
 
         if ($request->isPost()) {

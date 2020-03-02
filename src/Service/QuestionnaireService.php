@@ -74,6 +74,8 @@ class QuestionnaireService extends AbstractService
             )->isEmpty();
         }
 
+
+
         // No answers, or not from this affiliation or new answers
         if (! $hasAnswers) {
             static $sortedQuestionnaireQuestions = [];

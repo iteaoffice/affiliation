@@ -18,10 +18,11 @@ use Affiliation\Entity\Questionnaire\Answer;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Service\QuestionnaireService;
+use Doctrine\ORM\EntityManager;
+use Doctrine\Laminas\Hydrator\DoctrineObject as DoctrineHydrator;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
 use Laminas\Form\Form;
-use Laminas\Hydrator\ObjectPropertyHydrator as DoctrineHydrator;
 use Laminas\InputFilter\InputFilter;
 use Laminas\Json\Json;
 
@@ -38,7 +39,8 @@ final class QuestionnaireForm extends Form
     public function __construct(
         Questionnaire $questionnaire,
         Affiliation $affiliation,
-        QuestionnaireService $affiliationQuestionService
+        QuestionnaireService $affiliationQuestionService,
+        EntityManager $entityManager
     ) {
         parent::__construct($questionnaire->get('underscore_entity_name'));
         $this->setAttributes(
@@ -49,7 +51,7 @@ final class QuestionnaireForm extends Form
                 'action' => ''
             ]
         );
-        $doctrineHydrator = new DoctrineHydrator();
+        $doctrineHydrator = new DoctrineHydrator($entityManager);
 
 
         $answerCollection = new Element\Collection('answers');
@@ -59,13 +61,13 @@ final class QuestionnaireForm extends Form
         $answerCollection->setAllowRemove(false);
 
         $questionnaireFilter = new InputFilter();
-        $answersFilter       = new InputFilter();
+        $answersFilter = new InputFilter();
 
         /** @var Answer $answer */
         foreach ($affiliationQuestionService->getSortedAnswers($questionnaire, $affiliation) as $answer) {
 
             /** @var Question $question */
-            $question    = $answer->getQuestionnaireQuestion()->getQuestion();
+            $question = $answer->getQuestionnaireQuestion()->getQuestion();
             $placeholder = $question->getPlaceholder();
 
             $answerFieldset = new Fieldset($question->getId());
@@ -116,7 +118,7 @@ final class QuestionnaireForm extends Form
                     break;
 
                 case Question::INPUT_TYPE_TEXT:
-                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
+                    $attributes = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
                     $attributes['value'] = $answer->getValue();
                     $answerFieldset->add(
                         [
@@ -145,10 +147,10 @@ final class QuestionnaireForm extends Form
                     break;
 
                 case Question::INPUT_TYPE_NUMERIC:
-                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
+                    $attributes = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
                     $attributes['value'] = $answer->getValue();
-                    $attributes['min']   = 0;
-                    $attributes['step']  = 1;
+                    $attributes['min'] = 0;
+                    $attributes['step'] = 1;
                     $answerFieldset->add(
                         [
                             'type'       => Element\Number::class,
@@ -160,7 +162,7 @@ final class QuestionnaireForm extends Form
                     break;
 
                 case Question::INPUT_TYPE_DATE:
-                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
+                    $attributes = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
                     $attributes['value'] = $answer->getValue();
                     $answerFieldset->add(
                         [
@@ -174,7 +176,7 @@ final class QuestionnaireForm extends Form
 
                 case Question::INPUT_TYPE_STRING:
                 default:
-                    $attributes          = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
+                    $attributes = (empty($placeholder) ? [] : ['placeholder' => $placeholder]);
                     $attributes['value'] = $answer->getValue();
                     $answerFieldset->add(
                         [
