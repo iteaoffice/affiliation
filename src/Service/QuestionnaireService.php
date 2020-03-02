@@ -26,7 +26,6 @@ use Doctrine\ORM\EntityManager;
 use Project\Entity\Calendar\Calendar as ProjectCalendar;
 use Project\Entity\Version\Type;
 use Project\Entity\Version\Version;
-use Project\Service\ProjectService;
 use Project\Service\VersionService;
 
 use function count;
@@ -44,8 +43,7 @@ class QuestionnaireService extends AbstractService
     public function __construct(
         EntityManager $entityManager,
         VersionService $versionService
-    )
-    {
+    ) {
         parent::__construct($entityManager);
         $this->versionService = $versionService;
     }
@@ -69,7 +67,7 @@ class QuestionnaireService extends AbstractService
         //Check the first answer
         if ($questionnaireQuestion) {
             /** @var Answer $answer */
-            $hasAnswers = !$questionnaireQuestion->getAnswers()->filter(
+            $hasAnswers = ! $questionnaireQuestion->getAnswers()->filter(
                 static function (Answer $answer) use ($affiliation) {
                     return $answer->getAffiliation() === $affiliation;
                 }
@@ -77,9 +75,9 @@ class QuestionnaireService extends AbstractService
         }
 
         // No answers, or not from this affiliation or new answers
-        if (!$hasAnswers) {
+        if (! $hasAnswers) {
             static $sortedQuestionnaireQuestions = [];
-            if (!isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
+            if (! isset($sortedQuestionnaireQuestions[$questionnaire->getId()])) {
                 $sortedQuestionnaireQuestions[$questionnaire->getId()] =
                     $this->entityManager->getRepository(QuestionnaireQuestion::class)->getSorted(
                         $questionnaire
@@ -155,6 +153,7 @@ class QuestionnaireService extends AbstractService
         $now       = new DateTime();
         $startDate = $this->getStartDate($questionnaire, $affiliation);
         $endDate   = $this->getEndDate($questionnaire, $affiliation);
+
         return (
             (($startDate !== null) && ($now >= $startDate))
             && (($endDate === null) || ($now <= $endDate))
@@ -170,10 +169,7 @@ class QuestionnaireService extends AbstractService
                         $affiliation->getProject(),
                         $this->versionService->findVersionTypeById(Type::TYPE_PO)
                     );
-                    if (
-                        ($poVersion instanceof Version)
-                        && ($this->versionService->parseStatus($poVersion) === ProjectService::STATUS_PO_INVITED_FOR_FPP)
-                    ) {
+                    if ($poVersion instanceof Version && $poVersion->isApproved()) {
                         return $poVersion->getDateReviewed();
                     }
                     break;
@@ -234,7 +230,7 @@ class QuestionnaireService extends AbstractService
         /** @var Answer $answer */
         foreach ($answers as $answer) {
             $value = $answer->getValue();
-            if (!empty($value) || !$answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
+            if (! empty($value) || ! $answer->getQuestionnaireQuestion()->getQuestion()->getRequired()) {
                 $answerCount++;
             }
         }

@@ -23,7 +23,7 @@ use function sprintf;
 /**
  * @ORM\Table(name="affiliation_contract_version")
  * @ORM\Entity
- * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectPropertyHydrator")
  * @Annotation\Name("affiliation_contract_version")
  */
 class ContractVersion extends AbstractEntity

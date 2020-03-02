@@ -200,6 +200,4 @@ final class CommunityController extends AffiliationAbstractController
 
         return $response;
     }
-
-
 }

@@ -23,7 +23,7 @@ use function in_array;
 /**
  * @ORM\Table(name="affiliation_invoice")
  * @ORM\Entity
- * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectPropertyHydrator")
  * @Annotation\Name("affiliation_invoice")
  */
 class Invoice extends AbstractEntity

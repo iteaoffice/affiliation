@@ -17,18 +17,17 @@ declare(strict_types=1);
 
 namespace Affiliation\Form;
 
+use Affiliation\Entity;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Doctrine\ORM\EntityManager;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use DoctrineORMModule\Form\Element\EntityMultiCheckbox;
 use DoctrineORMModule\Form\Element\EntityRadio;
 use DoctrineORMModule\Form\Element\EntitySelect;
-use Affiliation\Entity;
 use Laminas\Form\Annotation\AnnotationBuilder;
 use Laminas\Form\Element;
 use Laminas\Form\Element\Radio;
 use Laminas\Form\Fieldset;
 use Laminas\Form\FieldsetInterface;
-use Laminas\Form\Form;
 
 /**
  * Class ObjectFieldset
@@ -45,7 +44,7 @@ class ObjectFieldset extends Fieldset
     {
         parent::__construct($object->get('underscore_entity_name'));
         $this->entityManager = $entityManager;
-        $doctrineHydrator    = new DoctrineHydrator($entityManager);
+        $doctrineHydrator    = new DoctrineObject($entityManager);
         $this->setHydrator($doctrineHydrator)->setObject($object);
         $builder = new AnnotationBuilder();
 

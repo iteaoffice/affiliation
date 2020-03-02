@@ -86,8 +86,7 @@ final class EditController extends AffiliationAbstractController
         FormService $formService,
         EntityManager $entityManager,
         TranslatorInterface $translator
-    )
-    {
+    ) {
         $this->affiliationService  = $affiliationService;
         $this->projectService      = $projectService;
         $this->versionService      = $versionService;
@@ -137,7 +136,7 @@ final class EditController extends AffiliationAbstractController
         $form->setData($formData);
 
         //Remove the de-activate-button when partner is not active
-        if (!$affiliation->isActive()) {
+        if (! $affiliation->isActive()) {
             $form->remove('deactivate');
         }
 
@@ -448,7 +447,7 @@ final class EditController extends AffiliationAbstractController
                 /**
                  * The presence of a VAT number triggers the creation of a financial organisation
                  */
-                if (!empty($formData['vat'])) {
+                if (! empty($formData['vat'])) {
                     $organisationFinancial->setVat($formData['vat']);
 
                     //Do an in-situ vat check
@@ -605,7 +604,7 @@ final class EditController extends AffiliationAbstractController
             }
 
 
-            if (isset($data['addKnownContact']) && !empty($data['contact'])) {
+            if (isset($data['addKnownContact']) && ! empty($data['contact'])) {
 
                 /** @var Contact $contact */
                 $contact = $this->contactService->findContactById((int)$data['contact']);
@@ -629,7 +628,7 @@ final class EditController extends AffiliationAbstractController
                 );
             }
 
-            if (isset($data['addEmail']) && !empty($data['email'])) {
+            if (isset($data['addEmail']) && ! empty($data['email'])) {
                 $this->affiliationService->addAssociate($affiliation, null, $data['email']);
 
                 $changelogMessage = sprintf(
@@ -831,7 +830,7 @@ final class EditController extends AffiliationAbstractController
             );
 
         if (
-        !$effortSpent
+            ! $effortSpent
             = $this->reportService->findEffortSpentByReportAndAffiliation($report, $affiliation)
         ) {
             $effortSpent = new ReportEffortSpent();
@@ -934,7 +933,7 @@ final class EditController extends AffiliationAbstractController
         $formData = [];
         foreach ($this->projectService->parseEditYearRange($project) as $year) {
             $costPerYear = $this->projectService->findTotalCostByAffiliationPerYear($affiliation);
-            if (!array_key_exists($year, $costPerYear)) {
+            if (! array_key_exists($year, $costPerYear)) {
                 $costPerYear[$year] = 0;
             }
             $formData['costPerAffiliationAndYear']
@@ -948,10 +947,10 @@ final class EditController extends AffiliationAbstractController
             foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
                 $effortPerWorkpackageAndYear
                     = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                    $workpackage,
-                    $affiliation
-                );
-                if (!array_key_exists($year, $effortPerWorkpackageAndYear)) {
+                        $workpackage,
+                        $affiliation
+                    );
+                if (! array_key_exists($year, $effortPerWorkpackageAndYear)) {
                     $effortPerWorkpackageAndYear[$year] = 0;
                 }
                 $formData['effortPerAffiliationAndYear']
@@ -1100,7 +1099,7 @@ final class EditController extends AffiliationAbstractController
 
         //Create an array for the proxies, but not on submission
         $proxyContacts = [];
-        if (!$this->getRequest()->isPost()) {
+        if (! $this->getRequest()->isPost()) {
             foreach ($affiliation->getProxyContact() as $contact) {
                 $proxyContacts[] = $contact->getId();
             }

@@ -38,7 +38,7 @@ use Project\Entity\Report\EffortSpent;
 /**
  * @ORM\Table(name="affiliation")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Affiliation")
- * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectPropertyHydrator")
  * @Annotation\Name("affiliation")
  */
 class Affiliation extends AbstractEntity
@@ -507,12 +507,12 @@ class Affiliation extends AbstractEntity
 
     public function hasContractVersion(): bool
     {
-        return null !== $this->contract && !$this->contractVersion->isEmpty();
+        return null !== $this->contract && ! $this->contractVersion->isEmpty();
     }
 
     public function addAssociate(Contact $contact): void
     {
-        if (!$this->associate->contains($contact)) {
+        if (! $this->associate->contains($contact)) {
             $this->associate->add($contact);
         }
     }

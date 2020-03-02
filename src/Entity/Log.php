@@ -22,7 +22,7 @@ use Laminas\Form\Annotation;
  *
  * @ORM\Table(name="affiliation_log")
  * @ORM\Entity
- * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectPropertyHydrator")
  * @Annotation\Name("affiliation_log")
  *
  * @category    Affiliation

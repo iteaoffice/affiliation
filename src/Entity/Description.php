@@ -22,7 +22,7 @@ use Laminas\Form\Annotation;
 /**
  * @ORM\Table(name="affiliation_description")
  * @ORM\Entity
- * @Annotation\Hydrator("Laminas\Hydrator\ObjectProperty")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectPropertyHydrator")
  * @Annotation\Name("affiliation_description")
  */
 class Description extends AbstractEntity
