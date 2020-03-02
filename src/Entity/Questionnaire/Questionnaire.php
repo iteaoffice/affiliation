@@ -22,8 +22,6 @@ use Organisation\Entity\Type;
 use Program\Entity\Call\Call;
 
 /**
- * Category
- *
  * @ORM\Table(name="affiliation_questionnaire")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Questionnaire\QuestionnaireRepository")
  */
@@ -130,7 +128,7 @@ class Questionnaire extends AbstractEntity
 
     public function __toString(): string
     {
-        return (string) $this->questionnaire;
+        return (string)$this->questionnaire;
     }
 
     public function getId(): ?int

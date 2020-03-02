@@ -18,11 +18,10 @@ use Affiliation\Entity\Questionnaire\Answer;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Service\QuestionnaireService;
-use Doctrine\ORM\EntityManager;
-use Laminas\Hydrator\ObjectPropertyHydrator as DoctrineHydrator;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
 use Laminas\Form\Form;
+use Laminas\Hydrator\ObjectPropertyHydrator as DoctrineHydrator;
 use Laminas\InputFilter\InputFilter;
 use Laminas\Json\Json;
 
@@ -39,8 +38,7 @@ final class QuestionnaireForm extends Form
     public function __construct(
         Questionnaire $questionnaire,
         Affiliation $affiliation,
-        QuestionnaireService $affiliationQuestionService,
-        EntityManager $entityManager
+        QuestionnaireService $affiliationQuestionService
     ) {
         parent::__construct($questionnaire->get('underscore_entity_name'));
         $this->setAttributes(

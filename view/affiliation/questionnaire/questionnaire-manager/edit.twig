@@ -4,7 +4,7 @@
 
 <h1>{{ translate("txt-edit-questionnaire-%s")|format(questionnaire) }}</h1>
 
-{% include 'affiliation/partial/form/questionnaire/questionnaire' with {'edit':true}%}
+{% include 'affiliation/partial/form/questionnaire/questionnaire' with {'edit':true} %}
 
 <h2>{{ translate("txt-questions") }}</h2>
 <div class="row">
@@ -13,34 +13,48 @@
                 {% for category in categories %}
                     <optgroup label="{{ category.category }}">
                         {% for question in category.questions %}
-                            <option data-link="{{ affiliationQuestionLink(question, 'view')|escape }}" value="{{ question.id }}">{{ question.question }}</option>
+                            <option data-link="{{ affiliationQuestionLink(question, 'view')|escape }}"
+                                    value="{{ question.id }}">{{ question.question }}</option>
                         {% endfor %}
                     </optgroup>
                 {% endfor %}
             </select></p>
-        <p><button id="btn-add" title="{{ translate("txt-add") }}" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> {{ translate("txt-add-question") }}</button></p>
+        <p>
+            <button id="btn-add" title="{{ translate("txt-add") }}" type="button" class="btn btn-primary"><i
+                        class="fa fa-plus"></i> {{ translate("txt-add-question") }}</button>
+        </p>
     </div>
     <div class="col-md-6">
         <table class="table table-hover table-striped table-sm">
             <thead>
             <tr>
-                <th class="col-md-3 col-sm-4">{{ translate("txt-sequence") }}</th>
-                <th class="col-md-9 col-sm-8">{{ translate("txt-question") }}</th>
+                <th>{{ translate("txt-sequence") }}</th>
+                <th>{{ translate("txt-question") }}</th>
                 <th></th>
             </thead>
             <tfoot>
+            <tr>
+                <td colspan="3"></td>
+            </tr>
             </tfoot>
             <tbody id="sortable-table">
             {% set questionnaireFieldset = form.get('affiliation_entity_questionnaire_questionnaire') %}
             {% for key, fieldset in questionnaireFieldset.get('questionnaireQuestions').getFieldsets() %}
                 <tr id="question-{{ questionnaireFieldset.get('questionnaireQuestions').object[key].question.id }}">
-                    <td><span class="ui-icon ui-icon-arrowthick-2-n-s d-inline-block"></span> <span class="sequence">{{ fieldset.get('sequence').getValue() }}</span>
-                        <input class="sequence" type="hidden" name="{{ fieldset.get('sequence').getAttribute('name') }}" value="{{ fieldset.get('sequence').getValue() }}"></td>
-                    <td><input type="hidden" name="{{ fieldset.get('question').getAttribute('name') }}" value="{{ questionnaireFieldset.get('questionnaireQuestions').object[key].question.id }}">
-                        <input type="hidden" name="{{ fieldset.get('questionnaire').getAttribute('name') }}" value="{{ questionnaire.id }}">
+                    <td><span class="ui-icon ui-icon-arrowthick-2-n-s d-inline-block"></span> <span
+                                class="sequence">{{ fieldset.get('sequence').getValue() }}</span>
+                        <input class="sequence" type="hidden" name="{{ fieldset.get('sequence').getAttribute('name') }}"
+                               value="{{ fieldset.get('sequence').getValue() }}"></td>
+                    <td><input type="hidden" name="{{ fieldset.get('question').getAttribute('name') }}"
+                               value="{{ questionnaireFieldset.get('questionnaireQuestions').object[key].question.id }}">
+                        <input type="hidden" name="{{ fieldset.get('questionnaire').getAttribute('name') }}"
+                               value="{{ questionnaire.id }}">
                         {{ affiliationQuestionLink(questionnaireFieldset.get('questionnaireQuestions').object[key].question, 'view') }}
                     </td>
-                    <td><button title="{{ translate("txt-remove") }}" type="button" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></button></td>
+                    <td>
+                        <button title="{{ translate("txt-remove") }}" type="button"
+                                class="btn btn-danger btn-sm float-right"><i class="far fa-trash-alt"></i></button>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -56,12 +70,12 @@
 {{ form().closeTag()|raw }}
 
 <script>
-    $(function(){
+    $(function () {
         var $table = $('#sortable-table'), $sel = $('#sel-question'), $template = $('#template');
         var count = $table.find('tr').length;
-        var updateSequence = function(){
+        var updateSequence = function () {
             var sequence = 1;
-            $table.find('tr').each(function(){
+            $table.find('tr').each(function () {
                 var $tr = $(this);
                 $tr.find('span.sequence').text(sequence);
                 $tr.find('input.sequence').val(sequence);
@@ -70,14 +84,19 @@
         };
 
         $table.sortable({
-            update:  function(event, ui){ updateSequence(); }
+            update: function (event, ui) {
+                updateSequence();
+            }
         });
-        $table.on('click', 'button', function(){
-            $(this).closest('tr').fadeOut(300, function(){ $(this).remove(); updateSequence(); });
+        $table.on('click', 'button', function () {
+            $(this).closest('tr').fadeOut(300, function () {
+                $(this).remove();
+                updateSequence();
+            });
         });
-        $('#btn-add').click(function(){
+        $('#btn-add').click(function () {
             var opt = $sel.find('option:selected');
-            if ($('#question-'+opt.val()).length === 0) {
+            if ($('#question-' + opt.val()).length === 0) {
                 var html = $template.find('tbody').html()
                     .replace(/__id__/g, opt.val())
                     .replace(/__index__/g, count)
@@ -97,13 +116,22 @@
         <tbody>
         <tr id="question-__id__">
             <td><span class="ui-icon ui-icon-arrowthick-2-n-s d-inline-block"></span> <span class="sequence"></span>
-                <input class="sequence" type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][sequence]" value="">
+                <input class="sequence" type="hidden"
+                       name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][sequence]"
+                       value="">
             </td>
-            <td><input type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][question]" value="__id__">
-                <input type="hidden" name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][questionnaire]" value="{{ questionnaire.id }}">
+            <td><input type="hidden"
+                       name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][question]"
+                       value="__id__">
+                <input type="hidden"
+                       name="affiliation_entity_questionnaire_questionnaire[questionnaireQuestions][__index__][questionnaire]"
+                       value="{{ questionnaire.id }}">
                 __question__
             </td>
-            <td><button title="{{ translate("txt-remove") }}" type="button" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></button></td>
+            <td>
+                <button title="{{ translate("txt-remove") }}" type="button" class="btn btn-danger btn-sm float-right"><i
+                            class="far fa-trash-alt"></i></button>
+            </td>
         </tr>
         </tbody>
     </table>

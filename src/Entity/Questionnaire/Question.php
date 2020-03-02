@@ -20,38 +20,31 @@ use Doctrine\ORM\Mapping as ORM;
 use Laminas\Form\Annotation;
 
 /**
- * Question
- *
  * @ORM\Table(name="affiliation_questionnaire_question")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Questionnaire\QuestionRepository")
  */
 class Question extends AbstractEntity
 {
     /** Input type is Yes/No */
-    public const INPUT_TYPE_BOOL    = 1;
+    public const INPUT_TYPE_BOOL = 1;
     /** Input type is a single line textfield */
-    public const INPUT_TYPE_STRING  = 2;
+    public const INPUT_TYPE_STRING = 2;
     /** Input type is a multi-line textarea */
-    public const INPUT_TYPE_TEXT    = 3;
+    public const INPUT_TYPE_TEXT = 3;
     /** Input type is select box */
-    public const INPUT_TYPE_SELECT  = 4;
+    public const INPUT_TYPE_SELECT = 4;
     /** Input type is a number */
     public const INPUT_TYPE_NUMERIC = 5;
     /** Input type is a date */
-    public const INPUT_TYPE_DATE    = 6;
+    public const INPUT_TYPE_DATE = 6;
 
-    /**
-     * Templates for the input types.
-     *
-     * @var array
-     */
     protected static array $inputTypeTemplates = [
-        self::INPUT_TYPE_BOOL => 'txt-input-type-bool',
-        self::INPUT_TYPE_STRING => 'txt-input-type-string',
-        self::INPUT_TYPE_TEXT => 'txt-input-type-text',
+        self::INPUT_TYPE_BOOL    => 'txt-input-type-bool',
+        self::INPUT_TYPE_STRING  => 'txt-input-type-string',
+        self::INPUT_TYPE_TEXT    => 'txt-input-type-text',
         //self::INPUT_TYPE_SELECT  => 'txt-input-type-select',
         self::INPUT_TYPE_NUMERIC => 'txt-input-type-numeric',
-        self::INPUT_TYPE_DATE => 'txt-input-type-date',
+        self::INPUT_TYPE_DATE    => 'txt-input-type-date',
     ];
 
     /**
@@ -171,126 +164,76 @@ class Question extends AbstractEntity
      */
     private $questionnaireQuestions;
 
-    /**
-     * Question constructor.
-     */
     public function __construct()
     {
         $this->questionnaireQuestions = new ArrayCollection();
     }
 
-    /**
-     * @return array
-     */
     public static function getInputTypeTemplates(): array
     {
         return self::$inputTypeTemplates;
     }
 
-    /**
-     * @param $property
-     *
-     * @return mixed
-     */
     public function __toString(): string
     {
         return (string)$this->question;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return Question
-     */
     public function setId(int $id): Question
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * @return Category
-     */
     public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-    /**
-     * @param Category $category
-     * @return Question
-     */
     public function setCategory(Category $category): Question
     {
         $this->category = $category;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getQuestion(): ?string
     {
         return $this->question;
     }
 
-    /**
-     * @param string $question
-     * @return Question
-     */
     public function setQuestion(string $question): Question
     {
         $this->question = $question;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getHelpBlock(): ?string
     {
         return $this->helpBlock;
     }
 
-    /**
-     * @param string $helpBlock
-     * @return Question
-     */
     public function setHelpBlock(string $helpBlock): Question
     {
         $this->helpBlock = $helpBlock;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getPlaceholder(): ?string
     {
         return $this->placeholder;
     }
 
-    /**
-     * @param string $placeholder
-     * @return Question
-     */
     public function setPlaceholder(string $placeholder): Question
     {
         $this->placeholder = $placeholder;
         return $this;
     }
 
-    /**
-     * @param bool $textual
-     * @return int|string
-     */
     public function getInputType(bool $textual = false)
     {
         if ($textual) {

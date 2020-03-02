@@ -107,8 +107,7 @@ final class QuestionnaireController extends AffiliationAbstractController
         $form = new QuestionnaireForm(
             $questionnaire,
             $affiliation,
-            $this->questionnaireService,
-            $this->entityManager
+            $this->questionnaireService
         );
 
         if ($request->isPost()) {

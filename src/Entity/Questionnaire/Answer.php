@@ -1,7 +1,7 @@
 <?php
 
 /**
-*
+ *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
  * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
@@ -13,10 +13,11 @@ declare(strict_types=1);
 
 namespace Affiliation\Entity\Questionnaire;
 
+use Affiliation\Entity\AbstractEntity;
 use Affiliation\Entity\Affiliation;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Affiliation\Entity\AbstractEntity;
 use Laminas\Form\Annotation;
 
 /**
@@ -58,7 +59,7 @@ class Answer extends AbstractEntity
      * @Gedmo\Timestampable(on="create")
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateCreated;
 
@@ -67,7 +68,7 @@ class Answer extends AbstractEntity
      * @Gedmo\Timestampable(on="update")
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateUpdated;
 
@@ -76,7 +77,7 @@ class Answer extends AbstractEntity
      * @Gedmo\Timestampable(on="change", field={"value"})
      * @Annotation\Exclude()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateChanged;
 
@@ -121,34 +122,34 @@ class Answer extends AbstractEntity
         return $this;
     }
 
-    public function getDateCreated(): ?\DateTime
+    public function getDateCreated(): ?DateTime
     {
         return $this->dateCreated;
     }
 
-    public function setDateCreated(\DateTime $dateCreated): Answer
+    public function setDateCreated(DateTime $dateCreated): Answer
     {
         $this->dateCreated = $dateCreated;
         return $this;
     }
 
-    public function getDateUpdated(): ?\DateTime
+    public function getDateUpdated(): ?DateTime
     {
         return $this->dateUpdated;
     }
 
-    public function setDateUpdated(\DateTime $dateUpdated): Answer
+    public function setDateUpdated(DateTime $dateUpdated): Answer
     {
         $this->dateUpdated = $dateUpdated;
         return $this;
     }
 
-    public function getDateChanged(): ?\DateTime
+    public function getDateChanged(): ?DateTime
     {
         return $this->dateChanged;
     }
 
-    public function setDateChanged(\DateTime $dateChanged): Answer
+    public function setDateChanged(DateTime $dateChanged): Answer
     {
         $this->dateChanged = $dateChanged;
         return $this;

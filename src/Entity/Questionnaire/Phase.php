@@ -30,7 +30,7 @@ class Phase extends AbstractEntity
     /** Start of project */
     public const PHASE_PROJECT_START = 1;
     /** End of project */
-    public const PHASE_PROJECT_END   = 2;
+    public const PHASE_PROJECT_END = 2;
 
     /**
      * @ORM\Column(name="phase_id", type="integer", options={"unsigned":true})
@@ -64,7 +64,7 @@ class Phase extends AbstractEntity
 
     public function __toString(): string
     {
-        return (string) $this->phase;
+        return (string)$this->phase;
     }
 
     public function getId(): ?int

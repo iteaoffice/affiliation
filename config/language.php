@@ -1,4 +1,5 @@
 <?php
+
 _('txt-affiliation-description-placeholder');
 _('txt-affiliation-description');
 _('txt-affiliation-description-explanation');
