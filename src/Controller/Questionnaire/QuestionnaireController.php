@@ -39,8 +39,7 @@ final class QuestionnaireController extends AffiliationAbstractController
         QuestionnaireService $questionnaireService,
         EntityManager $entityManager,
         TranslatorInterface $translator
-    )
-    {
+    ) {
         $this->affiliationService   = $affiliationService;
         $this->questionnaireService = $questionnaireService;
         $this->entityManager        = $entityManager;

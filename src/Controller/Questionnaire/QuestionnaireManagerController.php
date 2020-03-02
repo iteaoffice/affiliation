@@ -18,6 +18,7 @@ use Affiliation\Entity\Questionnaire\Category;
 use Affiliation\Entity\Questionnaire\Question;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Form\Questionnaire\QuestionnaireFilter;
+use Affiliation\Form\Questionnaire\QuestionnaireForm;
 use Affiliation\Service\QuestionnaireService;
 use Affiliation\Service\FormService;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;

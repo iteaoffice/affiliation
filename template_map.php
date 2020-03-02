@@ -36,7 +36,6 @@ return [
     'affiliation/edit/update-effort-spent'                              => __DIR__ . '//view/affiliation/edit/update-effort-spent.twig',
     'affiliation/edit/financial'                                        => __DIR__ . '//view/affiliation/edit/financial.twig',
     'affiliation/edit/cost-and-effort'                                  => __DIR__ . '//view/affiliation/edit/cost-and-effort.twig',
-    'affiliation/edit/technical-contact'                                => __DIR__ . '//view/affiliation/edit/technical-contact.twig',
     'affiliation/edit/add-associate'                                    => __DIR__ . '//view/affiliation/edit/add-associate.twig',
     'affiliation/edit/affiliation'                                      => __DIR__ . '//view/affiliation/edit/affiliation.twig',
     'affiliation/edit/manage-associate'                                 => __DIR__ . '//view/affiliation/edit/manage-associate.twig',
