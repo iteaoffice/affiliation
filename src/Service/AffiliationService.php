@@ -115,7 +115,8 @@ class AffiliationService extends AbstractService
         HelperPluginManager $viewHelperManager,
         PluginManager $controllerPluginManager,
         TranslatorInterface $translator
-    ) {
+    )
+    {
         parent::__construct($entityManager, $selectionContactService);
 
         $this->generalService          = $generalService;
@@ -135,7 +136,7 @@ class AffiliationService extends AbstractService
 
     public static function useContractInVersion(Affiliation $affiliation, Version $version): bool
     {
-        if (! self::useActiveContract($affiliation)) {
+        if (!self::useActiveContract($affiliation)) {
             return false;
         }
 
@@ -161,7 +162,7 @@ class AffiliationService extends AbstractService
         }
 
         foreach ($affiliation->getContract() as $contract) {
-            if (! $contract->getVersion()->isEmpty()) {
+            if (!$contract->getVersion()->isEmpty()) {
                 return true;
             }
         }
@@ -172,7 +173,8 @@ class AffiliationService extends AbstractService
     public static function findAffiliationVersion(
         Affiliation $affiliation,
         Version $version
-    ): ?\Affiliation\Entity\Version {
+    ): ?\Affiliation\Entity\Version
+    {
         $affiliationVersion = $version->getAffiliationVersion()->filter(
             static function (\Affiliation\Entity\Version $affiliationVersion) use ($affiliation) {
                 return $affiliationVersion->getAffiliation() === $affiliation;
@@ -198,7 +200,7 @@ class AffiliationService extends AbstractService
 
     public function isActiveInVersion(Affiliation $affiliation): bool
     {
-        return ! $affiliation->getVersion()->isEmpty();
+        return !$affiliation->getVersion()->isEmpty();
     }
 
     public function hasDoa(Affiliation $affiliation): bool
@@ -364,7 +366,7 @@ class AffiliationService extends AbstractService
             // We have to deal with the parent system
             $parent = $affiliation->getParentOrganisation()->getParent();
 
-            if (! $parent->getFinancial()->isEmpty()) {
+            if (!$parent->getFinancial()->isEmpty()) {
                 $organisation = $parent->getFinancial()->first()->getOrganisation();
             }
         }
@@ -411,7 +413,7 @@ class AffiliationService extends AbstractService
                         break 2;
                     }
 
-                    if (! $countryFound) {
+                    if (!$countryFound) {
                         $this->projectService->delete($rationale);
                     }
                 }
@@ -428,7 +430,8 @@ class AffiliationService extends AbstractService
         Project $project,
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         /** @var Repository\Affiliation $repository */
         $repository   = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectAndCountryAndWhich($project, $country, $which);
@@ -454,7 +457,7 @@ class AffiliationService extends AbstractService
         $errors = [];
         switch (true) {
             case $affiliation->getOrganisation()->getType()->getInvoice() === Type::NO_INVOICE
-                && ! ($affiliation->getProject()->getCall()->getProgram()->getId() === 3
+                && !($affiliation->getProject()->getCall()->getProgram()->getId() === 3
                     && $affiliation->getOrganisation()->getType()->getId() === Type::TYPE_UNIVERSITY):
                 $errors[] = sprintf(
                     'No invoice is needed for %s',
@@ -464,7 +467,7 @@ class AffiliationService extends AbstractService
             case null === $affiliation->getFinancial():
                 $errors[] = 'No financial organisation (affiliation financial) set for this partner';
                 break;
-            case ! $affiliation->isActive():
+            case !$affiliation->isActive():
                 $errors[] = 'Partner is de-activated';
                 break;
             case null === $affiliation->getFinancial()->getOrganisation()->getFinancial():
@@ -508,7 +511,7 @@ class AffiliationService extends AbstractService
         foreach ($latestVersion->getAffiliationVersion() as $affiliationVersion) {
             $affiliation = $affiliationVersion->getAffiliation();
 
-            if (! $affiliation->isActive()) {
+            if (!$affiliation->isActive()) {
                 continue;
             }
 
@@ -532,7 +535,8 @@ class AffiliationService extends AbstractService
         Version $version,
         int $year,
         ?int $period = null
-    ): float {
+    ): float
+    {
         $amountInvoiced = 0;
         /** @var Invoice $affiliationInvoice */
         foreach ($this->findAffiliationInvoiceByAffiliationPeriodAndYear($affiliation, $period, $year) as $affiliationInvoice) {
@@ -546,7 +550,8 @@ class AffiliationService extends AbstractService
         Affiliation $affiliation,
         int $period,
         int $year
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         return $affiliation->getInvoice()->filter(
             static function (Invoice $invoice) use ($period, $year) {
                 return $invoice->getPeriod() === $period && $invoice->getYear() === $year;
@@ -559,18 +564,19 @@ class AffiliationService extends AbstractService
         Version $version,
         int $year,
         ?int $period = null
-    ): float {
+    ): float
+    {
         if ($this->parseInvoiceMethod($affiliation, false) === Method::METHOD_PERCENTAGE_CONTRACT) {
             print 'Parse total cannot be used for contracts';
             return 0.0;
         }
 
         return $this->parseContribution($affiliation, $version, null, $year, $period, false) + $this->parseBalance(
-            $affiliation,
-            $version,
-            $year,
-            $period
-        );
+                $affiliation,
+                $version,
+                $year,
+                $period
+            );
     }
 
     public function parseInvoiceMethod(Affiliation $affiliation, bool $useContractData = true): int
@@ -598,7 +604,7 @@ class AffiliationService extends AbstractService
         $contractVersion = $this->contractService->findLatestContractVersionByAffiliation($affiliation);
 
         //Force the invoiceMethod back to _percentage_ when we don't want to use contract data
-        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || ! $useContractData)) {
+        if ($invoiceMethod === Method::METHOD_PERCENTAGE_CONTRACT && (null === $contractVersion || !$useContractData)) {
             $invoiceMethod = Method::METHOD_PERCENTAGE;
         }
 
@@ -614,7 +620,8 @@ class AffiliationService extends AbstractService
         bool $useContractData = true,
         bool $omitExchangeRate = false,
         ?int $exchangeRateYear = null
-    ): float {
+    ): float
+    {
 
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
         $invoiceMethod = $this->parseInvoiceMethod($affiliation, $useContractData);
@@ -673,7 +680,8 @@ class AffiliationService extends AbstractService
         ?ContractVersion $contractVersion,
         int $year,
         bool $useContractData = true
-    ): float {
+    ): float
+    {
         $base = 0;
 
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
@@ -753,9 +761,9 @@ class AffiliationService extends AbstractService
                 }
 
                 $invoiceFactor = $this->parentService->parseInvoiceFactor(
-                    $parent,
-                    $affiliation->getProject()->getCall()->getProgram()
-                ) / 100;
+                        $parent,
+                        $affiliation->getProject()->getCall()->getProgram()
+                    ) / 100;
 
                 if ($parent->isMember()) {
                     $membershipFactor = $this->parentService->parseMembershipFactor($parent);
@@ -781,8 +789,8 @@ class AffiliationService extends AbstractService
                     throw new InvalidArgumentException('Invoice cannot be funding when no parent is known');
                 }
 
-                //Funding PENTA === 1.5 %
-                $invoiceFactor = 1.5 / 100;
+                //Funding PENTA === 1.8 %
+                $invoiceFactor = ParentService::PARENT_INVOICE_FACTOR;
 
                 $doaFactor = $this->parentService->parseDoaFactor(
                     $parent,
@@ -803,7 +811,7 @@ class AffiliationService extends AbstractService
     public function parseContributionFactor(Affiliation $affiliation, int $year, ?int $period = null): float
     {
         switch (true) {
-            case ! $this->isFundedInYear($affiliation, $year):
+            case !$this->isFundedInYear($affiliation, $year):
                 return (float)0;
             case null === $period:
                 return 1;
@@ -842,7 +850,8 @@ class AffiliationService extends AbstractService
         Affiliation $affiliation,
         int $year,
         ?int $period = null
-    ): float {
+    ): float
+    {
 
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
         $invoiceMethod = $this->parseInvoiceMethod($affiliation);
@@ -885,7 +894,8 @@ class AffiliationService extends AbstractService
         Version $version,
         int $year,
         ?int $period = null
-    ): float {
+    ): float
+    {
         //Based on the invoice method we will only have a balance when we are working with percentage
         $invoiceMethod = $this->parseInvoiceMethod($affiliation);
         if (in_array($invoiceMethod, [Method::METHOD_FUNDING, Method::METHOD_FUNDING_MEMBER], true)) {
@@ -908,7 +918,8 @@ class AffiliationService extends AbstractService
         Version $version,
         int $year,
         int $period = null
-    ): float {
+    ): float
+    {
         $contributionDue = 0;
 
         //The percentage method can also be done on contract base, but therefore we need to know if we want to have it and if we have a contract
@@ -965,14 +976,15 @@ class AffiliationService extends AbstractService
         int $projectYear,
         int $year,
         int $period = null
-    ): float {
+    ): float
+    {
         switch (true) {
             case null === $period || $projectYear < $year:
                 return (float)1; //in the past is always 100% due
             case $projectYear === $year && $period === 2:
                 //Current year, and period 2 (so  first period might have been invoiced, due is now the 1-that value
                 return (float)1 - $this->parseContributionFactor($affiliation, $year, $period);
-            case ! $this->isFundedInYear($affiliation, $projectYear):
+            case !$this->isFundedInYear($affiliation, $projectYear):
             default:
                 return (float)0;
         }
@@ -1020,7 +1032,7 @@ class AffiliationService extends AbstractService
             /** @var Affiliation $affiliation */
             $affiliation = $affiliationVersion->getAffiliation();
 
-            if (! $affiliation->isActive()) {
+            if (!$affiliation->isActive()) {
                 continue;
             }
 
@@ -1050,7 +1062,8 @@ class AffiliationService extends AbstractService
         int $year,
         ?int $period = null,
         bool $onlyCurrentPeriod = false
-    ): float {
+    ): float
+    {
         return $this->parseTotalByInvoiceLines($affiliation, $version, $year, $period, $onlyCurrentPeriod);
     }
 
@@ -1060,7 +1073,8 @@ class AffiliationService extends AbstractService
         int $year,
         ?int $period = null,
         bool $onlyCurrentPeriod = false
-    ): float {
+    ): float
+    {
         $total = 0.0;
 
         foreach ($this->findInvoiceLines($affiliation, $contractVersion, $year, $period, $onlyCurrentPeriod) as $line) {
@@ -1076,7 +1090,8 @@ class AffiliationService extends AbstractService
         int $year,
         ?int $period = null,
         bool $onlyCurrentPeriod = false
-    ): array {
+    ): array
+    {
         $lines = [];
 
         $currency = $contractVersion->getContract()->getCurrency();
@@ -1102,7 +1117,7 @@ class AffiliationService extends AbstractService
                 }
 
                 if (
-                    ! $this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
+                !$this->affiliationHasInvoiceInYearAndPeriod($affiliation, $otherYear, $invoicePeriod)
                 ) {
                     $yearAndPeriod[$otherYear][] = $invoicePeriod;
                 }
@@ -1182,7 +1197,8 @@ class AffiliationService extends AbstractService
         int $year,
         Currency $currency,
         ?int $period = null
-    ): string {
+    ): string
+    {
         $contributionFactor = $this->parseContributionFactor($affiliation, $year, $period);
 
         return sprintf(
@@ -1222,7 +1238,8 @@ class AffiliationService extends AbstractService
     public function findAffiliationByProjectAndWhich(
         Project $project,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         /** @var Repository\Affiliation $repository */
         $repository   = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectAndWhich($project, $which);
@@ -1238,7 +1255,8 @@ class AffiliationService extends AbstractService
         Version $version,
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         $repository   = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
 
@@ -1254,7 +1272,8 @@ class AffiliationService extends AbstractService
         Program $program,
         int $which = self::WHICH_ONLY_ACTIVE,
         int $year = null
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         $repository   = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByParentAndProgramAndWhich($parent, $program, $which, $year);
 
@@ -1268,7 +1287,8 @@ class AffiliationService extends AbstractService
     public function findAffiliationByProjectVersionAndWhich(
         Version $version,
         int $which = self::WHICH_ALL
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         /** @var Repository\Affiliation $repository */
         $repository   = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndWhich($version, $which);
@@ -1290,7 +1310,7 @@ class AffiliationService extends AbstractService
         $hasContact = true;
 
         //When we have an email, create a contact based also on the $affiliation
-        if (! empty($email)) {
+        if (!empty($email)) {
             //Try to find the contact based on the email address
             $contact = $this->contactService->findContactByEmail($email);
 
@@ -1369,7 +1389,8 @@ class AffiliationService extends AbstractService
         Project $project,
         int $criterion,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
@@ -1386,7 +1407,8 @@ class AffiliationService extends AbstractService
         Project $project,
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): int {
+    ): int
+    {
         /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
@@ -1396,7 +1418,8 @@ class AffiliationService extends AbstractService
     public function findAmountOfAffiliationByCountryAndCall(
         Country $country,
         Call $call
-    ): int {
+    ): int
+    {
         /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
@@ -1407,7 +1430,8 @@ class AffiliationService extends AbstractService
         Version $version,
         Country $country,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): int {
+    ): int
+    {
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         return $repository->findAmountOfAffiliationByProjectVersionAndCountryAndWhich($version, $country, $which);
@@ -1416,7 +1440,8 @@ class AffiliationService extends AbstractService
     public function findAffiliationByProjectPerCountryAndWhich(
         Project $project,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         $countries = $this->findAffiliationCountriesByProjectAndWhich($project, $which);
 
         $result = new ArrayCollection();
@@ -1433,7 +1458,8 @@ class AffiliationService extends AbstractService
     public function findAffiliationCountriesByProjectAndWhich(
         Project $project,
         int $which = self::WHICH_ONLY_ACTIVE
-    ): array {
+    ): array
+    {
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
         /**
@@ -1460,7 +1486,8 @@ class AffiliationService extends AbstractService
      */
     public function findAffiliationByOrganisation(
         Organisation $organisation
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
@@ -1474,7 +1501,8 @@ class AffiliationService extends AbstractService
      */
     public function findAffiliationByOrganisationViaParentOrganisation(
         Organisation $organisation
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         /** @var Repository\Affiliation $repository */
         $repository = $this->entityManager->getRepository(Affiliation::class);
 
@@ -1485,7 +1513,8 @@ class AffiliationService extends AbstractService
         Project $project,
         Contact $contact,
         $which = self::WHICH_ONLY_ACTIVE
-    ): ?Affiliation {
+    ): ?Affiliation
+    {
         /*
          * If the contact has no contact organisation, return null because we will not have a affiliation
          */
@@ -1494,7 +1523,7 @@ class AffiliationService extends AbstractService
         }
 
         foreach ($project->getAffiliation() as $affiliation) {
-            if ($which === self::WHICH_ONLY_ACTIVE && ! $affiliation->isActive()) {
+            if ($which === self::WHICH_ONLY_ACTIVE && !$affiliation->isActive()) {
                 continue;
             }
             if ($which === self::WHICH_ONLY_INACTIVE && $affiliation->isActive()) {
@@ -1579,7 +1608,8 @@ class AffiliationService extends AbstractService
 
     public function parseRenameOptions(
         Affiliation $baseAffiliation
-    ): array {
+    ): array
+    {
         $options      = [];
         $organisation = $baseAffiliation->getOrganisation();
         $contact      = $baseAffiliation->getContact();
@@ -1612,10 +1642,10 @@ class AffiliationService extends AbstractService
                 ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
             [$contact->getContactOrganisation()->getBranch()]
                 = $this->organisationService->parseOrganisationWithBranch(
-                    $contact->getContactOrganisation()
+                $contact->getContactOrganisation()
                     ->getBranch(),
-                    $contact->getContactOrganisation()->getOrganisation()
-                );
+                $contact->getContactOrganisation()->getOrganisation()
+            );
         }
         /**
          * Add the contact organisation (from the organisation)
@@ -1629,10 +1659,10 @@ class AffiliationService extends AbstractService
                     ->getCountry()][$contact->getContactOrganisation()->getOrganisation()->getId()]
                 [$contact->getContactOrganisation()->getBranch()]
                     = $this->organisationService->parseOrganisationWithBranch(
-                        $contact->getContactOrganisation()
+                    $contact->getContactOrganisation()
                         ->getBranch(),
-                        $contact->getContactOrganisation()->getOrganisation()
-                    );
+                    $contact->getContactOrganisation()->getOrganisation()
+                );
             }
         }
 
