@@ -790,7 +790,7 @@ class AffiliationService extends AbstractService
                 }
 
                 //Funding PENTA === 1.8 %
-                $invoiceFactor = ParentService::PARENT_INVOICE_FACTOR;
+                $invoiceFactor = ParentService::PARENT_INVOICE_FACTOR / 100;
 
                 $doaFactor = $this->parentService->parseDoaFactor(
                     $parent,
