@@ -166,6 +166,11 @@ class Doa extends AbstractEntity
         return sprintf('Doa: %s', $this->id);
     }
 
+    public function isApproved(): bool
+    {
+        return null !== $this->dateApproved;
+    }
+
     public function parseFileName(): string
     {
         return sprintf('DOA_%s_%s', $this->affiliation->getOrganisation(), $this->affiliation->getProject());
@@ -187,7 +192,7 @@ class Doa extends AbstractEntity
         return $this->dateSigned;
     }
 
-    public function setDateSigned(DateTime $dateSigned): Doa
+    public function setDateSigned(?DateTime $dateSigned): Doa
     {
         $this->dateSigned = $dateSigned;
         return $this;

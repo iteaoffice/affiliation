@@ -71,7 +71,7 @@ final class SubmitDoa extends Form implements InputFilterProviderInterface
                 'name'    => 'file',
                 'options' => [
                     'label'      => 'txt-file',
-                    'help-block' => _('txt-a-signed-loi-is-required'),
+                    'help-block' => _('txt-a-signed-project-doa-is-required'),
                 ],
             ]
         );

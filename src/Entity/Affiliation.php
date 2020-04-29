@@ -197,7 +197,7 @@ class Affiliation extends AbstractEntity
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
      * @Annotation\Exclude()
      *
-     * @var \Organisation\Entity\Organisation
+     * @var \Organisation\Entity\Organisation|null
      */
     private $organisation;
     /**
@@ -458,19 +458,28 @@ class Affiliation extends AbstractEntity
         return $this->branch;
     }
 
-    public function setBranch($branch)
+    public function setBranch($branch): Affiliation
     {
         $this->branch = $branch;
+
+        return $this;
     }
 
-    public function getOrganisation()
+    public function getOrganisation(): ?\Organisation\Entity\Organisation
     {
         return $this->organisation;
     }
 
-    public function setOrganisation($organisation)
+    public function setOrganisation($organisation): Affiliation
     {
         $this->organisation = $organisation;
+
+        return $this;
+    }
+
+    public function hasParentOrganisation(): bool
+    {
+        return null !== $this->parentOrganisation;
     }
 
     public function hasInvoiceMethodFPP(): bool
@@ -490,6 +499,7 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
+
     public function isActive(): bool
     {
         return null === $this->dateEnd;
@@ -503,6 +513,11 @@ class Affiliation extends AbstractEntity
     public function hasDescription(): bool
     {
         return null !== $this->description;
+    }
+
+    public function hasDoa(): bool
+    {
+        return null !== $this->doa;
     }
 
     public function hasContractVersion(): bool

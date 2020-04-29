@@ -3,6 +3,12 @@
 
 <h1>{{ translate("txt-missing-affiliation-doa") }}</h1>
 
+{% if invoiceViaParent %}
+    <p>{{ translate("txt-missing-affiliation-doa-explanation-invoice-via-parent") }}</p>
+{% else %}
+    <p>{{ translate("txt-missing-affiliation-doa-explanation") }}</p>
+{% endif %}
+
 {% if affiliation|length > 0 %}
     <table class="table table-striped table-sm table-hover">
         <thead>
@@ -12,6 +18,7 @@
             <th>{{ translate("txt-partner-type") }}</th>
             <th>{{ translate("txt-country") }}</th>
             <th>{{ translate("txt-project") }}</th>
+            <th>{{ translate("txt-status") }}</th>
             <th>{{ translate("txt-reminders") }}</th>
             <th>{{ translate("txt-latest-reminder-send") }}</th>
             <th>{{ translate("txt-remind") }}</th>
@@ -19,7 +26,7 @@
         </thead>
         <tfoot>
         <tr>
-            <td colspan="8"></td>
+            <td colspan="9"></td>
         </tr>
         </tfoot>
         <tbody>
@@ -30,6 +37,7 @@
                 <td>{{ affiliation.organisation.type.type }}</td>
                 <td>{{ affiliation.organisation.country.iso3 }}</td>
                 <td>{{ projectLink(affiliation.project,'view-admin','name') }}</td>
+                <td>{{ projectService.parseStatus(affiliation.project) }}</td>
                 <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}</td>
                 <td>
                     {% if affiliation.doaReminder.last.dateCreated %}

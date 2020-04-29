@@ -34,13 +34,14 @@ use Deeplink\Service\DeeplinkService;
 use Doctrine\ORM\EntityManager;
 use General\Service\EmailService;
 use General\Service\GeneralService;
-use Organisation\Service\OrganisationService;
-use Project\Service\ProjectService;
+use Invoice\Options\ModuleOptions;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Validator\File\FilesSize;
 use Laminas\Validator\File\MimeType;
 use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
+use Organisation\Service\OrganisationService;
+use Project\Service\ProjectService;
 
 use function sprintf;
 
@@ -57,6 +58,7 @@ final class DoaManagerController extends AffiliationAbstractController
     private ProjectService $projectService;
     private GeneralService $generalService;
     private EmailService $emailService;
+    private ModuleOptions $invoiceModuleOptions;
     private DeeplinkService $deeplinkService;
     private FormService $formService;
     private EntityManager $entityManager;
@@ -69,28 +71,30 @@ final class DoaManagerController extends AffiliationAbstractController
         ProjectService $projectService,
         GeneralService $generalService,
         EmailService $emailService,
+        ModuleOptions $invoiceModuleOptions,
         DeeplinkService $deeplinkService,
         FormService $formService,
         EntityManager $entityManager,
         TranslatorInterface $translator
     ) {
-        $this->doaService = $doaService;
-        $this->affiliationService = $affiliationService;
-        $this->contactService = $contactService;
-        $this->projectService = $projectService;
-        $this->generalService = $generalService;
-        $this->emailService = $emailService;
-        $this->deeplinkService = $deeplinkService;
-        $this->formService = $formService;
-        $this->entityManager = $entityManager;
-        $this->translator = $translator;
+        $this->doaService           = $doaService;
+        $this->affiliationService   = $affiliationService;
+        $this->contactService       = $contactService;
+        $this->projectService       = $projectService;
+        $this->generalService       = $generalService;
+        $this->emailService         = $emailService;
+        $this->invoiceModuleOptions = $invoiceModuleOptions;
+        $this->deeplinkService      = $deeplinkService;
+        $this->formService          = $formService;
+        $this->entityManager        = $entityManager;
+        $this->translator           = $translator;
     }
 
     public function approvalAction(): ViewModel
     {
-        $notApprovedDigitalDoa = $this->doaService->findNotApprovedDigitalDoa();
+        $notApprovedDigitalDoa  = $this->doaService->findNotApprovedDigitalDoa();
         $notApprovedUploadedDoa = $this->doaService->findNotApprovedUploadedDoa();
-        $form = new FileApproval($notApprovedUploadedDoa, $this->contactService);
+        $form                   = new FileApproval($notApprovedUploadedDoa, $this->contactService);
 
         return new ViewModel(
             [
@@ -104,11 +108,15 @@ final class DoaManagerController extends AffiliationAbstractController
 
     public function missingAction(): ViewModel
     {
-        $affiliation = $this->affiliationService->findAffiliationWithMissingDoa();
+        $invoiceViaParent = $this->invoiceModuleOptions->getInvoiceViaParent();
+
+        $affiliation = $this->affiliationService->findAffiliationWithMissingDoa($invoiceViaParent);
 
         return new ViewModel(
             [
-                'affiliation' => $affiliation,
+                'affiliation'      => $affiliation,
+                'projectService'   => $this->projectService,
+                'invoiceViaParent' => $invoiceViaParent
             ]
         );
     }
@@ -230,16 +238,6 @@ final class DoaManagerController extends AffiliationAbstractController
 
         $form = $this->formService->prepare($doa, $data);
 
-
-        //Get contacts in an organisation
-        $contacts = $this->contactService->findContactsInAffiliation($doa->getAffiliation());
-        $form->get('affiliation_entity_doa')->get('contact')->setValueOptions(
-            $this->contactService->toFormValueOptions($contacts['contacts'])
-        )->setDisableInArrayValidator(true);
-
-        /**
-         *
-         */
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute('zfcadmin/affiliation/doa/view', ['id' => $this->params('id')]);
@@ -263,7 +261,7 @@ final class DoaManagerController extends AffiliationAbstractController
 
             if ($form->isValid()) {
                 /** @var $doa Doa */
-                $doa = $form->getData();
+                $doa      = $form->getData();
                 $fileData = $this->params()->fromFiles();
 
                 if ($fileData['affiliation_entity_doa']['file']['error'] === 0) {
@@ -321,7 +319,7 @@ final class DoaManagerController extends AffiliationAbstractController
 
     public function approveAction(): JsonModel
     {
-        $doa = $this->params()->fromPost('doa');
+        $doa       = $this->params()->fromPost('doa');
         $sendEmail = $this->params()->fromPost('sendEmail', 0);
 
         /**
@@ -330,13 +328,13 @@ final class DoaManagerController extends AffiliationAbstractController
         $doa = $this->affiliationService->find(Doa::class, (int)$doa);
 
         if ($doa->hasObject()) {
-            $contact = $this->params()->fromPost('contact');
+            $contact    = $this->params()->fromPost('contact');
             $dateSigned = $this->params()->fromPost('dateSigned');
             if (empty($contact) || empty($dateSigned)) {
                 return new JsonModel(
                     [
                         'result' => 'error',
-                        'error'  => _('txt-contact-or-date-signed-is-empty'),
+                        'error'  => $this->translator->translate('txt-contact-or-date-signed-is-empty'),
                     ]
                 );
             }
@@ -361,25 +359,25 @@ final class DoaManagerController extends AffiliationAbstractController
          * Send the email tot he user
          */
         if ($sendEmail === 'true') {
-            $this->emailService->setWebInfo('/affiliation/doa/approved');
-            $this->emailService->addTo($doa->getContact());
+            $email = $this->emailService->createNewWebInfoEmailBuilder('/affiliation/doa/approved');
+            $email->addContactTo($doa->getContact());
 
             /** @var Affiliation $affiliation */
             $affiliation = $doa->getAffiliation();
 
-            $this->emailService->setTemplateVariable(
-                'organisation',
-                OrganisationService::parseBranch(
+            $templateVariables = [
+                'organisation'  => OrganisationService::parseBranch(
                     $affiliation->getBranch(),
                     $affiliation->getOrganisation()
-                )
-            );
-            $this->emailService->setTemplateVariable('project', $affiliation->getProject()->parseFullName());
-            $this->emailService->setTemplateVariable('signer', $doa->getContact()->parseFullName());
-            $this->emailService->setTemplateVariable('date', $doa->getDateSigned()->format('d-m-Y'));
-            $this->emailService->setTemplateVariable('uploaded', $doa->hasObject());
+                ),
+                'project'       => $affiliation->getProject()->parseFullName(),
+                'date_signed'   => $doa->getDateSigned(),
+                'date_approved' => $doa->getDateApproved()
+            ];
 
-            $this->emailService->send();
+            $email->setTemplateVariables($templateVariables);
+
+            $this->emailService->sendBuilder($email);
         }
 
         return new JsonModel(

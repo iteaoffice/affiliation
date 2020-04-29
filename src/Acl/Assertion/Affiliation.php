@@ -98,13 +98,12 @@ final class Affiliation extends AbstractAssertion
                     $affiliation
                 );
             case 'technical-contact':
+            case 'list-questionnaire':
                 return $this->contactService->contactHasPermit(
                     $this->contact,
                     ['edit'],
                     $affiliation
                 );
-            case 'list-questionnaire':
-                return $this->questionnaireAssertion->assert($acl, $role, $affiliation, 'list-community');
             case 'update-effort-spent':
                 // Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');

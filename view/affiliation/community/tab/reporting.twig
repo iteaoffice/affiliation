@@ -69,12 +69,10 @@
         </tbody>
     </table>
 {% else %}
-    <br>
     {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(affiliation.project.parseFullname()))|raw }}
 {% endif %}
 
 <h2>{{ translate("txt-exploitation-related-achievement") }}</h2>
-
 {% if affiliation.achievement.count > 0 %}
     <table class="table table-hover table-striped table-sm">
         <thead>
@@ -110,9 +108,7 @@
         {% endfor %}
         </tbody>
     </table>
-
 {% else %}
-    <br>
     {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()))|raw }}
 {% endif %}
 

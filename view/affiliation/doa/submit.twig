@@ -4,57 +4,54 @@
 <h1>{{ translate("txt-submit-declaration-of-acceptance-for-%s-in-%s")|format(affiliation.organisation,affiliation.project) }}</h1>
 {% if not doa %}
 
-    <p>You can agree with the Declaration of Acceptance (DOA), also on behalf of your organisation, in two different
-        ways:</p>
-
-    <ul>
-        <li>Complete and sign the digital version by ticking the checkbox below</li>
-        <li>Download and complete and sign the paper version and upload it below</li>
-
-    </ul>
+    {{ translate("txt-submit-doa-introduction-text") }}
 
     {% do form.prepare() %}
     {{ form().openTag(form)|raw }}
 
-    <fieldset>
-        <legend>{{ translate("txt-doa-sign-digital-version") }}</legend>
+    {# only show the digital version when the DoAcontent is there #}
+    {% if doaContent %}
+        <fieldset>
+            <legend>{{ translate("txt-doa-sign-digital-version") }}</legend>
 
-        <div class="form-group row">
-            <div class="offset-sm-3 col-sm-9">
-                <p>{{ translate("txt-please-read-the-text-below-before-signing-the-doa") }}</p>
-                <div style="background-color: #f8f8f8; padding: 10px;">
+            <div class="form-group row">
+                <div class="offset-sm-3 col-sm-9">
+                    <p>{{ translate("txt-please-read-the-text-below-before-signing-the-doa") }}</p>
+                    <div style="background-color: #f8f8f8; padding: 10px;">
 
-                    {{ doaContent|raw }}
+                        {{ doaContent|raw }}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group {% if form.get('selfApprove').getMessages() %}has-error{% endif %}">
+                <div class="offset-sm-3 col-sm-9">
+                    <div class="checkbox">
+                        <label>
+                            {{ formelement(form.get('selfApprove')) }} {{ translate("txt-self-approve-doa-checkbox-help-text") }}
+                        </label>
+                    </div>
+                    {% if form.get('selfApprove').getMessages() %}
+                        <div class="invalid-feedback">{{ translate("txt-please-check-the-box-above-to-digitally-sign-the-doa") }}</div>{% endif %}
 
                 </div>
             </div>
-        </div>
 
-        <div class="form-group {% if form.get('selfApprove').getMessages() %}has-error{% endif %}">
-            <div class="offset-sm-3 col-sm-9">
-                <div class="checkbox">
-                    <label>
-                        {{ formelement(form.get('selfApprove')) }} {{ translate("txt-self-approve-doa-checkbox-help-text") }}
-                    </label>
+
+            <div class="form-group row">
+                <div class="offset-sm-3 col-sm-9">
+                    {{ ztbformelement(form.get('sign')) }}
                 </div>
-                {% if form.get('selfApprove').getMessages() %}
-                    <div class="invalid-feedback">{{ translate("txt-please-check-the-box-above-to-digitally-sign-the-doa") }}</div>{% endif %}
-
             </div>
-        </div>
-
-
-        <div class="form-group row">
-            <div class="offset-sm-3 col-sm-9">
-                {{ ztbformelement(form.get('sign')) }}
-            </div>
-        </div>
-    </fieldset>
-
-    <hr>
+        </fieldset>
+        <hr>
+    {% endif %}
 
     <fieldset>
+        {% if doaContent %}
         <legend>{{ translate("txt-sign-and-upload-paper-version") }}</legend>
+        {% endif  %}
 
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">{{ translate("txt-project") }}</label>
@@ -92,9 +89,10 @@
     </fieldset>
 
     {{ form().closeTag()|raw }}
+{% endif %}
 
-{% else %}
 
+{% if doa %}
     {% if doa.dateApproved %}
         <div class="alert alert-block alert-success">
             <div class="alert-heading"><h4>{{ translate("txt-doa-already-approved") }}</h4></div>
@@ -119,5 +117,4 @@
     </dl>
 
     {{ doaLink(doa,'replace','button') }}
-
 {% endif %}

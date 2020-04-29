@@ -252,7 +252,7 @@ return [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
-                                            'route'    => '/approve.json',
+                                            'route'    => '/finalise.html',
                                             'defaults' => [
                                                 'action'    => 'approve',
                                                 'privilege' => 'edit-admin',

@@ -50,6 +50,7 @@ $config = [
             Service\FormService::class                                   => Factory\FormServiceFactory::class,
             InputFilter\AffiliationFilter::class                         => Factory\InputFilterFactory::class,
             InputFilter\DescriptionFilter::class                         => Factory\InputFilterFactory::class,
+            InputFilter\DoaFilter::class                                 => Factory\InputFilterFactory::class,
             Options\ModuleOptions::class                                 => Factory\ModuleOptionsFactory::class,
             Acl\Assertion\Affiliation::class                             => Factory\InvokableFactory::class,
             Acl\Assertion\Doa::class                                     => Factory\InvokableFactory::class,

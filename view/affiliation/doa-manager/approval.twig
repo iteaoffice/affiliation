@@ -3,15 +3,15 @@
 
 <h1>{{ translate("txt-unapproved-affiliation-doa") }}</h1>
 
+
 {% if notApprovedDigitalDoa|length > 0 %}
+
+    <h2>{{ translate("txt-unapproved-affiliation-digitally-signed-doa") }}</h2>
 
     <label>
         {{ formelement(form.get('sendMail')) }}
         {{ translate("txt-send-email-on-doa-approval") }}
     </label>
-
-    <h2>{{ translate("txt-unapproved-affiliation-digitally-signed-doa") }}</h2>
-
     <table class="table table-striped table-sm table-hover">
         <thead>
         <tr>
@@ -23,9 +23,8 @@
             <th>{{ translate("txt-group-name") }}</th>
             <th>{{ translate("txt-chamber-of-commerce-number") }}</th>
             <th>{{ translate("txt-chamber-of-commerce-location") }}</th>
-
-            <th width="50px;"></th>
-            <th width="200px;">{{ translate("txt-approve") }}</th>
+            <th></th>
+            <th>{{ translate("txt-approve") }}</th>
         </tr>
         </thead>
         <tfoot>
@@ -45,8 +44,7 @@
                 <td>{{ doa.chamberOfCommerceNumber }}</td>
                 <td>{{ doa.chamberOfCommerceLocation }}</td>
                 <td> {{ doaLink(doa,'view-admin','icon') }} {{ doaLink(doa,'edit-admin','icon') }}</td>
-
-                <td>
+                <td nowrap>
                     <button type="button" data-doa-id="{{ doa.id }}"
                             class="btn btn-info btn-sm approveButton">{{ translate("txt-approve") }}
                     </button>
@@ -67,6 +65,10 @@
     <h2>{{ translate("txt-unapproved-affiliation-file-upload-doa") }}</h2>
     <p>{{ translate("txt-unapproved-affiliation-file-upload-explanation") }}</p>
 
+    <label>
+        {{ formelement(form.get('sendMail')) }}
+        {{ translate("txt-send-email-on-doa-approval") }}
+    </label>
     <table class="table table-striped table-sm table-hover">
         <thead>
         <tr>
@@ -75,8 +77,8 @@
             <th>{{ translate("txt-project") }}</th>
             <th>{{ translate("txt-signer") }}</th>
             <th>{{ translate("txt-date-signed") }}</th>
-            <th width="80px;"></th>
-            <th width="100">{{ translate("txt-approve") }}</th>
+            <th></th>
+            <th>{{ translate("txt-approve") }}</th>
         </tr>
         </thead>
         <tfoot>
@@ -87,10 +89,12 @@
         <tbody>
         {% for doa in notApprovedUploadedDoa %}
             <tr id="doa-{{ doa.id }}">
-                <td>{{ affiliationLink(doa.affiliation,'view-community','name') }}</td>
+                <td>{{ affiliationLink(doa.affiliation,'view-admin','name') }} {% if not doa.affiliation.hasParentOrganisation %}
+                        <span class="badge badge-danger">{{ translate("txt-not-linked-to-parent") }}</span>{% endif %}
+                </td>
                 <td>{{ doa.affiliation.organisation.country }}</td>
                 <td>{{ projectLink(doa.affiliation.project,'view-admin','name') }}</td>
-                <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('contact').setValue(doa.contact.id)) }}</td>
+                <td width="250">{{ contactformelement(form.get('affiliation_' ~ doa.affiliation.id).get('contact').setValue(doa.contact.id), true, true) }}</td>
                 <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('dateSigned').setValue(doa.dateSigned)) }}</td>
                 <td>
                     {{ doaLink(doa,'view-admin','icon') }} {{ doaLink(doa,'download','icon') }} {{ doaLink(doa,'edit-admin','icon') }}
@@ -115,13 +119,13 @@
 
         let btn = $(this);
         btn.data('original-text', btn.html());
-        btn.html('<i class="far fa-circle-notch fa-spin"></i> loading...');
+        btn.html('<i class="fas fa-spinner  fa-spin"></i> loading...');
 
         //DoaId
         let doaId = btn.data('doa-id');
 
         $.ajax({
-            url: '{{ serverUrl() }}{{ url('zfcadmin/affiliation/doa/approve') }}',
+            url: '{{ url('zfcadmin/affiliation/doa/approve') }}',
             type: 'post',
             dataType: 'json',
             data: {

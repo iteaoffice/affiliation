@@ -284,10 +284,10 @@ final class RenderPaymentSheet extends AbstractPlugin
                         $financialContact->getEmail()
                     );
                 }
-            }
 
-            $financialAddress = $this->contactService->getFinancialAddress($financialContact);
-            $financialDetails = [
+
+                $financialAddress = $this->contactService->getFinancialAddress($financialContact);
+                $financialDetails = [
                 [
                     $this->translator->translate('txt-name'),
                     trim(
@@ -305,7 +305,8 @@ final class RenderPaymentSheet extends AbstractPlugin
                 ],
                 [
                     $this->translator->translate('txt-billing-address'),
-                    null !== $financialAddress ? trim(
+                    null !== $financialAddress && null !== $affiliation->getFinancial()
+                    && null !== $affiliation->getFinancial()->getOrganisation()->getFinancial() ? trim(
                         sprintf(
                             '
                                     %s
@@ -336,9 +337,10 @@ final class RenderPaymentSheet extends AbstractPlugin
                     $preferredDelivery
 
                 ],
-            ];
+                ];
 
-            $pdf->coloredTable([], $financialDetails, [55, 130]);
+                $pdf->coloredTable([], $financialDetails, [55, 130]);
+            }
         }
 
         $pdf->AddPage();

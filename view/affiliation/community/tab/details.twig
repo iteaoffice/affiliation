@@ -13,7 +13,10 @@
     <dd>{{ affiliation.strategicImportance|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
     <dt>{{ translate("txt-market-access") }}</dt>
     <dd>{{ affiliation.marketAccess|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
-    {% if callService.requireDoaPerProgram(affiliation.project.call) %}
+</dl>
+
+<dl class="dl-horizontal">
+    {% if affiliation.project.call.requireDoaPerProgram %}
         <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
         {% if affiliation.parentOrganisation %}
             <dd>{% for doa in affiliation.parentOrganisation.parent.doa|filter(doa => doa.program.id == project.call.program.id) -%}
@@ -46,7 +49,7 @@
         {% endif %}
     {% endif %}
 
-    {% if callService.requireDoaPerProject(affiliation.project.call) %}
+    {% if affiliation.project.call.requireDoaPerProject %}
         <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
         <dd>
             {% if not affiliationService.hasDoa(affiliation) %}
@@ -68,7 +71,35 @@
         </dd>
     {% endif %}
 
-    {% if callService.requireLoi(affiliation.project.call) %}
+    {% if affiliation.project.call.requireDoaPerProjectOrMember %}
+        <dt>{{ translate("txt-membership-status") }}</dt>
+        <dd>{% if affiliation.hasParentOrganisation %}{{ translate(affiliation.parentOrganisation.parent.getMemberType(true)) }}{% else %}{{ translate("txt-no-member") }}{% endif %}</dd>
+
+        {% if affiliationService.hasParentDoa(affiliation) %}
+            <dt>{{ translate("txt-parent-doa-signer") }}</dt>
+            <dd>{{ translate("txt-yes") }}</dd>
+        {% endif %}
+
+        {% if not affiliationService.hasParentDoa(affiliation) and not affiliation.parentOrganisation.parent.isMember() %}
+            <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
+            <dd>
+            {% if not affiliationService.hasDoa(affiliation) %}
+                {{ doaLink(null,'submit','text', affiliation) }}
+            {% elseif affiliation.doa.dateApproved is null %}
+                {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
+                format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
+                {{ doaLink(affiliation.doa,'download','icon') }}
+                {{ doaLink(affiliation.doa,'edit-admin','icon') }}
+            {% else %}
+                {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date)|raw }}
+                {{ doaLink(affiliation.doa,'download','icon') }}
+                {{ doaLink(affiliation.doa,'edit-admin','icon') }}
+            {% endif %}
+        {% endif %}
+        </dd>
+    {% endif %}
+
+    {% if affiliation.project.call.requireLoi %}
         <dt>{{ translate("txt-letter-of-intent") }}</dt>
         <dd>
             {% if not affiliationService.hasLoi(affiliation) %}
@@ -89,6 +120,9 @@
             {% endif %}
         </dd>
     {% endif %}
+</dl>
+
+<dl class="dl-horizontal">
     <dt>{{ translate("txt-technical-contact") }}</dt>
     <dd>{{ affiliation.contact.displayName() }}
         <a href="mailto:{{ affiliation.contact.email }}"><i class="far fa-envelope"></i></a>

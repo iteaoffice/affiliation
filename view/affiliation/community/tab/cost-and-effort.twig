@@ -1,5 +1,4 @@
 {% if latestVersion %}
-
     {% set hasSomeCostAndEffortEditRights = false %}
     <h2>{{ versionService.parseStatus(latestVersion) }}</h2>
 
@@ -188,7 +187,7 @@
                                     data-url="{{ url('json/project/cost/update-draft') }}"
                                     data-title="{{ translate("txt-update-costs") }}">{{ costPerYear[year]|parse_cost }}</a>
                         {% else %}
-                            <span data-affilation="{{ affiliation.id }}"
+                            <span class="single-cost" data-affilation="{{ affiliation.id }}"
                                   data-year="{{ year }}">{{ costPerYear[year]|parse_cost }}</span>
                         {% endif %}
                     </td>

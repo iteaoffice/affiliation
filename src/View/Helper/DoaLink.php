@@ -96,7 +96,7 @@ final class DoaLink extends AbstractLink
                 break;
             case 'download':
                 $linkParams = [
-                    'icon'  => 'far fa-file-pdf',
+                    'icon'  => 'fas fa-file-download',
                     'route' => 'community/affiliation/doa/download',
                     'text'  => $showOptions[$show]
                         ?? sprintf(

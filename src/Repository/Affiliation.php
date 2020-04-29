@@ -15,6 +15,7 @@ namespace Affiliation\Repository;
 
 use Affiliation\Entity;
 use Affiliation\Service\AffiliationService;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
@@ -24,6 +25,7 @@ use Organisation\Entity\Organisation;
 use Program\Entity\Call\Call;
 use Program\Entity\Program;
 use Project\Entity\Project;
+use Project\Entity\Version\Type;
 use Project\Entity\Version\Version;
 
 /**
@@ -31,7 +33,9 @@ use Project\Entity\Version\Version;
  *
  * @package Affiliation\Repository
  */
-/*final*/ class Affiliation extends EntityRepository
+/*final*/
+
+class Affiliation extends EntityRepository
 {
     public function findAffiliationByProjectAndWhich(Project $project, int $which): array
     {
@@ -90,12 +94,12 @@ use Project\Entity\Version\Version;
             case OParent::CRITERION_C_CHAMBER:
                 /** @var \Organisation\Repository\OParent $parentRepository */
                 $parentRepository = $this->_em->getRepository(OParent::class);
-                $queryBuilder = $parentRepository->limitCChambers($queryBuilder);
+                $queryBuilder     = $parentRepository->limitCChambers($queryBuilder);
                 break;
             case OParent::CRITERION_FREE_RIDER:
                 /** @var \Organisation\Repository\OParent $parentRepository */
                 $parentRepository = $this->_em->getRepository(OParent::class);
-                $queryBuilder = $parentRepository->limitFreeRiders($queryBuilder, $project->getCall()->getProgram());
+                $queryBuilder     = $parentRepository->limitFreeRiders($queryBuilder, $project->getCall()->getProgram());
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('Incorrect value (%s) for which', $which));
@@ -118,7 +122,7 @@ use Project\Entity\Version\Version;
         $qb->setParameter(1, Entity\Affiliation::SELF_FUNDED);
 
         $projectRepository = $this->_em->getRepository(Project::class);
-        $qb = $projectRepository->onlyActiveProject($qb);
+        $qb                = $projectRepository->onlyActiveProject($qb);
 
         return $qb->getQuery()->getResult();
     }
@@ -148,10 +152,10 @@ use Project\Entity\Version\Version;
          * @var $projectRepository \Project\Repository\Project
          */
         $projectRepository = $this->_em->getRepository(Project::class);
-        $qb = $projectRepository->onlyActiveProject($qb);
+        $qb                = $projectRepository->onlyActiveProject($qb);
 
         /*
-         * Fetch the corresponding projects
+         * Filter on the relevant programme calls
          */
         $subSelect = $this->_em->createQueryBuilder();
         $subSelect->select('project');
@@ -175,7 +179,71 @@ use Project\Entity\Version\Version;
         //Exclude de-activated partners
         $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
 
-        $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
+        $qb->addOrderBy('organisation_entity_organisation.organisation', Criteria::ASC);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findAffiliationWithMissingProjectDoaAndNoMember(): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->join('affiliation_entity_affiliation.project', 'project_entity_project');
+        $qb->join('project_entity_project.call', 'program_entity_call');
+        $qb->andWhere($qb->expr()->in('program_entity_call.doaRequirement', [
+            Call::DOA_REQUIREMENT_PER_PROJECT_OR_MEMBER
+        ]));
+
+        //Include all the projects with an proved PO
+        $subSelect = $this->_em->createQueryBuilder();
+        $subSelect->select('active_project_outline.id');
+        $subSelect->from(Version::class, 'active_version_project_outline');
+        $subSelect->join('active_version_project_outline.project', 'active_project_outline');
+        $subSelect->where('active_version_project_outline.approved = :approved');
+        $subSelect->andWhere('active_version_project_outline.versionType = :po');
+        $qb->andWhere($qb->expr()->in('affiliation_entity_affiliation.project', $subSelect->getDQL()));
+
+        //Exclude all the projects with an rejected FPP
+        $subSelect = $this->_em->createQueryBuilder();
+        $subSelect->select('active_version_full_project_proposal.id');
+        $subSelect->from(Version::class, 'active_version_full_project_proposal');
+        $subSelect->join('active_version_full_project_proposal.project', 'active_full_project_proposal');
+        $subSelect->where('active_version_full_project_proposal.approved = :rejected');
+        $subSelect->andWhere('active_version_full_project_proposal.versionType = :fpp');
+        $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation.project', $subSelect->getDQL()));
+
+        //Exclude the already submitted project DoAs
+        $subSelect = $this->_em->createQueryBuilder();
+        $subSelect->select('affiliation_entity_affiliation_submitted_doa');
+        $subSelect->from(Entity\Doa::class, 'affiliation_entity_doa');
+        $subSelect->join('affiliation_entity_doa.affiliation', 'affiliation_entity_affiliation_submitted_doa');
+        $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect->getDQL()));
+
+        //Exclude the DOAs submitted on programme level
+        $subSelect = $this->_em->createQueryBuilder();
+        $subSelect->select('affiliation_entity_affiliation_parent_doa');
+        $subSelect->from(\Organisation\Entity\Parent\Doa::class, 'organisation_entity_parent_doa');
+        $subSelect->join('organisation_entity_parent_doa.parent', 'organisation_entity_parent');
+        $subSelect->andWhere('organisation_entity_parent_doa.program = program_entity_call.program');
+
+        $subSelect->join('organisation_entity_parent.parentOrganisation', 'organisation_entity_parent_organisation');
+        $subSelect->join('organisation_entity_parent_organisation.affiliation', 'affiliation_entity_affiliation_parent_doa');
+        $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect->getDQL()));
+
+
+        //Exclude de-activated partners
+        $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateEnd'));
+
+        $qb->setParameter('approved', Version::STATUS_APPROVED);
+        $qb->setParameter('rejected', Version::STATUS_REJECTED);
+        $qb->setParameter('po', Type::TYPE_PO);
+        $qb->setParameter('fpp', Type::TYPE_FPP);
+
+        $qb->addOrderBy('program_entity_call.id', Criteria::DESC);
+        $qb->addOrderBy('project_entity_project.number', Criteria::ASC);
+        $qb->addOrderBy('organisation_entity_organisation.organisation', Criteria::ASC);
 
         return $qb->getQuery()->getResult();
     }
@@ -190,7 +258,7 @@ use Project\Entity\Version\Version;
         $qb->join('project_entity_project.call', 'program_entity_programcall');
 
         $projectRepository = $this->_em->getRepository(Project::class);
-        $qb = $projectRepository->onlyActiveProject($qb);
+        $qb                = $projectRepository->onlyActiveProject($qb);
 
         /*
          * Exclude the found LOIs the corresponding projects
@@ -417,7 +485,7 @@ use Project\Entity\Version\Version;
      * @param Organisation $organisation
      *
      * @return Entity\Affiliation[]
-     *@deprecated
+     * @deprecated
      */
     public function findAffiliationByOrganisation(Organisation $organisation): array
     {

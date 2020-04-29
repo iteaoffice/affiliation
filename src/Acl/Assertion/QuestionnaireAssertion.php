@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace Affiliation\Acl\Assertion;
 
 use Admin\Entity\Access;
-use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Entity\Affiliation as AffiliationEntity;
+use Affiliation\Entity\Questionnaire\Questionnaire;
+use Affiliation\Service\AffiliationService;
 use Affiliation\Service\QuestionnaireService;
 use Contact\Entity\Contact;
 use Interop\Container\ContainerInterface;
@@ -33,32 +34,44 @@ final class QuestionnaireAssertion extends AbstractAssertion
      * @var QuestionnaireService
      */
     private $questionnaireService;
+    /**
+     * @var AffiliationService
+     */
+    private $affiliationService;
 
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
         $this->questionnaireService = $container->get(QuestionnaireService::class);
+        $this->affiliationService   = $container->get(AffiliationService::class);
     }
 
     public function assert(
         Acl $acl,
         RoleInterface $role = null,
-        ResourceInterface $affiliation = null,
+        ResourceInterface $questionnaire = null,
         $privilege = null
     ): bool {
         $this->setPrivilege($privilege);
+        $id = $this->getId();
 
         // Office always has access
         if ($this->rolesHaveAccess(Access::ACCESS_OFFICE)) {
             return true;
         }
 
-        $questionnaireId = $this->getId();
-        $affiliationId   = $this->getRouteMatch()->getParam('affiliationId');
-        if (! ($affiliation instanceof AffiliationEntity) && ($affiliationId !== null)) {
-            $affiliation = $this->questionnaireService->find(AffiliationEntity::class, (int) $affiliationId);
+        if (! ($questionnaire instanceof Questionnaire) && (null !== $id)) {
+            $questionnaire = $this->questionnaireService->find(Questionnaire::class, $id);
         }
-        $isTechContact   = (
+
+        $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
+
+        $affiliation   = null;
+        if ($affiliationId !== null) {
+            $affiliation = $this->affiliationService->findAffiliationById((int)$affiliationId);
+        }
+
+        $isTechContact = (
             ($affiliation instanceof AffiliationEntity)
             && ($affiliation->getContact() instanceof Contact)
             && ($this->contact->getId() === $affiliation->getContact()->getId())
@@ -66,18 +79,11 @@ final class QuestionnaireAssertion extends AbstractAssertion
 
         switch ($this->getPrivilege()) {
             case 'overview':
-                return $this->hasContact();
-            case 'list-community':
             case 'view-community':
-                // Only technical contact can access the questionnaires
-                return $isTechContact;
+                return $this->hasContact();
             case 'edit-community':
-                $questionnaire = new Questionnaire();
-                if ($questionnaireId !== null) {
-                    $questionnaire = $this->questionnaireService->find(Questionnaire::class, (int) $questionnaireId);
-                }
                 // User should be tech contact and questionnaire should be open
-                return ($isTechContact && $this->questionnaireService->isOpen($questionnaire, $affiliation));
+                return $isTechContact && $this->questionnaireService->isOpen($questionnaire, $affiliation);
         }
 
         return true;

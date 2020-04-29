@@ -25,6 +25,8 @@ use General\Service\EmailService;
 use General\Service\GeneralService;
 use Invoice\Options\ModuleOptions;
 use Invoice\Service\InvoiceService;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
 use Program\Service\CallService;
@@ -33,14 +35,12 @@ use Project\Service\ProjectService;
 use Project\Service\ReportService;
 use Project\Service\VersionService;
 use Project\Service\WorkpackageService;
-use Laminas\I18n\Translator\TranslatorInterface;
-use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use ZfcTwig\View\TwigRenderer;
 
 return [
     ConfigAbstractFactory::class => [
         // Controller plugins
-        Service\AffiliationService::class => [
+        Service\AffiliationService::class                              => [
             EntityManager::class,
             SelectionContactService::class,
             GeneralService::class,
@@ -57,17 +57,17 @@ return [
             'ControllerPluginManager',
             TranslatorInterface::class
         ],
-        Service\QuestionnaireService::class => [
+        Service\QuestionnaireService::class                            => [
             EntityManager::class,
             VersionService::class
         ],
-        Service\DoaService::class => [
+        Service\DoaService::class                                      => [
             EntityManager::class
         ],
-        Service\LoiService::class => [
+        Service\LoiService::class                                      => [
             EntityManager::class
         ],
-        Controller\AffiliationManagerController::class => [
+        Controller\AffiliationManagerController::class                 => [
             Service\AffiliationService::class,
             TranslatorInterface::class,
             ProjectService::class,
@@ -83,7 +83,7 @@ return [
             AssertionService::class,
             EntityManager::class
         ],
-        Controller\CommunityController::class => [
+        Controller\CommunityController::class                          => [
             Service\AffiliationService::class,
             ProjectService::class,
             VersionService::class,
@@ -99,26 +99,27 @@ return [
             AssertionService::class,
             Service\QuestionnaireService::class
         ],
-        Controller\DoaController::class => [
+        Controller\DoaController::class                                => [
             Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
             TranslatorInterface::class,
             TwigRenderer::class
         ],
-        Controller\DoaManagerController::class => [
+        Controller\DoaManagerController::class                         => [
             Service\DoaService::class,
             Service\AffiliationService::class,
             ContactService::class,
             ProjectService::class,
             GeneralService::class,
             EmailService::class,
+            ModuleOptions::class,
             DeeplinkService::class,
             Service\FormService::class,
             EntityManager::class,
             TranslatorInterface::class
         ],
-        Controller\EditController::class => [
+        Controller\EditController::class                               => [
             Service\AffiliationService::class,
             ProjectService::class,
             VersionService::class,
@@ -132,14 +133,14 @@ return [
             EntityManager::class,
             TranslatorInterface::class
         ],
-        Controller\LoiController::class => [
+        Controller\LoiController::class                                => [
             Service\LoiService::class,
             Service\AffiliationService::class,
             ProjectService::class,
             GeneralService::class,
             TranslatorInterface::class
         ],
-        Controller\LoiManagerController::class => [
+        Controller\LoiManagerController::class                         => [
             Service\LoiService::class,
             ContactService::class,
             Service\AffiliationService::class,
@@ -150,12 +151,12 @@ return [
             Service\FormService::class,
             TranslatorInterface::class
         ],
-        Controller\Questionnaire\CategoryManagerController::class => [
+        Controller\Questionnaire\CategoryManagerController::class      => [
             Service\QuestionnaireService::class,
             Service\FormService::class,
             TranslatorInterface::class
         ],
-        Controller\Questionnaire\QuestionManagerController::class => [
+        Controller\Questionnaire\QuestionManagerController::class      => [
             Service\QuestionnaireService::class,
             Service\FormService::class,
             TranslatorInterface::class
@@ -165,13 +166,13 @@ return [
             Service\FormService::class,
             TranslatorInterface::class
         ],
-        Controller\Questionnaire\QuestionnaireController::class => [
+        Controller\Questionnaire\QuestionnaireController::class        => [
             Service\AffiliationService::class,
             Service\QuestionnaireService::class,
             EntityManager::class,
             TranslatorInterface::class
         ],
-        Controller\Plugin\RenderPaymentSheet::class => [
+        Controller\Plugin\RenderPaymentSheet::class                    => [
             Service\AffiliationService::class,
             Options\ModuleOptions::class,
             ProjectService::class,
@@ -182,16 +183,16 @@ return [
             InvoiceService::class,
             TranslatorInterface::class
         ],
-        Controller\Plugin\RenderLoi::class => [
+        Controller\Plugin\RenderLoi::class                             => [
             Options\ModuleOptions::class,
             ContactService::class,
             TwigRenderer::class
         ],
-        Controller\Plugin\MergeAffiliation::class => [
+        Controller\Plugin\MergeAffiliation::class                      => [
             AdminService::class,
             EntityManager::class
         ],
-        View\Helper\PaymentSheet::class => [
+        View\Helper\PaymentSheet::class                                => [
             ProjectService::class,
             ContractService::class,
             InvoiceService::class,
@@ -201,7 +202,7 @@ return [
             VersionService::class,
             TwigRenderer::class,
         ],
-        View\Helper\Questionnaire\QuestionnaireHelper::class => [
+        View\Helper\Questionnaire\QuestionnaireHelper::class           => [
             Service\QuestionnaireService::class,
         ]
     ]
