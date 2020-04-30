@@ -225,11 +225,20 @@ class Affiliation extends EntityRepository
         $subSelect = $this->_em->createQueryBuilder();
         $subSelect->select('affiliation_entity_affiliation_parent_doa');
         $subSelect->from(\Organisation\Entity\Parent\Doa::class, 'organisation_entity_parent_doa');
-        $subSelect->join('organisation_entity_parent_doa.parent', 'organisation_entity_parent');
+        $subSelect->join('organisation_entity_parent_doa.parent', 'organisation_entity_parent_doa_parent');
         $subSelect->andWhere('organisation_entity_parent_doa.program = program_entity_call.program');
-
-        $subSelect->join('organisation_entity_parent.parentOrganisation', 'organisation_entity_parent_organisation');
+        $subSelect->join('organisation_entity_parent_doa_parent.parentOrganisation', 'organisation_entity_parent_organisation');
         $subSelect->join('organisation_entity_parent_organisation.affiliation', 'affiliation_entity_affiliation_parent_doa');
+        $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect->getDQL()));
+
+        //Exclude the Members
+        $subSelect = $this->_em->createQueryBuilder();
+        $subSelect->select('organisation_entity_parent_affiliation');
+        $subSelect->from(Entity\Affiliation::class, 'organisation_entity_parent_affiliation');
+        $subSelect->join('organisation_entity_parent_affiliation.parentOrganisation', 'organisation_entity_parent_affiliation_parent_organisation');
+        $subSelect->join('organisation_entity_parent_affiliation_parent_organisation.parent', 'organisation_entity_parent_affiliation_parent_organisation_parent');
+        $subSelect->andWhere($qb->expr()->isNull('organisation_entity_parent_affiliation_parent_organisation_parent.dateEnd'));
+        $subSelect->andWhere($qb->expr()->eq('organisation_entity_parent_affiliation_parent_organisation_parent.memberType', OParent::MEMBER_TYPE_MEMBER));
         $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect->getDQL()));
 
 
@@ -328,7 +337,8 @@ class Affiliation extends EntityRepository
         Program $program,
         int $which,
         ?int $year
-    ): array {
+    ): array
+    {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -372,7 +382,8 @@ class Affiliation extends EntityRepository
         Version $version,
         Country $country,
         int $which
-    ): array {
+    ): array
+    {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -413,7 +424,8 @@ class Affiliation extends EntityRepository
         Version $version,
         Country $country,
         int $which
-    ): int {
+    ): int
+    {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation.id) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -522,7 +534,8 @@ class Affiliation extends EntityRepository
         Project $project,
         Country $country,
         int $which
-    ): int {
+    ): int
+    {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
