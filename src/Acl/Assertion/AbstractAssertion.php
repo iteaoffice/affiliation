@@ -170,9 +170,12 @@ abstract class AbstractAssertion implements AssertionInterface
             /*
              * We only have a string or array, so we need to lookup the role
              */
-            if (\is_array($accessRoleOrCollection)) {
+            if (is_array($accessRoleOrCollection)) {
                 foreach ($accessRoleOrCollection as $key => $accessItem) {
-                    $access = $this->adminService->findAccessByName($accessItem);
+                    $access = $accessItem;
+                    if (! $accessItem instanceof Access) {
+                        $access = $this->adminService->findAccessByName($accessItem);
+                    }
 
                     if (null !== $access) {
                         $accessRoleOrCollection[$key] = strtolower($access->getAccess());
@@ -185,6 +188,8 @@ abstract class AbstractAssertion implements AssertionInterface
                     strtolower($this->adminService->findAccessByName($accessRoleOrCollection)->getAccess()),
                 ];
             }
+        } else {
+            $accessRoleOrCollection = array_map('strtolower', $accessRoleOrCollection->toArray());
         }
 
         return $accessRoleOrCollection;

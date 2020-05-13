@@ -337,8 +337,7 @@ class Affiliation extends EntityRepository
         Program $program,
         int $which,
         ?int $year
-    ): array
-    {
+    ): array {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -382,8 +381,7 @@ class Affiliation extends EntityRepository
         Version $version,
         Country $country,
         int $which
-    ): array
-    {
+    ): array {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('affiliation_entity_affiliation');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -424,8 +422,7 @@ class Affiliation extends EntityRepository
         Version $version,
         Country $country,
         int $which
-    ): int
-    {
+    ): int {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation.id) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
@@ -534,8 +531,7 @@ class Affiliation extends EntityRepository
         Project $project,
         Country $country,
         int $which
-    ): int
-    {
+    ): int {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COUNT(affiliation_entity_affiliation) amount');
         $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');

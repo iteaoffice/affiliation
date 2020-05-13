@@ -195,7 +195,7 @@
             {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE") %}
                 {% set dueInYear = versionContributionInformation.cost[projectYear] / 100 * projectService.findProjectFeeByYear(projectYear).percentage %}
                 <td class="text-right">
-                   &euro; {{ versionContributionInformation.cost[projectYear]|number_format(0) }}
+                    &euro; {{ versionContributionInformation.cost[projectYear]|number_format(0) }}
                 </td>
                 <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
                     %
@@ -230,8 +230,8 @@
             <td colspan="4"></td>
             <th colspan="2" class="text-right"
             >{{ translate("txt-total-contribution-amount-due-upto-year-%s-period-%s")|format(year,period) }}</th>
-            <th style="border-top: 2px solid black;"><span
-                        class="text-right">{{ totalDueBasedOnProjectData|currency_decimal() }}</th>
+            <th style="border-top: 2px solid black;"
+                class="text-right">{{ totalDueBasedOnProjectData|currency_decimal() }}</th>
         {% endif %}
     </tr>
     </tfoot>
@@ -414,9 +414,7 @@
         <tfoot>
         <tr>
             <th class="text-right">{{ translate("txt-correction") }}</th>
-            <th style="border-top: 2px solid black;"><span
-                        class="text-right">{{ balance|currency_decimal() }}</span>
-            </th>
+            <th style="border-top: 2px solid black;" class="text-right">{{ balance|currency_decimal() }}</th>
         </tr>
         </tfoot>
     </table>
@@ -449,7 +447,7 @@
         <tr>
             <td></td>
             <th class="text-right">{{ translate("txt-total") }}</th>
-            <th style="border-top: 2px solid black;"  class="text-right">{{ (total)|currency_decimal() }}</th>
+            <th style="border-top: 2px solid black;" class="text-right">{{ (total)|currency_decimal() }}</th>
             <th>{% if  total < -0.1 %}{{ translate("txt-credit") }}{% endif %}</th>
         </tr>
         </tfoot>

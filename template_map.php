@@ -42,7 +42,6 @@ return [
     'affiliation/edit/manage-associate'                                 => __DIR__ . '//view/affiliation/edit/manage-associate.twig',
     'affiliation/doa/submit'                                            => __DIR__ . '//view/affiliation/doa/submit.twig',
     'affiliation/doa/replace'                                           => __DIR__ . '//view/affiliation/doa/replace.twig',
-    'affiliation/doa/upload'                                            => __DIR__ . '//view/affiliation/doa/upload.twig',
     'affiliation/community/tab/description'                             => __DIR__ . '//view/affiliation/community/tab/description.twig',
     'affiliation/community/tab/questionnaires'                          => __DIR__ . '//view/affiliation/community/tab/questionnaires.twig',
     'affiliation/community/tab/cost-and-effort'                         => __DIR__ . '//view/affiliation/community/tab/cost-and-effort.twig',
