@@ -526,12 +526,12 @@
                     <tr>
 
                         <td></td>
-                        <td>{{ translate("txt-contract") }} {{ contractVersionLink(affiliationVersion.contractVersion.version,'view','icon') }}</td>
+                        <td>{{ translate("txt-contract") }} {{ contractVersionLink(contractVersion.version,'view','icon') }}</td>
                         {% for year in years %}
                             {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion.version, affiliation) %}
-                            <td class="text-right">{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
+                            <td class="text-right">{{ contractVersionCost[year]|currency_decimal(contractVersion.version.contract.currency) }}</td>
                         {% endfor %}
-                        <th class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion.version)|currency_decimal(contractVersion.contract.currency) }}</th>
+                        <th class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion.version)|currency_decimal(contractVersion.version.contract.currency) }}</th>
                     </tr>
                 {% endif %}
 
@@ -589,7 +589,7 @@
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-national") }}</td>
-                <td colspan="{{ years|length + 1 }}">
+                <td class="text-right" colspan="{{ years|length + 1 }}">
                     &euro; <a
                             class="text-primary funding-edit"
                             data-type="text"
@@ -603,7 +603,7 @@
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-eu") }}</td>
-                <td colspan="{{ years|length  + 1 }}">
+                <td  class="text-right" colspan="{{ years|length  + 1 }}">
                     &euro; <a
                             class="text-primary funding-edit"
                             data-type="text"
