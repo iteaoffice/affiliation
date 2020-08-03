@@ -91,13 +91,30 @@ return [
                                     ],
                                 ],
                             ],
+                            'edit-description'           => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/edit-description/[:id].html',
+                                    'defaults' => [
+                                        'action' => 'edit-description',
+                                    ],
+                                ],
+                            ],
+                            'edit-market-access'         => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/edit-market-access/[:id].html',
+                                    'defaults' => [
+                                        'action' => 'edit-market-access',
+                                    ],
+                                ],
+                            ],
                             'loi'                        => [
                                 'type'          => 'Segment',
                                 'priority'      => 1000,
                                 'options'       => [
                                     'route'    => '/loi',
                                     'defaults' => [
-                                        'namespace'  => __NAMESPACE__,
                                         'controller' => Controller\LoiManagerController::class,
                                         'action'     => 'index',
                                     ],

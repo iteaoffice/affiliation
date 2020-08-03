@@ -6,7 +6,7 @@
         <dd>{{ affiliation.description.description|nl2br }}</dd>
     </dl>
 {% else %}
-    {{ ztbalert().warning(translate("txt-no-description-found-for-%s")|format(
+    {{ ztbalert().danger(translate("txt-no-description-found-for-%s")|format(
         affiliation.parseBranchedName()
     ))|raw }}
 {% endif %}

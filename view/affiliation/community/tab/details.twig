@@ -4,15 +4,21 @@
     <dt>{{ translate("txt-project-name") }}</dt>
     <dd>{{ projectLink(affiliation.project,'view-community', 'name') }}</dd>
     <dt>{{ translate("txt-project-title") }}</dt>
+
     <dd>{{ affiliation.project.title }} ({{ projectService.parseStatus(affiliation.project) }})</dd>
-    <dt>{{ translate("txt-position-on-value-chain") }}</dt>
-    <dd>{{ affiliation.valueChain|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
-    <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
-    <dd>{{ affiliation.mainContribution|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dt>{{ translate("txt-role-in-the-project") }}</dt>
+
+    <dd>{{ affiliation.valueChain|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
+    <dt>{{ translate("txt-main-contributions") }}</dt>
+    <dd>{{ affiliation.mainContribution|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
+
+    {% if projectService.hasTasksAndAddedValue(affiliation.project) %}
+        <dt>{{ translate("txt-tasks-and-added-value") }}</dt>
+        <dd>{{ affiliation.tasksAndAddedValue|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
+    {% endif %}
+
     <dt>{{ translate("txt-strategic-importance") }}</dt>
-    <dd>{{ affiliation.strategicImportance|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
-    <dt>{{ translate("txt-market-access") }}</dt>
-    <dd>{{ affiliation.marketAccess|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+    <dd>{{ affiliation.strategicImportance|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
 </dl>
 
 <dl class="dl-horizontal">

@@ -21,6 +21,7 @@ use Affiliation\Form\CostAndEffort;
 use Affiliation\Form\EffortSpent;
 use Affiliation\Form\Financial as FinancialForm;
 use Affiliation\Form\ManageTechnicalContact;
+use Affiliation\Form\MarketAccess;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\FormService;
 use Contact\Entity\Address;
@@ -121,10 +122,12 @@ final class EditController extends AffiliationAbstractController
         $formData['communicationContactName']  = $affiliation->getCommunicationContactName();
         $formData['communicationContactEmail'] = $affiliation->getCommunicationContactEmail();
         $formData['valueChain']                = $affiliation->getValueChain();
-        $formData['marketAccess']              = $affiliation->getMarketAccess();
         $formData['mainContribution']          = $affiliation->getMainContribution();
-        $formData['strategicImportance']       = $affiliation->getStrategicImportance();
-        $formData['selfFunded']                = $affiliation->getSelfFunded();
+        if ($this->projectService->hasTasksAndAddedValue($affiliation->getProject())) {
+            $formData['tasksAndAddedValue'] = $affiliation->getTasksAndAddedValue();
+        }
+        $formData['strategicImportance'] = $affiliation->getStrategicImportance();
+        $formData['selfFunded']          = $affiliation->getSelfFunded();
 
         /*
          * Check if the organisation has a financial contact
@@ -134,6 +137,10 @@ final class EditController extends AffiliationAbstractController
         }
         $form = new AffiliationForm($affiliation, $this->affiliationService);
         $form->setData($formData);
+
+        if (! $this->projectService->hasTasksAndAddedValue($affiliation->getProject())) {
+            $form->remove('tasksAndAddedValue');
+        }
 
         //Remove the de-activate-button when partner is not active
         if (! $affiliation->isActive()) {
@@ -239,7 +246,11 @@ final class EditController extends AffiliationAbstractController
                 $this->affiliationService->save($affiliation);
                 $affiliation->setValueChain($formData['valueChain']);
                 $affiliation->setMainContribution($formData['mainContribution']);
-                $affiliation->setMarketAccess($formData['marketAccess']);
+
+                if ($this->projectService->hasTasksAndAddedValue($affiliation->getProject())) {
+                    $affiliation->setTasksAndAddedValue($formData['tasksAndAddedValue']);
+                }
+
                 $affiliation->setStrategicImportance($formData['strategicImportance']);
                 $affiliation->setSelfFunded($formData['selfFunded']);
                 /*
@@ -803,6 +814,66 @@ final class EditController extends AffiliationAbstractController
         );
     }
 
+    public function marketAccessAction()
+    {
+        $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
+
+        if (null === $affiliation) {
+            return $this->notFoundAction();
+        }
+
+        $data = $this->getRequest()->getPost()->toArray();
+        $form = new MarketAccess();
+        $form->get('marketAccess')->setValue($affiliation->getMarketAccess());
+
+        $form->setData($data);
+
+
+        if ($this->getRequest()->isPost()) {
+            if (isset($data['cancel'])) {
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'market-access']
+                );
+            }
+
+            if ($form->isValid()) {
+                $affiliation->setMarketAccess($form->getData()['marketAccess']);
+                $this->affiliationService->save($affiliation);
+
+                $changelogMessage = sprintf(
+                    $this->translator->translate('txt-description-of-affiliation-%s-has-successfully-been-updated'),
+                    $affiliation
+                );
+
+                $this->flashMessenger()->addSuccessMessage($changelogMessage);
+                $this->projectService->addMessageToChangelog(
+                    $affiliation->getProject(),
+                    $this->identity(),
+                    Changelog::TYPE_PARTNER,
+                    Changelog::SOURCE_COMMUNITY,
+                    $changelogMessage
+                );
+
+                return $this->redirect()->toRoute(
+                    'community/affiliation/affiliation',
+                    ['id' => $affiliation->getId()],
+                    ['fragment' => 'market-access']
+                );
+            }
+        }
+
+        return new ViewModel(
+            [
+                'affiliation'        => $affiliation,
+                'affiliationService' => $this->affiliationService,
+                'projectService'     => $this->projectService,
+                'form'               => $form,
+            ]
+        );
+    }
+
     public function updateEffortSpentAction()
     {
         $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
@@ -941,23 +1012,36 @@ final class EditController extends AffiliationAbstractController
             [$year]
                 = ['cost' => $costPerYear[$year] / 1000];
 
-            /*
-             * Sum over the effort, this is grouped per workpackage
-             */
-            foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
-                $effortPerWorkpackageAndYear
-                    = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                        $workpackage,
-                        $affiliation
-                    );
-                if (! array_key_exists($year, $effortPerWorkpackageAndYear)) {
-                    $effortPerWorkpackageAndYear[$year] = 0;
+            if (! $this->projectService->hasWorkPackages($project)) {
+                $effortPerYear = $this->projectService->findTotalEffortByAffiliationPerYear($affiliation);
+                if (! array_key_exists($year, $effortPerYear)) {
+                    $effortPerYear[$year] = 0;
                 }
                 $formData['effortPerAffiliationAndYear']
-                [$workpackage->getId()]
                 [$affiliation->getId()]
                 [$year]
-                    = ['effort' => $effortPerWorkpackageAndYear[$year]];
+                    = ['effort' => $effortPerYear[$year]];
+            }
+
+            if ($this->projectService->hasWorkPackages($project)) {
+                /*
+                 * Sum over the effort, this is grouped per workpackage
+                 */
+                foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
+                    $effortPerWorkpackageAndYear
+                        = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
+                            $workpackage,
+                            $affiliation
+                        );
+                    if (! array_key_exists($year, $effortPerWorkpackageAndYear)) {
+                        $effortPerWorkpackageAndYear[$year] = 0;
+                    }
+                    $formData['effortPerAffiliationAndYear']
+                    [$workpackage->getId()]
+                    [$affiliation->getId()]
+                    [$year]
+                        = ['effort' => $effortPerWorkpackageAndYear[$year]];
+                }
             }
         }
 
@@ -978,6 +1062,7 @@ final class EditController extends AffiliationAbstractController
             }
 
             $formData = $form->getData();
+
             /*
              * Update the cost
              */
@@ -1007,23 +1092,12 @@ final class EditController extends AffiliationAbstractController
                 }
             }
 
-            /*
-             * Update the effort
-             */
-            foreach ($formData['effortPerAffiliationAndYear'] as $workpackageId => $effortPerAffiliationAndYear) {
-                $workpackage = $this->workpackageService->findWorkpackageById($workpackageId);
-
-                if (null === $workpackage) {
-                    continue;
-                }
-
-                foreach ($effortPerAffiliationAndYear[$affiliation->getId()] as $year => $effortValue) {
-                    $effort = $this->projectService
-                        ->findEffortByAffiliationAndWorkpackageAndYear(
-                            $affiliation,
-                            $workpackage,
-                            $year
-                        );
+            if (! $this->projectService->hasWorkPackages($project)) {
+                /*
+                 * Update the cost
+                 */
+                foreach ($formData['effortPerAffiliationAndYear'][$affiliation->getId()] as $year => $effortValue) {
+                    $effort = $this->projectService->findEffortByAffiliationAndYear($affiliation, $year);
 
                     $setEffortValue = (float)str_replace(',', '.', $effortValue['effort']);
 
@@ -1038,7 +1112,6 @@ final class EditController extends AffiliationAbstractController
                         if (null === $effort) {
                             $effort = new Effort();
                             $effort->setAffiliation($affiliation);
-                            $effort->setWorkpackage($workpackage);
                             $dateStart = new DateTime();
                             $effort->setDateStart($dateStart->modify('first day of january ' . $year));
                             $dateEnd = new DateTime();
@@ -1046,6 +1119,51 @@ final class EditController extends AffiliationAbstractController
                         }
                         $effort->setEffort($setEffortValue);
                         $this->projectService->save($effort);
+                    }
+                }
+            }
+
+            if ($this->projectService->hasWorkPackages($project)) {
+                /*
+                 * Update the effort
+                 */
+                foreach ($formData['effortPerAffiliationAndYear'] as $workpackageId => $effortPerAffiliationAndYear) {
+                    $workpackage = $this->workpackageService->findWorkpackageById($workpackageId);
+
+                    if (null === $workpackage) {
+                        continue;
+                    }
+
+                    foreach ($effortPerAffiliationAndYear[$affiliation->getId()] as $year => $effortValue) {
+                        $effort = $this->projectService
+                            ->findEffortByAffiliationAndWorkpackageAndYear(
+                                $affiliation,
+                                $workpackage,
+                                $year
+                            );
+
+                        $setEffortValue = (float)str_replace(',', '.', $effortValue['effort']);
+
+                        if (null !== $effort && $setEffortValue === 0.0) {
+                            $this->projectService->delete($effort);
+                        }
+
+                        if ($setEffortValue > 0) {
+                            /*
+                             * Create a new if not set yet
+                             */
+                            if (null === $effort) {
+                                $effort = new Effort();
+                                $effort->setAffiliation($affiliation);
+                                $effort->setWorkpackage($workpackage);
+                                $dateStart = new DateTime();
+                                $effort->setDateStart($dateStart->modify('first day of january ' . $year));
+                                $dateEnd = new DateTime();
+                                $effort->setDateEnd($dateEnd->modify('last day of december ' . $year));
+                            }
+                            $effort->setEffort($setEffortValue);
+                            $this->projectService->save($effort);
+                        }
                     }
                 }
             }
@@ -1084,6 +1202,9 @@ final class EditController extends AffiliationAbstractController
                 'workpackageService' => $this->workpackageService,
                 'contractService'    => $this->contractService,
                 'affiliationService' => $this->affiliationService,
+                'yearRange'          => $this->projectService->parseYearRange($project),
+                'editYearRange'      => $this->projectService->parseEditYearRange($project),
+                'hasWorkPackages'    => $this->projectService->hasWorkPackages($project),
                 'form'               => $form
             ]
         );

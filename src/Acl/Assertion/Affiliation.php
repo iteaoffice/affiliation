@@ -89,6 +89,7 @@ final class Affiliation extends AbstractAssertion
             case 'add-associate':
             case 'manage-associate':
             case 'edit-cost-and-effort':
+            case 'edit-market-access':
             case 'edit-affiliation':
             case 'edit-description':
             case 'edit-community':
@@ -127,15 +128,16 @@ final class Affiliation extends AbstractAssertion
             case 'payment-sheet-pdf':
             case 'payment-sheet-pdf-contract':
                 return $this->contactService->contactHasPermit($this->contact, 'financial', $affiliation);
+            default:
             case 'view-admin':
             case 'edit-admin':
             case 'add-associate-admin':
+            case 'edit-description-admin':
+            case 'edit-market-access-admin':
             case 'merge-admin':
             case 'payment-sheet-admin':
             case 'missing-affiliation-parent':
                 return $this->rolesHaveAccess(Access::ACCESS_OFFICE);
         }
-
-        return false;
     }
 }

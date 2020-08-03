@@ -51,8 +51,11 @@
 {{ ztbformelement(form.get('communicationContactEmail')) }}
 {{ ztbformelement(form.get('valueChain')) }}
 {{ ztbformelement(form.get('mainContribution')) }}
+{% if form.has('tasksAndAddedValue') %}
+    {{ ztbformelement(form.get('tasksAndAddedValue')) }}
+{% endif  %}
 {{ ztbformelement(form.get('strategicImportance')) }}
-{{ ztbformelement(form.get('marketAccess')) }}
+{#{{ ztbformelement(form.get('marketAccess')) }}#}
 {{ ztbformelement(form.get('selfFunded')) }}
 
 

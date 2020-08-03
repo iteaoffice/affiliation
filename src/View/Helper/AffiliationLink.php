@@ -77,6 +77,15 @@ final class AffiliationLink extends AbstractLink
                 ];
 
                 break;
+            case 'edit-market-access':
+                $linkParams = [
+                    'icon'  => 'far fa-edit',
+                    'route' => 'community/affiliation/edit/market-access',
+                    'text'  => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-market-access')
+                ];
+
+                break;
             case 'edit-financial':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
@@ -119,10 +128,7 @@ final class AffiliationLink extends AbstractLink
                 $linkParams = [
                     'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/description',
-                    'text'  => $showOptions[$show] ?? sprintf(
-                        $this->translator->translate('txt-edit-description-affiliation-%s'),
-                        $affiliation->parseBranchedName()
-                    )
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-edit-description')
                 ];
                 break;
             case 'view-admin':
@@ -140,6 +146,22 @@ final class AffiliationLink extends AbstractLink
                     'route' => 'zfcadmin/affiliation/edit',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-edit-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
+                ];
+                break;
+            case 'edit-description-admin':
+                $linkParams = [
+                    'icon'  => 'far fa-edit',
+                    'route' => 'zfcadmin/affiliation/edit-description',
+                    'text'  => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-description')
+                ];
+                break;
+            case 'edit-market-access-admin':
+                $linkParams = [
+                    'icon'  => 'far fa-edit',
+                    'route' => 'zfcadmin/affiliation/edit-market-access',
+                    'text'  => $showOptions[$show]
+                        ?? $this->translator->translate('txt-edit-market-access')
                 ];
                 break;
             case 'merge-admin':

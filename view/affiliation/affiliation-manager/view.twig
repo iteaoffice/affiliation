@@ -41,6 +41,8 @@
                                    data-toggle="tab">{{ translate("txt-partner-details") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#description"
                             data-toggle="tab">{{ translate("txt-description") }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="#market-access"
+                            data-toggle="tab">{{ translate("txt-market-access") }}</a></li>
     <li class="nav-item"><a class="nav-link" href="#associates" data-toggle="tab">{{ translate("txt-associates") }}</a>
     </li>
     <li class="nav-item"><a class="nav-link" href="#financial" data-toggle="tab">{{ translate("txt-financial") }}</a>
@@ -120,14 +122,21 @@
             {% endif %}
 
 
-            <dt>{{ translate("txt-position-on-value-chain") }}</dt>
-            <dd>{{ affiliation.valueChain|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
-            <dt>{{ translate("txt-main-contributions-and-added-value") }}</dt>
-            <dd>{{ affiliation.mainContribution|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+            <dt>{{ translate("txt-role-in-the-project") }}</dt>
+            <dd>{{ affiliation.valueChain|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
+
+            <dt>{{ translate("txt-main-contributions") }}</dt>
+            <dd>{{ affiliation.mainContribution|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
+
+            {% if projectService.hasTasksAndAddedValue(affiliation.project) %}
+                <dt>{{ translate("txt-tasks-and-added-value") }}</dt>
+                <dd>{{ affiliation.tasksAndAddedValue|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
+            {% endif %}
+
             <dt>{{ translate("txt-strategic-importance") }}</dt>
-            <dd>{{ affiliation.strategicImportance|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
-            <dt>{{ translate("txt-market-access") }}</dt>
-            <dd>{{ affiliation.marketAccess|default('<i class="fas fa-exclamation-circle text-warning warning"></i>')|raw }}</dd>
+            <dd>{{ affiliation.strategicImportance|default('<i class="fas fa-exclamation-circle text-warning"></i>')|raw }}</dd>
+
+
         </dl>
 
         <dl class="dl-horizontal">
@@ -137,7 +146,7 @@
                     <dd>{% for doa in affiliation.parentOrganisation.parent.doa|filter(doa => doa.program.id == project.call.program.id) -%}
                             {% if programDoa.dateApproved is null %}
                                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(doa.dateCreated|date("d-m-Y"))|raw }}
-                                {#{{ parentDoaLink(doa,'replace','icon') }}#}
+                                {# {{ parentDoaLink(doa,'replace','icon') }} #}
                                 {{ parentDoaLink(doa,'download','icon') }}
                             {% else %}
                                 {{ translate("txt-doa-received-and-approved-on-%s")|format(doa.dateApproved|date("d-m-Y"))|raw }}
@@ -274,7 +283,23 @@
             ))|raw }}
         {% endif %}
 
-        {{ affiliationLink(affiliation, 'edit-description','button') }}
+        {{ affiliationLink(affiliation, 'edit-description-admin','button') }}
+    </div>
+    <div class="tab-pane" role="tabpanel" id="market-access">
+        <h2>{{ translate("txt-market-access") }}</h2>
+
+        {% if affiliation.marketAccess %}
+            <dl class="dl-horizontal">
+                <dt>{{ translate("txt-market-access") }}</dt>
+                <dd>{{ affiliation.marketAccess|nl2br }}</dd>
+            </dl>
+        {% else %}
+            {{ ztbalert().warning(translate("txt-no-market-access-found-for-%s")|format(
+                affiliation.parseBranchedName()
+            ))|raw }}
+        {% endif %}
+
+        {{ affiliationLink(affiliation, 'edit-market-access-admin','button') }}
     </div>
     <div class="tab-pane" role="tabpanel" id="associates">
         <h2>{{ translate("txt-associates") }}</h2>
@@ -603,7 +628,7 @@
             <tr>
                 <td></td>
                 <td>{{ translate("txt-funding-eu") }}</td>
-                <td  class="text-right" colspan="{{ years|length  + 1 }}">
+                <td class="text-right" colspan="{{ years|length  + 1 }}">
                     &euro; <a
                             class="text-primary funding-edit"
                             data-type="text"

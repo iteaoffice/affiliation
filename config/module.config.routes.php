@@ -145,6 +145,16 @@ return [
                                             ],
                                         ],
                                     ],
+                                    'market-access'       => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/market-access/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'market-access',
+                                                'privilege' => 'edit-market-access',
+                                            ],
+                                        ],
+                                    ],
                                     'update-effort-spent' => [
                                         'type'    => 'Segment',
                                         'options' => [

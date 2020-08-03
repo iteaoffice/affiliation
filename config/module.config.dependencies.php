@@ -81,6 +81,7 @@ return [
             ParentService::class,
             CallService::class,
             AssertionService::class,
+            Service\FormService::class,
             EntityManager::class
         ],
         Controller\CommunityController::class                          => [

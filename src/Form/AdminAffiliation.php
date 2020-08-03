@@ -18,9 +18,6 @@ use Contact\Form\Element\Contact;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use Invoice\Entity\Method;
-use Organisation\Entity\OParent;
-use Organisation\Form\Element\Organisation;
-use Organisation\Service\ParentService;
 use Laminas\Form\Element\Checkbox;
 use Laminas\Form\Element\Date;
 use Laminas\Form\Element\Email;
@@ -31,6 +28,9 @@ use Laminas\Form\Element\Text;
 use Laminas\Form\Element\Textarea;
 use Laminas\Form\Form;
 use Laminas\InputFilter\InputFilterProviderInterface;
+use Organisation\Entity\OParent;
+use Organisation\Form\Element\Organisation;
+use Organisation\Service\ParentService;
 
 /**
  * Class AdminAffiliation
@@ -61,7 +61,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
         $parentOrganisationLike = $parentService->findParentOrganisationByNameLike(
             $affiliation->getOrganisation()->getOrganisation()
         );
-        $parentOrganisations = ['' => '-- None of the options'];
+        $parentOrganisations    = ['' => '-- None of the options'];
         foreach ($parentOrganisationLike as $parentOrganisation) {
             $parentOrganisations[$parentOrganisation->getId()] = sprintf(
                 '%s (%s)',
@@ -92,7 +92,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
         $parents = $parentService->findAll(OParent::class);
 
         $parentsAndOrganisations = [];
-        $parentOptions = [];
+        $parentOptions           = [];
 
         foreach ($parents as $parent) {
             $parentOrganisations = [];
@@ -111,7 +111,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
                     'label' => $parent->getOrganisation()->getOrganisation()
                 ];
                 $parentsAndOrganisations[$parent->getOrganisation()->getOrganisation()]['options']
-                    = $parentOrganisations;
+                                                                                        = $parentOrganisations;
             }
 
             $parentOptions[$parent->getId()] = sprintf(
@@ -218,11 +218,8 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
                 'type'       => Text::class,
                 'name'       => 'valueChain',
                 'options'    => [
-                    'label'      => _('txt-position-on-value-chain'),
-                    'help-block' => _('txt-position-on-value-chain-inline-help'),
-                ],
-                'attributes' => [
-                    'class' => 'form-control',
+                    'label'      => _('txt-role-in-the-project'),
+                    'help-block' => _('txt-role-in-the-project-inline-help'),
                 ],
             ]
         );
@@ -233,10 +230,25 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
                 'name'       => 'mainContribution',
                 'options'    => [
                     'label'      => _('txt-main-contribution-for-the-project'),
-                    'help-block' => _('txt--main-contribution-for-the-project-inline-help'),
+                    'help-block' => _('txt-main-contribution-for-the-project-inline-help'),
                 ],
                 'attributes' => [
-                    'class' => 'form-control',
+                    'label'       => _('txt-tasks-and-added-value-label'),
+                    'placeholder' => _('txt-tasks-and-added-value-help-placeholder'),
+                ],
+            ]
+        );
+
+        $this->add(
+            [
+                'type'       => Textarea::class,
+                'name'       => 'tasksAndAddedValue',
+                'options'    => [
+                    'help-block' => _('txt-tasks-and-added-value-help-block'),
+                ],
+                'attributes' => [
+                    'label'       => _('txt-tasks-and-added-value-label'),
+                    'placeholder' => _('txt-tasks-and-added-value-help-placeholder'),
                 ],
             ]
         );
@@ -266,6 +278,7 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
                 ],
             ]
         );
+
 
         $this->add(
             [

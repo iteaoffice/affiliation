@@ -75,8 +75,10 @@
 
 {{ ztbformelement(form.get('valueChain')) }}
 {{ ztbformelement(form.get('mainContribution')) }}
-{{ ztbformelement(form.get('marketAccess')) }}
 
+{% if form.has('tasksAndAddedValue') %}
+    {{ ztbformelement(form.get('tasksAndAddedValue')) }}
+{% endif  %}
 
 {{ organisationformelement(form.get('financialOrganisation')) }}
 {{ contactformelement(form.get('financialContact')) }}

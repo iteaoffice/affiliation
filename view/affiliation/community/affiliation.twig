@@ -9,6 +9,7 @@
 {# Produce the link first to have the resource :) #}
 {% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
 {% set useContract = affiliationService.useActiveContract(affiliation) %}
+{% set checklist = projectChecklist.getSingleAffiliationErrors(affiliation) %}
 
 <h1>{{ affiliation.parseBranchedName() }}</h1>
 
@@ -37,9 +38,10 @@
             )|raw }}
         {% endif %}
 
+{% if checklist %}
 <div class="row">
     <div class="col-md-10">
-
+        {% endif %}
 
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item active">
@@ -48,7 +50,17 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#description" data-toggle="tab"
-                   role="tab">{{ translate("txt-description") }}</a>
+                   role="tab">
+                    {% if not affiliation.description %}<i
+                            class="fas fa-exclamation-triangle text-danger"></i>{% endif %}
+                    {{ translate("txt-description") }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#market-access" data-toggle="tab"
+                   role="tab">
+                    {% if not affiliation.marketAccess %}<i
+                            class="fas fa-exclamation-circle text-warning"></i>{% endif %}
+                    {{ translate("txt-market-access") }}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#cost-and-effort" data-toggle="tab"
@@ -97,6 +109,9 @@
             <div class="tab-pane" role="tabpanel" id="description">
                 {% include 'affiliation/community/tab/description' %}
             </div>
+            <div class="tab-pane" role="tabpanel" id="market-access">
+                {% include 'affiliation/community/tab/market-access' %}
+            </div>
             <div class="tab-pane" role="tabpanel" id="cost-and-effort">
                 {% include 'affiliation/community/tab/cost-and-effort' %}
             </div>
@@ -129,8 +144,10 @@
                 </div>
             {% endif %}
         </div>
+        {% if checklist %}
     </div>
     <div class="col-md-2">
         {% include 'affiliation/partial/checklist' %}
     </div>
 </div>
+{% endif %}

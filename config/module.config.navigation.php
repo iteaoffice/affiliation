@@ -55,6 +55,16 @@ $communityNavigation = [
                                             ],
                                         ],
                                     ],
+                                    'edit-market-access'       => [
+                                        'label'   => _('txt-edit-market-access'),
+                                        'route'   => 'community/affiliation/edit/market-access',
+                                        'visible' => false,
+                                        'params'  => [
+                                            'entities' => [
+                                                'id' => Affiliation::class,
+                                            ],
+                                        ],
+                                    ],
                                     'edit-financial'           => [
                                         'label'   => _('txt-edit-financial'),
                                         'route'   => 'community/affiliation/edit/financial',
@@ -246,7 +256,7 @@ return [
                                                     ],
                                                 ],
                                                 'pages'   => [
-                                                    'edit'           => [
+                                                    'edit'               => [
                                                         'label'   => _('txt-nav-edit'),
                                                         'route'   => 'zfcadmin/affiliation/edit',
                                                         'visible' => false,
@@ -256,7 +266,7 @@ return [
                                                             ],
                                                         ],
                                                     ],
-                                                    'view-doa'       => [
+                                                    'view-doa'           => [
                                                         'label'   => _('txt-nav-view-doa'),
                                                         'route'   => 'zfcadmin/affiliation/doa/view',
                                                         'visible' => false,
@@ -284,7 +294,7 @@ return [
                                                             ],
                                                         ]
                                                     ],
-                                                    'view-loi'       => [
+                                                    'view-loi'           => [
                                                         'label'   => _('txt-nav-view-loi'),
                                                         'route'   => 'zfcadmin/affiliation/loi/view',
                                                         'visible' => false,
@@ -312,7 +322,7 @@ return [
                                                             ],
                                                         ]
                                                     ],
-                                                    'edit-associate' => [
+                                                    'edit-associate'     => [
                                                         'label'   => _('txt-nav-edit-associate'),
                                                         'route'   => 'zfcadmin/affiliation/edit-associate',
                                                         'visible' => false,
@@ -322,7 +332,27 @@ return [
                                                             ],
                                                         ],
                                                     ],
-                                                    'add-associate'  => [
+                                                    'edit-description'   => [
+                                                        'label'   => _('txt-nav-edit-description'),
+                                                        'route'   => 'zfcadmin/affiliation/edit-description',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities' => [
+                                                                'id' => Affiliation::class,
+                                                            ],
+                                                        ],
+                                                    ],
+                                                    'edit-market-access' => [
+                                                        'label'   => _('txt-nav-edit-market-access'),
+                                                        'route'   => 'zfcadmin/affiliation/edit-market-access',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities' => [
+                                                                'id' => Affiliation::class,
+                                                            ],
+                                                        ],
+                                                    ],
+                                                    'add-associate'      => [
                                                         'label'  => _('txt-nav-add-associate'),
                                                         'route'  => 'zfcadmin/affiliation/add-associate',
                                                         'params' => [
@@ -331,7 +361,7 @@ return [
                                                             ],
                                                         ],
                                                     ],
-                                                    'merge'          => [
+                                                    'merge'              => [
                                                         'label'   => _('txt-merge-with-other'),
                                                         'route'   => 'zfcadmin/affiliation/merge',
                                                         'visible' => false,

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Affiliation\Form;
 
 use Affiliation\Entity;
-use Project\Form\CostPerAffiliationFieldset;
-use Project\Form\EffortPerAffiliationFieldset;
+use Project\Form\Project\CostPerAffiliationFieldset;
+use Project\Form\Project\EffortPerAffiliationFieldset;
 use Project\Service\ProjectService;
 use Project\Service\WorkpackageService;
 use Laminas\Form\Fieldset;
@@ -52,23 +52,36 @@ final class CostAndEffort extends Form implements InputFilterProviderInterface
         $costFieldset->setUseAsBaseFieldset(true);
         $this->add($costFieldset);
 
-
-        $effortFieldset = new Fieldset('effortPerAffiliationAndYear');
-        foreach ($workpackageService->findWorkpackageByProjectAndWhich($affiliation->getProject()) as $workpackage) {
-            $workPackageFieldset = new Fieldset($workpackage->getId());
-
-            $affiliationFieldSet = new EffortPerAffiliationFieldset(
+        if (! $projectService->hasWorkPackages($affiliation->getProject())) {
+            $effortFieldset = new Fieldset('effortPerAffiliationAndYear');
+            $affiliationFieldset = new EffortPerAffiliationFieldset(
                 $affiliation,
                 $affiliation->getProject(),
-                $projectService,
-                $workpackage
+                $projectService
             );
-
-            $workPackageFieldset->add($affiliationFieldSet);
-            $effortFieldset->add($workPackageFieldset);
+            $effortFieldset->add($affiliationFieldset);
+            $effortFieldset->setUseAsBaseFieldset(true);
+            $this->add($effortFieldset);
         }
-        $effortFieldset->setUseAsBaseFieldset(true);
-        $this->add($effortFieldset);
+
+        if ($projectService->hasWorkPackages($affiliation->getProject())) {
+            $effortFieldset = new Fieldset('effortPerAffiliationAndYear');
+            foreach ($workpackageService->findWorkpackageByProjectAndWhich($affiliation->getProject()) as $workpackage) {
+                $workPackageFieldset = new Fieldset($workpackage->getId());
+
+                $affiliationFieldSet = new EffortPerAffiliationFieldset(
+                    $affiliation,
+                    $affiliation->getProject(),
+                    $projectService,
+                    $workpackage
+                );
+
+                $workPackageFieldset->add($affiliationFieldSet);
+                $effortFieldset->add($workPackageFieldset);
+            }
+            $effortFieldset->setUseAsBaseFieldset(true);
+            $this->add($effortFieldset);
+        }
 
         $this->add(
             [

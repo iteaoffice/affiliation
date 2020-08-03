@@ -36,8 +36,15 @@ return [
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/edit-associate',
-                    'roles'     => ['office'],
-                    'assertion' => AffiliationAssertion::class,
+                    'roles'     => ['office']
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/edit-description',
+                    'roles'     => ['office']
+                ],
+                [
+                    'route'     => 'zfcadmin/affiliation/edit-market-access',
+                    'roles'     => ['office']
                 ],
                 [
                     'route'     => 'zfcadmin/affiliation/add-associate',
@@ -198,6 +205,11 @@ return [
                 ],
                 [
                     'route'     => 'community/affiliation/edit/cost-and-effort',
+                    'roles'     => ['user'],
+                    'assertion' => AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/market-access',
                     'roles'     => ['user'],
                     'assertion' => AffiliationAssertion::class,
                 ],

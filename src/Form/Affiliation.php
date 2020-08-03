@@ -44,7 +44,7 @@ final class Affiliation extends Form implements InputFilterProviderInterface
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
         $technicalContactValueOptions = [];
-        $affiliationValueOptions = [];
+        $affiliationValueOptions      = [];
         foreach ($affiliationService->parseRenameOptions($affiliation) as $country => $options) {
             $groupOptions = [];
             foreach ($options as $organisationId => $branchAndName) {
@@ -69,13 +69,13 @@ final class Affiliation extends Form implements InputFilterProviderInterface
 
         //Go over the TC/PTC to add them
         if ($this->isContactInAffiliationOrganisation($affiliation->getProject()->getContact(), $affiliation)) {
-            $contact = $affiliation->getProject()->getContact();
+            $contact                                         = $affiliation->getProject()->getContact();
             $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
         }
 
         foreach ($affiliation->getProject()->getProxyContact() as $proxyContact) {
             if ($this->isContactInAffiliationOrganisation($proxyContact, $affiliation)) {
-                $contact = $affiliation->getProject()->getContact();
+                $contact                                         = $affiliation->getProject()->getContact();
                 $technicalContactValueOptions[$contact->getId()] = $contact->getFormName();
             }
         }
@@ -85,7 +85,7 @@ final class Affiliation extends Form implements InputFilterProviderInterface
          * This array starts from the technical contacts
          */
         $financialContactValueOptions = $technicalContactValueOptions;
-        $organisation = $affiliation->getOrganisation();
+        $organisation                 = $affiliation->getOrganisation();
         foreach ($organisation->getAffiliation() as $otherAffiliation) {
             if (
                 (null !== $otherAffiliation->getFinancial())
@@ -179,8 +179,8 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                 'type'       => Text::class,
                 'name'       => 'valueChain',
                 'options'    => [
-                    'label'      => _('txt-position-on-value-chain'),
-                    'help-block' => _('txt-position-on-value-chain-inline-help'),
+                    'label'      => _('txt-role-in-the-project'),
+                    'help-block' => _('txt-role-in-the-project-inline-help'),
                 ],
                 'attributes' => [
                     'class' => 'form-control',
@@ -192,24 +192,36 @@ final class Affiliation extends Form implements InputFilterProviderInterface
                 'type'       => Textarea::class,
                 'name'       => 'mainContribution',
                 'options'    => [
-                    'label'      => _('txt-main-contributions-and-added-value'),
-                    'help-block' => _('txt--main-contribution-for-the-project-inline-help'),
+
+                    'help-block' => _('txt-affiliation-main-contribution-for-the-project-help-block'),
                 ],
                 'attributes' => [
-                    'class' => 'form-control',
+                    'placeholder' => _('txt-affiliation-main-contributions-placeholder'),
+                    'label'       => _('txt-affiliation-main-contributions-label'),
                 ],
             ]
         );
         $this->add(
             [
                 'type'       => Textarea::class,
-                'name'       => 'strategicImportance',
+                'name'       => 'tasksAndAddedValue',
                 'options'    => [
-                    'label'      => _('txt-strategic-importance'),
-                    'help-block' => _('txt-strategic-importance-inline-help'),
+
+                    'help-block' => _('txt-affiliation-tasks-and-added-value-help-block'),
                 ],
                 'attributes' => [
-                    'class' => 'form-control',
+                    'placeholder' => _('txt-affiliation-tasks-and-added-value-placeholder'),
+                    'label'       => _('txt-affiliation-tasks-and-added-value-label'),
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'    => Textarea::class,
+                'name'    => 'strategicImportance',
+                'options' => [
+                    'label'      => _('txt-strategic-importance'),
+                    'help-block' => _('txt-strategic-importance-inline-help'),
                 ],
             ]
         );

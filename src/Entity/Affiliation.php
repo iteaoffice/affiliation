@@ -56,64 +56,54 @@ class Affiliation extends AbstractEntity
      * @ORM\Column(name="affiliation_id",type="integer",options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Annotation\Exclude()
      *
      * @var int
      */
     private $id;
     /**
      * @ORM\Column(name="branch", type="string", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-branch"})
      *
      * @var string
      */
     private $branch;
     /**
      * @ORM\Column(name="note", type="text", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-note"})
      *
      * @var string
      */
     private $note;
     /**
      * @ORM\Column(name="value_chain", type="string", length=255, nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-value-chain"})
      *
      * @var string
      */
     private $valueChain;
     /**
      * @ORM\Column(name="market_access", type="text", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-market-access"})
      *
      * @var string
      */
     private $marketAccess;
     /**
      * @ORM\Column(name="strategic_importance", type="text", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-strategic-importance"})
      *
      * @var string
      */
     private $strategicImportance;
     /**
      * @ORM\Column(name="main_contribution", type="text", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-main-contribution"})
      *
      * @var string
      */
     private $mainContribution;
     /**
+     * @ORM\Column(name="tasks_and_added_value", type="text", nullable=true)
+     *
+     * @var string
+     */
+    private $tasksAndAddedValue;
+    /**
      * @ORM\Column(name="self_funded", type="smallint", nullable=false)
-     * @Annotation\Type("Laminas\Form\Element\Radio")
-     * @Annotation\Attributes({"array":"selfFundedTemplates"})
-     * @Annotation\Attributes({"label":"txt-self-funded"})
      *
      * @var int
      */
@@ -121,23 +111,18 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\Column(name="date_created", type="datetime", nullable=true)
      * @Gedmo\Timestampable(on="create")
-     * @Annotation\Exclude()
      *
      * @var DateTime
      */
     private $dateCreated;
     /**
      * @ORM\Column(name="date_end", type="datetime", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\DateTime")
-     * @Annotation\Options({"label":"txt-date-end"})
      *
      * @var DateTime
      */
     private $dateEnd;
     /**
      * @ORM\Column(name="date_self_funded", type="datetime", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\DateTime")
-     * @Annotation\Options({"label":"txt-date-self-funded"})
      *
      * @var DateTime
      */
@@ -145,20 +130,6 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntitySelect")
-     * @Annotation\Options({
-     *      "target_class":"Contact\Entity\Contact",
-     *      "find_method":{
-     *          "name":"findBy",
-     *          "params": {
-     *              "criteria":{},
-     *              "orderBy":{
-     *                  "lastname":"ASC"}
-     *              }
-     *          }
-     *      }
-     * )
-     * @Annotation\Attributes({"label":"txt-technical-contact"})
      *
      * @var Contact
      */
@@ -169,16 +140,12 @@ class Affiliation extends AbstractEntity
      *            joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
      *            inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id")}
      * )
-     * @Annotation\Exclude()
      *
      * @var Contact[]|Collections\ArrayCollection
      */
     private $proxyContact;
     /**
      * @ORM\Column(name="communication_contact_name", type="string", nullable=true)
-     * @Annotation\Type("\Laminas\Form\Element\Text")
-     * @Annotation\Options({"label":"txt-affiliation-communication-contact-name-label","help-block":"txt-affiliation-communication-contact-name-help-block"})
-     * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-name-placeholder"})
      *
      * @var string
      */
@@ -186,8 +153,6 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\Column(name="communication_contact_email", type="string", nullable=true)
      * @Annotation\Type("\Laminas\Form\Element\Email")
-     * @Annotation\Options({"label":"txt-affiliation-communication-contact-email-label","help-block":"txt-affiliation-communication-contact-email-help-block"})
-     * @Annotation\Attributes({"placeholder":"txt-affiliation-communication-contact-email-placeholder"})
      *
      * @var string
      */
@@ -195,7 +160,6 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
-     * @Annotation\Exclude()
      *
      * @var \Organisation\Entity\Organisation|null
      */
@@ -203,7 +167,6 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Parent\Organisation", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="parent_organisation_id", referencedColumnName="parent_organisation_id", nullable=true)
-     * @Annotation\Exclude()
      *
      * @var Organisation|null
      */
@@ -211,56 +174,48 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Project\Entity\Project", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="project_id", referencedColumnName="project_id", nullable=true)
-     * @Annotation\Exclude()
      *
      * @var Project
      */
     private $project;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Description|null
      */
     private $description;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Financial", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Financial
      */
     private $financial;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Invoice", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Invoice[]|Collections\ArrayCollection()
      */
     private $invoice;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Log", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Log[]|Collections\ArrayCollection()
      */
     private $log;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Version", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Version[]|Collections\ArrayCollection()
      */
     private $version;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Contract", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Contract[]|Collections\ArrayCollection()
      */
     private $contract;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\ContractVersion", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var ContractVersion[]|Collections\ArrayCollection()
      */
@@ -272,83 +227,60 @@ class Affiliation extends AbstractEntity
      *    joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
      *    inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id")}
      * )
-     * @Annotation\Type("DoctrineORMModule\Form\Element\EntityMultiCheckbox")
-     * @Annotation\Options({
-     *      "target_class":"Contact\Entity\Contact",
-     *      "find_method":{
-     *          "name":"findBy",
-     *          "params": {
-     *              "criteria":{},
-     *              "orderBy":{
-     *                  "lastname":"ASC"}
-     *              }
-     *          }
-     *      }
-     * )
-     * @Annotation\Attributes({"label":"txt-associates"})
      *
      * @var Contact[]|Collections\ArrayCollection()
      */
     private $associate;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funding", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Funding[]|Collections\ArrayCollection()
      */
     private $funding;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Cost\Cost", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var \Project\Entity\Cost\Cost[]|Collections\ArrayCollection()
      */
     private $cost;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Contract\Cost", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Cost[]|Collections\ArrayCollection()
      */
     private $contractCost;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Effort", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Effort[]|Collections\ArrayCollection()
      */
     private $effort;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Funding\Funded", cascade={"persist","remove"}, mappedBy="affiliation", orphanRemoval=true)
-     * @Annotation\Exclude()
      *
      * @var Funded[]|Collections\ArrayCollection()
      */
     private $funded;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Effort\Spent", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Spent[]|Collections\ArrayCollection()
      */
     private $spent;
     /**
      * @ORM\OneToMany(targetEntity="Project\Entity\Report\EffortSpent", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var EffortSpent[]|Collections\ArrayCollection()
      */
     private $projectReportEffortSpent;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Loi
      */
     private $loi;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Doa
      */
@@ -356,35 +288,30 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist","remove"}, mappedBy="affiliation")
      * @ORM\OrderBy=({"DateCreated"="DESC"})
-     * @Annotation\Exclude();
      *
      * @var DoaReminder[]|Collections\ArrayCollection
      */
     private $doaReminder;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Achievement", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Achievement[]|Collections\ArrayCollection
      */
     private $achievement;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\CostChange", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var CostChange[]|Collections\ArrayCollection
      */
     private $changeRequestCostChange;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\ChangeRequest\Country", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var Country[]|Collections\ArrayCollection
      */
     private $changeRequestCountry;
     /**
      * @ORM\ManyToMany(targetEntity="Project\Entity\Log", cascade={"persist"}, mappedBy="affiliation")
-     * @Annotation\Exclude()
      *
      * @var \Project\Entity\Log[]|Collections\ArrayCollection
      */
@@ -392,14 +319,12 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\ManyToOne(targetEntity="Invoice\Entity\Method", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="method_id", referencedColumnName="method_id", nullable=true)
-     * @Annotation\Exclude()
      *
      * @var Method
      */
     private $invoiceMethod;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Questionnaire\Answer", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @Annotation\Exclude();
      *
      * @var Answer[]|Collections\Collection
      */
@@ -475,6 +400,21 @@ class Affiliation extends AbstractEntity
         $this->organisation = $organisation;
 
         return $this;
+    }
+
+    public function hasMarketAccess(): bool
+    {
+        return null !== $this->marketAccess;
+    }
+
+    public function hasMainContribution(): bool
+    {
+        return null !== $this->mainContribution;
+    }
+
+    public function hasTasksAndAddedValue(): bool
+    {
+        return null !== $this->tasksAndAddedValue;
     }
 
     public function hasParentOrganisation(): bool
@@ -968,6 +908,17 @@ class Affiliation extends AbstractEntity
     public function setProxyContact($proxyContact): Affiliation
     {
         $this->proxyContact = $proxyContact;
+        return $this;
+    }
+
+    public function getTasksAndAddedValue(): ?string
+    {
+        return $this->tasksAndAddedValue;
+    }
+
+    public function setTasksAndAddedValue(?string $tasksAndAddedValue): Affiliation
+    {
+        $this->tasksAndAddedValue = $tasksAndAddedValue;
         return $this;
     }
 }

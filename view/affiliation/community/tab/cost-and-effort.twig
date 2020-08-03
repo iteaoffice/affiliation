@@ -92,29 +92,32 @@
         <tbody>
 
         {% set grandTotal = 0 %}
-        {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
-            {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
-                workpackage,
-                affiliation,
-                latestVersion,
-                'object'
-                ) %}
-            {% set totalPerWP = 0 %}
-            <tr>
-                <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
-                <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
-                {% for year in years %}
-                    <td class="effort-version text-right"
-                        data-affiliation="{{ affiliation.id }}"
-                        data-workpackage="{{ workpackage.id }}"
-                        data-year="{{ year }}"
-                    >{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
-                    {% set totalPerWP = totalPerWP + effortPerYear[year].effort %}
-                {% endfor %}
-                {% set grandTotal = grandTotal + totalPerWP %}
-                <th class="text-right">{{ totalPerWP|parse_effort }}</th>
-            </tr>
-        {% endfor %}
+
+        {% if versionService.hasWorkPackages(latestVersion) %}
+            {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
+                {% set effortPerYear = versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
+                    workpackage,
+                    affiliation,
+                    latestVersion,
+                    'object'
+                    ) %}
+                {% set totalPerWP = 0 %}
+                <tr>
+                    <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
+                    <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
+                    {% for year in years %}
+                        <td class="effort-version text-right"
+                            data-affiliation="{{ affiliation.id }}"
+                            data-workpackage="{{ workpackage.id }}"
+                            data-year="{{ year }}"
+                        >{{ effortPerYear[year].effort|default(0)|parse_effort }}</td>
+                        {% set totalPerWP = totalPerWP + effortPerYear[year].effort %}
+                    {% endfor %}
+                    {% set grandTotal = grandTotal + totalPerWP %}
+                    <th class="text-right">{{ totalPerWP|parse_effort }}</th>
+                </tr>
+            {% endfor %}
+        {% endif %}
 
         <tr>
             <th colspan="2">{{ translate("txt-totals") }}</th>
@@ -175,8 +178,6 @@
                             isAllowed(affiliation, 'edit-affiliation')
                             ) %}
 
-                            {% set hasSomeCostAndEffortEditRights = true %}
-
                             <a
                                     data-affiliation="{{ affiliation.id }}"
                                     data-year="{{ year }}"
@@ -228,79 +229,119 @@
             <th class="text-right">{{ translate("txt-total") }}</th>
         </tr>
         </thead>
-        <tbody>
-        {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
-            {% set effortPerYear = projectService.findTotalEffortByWorkpackageAndAffiliationPerYear(
-                workpackage,
-                affiliation,
-                'object') %}
-            {% set totalPerWP = 0 %}
 
-            {# do a second iteration over the previous version to highlight the difference#}
-            {% if latestVersion %}
-                {% set effortPerYearInVersion =
-                    versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
+
+        {% if not projectService.hasWorkPackages(project) %}
+            {% set effortPerYear = projectService.findTotalEffortByAffiliationPerYear(affiliation) %}
+            {% set totalPerYear = 0 %}
+            <tbody>
+            <tr>
+                <td colspan="2"></td>
+                {% for year in years %}
+                    <td class="text-right {% if projectService.isOutOfBounds(project, year) %}table-danger{% endif %}">
+                        {% if
+                            year in projectService.parseEditYearRange(affiliation.project) and
+                            (
+                            hasProjectEditRights or
+                            isAllowed(affiliation, 'edit-affiliation')
+                            ) %}
+
+                            <a
+                                    data-affiliation="{{ affiliation.id }}"
+                                    data-year="{{ year }}"
+                                    class="text-primary effort-edit single-effort"
+                                    data-type="text"
+                                    data-pk=""
+                                    data-params="{'affiliation':{{ affiliation.id }},'year':{{ year }}}"
+                                    data-url="{{ url('json/project/effort/update-draft-no-work-package') }}"
+                                    data-title="{{ translate("txt-update-effort") }}">{{ effortPerYear[year]|parse_effort }}</a>
+                        {% else %}
+                            <span class="single-effort" data-affilation="{{ affiliation.id }}"
+                                  data-year="{{ year }}">{{ effortPerYear[year]|parse_effort }}</span>
+                        {% endif %}
+                    </td>
+                    {% set totalPerYear = totalPerYear + effortPerYear[year] %}
+                {% endfor %}
+                <th class="effort-total text-right">{{ totalPerYear|parse_effort }}</th>
+            </tr>
+            </tbody>
+        {% endif %}
+
+
+        {% if projectService.hasWorkPackages(project) %}
+            <tbody>
+            {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(affiliation.project) %}
+                {% set effortPerYear = projectService.findTotalEffortByWorkpackageAndAffiliationPerYear(
                     workpackage,
                     affiliation,
-                    latestVersion
-                    ) %}
-            {% endif %}
+                    'object') %}
+                {% set totalPerWP = 0 %}
 
-
-            <tr>
-                <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
-                <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
-                {% for year in years %}
-                {% set effortInCurrentYear = effortPerYear[year].effort %}
-
-                <td class="text-right {% if projectService.isOutOfBounds(project, year) %}table-danger{% endif %}">
-                    {% if
-                        year in projectService.parseEditYearRange(affiliation.project) and
-                        (
-                        hasProjectEditRights or
-                        isAllowed(workpackage, 'edit-community') or
-                        isAllowed(affiliation, 'edit-affiliation')
+                {# do a second iteration over the previous version to highlight the difference #}
+                {% if latestVersion %}
+                    {% set effortPerYearInVersion =
+                        versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
+                        workpackage,
+                        affiliation,
+                        latestVersion
                         ) %}
+                {% endif %}
 
-                        {% set hasSomeCostAndEffortEditRights = true %}
 
-                        <a data-affiliation="{{ affiliation.id }}"
-                           data-workpackage="{{ workpackage.id }}"
-                           data-year="{{ year }}"
-                           class="text-primary effort-edit single-effort"
-                           data-type="text"
-                           data-pk=""
-                           data-params="{'affiliation':{{ affiliation.id }},'year':{{ year }},'workpackage':{{ workpackage.id }}}"
-                           data-url="{{ url('json/project/effort/update-draft') }}"
-                           data-title="{{ translate("txt-update-effort") }}"
-                        >{{ effortInCurrentYear|parse_effort }}</a>
-                    {% else %}
-                        <span class="single-effort"
-                              data-affiliation="{{ affiliation.id }}"
-                              data-workpackage="{{ workpackage.id }}"
-                              data-year="{{ year }}"
-                        >
+                <tr>
+                    <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
+                    <td>{{ workpackageLink(workpackage,'view-community', 'name') }}</td>
+                    {% for year in years %}
+                    {% set effortInCurrentYear = effortPerYear[year].effort %}
+
+                    <td class="text-right {% if projectService.isOutOfBounds(project, year) %}table-danger{% endif %}">
+                        {% if
+                            year in projectService.parseEditYearRange(affiliation.project) and
+                            (
+                            hasProjectEditRights or
+                            isAllowed(workpackage, 'edit-community') or
+                            isAllowed(affiliation, 'edit-affiliation')
+                            ) %}
+
+                            <a data-affiliation="{{ affiliation.id }}"
+                               data-workpackage="{{ workpackage.id }}"
+                               data-year="{{ year }}"
+                               class="text-primary effort-edit single-effort"
+                               data-type="text"
+                               data-pk=""
+                               data-params="{'affiliation':{{ affiliation.id }},'year':{{ year }},'workpackage':{{ workpackage.id }}}"
+                               data-url="{{ url('json/project/effort/update-draft') }}"
+                               data-title="{{ translate("txt-update-effort") }}"
+                            >{{ effortInCurrentYear|parse_effort }}</a>
+                        {% else %}
+                            <span class="single-effort"
+                                  data-affiliation="{{ affiliation.id }}"
+                                  data-workpackage="{{ workpackage.id }}"
+                                  data-year="{{ year }}"
+                            >
                             {{ effortInCurrentYear|parse_effort }}</span>
-                    {% endif %}
-                    {% set totalPerWP = totalPerWP + effortInCurrentYear %}
-                    {% endfor %}
-                <th class="effort-wp-total text-right"
-                    data-workpackage="{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
-            </tr>
-        {% endfor %}
-        </tbody>
-        <tfoot>
-        <tr>
-            <th colspan="2">{{ translate("txt-total") }}</th>
-            {% for year in years %}
-                <th class="text-right effort-year-total" data-year="{{ year }}"></th>
+                        {% endif %}
+                        {% set totalPerWP = totalPerWP + effortInCurrentYear %}
+                        {% endfor %}
+                    <th class="effort-wp-total text-right"
+                        data-workpackage="{{ workpackage.id }}">{{ totalPerWP|parse_effort }}</th>
+                </tr>
             {% endfor %}
-            <th class="text-right effort-total">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
-        </tr>
-        </tfoot>
+            </tbody>
+
+            <tfoot>
+            <tr>
+                <th colspan="2">{{ translate("txt-total") }}</th>
+                {% for year in years %}
+                    <th class="text-right effort-year-total" data-year="{{ year }}"></th>
+                {% endfor %}
+                <th class="text-right effort-total">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
+            </tr>
+            </tfoot>
+        {% endif %}
     </table>
 
-    {% if hasSomeCostAndEffortEditRights %}
+    {% if hasProjectEditRights or isAllowed(affiliation, 'edit-affiliation') %}
         {{ affiliationLink(affiliation, 'edit-cost-and-effort', 'button') }}
 
         <span class="float-right">
