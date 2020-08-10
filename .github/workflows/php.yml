@@ -40,11 +40,11 @@ jobs:
       - name: Dump the autoloader
         run: composer dump-autoload
 
-      - name: Run fix suite
-        run: composer fix
-
-      - name: Run check suite
-        run: composer check
+#      - name: Run fix suite
+#        run: composer fix
+#
+#      - name: Run check suite
+#        run: composer check
 
       - name: Run test suite
         run: composer test
