@@ -22,13 +22,6 @@
   "minimum-stability": "dev",
   "require": {
     "php": "^7.4",
-    "iteaoffice/search": "^2.1",
-    "iteaoffice/contact": "^5.1",
-    "iteaoffice/organisation": "^5.1",
-    "iteaoffice/general": "^5.1",
-    "iteaoffice/invoice": "^5.1",
-    "iteaoffice/project": "^5.1",
-    "setasign/fpdi-tcpdf": "^2.2",
     "laminas/laminas-mvc": "^3.1",
     "laminas/laminas-mvc-form": "^1.0.0",
     "laminas/laminas-mvc-console": "^1.2.0",
@@ -39,6 +32,13 @@
   },
   "require-dev": {
     "iteaoffice/testing": "^2.1",
+    "iteaoffice/search": "^2.1",
+    "iteaoffice/contact": "^5.1",
+    "iteaoffice/organisation": "^5.1",
+    "iteaoffice/general": "^5.1",
+    "iteaoffice/invoice": "^5.1",
+    "iteaoffice/project": "^5.1",
+    "setasign/fpdi-tcpdf": "^2.2"
   },
   "autoload": {
     "psr-4": {
