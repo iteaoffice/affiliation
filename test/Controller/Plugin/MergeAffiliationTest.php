@@ -300,42 +300,42 @@ class MergeAffiliationTest extends AbstractServiceTest
         );
 // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
-        $this->assertEquals(true, $response['success']);
+        self::assertEquals(true, $response['success']);
 // Assert achievements
         /** @var Achievement $achievement */
         $achievement = $this->mainAffiliation->getAchievement()->first();
-        $this->assertInstanceOf(Achievement::class, $achievement);
-        $this->assertEquals(1, $achievement->getId());
+        self::assertInstanceOf(Achievement::class, $achievement);
+        self::assertEquals(1, $achievement->getId());
 // Assert cost changes
         /** @var CostChange $costChange */
         $costChange = $this->mainAffiliation->getChangeRequestCostChange()->first();
-        $this->assertInstanceOf(CostChange::class, $costChange);
-        $this->assertEquals(1, $costChange->getId());
+        self::assertInstanceOf(CostChange::class, $costChange);
+        self::assertEquals(1, $costChange->getId());
 // Assert report effort spent
         /** @var EffortSpent $reportEffortSpent */
         $reportEffortSpent = $this->mainAffiliation->getProjectReportEffortSpent()->first();
-        $this->assertInstanceOf(EffortSpent::class, $reportEffortSpent);
-        $this->assertEquals(1, $reportEffortSpent->getId());
+        self::assertInstanceOf(EffortSpent::class, $reportEffortSpent);
+        self::assertEquals(1, $reportEffortSpent->getId());
 // Assert project log
         /** @var ProjectLog $projectLog */
         $projectLog = $this->mainAffiliation->getProjectLog()->first();
-        $this->assertInstanceOf(ProjectLog::class, $projectLog);
-        $this->assertEquals(1, $projectLog->getId());
+        self::assertInstanceOf(ProjectLog::class, $projectLog);
+        self::assertEquals(1, $projectLog->getId());
 // Assert affiliation log
         /** @var AffiliationLog $affiliationLog */
         $affiliationLog = $this->mainAffiliation->getLog()->first();
-        $this->assertInstanceOf(AffiliationLog::class, $affiliationLog);
-        $this->assertEquals(1, $affiliationLog->getId());
+        self::assertInstanceOf(AffiliationLog::class, $affiliationLog);
+        self::assertEquals(1, $affiliationLog->getId());
 // Assert invoices
         /** @var Invoice $invoice */
         $invoice = $this->mainAffiliation->getInvoice()->first();
-        $this->assertInstanceOf(Invoice::class, $invoice);
-        $this->assertEquals(1, $invoice->getId());
+        self::assertInstanceOf(Invoice::class, $invoice);
+        self::assertEquals(1, $invoice->getId());
 // Assert associates
         /** @var Contact $associate */
         $associate = $this->mainAffiliation->getAssociate()->first();
-        $this->assertInstanceOf(Contact::class, $associate);
-        $this->assertEquals(1, $associate->getId());
+        self::assertInstanceOf(Contact::class, $associate);
+        self::assertEquals(1, $associate->getId());
     }
 
     /**
@@ -355,9 +355,9 @@ class MergeAffiliationTest extends AbstractServiceTest
 // Short circuit when an exception should be thrown
         if ($throwException) {
             $exception = new ORMException('Oops!');
-            $entityManagerMock->expects($this->any())->method('persist')->will($this->throwException($exception));
-            $entityManagerMock->expects($this->any())->method('remove')->will($this->throwException($exception));
-            $entityManagerMock->expects($this->any())->method('flush')->will($this->throwException($exception));
+            $entityManagerMock->expects(self::any())->method('persist')->will(self::throwException($exception));
+            $entityManagerMock->expects(self::any())->method('remove')->will(self::throwException($exception));
+            $entityManagerMock->expects(self::any())->method('flush')->will(self::throwException($exception));
             return $entityManagerMock;
         }
 
@@ -367,63 +367,63 @@ class MergeAffiliationTest extends AbstractServiceTest
             case MergeAffiliation::STRATEGY_SUM:
             case MergeAffiliation::STRATEGY_USE_OTHER:
                 $params = [
-                [$this->identicalTo($this->mainAffiliation->getCost()->first())],
-                [$this->identicalTo($this->otherAffiliation->getCost()->get(1))],
-                [$this->identicalTo($this->mainAffiliation->getEffort()->first())],
-                [$this->identicalTo($this->otherAffiliation->getEffort()->get(1))],
-                [$this->identicalTo($this->mainAffiliation->getSpent()->first())],
-                [$this->identicalTo($this->otherAffiliation->getSpent()->get(1))],
-                [$this->identicalTo($this->mainAffiliation->getVersion()->first()->getCostVersion()->first())],
-                [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
-                [$this->identicalTo($this->mainAffiliation->getVersion()->first()->getEffortVersion()->first())],
-                [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getVersion()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getAchievement()->first())],
-                [$this->identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
-                [$this->identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
-                [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())],
-                [$this->identicalTo($this->otherAffiliation->getLog()->first())],
-                [$this->identicalTo($this->otherAffiliation->getInvoice()->first())],
-                [$this->identicalTo($this->mainAffiliation)],
+                [self::identicalTo($this->mainAffiliation->getCost()->first())],
+                [self::identicalTo($this->otherAffiliation->getCost()->get(1))],
+                [self::identicalTo($this->mainAffiliation->getEffort()->first())],
+                [self::identicalTo($this->otherAffiliation->getEffort()->get(1))],
+                [self::identicalTo($this->mainAffiliation->getSpent()->first())],
+                [self::identicalTo($this->otherAffiliation->getSpent()->get(1))],
+                [self::identicalTo($this->mainAffiliation->getVersion()->first()->getCostVersion()->first())],
+                [self::identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
+                [self::identicalTo($this->mainAffiliation->getVersion()->first()->getEffortVersion()->first())],
+                [self::identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getVersion()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getAchievement()->first())],
+                [self::identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
+                [self::identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
+                [self::identicalTo($this->otherAffiliation->getProjectLog()->first())],
+                [self::identicalTo($this->otherAffiliation->getLog()->first())],
+                [self::identicalTo($this->otherAffiliation->getInvoice()->first())],
+                [self::identicalTo($this->mainAffiliation)],
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ];
 
                 break;
             case MergeAffiliation::STRATEGY_USE_MAIN:
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   $params = [
-                [$this->identicalTo($this->otherAffiliation->getCost()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getEffort()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getSpent()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getVersion()->get(1))],
-                [$this->identicalTo($this->otherAffiliation->getAchievement()->first())],
-                [$this->identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
-                [$this->identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
-                [$this->identicalTo($this->otherAffiliation->getProjectLog()->first())],
-                [$this->identicalTo($this->otherAffiliation->getLog()->first())],
-                [$this->identicalTo($this->otherAffiliation->getInvoice()->first())],
-                [$this->identicalTo($this->mainAffiliation)],
+                [self::identicalTo($this->otherAffiliation->getCost()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getEffort()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getSpent()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getVersion()->get(1))],
+                [self::identicalTo($this->otherAffiliation->getAchievement()->first())],
+                [self::identicalTo($this->otherAffiliation->getChangeRequestCostChange()->first())],
+                [self::identicalTo($this->otherAffiliation->getProjectReportEffortSpent()->first())],
+                [self::identicalTo($this->otherAffiliation->getProjectLog()->first())],
+                [self::identicalTo($this->otherAffiliation->getLog()->first())],
+                [self::identicalTo($this->otherAffiliation->getInvoice()->first())],
+                [self::identicalTo($this->mainAffiliation)],
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ];
 
                 break;
         }
 
-        $entityManagerMock->expects($this->exactly(count($params)))
+        $entityManagerMock->expects(self::exactly(count($params)))
             ->method('persist')
             ->withConsecutive(...$params);
         $params = [
-            [$this->identicalTo($this->otherAffiliation->getCost()->first())],
-            [$this->identicalTo($this->otherAffiliation->getEffort()->first())],
-            [$this->identicalTo($this->otherAffiliation->getSpent()->first())],
-            [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->first())],
-            [$this->identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->first())],
-            [$this->identicalTo($this->otherAffiliation->getVersion()->first())],
-            [$this->identicalTo($this->otherAffiliation)],
+            [self::identicalTo($this->otherAffiliation->getCost()->first())],
+            [self::identicalTo($this->otherAffiliation->getEffort()->first())],
+            [self::identicalTo($this->otherAffiliation->getSpent()->first())],
+            [self::identicalTo($this->otherAffiliation->getVersion()->first()->getCostVersion()->first())],
+            [self::identicalTo($this->otherAffiliation->getVersion()->first()->getEffortVersion()->first())],
+            [self::identicalTo($this->otherAffiliation->getVersion()->first())],
+            [self::identicalTo($this->otherAffiliation)],
         ];
-        $entityManagerMock->expects($this->exactly(count($params)))
+        $entityManagerMock->expects(self::exactly(count($params)))
             ->method('remove')
             ->withConsecutive(...$params);
-        $entityManagerMock->expects($this->once())->method('flush');
+        $entityManagerMock->expects(self::once())->method('flush');
         return $entityManagerMock;
     }
 
@@ -443,56 +443,56 @@ class MergeAffiliationTest extends AbstractServiceTest
         );
 // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
-        $this->assertEquals(true, $response['success']);
+        self::assertEquals(true, $response['success']);
 // Assert cost
         $cost = $this->mainAffiliation->getCost();
-        $this->assertInstanceOf(Cost::class, $cost->first());
-        $this->assertEquals(30, $cost->first()->getCosts());
-        $this->assertInstanceOf(Cost::class, $cost->get(1));
-        $this->assertEquals(40, $cost->get(1)->getCosts());
+        self::assertInstanceOf(Cost::class, $cost->first());
+        self::assertEquals(30, $cost->first()->getCosts());
+        self::assertInstanceOf(Cost::class, $cost->get(1));
+        self::assertEquals(40, $cost->get(1)->getCosts());
 // Assert effort
         $effort = $this->mainAffiliation->getEffort();
-        $this->assertInstanceOf(Effort::class, $effort->first());
-        $this->assertEquals(1.50, $effort->first()->getEffort());
-        $this->assertInstanceOf(Effort::class, $effort->get(1));
-        $this->assertEquals(1.00, $effort->get(1)->getEffort());
+        self::assertInstanceOf(Effort::class, $effort->first());
+        self::assertEquals(1.50, $effort->first()->getEffort());
+        self::assertInstanceOf(Effort::class, $effort->get(1));
+        self::assertEquals(1.00, $effort->get(1)->getEffort());
 // Assert effort spent
         $effortSpent = $this->mainAffiliation->getSpent();
-        $this->assertInstanceOf(Spent::class, $effortSpent->first());
-        $this->assertEquals(1.00, $effortSpent->first()->getEffort());
-        $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
-        $this->assertEquals(0.10, $effortSpent->get(1)->getEffort());
+        self::assertInstanceOf(Spent::class, $effortSpent->first());
+        self::assertEquals(1.00, $effortSpent->first()->getEffort());
+        self::assertInstanceOf(Spent::class, $effortSpent->get(1));
+        self::assertEquals(0.10, $effortSpent->get(1)->getEffort());
 // Assert version cost & effort
         /** @var AffiliationVersion $affiliationVersion1 */
         $affiliationVersion1 = $this->mainAffiliation->getVersion()->get(0);
-        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
+        self::assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
 /** @var CostVersion $costVersion1 */
         $costVersion1 = $affiliationVersion1->getCostVersion()->get(0);
-        $this->assertInstanceOf(CostVersion::class, $costVersion1);
-        $this->assertEquals(35, $costVersion1->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion1);
+        self::assertEquals(35, $costVersion1->getCosts());
 /** @var CostVersion $costVersion2 */
         $costVersion2 = $affiliationVersion1->getCostVersion()->get(1);
-        $this->assertInstanceOf(CostVersion::class, $costVersion2);
-        $this->assertEquals(30, $costVersion2->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion2);
+        self::assertEquals(30, $costVersion2->getCosts());
 /** @var EffortVersion $effortVersion1 */
         $effortVersion1 = $affiliationVersion1->getEffortVersion()->get(0);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion1);
-        $this->assertEquals(0.40, $effortVersion1->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion1);
+        self::assertEquals(0.40, $effortVersion1->getEffort());
 /** @var EffortVersion $effortVersion2 */
         $effortVersion2 = $affiliationVersion1->getEffortVersion()->get(1);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion2);
-        $this->assertEquals(0.20, $effortVersion2->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion2);
+        self::assertEquals(0.20, $effortVersion2->getEffort());
 /** @var AffiliationVersion $affiliationVersion2 */
         $affiliationVersion2 = $this->mainAffiliation->getVersion()->get(1);
-        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
+        self::assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
 /** @var CostVersion $costVersion3 */
         $costVersion3 = $affiliationVersion2->getCostVersion()->get(0);
-        $this->assertInstanceOf(CostVersion::class, $costVersion3);
-        $this->assertEquals(40, $costVersion3->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion3);
+        self::assertEquals(40, $costVersion3->getCosts());
 /** @var EffortVersion $effortVersion3 */
         $effortVersion3 = $affiliationVersion2->getEffortVersion()->get(0);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion3);
-        $this->assertEquals(0.40, $effortVersion3->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion3);
+        self::assertEquals(0.40, $effortVersion3->getEffort());
     }
 
     /**
@@ -510,58 +510,58 @@ class MergeAffiliationTest extends AbstractServiceTest
         );
 // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
-        $this->assertEquals(true, $response['success']);
+        self::assertEquals(true, $response['success']);
 // Assert cost
         $cost = $this->mainAffiliation->getCost();
-        $this->assertInstanceOf(Cost::class, $cost->first());
-        $this->assertEquals(10, $cost->first()->getCosts());
-        $this->assertInstanceOf(Cost::class, $cost->get(1));
-        $this->assertEquals(40, $cost->get(1)->getCosts());
+        self::assertInstanceOf(Cost::class, $cost->first());
+        self::assertEquals(10, $cost->first()->getCosts());
+        self::assertInstanceOf(Cost::class, $cost->get(1));
+        self::assertEquals(40, $cost->get(1)->getCosts());
 // Assert effort
         $effort = $this->mainAffiliation->getEffort();
-        $this->assertInstanceOf(Effort::class, $effort->first());
-        $this->assertEquals(0.50, $effort->first()->getEffort());
-        $this->assertInstanceOf(Effort::class, $effort->get(1));
-        $this->assertEquals(1.00, $effort->get(1)->getEffort());
+        self::assertInstanceOf(Effort::class, $effort->first());
+        self::assertEquals(0.50, $effort->first()->getEffort());
+        self::assertInstanceOf(Effort::class, $effort->get(1));
+        self::assertEquals(1.00, $effort->get(1)->getEffort());
 // Assert effort spent
         $effortSpent = $this->mainAffiliation->getSpent();
-        $this->assertInstanceOf(Spent::class, $effortSpent->first());
-        $this->assertEquals(0.40, $effortSpent->first()->getEffort());
-        $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
-        $this->assertEquals(0.10, $effortSpent->get(1)->getEffort());
+        self::assertInstanceOf(Spent::class, $effortSpent->first());
+        self::assertEquals(0.40, $effortSpent->first()->getEffort());
+        self::assertInstanceOf(Spent::class, $effortSpent->get(1));
+        self::assertEquals(0.10, $effortSpent->get(1)->getEffort());
 // Assert version cost & effort
         /** @var AffiliationVersion $affiliationVersion1 */
         $affiliationVersion1 = $this->mainAffiliation->getVersion()->get(0);
-        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
+        self::assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
 // Affiliation version 1
         /** @var CostVersion $costVersion1 */
         $costVersion1 = $affiliationVersion1->getCostVersion()->get(0);
-        $this->assertInstanceOf(CostVersion::class, $costVersion1);
-        $this->assertEquals(15, $costVersion1->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion1);
+        self::assertEquals(15, $costVersion1->getCosts());
 /** @var CostVersion $costVersion2 */
         $costVersion2 = $affiliationVersion1->getCostVersion()->get(1);
-        $this->assertInstanceOf(CostVersion::class, $costVersion2);
-        $this->assertEquals(30, $costVersion2->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion2);
+        self::assertEquals(30, $costVersion2->getCosts());
 /** @var EffortVersion $effortVersion1 */
         $effortVersion1 = $affiliationVersion1->getEffortVersion()->get(0);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion1);
-        $this->assertEquals(0.30, $effortVersion1->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion1);
+        self::assertEquals(0.30, $effortVersion1->getEffort());
 /** @var EffortVersion $effortVersion2 */
         $effortVersion2 = $affiliationVersion1->getEffortVersion()->get(1);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion2);
-        $this->assertEquals(0.20, $effortVersion2->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion2);
+        self::assertEquals(0.20, $effortVersion2->getEffort());
 // Affiliation version 2
         /** @var AffiliationVersion $affiliationVersion2 */
         $affiliationVersion2 = $this->mainAffiliation->getVersion()->get(1);
-        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
+        self::assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
 /** @var CostVersion $costVersion3 */
         $costVersion3 = $affiliationVersion2->getCostVersion()->get(0);
-        $this->assertInstanceOf(CostVersion::class, $costVersion3);
-        $this->assertEquals(40, $costVersion3->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion3);
+        self::assertEquals(40, $costVersion3->getCosts());
 /** @var EffortVersion $effortVersion3 */
         $effortVersion3 = $affiliationVersion2->getEffortVersion()->get(0);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion3);
-        $this->assertEquals(0.40, $effortVersion3->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion3);
+        self::assertEquals(0.40, $effortVersion3->getEffort());
     }
 
     /**
@@ -579,58 +579,58 @@ class MergeAffiliationTest extends AbstractServiceTest
         );
 // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
-        $this->assertEquals(true, $response['success']);
+        self::assertEquals(true, $response['success']);
 // Assert cost
         $cost = $this->mainAffiliation->getCost();
-        $this->assertInstanceOf(Cost::class, $cost->first());
-        $this->assertEquals(20, $cost->first()->getCosts());
-        $this->assertInstanceOf(Cost::class, $cost->get(1));
-        $this->assertEquals(40, $cost->get(1)->getCosts());
+        self::assertInstanceOf(Cost::class, $cost->first());
+        self::assertEquals(20, $cost->first()->getCosts());
+        self::assertInstanceOf(Cost::class, $cost->get(1));
+        self::assertEquals(40, $cost->get(1)->getCosts());
 // Assert effort
         $effort = $this->mainAffiliation->getEffort();
-        $this->assertInstanceOf(Effort::class, $effort->first());
-        $this->assertEquals(1.00, $effort->first()->getEffort());
-        $this->assertInstanceOf(Effort::class, $effort->get(1));
-        $this->assertEquals(1.00, $effort->get(1)->getEffort());
+        self::assertInstanceOf(Effort::class, $effort->first());
+        self::assertEquals(1.00, $effort->first()->getEffort());
+        self::assertInstanceOf(Effort::class, $effort->get(1));
+        self::assertEquals(1.00, $effort->get(1)->getEffort());
 // Assert effort spent
         $effortSpent = $this->mainAffiliation->getSpent();
-        $this->assertInstanceOf(Spent::class, $effortSpent->first());
-        $this->assertEquals(0.60, $effortSpent->first()->getEffort());
-        $this->assertInstanceOf(Spent::class, $effortSpent->get(1));
-        $this->assertEquals(0.10, $effortSpent->get(1)->getEffort());
+        self::assertInstanceOf(Spent::class, $effortSpent->first());
+        self::assertEquals(0.60, $effortSpent->first()->getEffort());
+        self::assertInstanceOf(Spent::class, $effortSpent->get(1));
+        self::assertEquals(0.10, $effortSpent->get(1)->getEffort());
 // Assert version cost & effort
         /** @var AffiliationVersion $affiliationVersion1 */
         $affiliationVersion1 = $this->mainAffiliation->getVersion()->get(0);
-        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
+        self::assertInstanceOf(AffiliationVersion::class, $affiliationVersion1);
 // Affiliation version 1
         /** @var CostVersion $costVersion1 */
         $costVersion1 = $affiliationVersion1->getCostVersion()->get(0);
-        $this->assertInstanceOf(CostVersion::class, $costVersion1);
-        $this->assertEquals(20, $costVersion1->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion1);
+        self::assertEquals(20, $costVersion1->getCosts());
 /** @var CostVersion $costVersion2 */
         $costVersion2 = $affiliationVersion1->getCostVersion()->get(1);
-        $this->assertInstanceOf(CostVersion::class, $costVersion2);
-        $this->assertEquals(30, $costVersion2->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion2);
+        self::assertEquals(30, $costVersion2->getCosts());
 /** @var EffortVersion $effortVersion1 */
         $effortVersion1 = $affiliationVersion1->getEffortVersion()->get(0);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion1);
-        $this->assertEquals(0.10, $effortVersion1->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion1);
+        self::assertEquals(0.10, $effortVersion1->getEffort());
 /** @var EffortVersion $effortVersion2 */
         $effortVersion2 = $affiliationVersion1->getEffortVersion()->get(1);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion2);
-        $this->assertEquals(0.20, $effortVersion2->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion2);
+        self::assertEquals(0.20, $effortVersion2->getEffort());
 // Affiliation version 2
         /** @var AffiliationVersion $affiliationVersion2 */
         $affiliationVersion2 = $this->mainAffiliation->getVersion()->get(1);
-        $this->assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
+        self::assertInstanceOf(AffiliationVersion::class, $affiliationVersion2);
 /** @var CostVersion $costVersion3 */
         $costVersion3 = $affiliationVersion2->getCostVersion()->get(0);
-        $this->assertInstanceOf(CostVersion::class, $costVersion3);
-        $this->assertEquals(40, $costVersion3->getCosts());
+        self::assertInstanceOf(CostVersion::class, $costVersion3);
+        self::assertEquals(40, $costVersion3->getCosts());
 /** @var EffortVersion $effortVersion3 */
         $effortVersion3 = $affiliationVersion2->getEffortVersion()->get(0);
-        $this->assertInstanceOf(EffortVersion::class, $effortVersion3);
-        $this->assertEquals(0.40, $effortVersion3->getEffort());
+        self::assertInstanceOf(EffortVersion::class, $effortVersion3);
+        self::assertEquals(0.40, $effortVersion3->getEffort());
     }
 
     /**
@@ -649,7 +649,7 @@ class MergeAffiliationTest extends AbstractServiceTest
         );
 // Run the merge
         $response = $mergeAffiliation($this->mainAffiliation, $this->otherAffiliation, $strategy);
-        $this->assertEquals(false, $response['success']);
-        $this->assertEquals('Oops!', $response['errorMessage']);
+        self::assertEquals(false, $response['success']);
+        self::assertEquals('Oops!', $response['errorMessage']);
     }
 }
