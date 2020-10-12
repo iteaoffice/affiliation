@@ -28,6 +28,7 @@ use Program\Entity\Program;
 use Project\Entity\Project;
 use Project\Entity\Version\Type;
 use Project\Entity\Version\Version;
+use Project\Entity\Workpackage\Workpackage;
 
 /**
  * Class Affiliation
@@ -329,6 +330,22 @@ class Affiliation extends EntityRepository
         $qb->setParameter(5, $version);
 
         $qb->addOrderBy('organisation_entity_organisation.organisation', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findAffiliationByWorkPackage(Workpackage $workPackage): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('affiliation_entity_affiliation');
+        $qb->from(Entity\Affiliation::class, 'affiliation_entity_affiliation');
+        $qb->join('affiliation_entity_affiliation.organisation', 'organisation_entity_organisation');
+        $qb->join('affiliation_entity_affiliation.effort', 'project_entity_effort');
+
+        $qb->andWhere('project_entity_effort.workpackage = :workpackage');
+        $qb->setParameter('workpackage', $workPackage);
+
+        $qb->addOrderBy('organisation_entity_organisation.organisation', Criteria::ASC);
 
         return $qb->getQuery()->getResult();
     }

@@ -30,7 +30,7 @@
         {% set costPerYear = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(
             affiliation,
             latestVersion
-            ) %}
+        ) %}
         {% set totalPerYear = 0 %}
 
         {% set affiliationVersion = affiliationService.findAffiliationVersion(affiliation,latestVersion) %}
@@ -100,7 +100,7 @@
                     affiliation,
                     latestVersion,
                     'object'
-                    ) %}
+                ) %}
                 {% set totalPerWP = 0 %}
                 <tr>
                     <td>{{ workpackageLink(workpackage,'view-community', 'sequence') }}</td>
@@ -117,17 +117,33 @@
                     <th class="text-right">{{ totalPerWP|parse_effort }}</th>
                 </tr>
             {% endfor %}
+
+            <tr>
+                <th colspan="2">{{ translate("txt-totals") }}</th>
+                {% for year in years %}
+                    <th class="text-right">
+                        {{ versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, latestVersion)[year]|parse_effort }}
+                    </th>
+                {% endfor %}
+                <th class="text-right">{{ grandTotal|parse_effort }}</th>
+            </tr>
         {% endif %}
 
-        <tr>
-            <th colspan="2">{{ translate("txt-totals") }}</th>
-            {% for year in years %}
-                <th class="text-right">
-                    {{ versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, latestVersion)[year]|parse_effort }}
-                </th>
-            {% endfor %}
-            <th class="text-right">{{ grandTotal|parse_effort }}</th>
-        </tr>
+        {% if not versionService.hasWorkPackages(latestVersion) %}
+            {% set grandTotal = 0 %}
+            <tr>
+                <th colspan="2">{{ translate("txt-totals") }}</th>
+                {% for year in years %}
+                    <td class="text-right">
+                        {% set amountPerYear = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, latestVersion)[year] %}
+                        {% set grandTotal = grandTotal + amountPerYear %}
+                        {{ amountPerYear|parse_effort }}
+                    </td>
+                {% endfor %}
+                <th class="text-right">{{ grandTotal|parse_effort }}</th>
+            </tr>
+        {% endif %}
+
 
         </tbody>
     </table>
@@ -281,9 +297,9 @@
                 {% if latestVersion %}
                     {% set effortPerYearInVersion =
                         versionService.findTotalEffortVersionByWorkpackageAndAffiliationAndVersionPerYear(
-                        workpackage,
-                        affiliation,
-                        latestVersion
+                            workpackage,
+                            affiliation,
+                            latestVersion
                         ) %}
                 {% endif %}
 

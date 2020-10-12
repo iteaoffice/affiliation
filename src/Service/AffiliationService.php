@@ -57,6 +57,7 @@ use Project\Entity\Funding\Source;
 use Project\Entity\Funding\Status;
 use Project\Entity\Project;
 use Project\Entity\Version\Version;
+use Project\Entity\Workpackage\Workpackage;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
@@ -1281,6 +1282,19 @@ class AffiliationService extends AbstractService
         /** @var Repository\Affiliation $repository */
         $repository   = $this->entityManager->getRepository(Affiliation::class);
         $affiliations = $repository->findAffiliationByProjectVersionAndWhich($version, $which);
+
+        if (null === $affiliations) {
+            $affiliations = [];
+        }
+
+        return new ArrayCollection($affiliations);
+    }
+
+    public function findAffiliationByWorkPackage(Workpackage $workPackage): ArrayCollection
+    {
+        /** @var Repository\Affiliation $repository */
+        $repository   = $this->entityManager->getRepository(Affiliation::class);
+        $affiliations = $repository->findAffiliationByWorkPackage($workPackage);
 
         if (null === $affiliations) {
             $affiliations = [];

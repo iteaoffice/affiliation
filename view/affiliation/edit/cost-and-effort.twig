@@ -34,6 +34,11 @@
     </div>
 </div>
 
+{% if hasWorkPackages and not project.hasWorkPackages() %}
+    <br>
+    {{ ztbalert().danger(translate("txt-in-order-to-complete-the-costs-and-effort-in-this-phase-of-the-project-you-need-to-create-work-packages-first-here-%s")|format(url('community/project/project/work-packages',{'docRef':project.docRef})))|raw }}
+{% endif %}
+
 
 <table class="table table-listing table-striped table-sm">
     <tbody>
