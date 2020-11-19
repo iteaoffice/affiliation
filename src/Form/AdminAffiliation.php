@@ -15,6 +15,7 @@ namespace Affiliation\Form;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Form\Element\Contact;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use Invoice\Entity\Method;
@@ -360,10 +361,10 @@ final class AdminAffiliation extends Form implements InputFilterProviderInterfac
                     'object_manager' => $entityManager,
                     'label'          => _('txt-invoice-method'),
                     'find_method'    => [
-                        'name'   => 'findAll',
+                        'name'   => 'findBy',
                         'params' => [
                             'criteria' => [],
-                            'orderBy'  => ['method' => 'ASC'],
+                            'orderBy'  => ['method' => Criteria::ASC],
                         ],
                     ],
                 ],

@@ -98,8 +98,8 @@ final class SubmitLoi extends Form implements InputFilterProviderInterface
                 'validators' => [
                     new Size(
                         [
-                            'min' => '5kB',
-                            'max' => '8MB',
+                            'min' => '1kB',
+                            'max' => '16MB',
                         ]
                     ),
                     new Extension(

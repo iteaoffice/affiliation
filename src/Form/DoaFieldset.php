@@ -78,8 +78,8 @@ final class DoaFieldset extends ObjectFieldset implements InputFilterProviderInt
                 'validators' => [
                     new Size(
                         [
-                            'min' => '20kB',
-                            'max' => '8MB',
+                            'min' => '1kB',
+                            'max' => '16MB',
                         ]
                     ),
                 ],

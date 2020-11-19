@@ -45,8 +45,8 @@ final class DoaFilter extends InputFilter
                 'validators' => [
                     new Size(
                         [
-                            'min' => '5kB',
-                            'max' => '8MB',
+                            'min' => '1kB',
+                            'max' => '16MB',
                         ]
                     ),
                     new Extension(

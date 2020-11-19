@@ -447,7 +447,7 @@
                     <tr>
                         {% set version = affiliationVersion.version %}
                         <td><small class="text-muted">{{ version.id }}</small></td>
-                        <td>{{ versionLink(version,'view-admin','description') }}</td>
+                        <td>{{ versionLink(version,'general-admin','description') }}</td>
                         <td><small class="text-muted">{{ affiliationVersion.id }}</small></td>
                         <td>{{ versionService.parseStatus(version) }}</td>
                         <td>{{ version.dateReviewed|string_date }}</td>
@@ -499,7 +499,7 @@
                 {% set version = affiliationVersion.version %}
                 <tr>
                     <th colspan="{{ 4 + projectService.parseYearRange(project, true)|length }}">
-                        {{ versionLink(version,'view-admin','description') }}</th>
+                        {{ versionLink(version,'general-admin','description') }}</th>
                 </tr>
                 <tr>
                     <td>

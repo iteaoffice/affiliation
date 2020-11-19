@@ -16,18 +16,16 @@ namespace Affiliation\Controller;
 use Affiliation\Controller\Plugin;
 use Affiliation\Entity\Affiliation;
 use Contact\Entity\Contact;
-use Project\Controller\Plugin\Checklist\ProjectChecklist;
-use Project\Entity\Project;
-use Project\Entity\Version\Type;
-use Search\Service\AbstractSearchService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\Mvc\Plugin\Identity\Identity;
-use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
+use Project\Controller\Plugin\Checklist\ProjectChecklist;
+use Project\Entity\Project;
+use Project\Entity\Version\Type;
+use Search\Service\AbstractSearchService;
 
 /**
- * @method      ZfcUserAuthentication zfcUserAuthentication()
  * @method      Identity|Contact identity()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)

@@ -123,8 +123,8 @@ class Affiliation extends EntityRepository
         $qb->andWhere($qb->expr()->isNull('affiliation_entity_affiliation.dateSelfFunded'));
         $qb->setParameter(1, Entity\Affiliation::SELF_FUNDED);
 
-        $projectRepository = $this->_em->getRepository(Project::class);
-        $qb                = $projectRepository->onlyActiveProject($qb);
+//        $projectRepository = $this->_em->getRepository(Project::class);
+//        $qb                = $projectRepository->onlyActiveProject($qb);
 
         return $qb->getQuery()->getResult();
     }
