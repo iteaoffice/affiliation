@@ -151,7 +151,7 @@
     <hr>
 {% endif %}
 
-{% if projectService.isPrepareMode(affiliation.project) %}
+{% if projectService.canSubmitNextVersion(affiliation.project) %}
     <h2>{{ translate("txt-latest-unsubmitted-version") }}</h2>
 
     {{ ztbalert().info(translate("txt-explanation-cost-and-effort-edit-in-place"))|raw }}

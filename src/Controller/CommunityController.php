@@ -101,10 +101,7 @@ final class CommunityController extends AffiliationAbstractController
         /*
          * Create the checklist already now, since we need it in every method
          */
-        $projectChecklist = $this->projectChecklist(
-            $affiliation->getProject(),
-            $this->callService->getCallStatus($affiliation->getProject()->getCall())->getVersionType()
-        );
+        $projectChecklist = $this->projectChecklist($affiliation->getProject());
 
         $params = [
             'affiliationService'    => $this->affiliationService,
@@ -115,7 +112,7 @@ final class CommunityController extends AffiliationAbstractController
             'workpackageService'    => $this->workpackageService,
             'latestVersion'         => $this->projectService->getLatestNotRejectedProjectVersion($affiliation->getProject()),
             'latestContractVersion' => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
-            'versionType'           => $this->projectService->getNextMode($affiliation->getProject())->getVersionType(),
+            'versionType'           => $this->projectService->getNextVersionType($affiliation->getProject())->getVersionType(),
             'hasProjectEditRights'  => $hasProjectEditRights,
             'reportService'         => $this->reportService,
             'versionService'        => $this->versionService,

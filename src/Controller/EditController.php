@@ -267,7 +267,6 @@ final class EditController extends AffiliationAbstractController
 
                 //Update the mode of the project
                 $project = $affiliation->getProject();
-                $project->setMode($this->projectService->getNextMode($project)->getMode());
                 //$this->projectService->save($project);
 
                 $changelogMessage = sprintf(
@@ -1167,9 +1166,6 @@ final class EditController extends AffiliationAbstractController
                     }
                 }
             }
-            //Update the mode of the project when the saved is pressed
-            $project->setMode($this->projectService->getNextMode($project)->getMode());
-            //$this->projectService->save($project);
 
             $changelogMessage = sprintf(
                 $this->translator->translate(

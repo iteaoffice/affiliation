@@ -29,7 +29,7 @@ use Search\Service\AbstractSearchService;
  * @method      Identity|Contact identity()
  * @method      FlashMessenger flashMessenger()
  * @method      bool isAllowed($resource, $action)
- * @method      ProjectChecklist projectChecklist(Project $project, Type $versionType)
+ * @method      ProjectChecklist projectChecklist(Project $project)
  * @method      Plugin\AffiliationPdf renderPaymentSheet(Affiliation $affiliation, int $year, int $period, bool $useContractData)
  * @method      Plugin\RenderLoi renderLoi()
  * @method      Plugin\GetFilter getAffiliationFilter()
