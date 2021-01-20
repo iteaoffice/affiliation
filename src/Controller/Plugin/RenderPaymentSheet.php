@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -393,7 +392,7 @@ final class RenderPaymentSheet extends AbstractPlugin
 
             $yearData[] = $projectYear;
 
-            if ($this->affiliationService->isSelfFunded($affiliation)) {
+            if ($affiliation->isSelfFunded()) {
                 $yearData[] = $this->translator->translate('txt-self-funded');
             } elseif (null !== $this->affiliationService->getFundingInYear($affiliation, $projectYear)) {
                 $yearData[] = $this->affiliationService->getFundingInYear($affiliation, $projectYear)->getStatus()

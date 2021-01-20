@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -17,7 +16,6 @@ use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Questionnaire\Questionnaire;
 use Affiliation\Service\QuestionnaireService;
 use DateTime;
-use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\View\Helper\AbstractHelper;
 
 use function sprintf;
@@ -26,11 +24,8 @@ use function sprintf;
  * Class QuestionnaireHelper
  * @package Affiliation\View\Helper\Questionnaire
  */
-class QuestionnaireHelper extends AbstractHelper
+final class QuestionnaireHelper extends AbstractHelper
 {
-    /**
-     * @var QuestionnaireService
-     */
     private QuestionnaireService $questionnaireService;
 
     public function __construct(QuestionnaireService $questionnaireService)

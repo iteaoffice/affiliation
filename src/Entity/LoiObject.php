@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA copyright message placeholder.
- *
- * @category    Affiliation
+ * ITEA Office all rights reserved
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -25,10 +24,8 @@ class LoiObject extends AbstractEntity
      * @ORM\Column(name="object_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     *
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
     /**
      * @ORM\Column(name="object", type="blob", nullable=false)
      *
@@ -36,29 +33,27 @@ class LoiObject extends AbstractEntity
      */
     private $object;
     /**
-     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Loi", cascade="persist", inversedBy="object")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade="persist", inversedBy="object")
      * @ORM\JoinColumn(name="loi_id", referencedColumnName="loi_id", nullable=false)
-     *
-     * @var \Affiliation\Entity\Loi
      */
-    private $loi;
+    private \Affiliation\Entity\Loi $loi;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    public function getLoi()
+    public function getLoi(): \Affiliation\Entity\Loi
     {
         return $this->loi;
     }
 
-    public function setLoi($loi)
+    public function setLoi(\Affiliation\Entity\Loi $loi)
     {
         $this->loi = $loi;
     }
@@ -68,7 +63,7 @@ class LoiObject extends AbstractEntity
         return $this->object;
     }
 
-    public function setObject($object)
+    public function setObject(string $object)
     {
         $this->object = $object;
     }

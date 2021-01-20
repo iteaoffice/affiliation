@@ -1,0 +1,45 @@
+{% include 'affiliation/admin/manger/tabs' %}
+
+<h2>{{ translate("txt-associate-details") }}</h2>
+
+{% if contactsInAffiliation.contacts|length > 0 %}
+    <table class="table table-striped table-hover table-sm">
+        <thead>
+        <tr>
+            <th>{{ translate("txt-associate-name") }}</th>
+            <th>{{ translate("txt-organisation") }}</th>
+            <th>{{ translate("txt-country") }}</th>
+            <th>{{ translate("txt-roles") }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for contact in contactsInAffiliation.contacts %}
+            <tr>
+                <td>{{ contact.displayName }} <a
+                            href="mailto:{{ contact.email }}"><i class="far fa-envelope"></i></a></td>
+                {% if contactService.hasOrganisation(contact) %}
+                    <td>{{ organisationLink(contact.contactOrganisation.organisation,'view-admin') }}
+                        {% if contact.contactOrganisation.organisation != affiliation.organisation %}
+                            <i class="fas fa-exclamation-triangle text-danger"
+                               title="{{ translate("txt-associate-is-from-another-organisation") }}"></i>
+                        {% endif %}
+                    </td>
+                    <td>{{ countryLink(contact.contactOrganisation.organisation.country,'view-admin') }}</td>
+                {% else %}
+                    <td colspan="2"></td>
+                {% endif %}
+                <td>
+                    {{ contactsInAffiliation['contactRole'][contact.id]|join(', ') }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {{ ztbalert().info(translate("txt-no-associates-in-this-affiliation"))|raw }}
+{% endif %}
+
+{{ affiliationLink(affiliation,'add-associate-admin','button') }}
+{% if contactsInAffiliation.contacts|length > 0 %}
+    {{ affiliationLink(affiliation,'manage-associate','button') }}
+{% endif %}

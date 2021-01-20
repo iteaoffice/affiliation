@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -14,13 +13,12 @@ declare(strict_types=1);
 namespace AffiliationTest\Form;
 
 use Affiliation\Entity\Affiliation;
-use Affiliation\Form\AdminAffiliation;
+use Affiliation\Form\AffiliationAdminForm;
 use Doctrine\Common\Collections\ArrayCollection;
 use General\Entity\Country;
-use Organisation\Entity\OParent;
+use Organisation\Entity\ParentEntity;
 use Organisation\Entity\Organisation;
 use Organisation\Service\ParentService;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Testing\Util\AbstractFormTest;
 
 /**
@@ -30,17 +28,12 @@ use Testing\Util\AbstractFormTest;
  */
 class AdminAffiliationTest extends AbstractFormTest
 {
-    /**
-     * @var Affiliation
-     */
-    protected $affiliation;
-/**
-     * Set up basic properties
-     */
+    protected Affiliation $affiliation;
+
     public function setUp(): void
     {
         $this->affiliation = new Affiliation();
-        $organisation = new Organisation();
+        $organisation      = new Organisation();
         $organisation->setId(1);
         $organisation->setOrganisation('organisation');
         $this->affiliation->setOrganisation($organisation);
@@ -48,16 +41,11 @@ class AdminAffiliationTest extends AbstractFormTest
 
     public function testCanCreateAdminAffiliationForm(): void
     {
-        $adminAffiliation = new AdminAffiliation($this->affiliation, $this->setUpParentServiceMock(), $this->getEntityManagerMock());
-        $this->assertInstanceOf(AdminAffiliation::class, $adminAffiliation);
-        $this->assertArrayHasKey('parentOrganisation', $adminAffiliation->getInputFilterSpecification());
+        $adminAffiliation = new AffiliationAdminForm($this->affiliation, $this->setUpParentServiceMock(), $this->getEntityManagerMock());
+        self::assertInstanceOf(AffiliationAdminForm::class, $adminAffiliation);
+        self::assertArrayHasKey('parentOrganisation', $adminAffiliation->getInputFilterSpecification());
     }
 
-    /**
-     * Set up the contact service mock object.
-     *
-     * @return ParentService|MockObject
-     */
     private function setUpParentServiceMock()
     {
         $country = new Country();
@@ -72,21 +60,21 @@ class AdminAffiliationTest extends AbstractFormTest
         $organisation2->setCountry($country);
         $parentOrganisation = new \Organisation\Entity\Parent\Organisation();
         $parentOrganisation->setOrganisation($organisation1);
-        $oParent = new OParent();
-        $oParent->setOrganisation($organisation2);
-        $oParent->setParentOrganisation(new ArrayCollection([$parentOrganisation]));
+        $ParentEntity = new ParentEntity();
+        $ParentEntity->setOrganisation($organisation2);
+        $ParentEntity->setParentOrganisation(new ArrayCollection([$parentOrganisation]));
         $parentServiceMock = $this->getMockBuilder(ParentService::class)
             ->disableOriginalConstructor()
             ->setMethods(['findParentOrganisationByNameLike', 'findAll'])
             ->getMock();
-        $parentServiceMock->expects($this->once())
+        $parentServiceMock->expects(self::once())
             ->method('findParentOrganisationByNameLike')
             ->with($this->affiliation->getOrganisation())
             ->willReturn(new ArrayCollection([$parentOrganisation]));
-        $parentServiceMock->expects($this->once())
+        $parentServiceMock->expects(self::once())
             ->method('findAll')
-            ->willReturn([$oParent]);
-//  $parentServiceMock->setEntityManager($this->getEntityManagerMock(OParent::class));
+            ->willReturn([$ParentEntity]);
+//  $parentServiceMock->setEntityManager($this->getEntityManagerMock(ParentEntity::class));
 
         return $parentServiceMock;
     }

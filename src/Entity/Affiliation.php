@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA copyright message placeholder.
- *
- * @category    Project
+ * ITEA Office all rights reserved
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -161,14 +160,14 @@ class Affiliation extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
      *
-     * @var \Organisation\Entity\Organisation|null
+     * @var \Organisation\Entity\Organisation
      */
     private $organisation;
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Parent\Organisation", inversedBy="affiliation", cascade={"persist"})
      * @ORM\JoinColumn(name="parent_organisation_id", referencedColumnName="parent_organisation_id", nullable=true)
      *
-     * @var Organisation|null
+     * @var \Organisation\Entity\Parent\Organisation
      */
     private $parentOrganisation;
     /**
@@ -181,7 +180,7 @@ class Affiliation extends AbstractEntity
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Description", cascade={"persist","remove"}, mappedBy="affiliation")
      *
-     * @var Description|null
+     * @var Description
      */
     private $description;
     /**
@@ -286,10 +285,10 @@ class Affiliation extends AbstractEntity
      */
     private $doa;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaReminder", cascade={"persist","remove"}, mappedBy="affiliation")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Doa\Reminder", cascade={"persist","remove"}, mappedBy="affiliation")
      * @ORM\OrderBy=({"DateCreated"="DESC"})
      *
-     * @var DoaReminder[]|Collections\ArrayCollection
+     * @var \Affiliation\Entity\Doa\Reminder[]|Collections\ArrayCollection
      */
     private $doaReminder;
     /**
@@ -383,10 +382,9 @@ class Affiliation extends AbstractEntity
         return $this->branch;
     }
 
-    public function setBranch($branch): Affiliation
+    public function setBranch(?string $branch): Affiliation
     {
         $this->branch = $branch;
-
         return $this;
     }
 
@@ -395,10 +393,9 @@ class Affiliation extends AbstractEntity
         return $this->organisation;
     }
 
-    public function setOrganisation($organisation): Affiliation
+    public function setOrganisation(?\Organisation\Entity\Organisation $organisation): Affiliation
     {
         $this->organisation = $organisation;
-
         return $this;
     }
 
@@ -426,19 +423,6 @@ class Affiliation extends AbstractEntity
     {
         return null !== $this->invoiceMethod && $this->invoiceMethod->getId() === Method::METHOD_PERCENTAGE;
     }
-
-    public function getParentOrganisation(): ?Organisation
-    {
-        return $this->parentOrganisation;
-    }
-
-    public function setParentOrganisation($parentOrganisation): Affiliation
-    {
-        $this->parentOrganisation = $parentOrganisation;
-
-        return $this;
-    }
-
 
     public function isActive(): bool
     {
@@ -477,237 +461,41 @@ class Affiliation extends AbstractEntity
         $this->associate->removeElement($contact);
     }
 
-    public function getContact()
+    public function getSelfFundedText(): string
     {
-        return $this->contact;
+        return self::$selfFundedTemplates[$this->selfFunded] ?? '';
     }
 
-    public function setContact($contact)
-    {
-        $this->contact = $contact;
-    }
-
-    public function getDateCreated()
-    {
-        return $this->dateCreated;
-    }
-
-    public function setDateCreated($dateCreated)
-    {
-        $this->dateCreated = $dateCreated;
-    }
-
-    public function getDateEnd()
-    {
-        return $this->dateEnd;
-    }
-
-    public function setDateEnd($dateEnd)
-    {
-        $this->dateEnd = $dateEnd;
-    }
-
-    public function getDateSelfFunded()
-    {
-        return $this->dateSelfFunded;
-    }
-
-    public function setDateSelfFunded($dateSelfFunded)
-    {
-        $this->dateSelfFunded = $dateSelfFunded;
-    }
-
-    public function getDescription(): ?Description
-    {
-        return $this->description;
-    }
-
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    public function getFinancial(): ?Financial
-    {
-        return $this->financial;
-    }
-
-    public function setFinancial($financial)
-    {
-        $this->financial = $financial;
-    }
-
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId(?int $id): Affiliation
     {
         $this->id = $id;
+        return $this;
     }
 
-    public function getInvoice()
-    {
-        return $this->invoice;
-    }
-
-    public function setInvoice($invoice)
-    {
-        $this->invoice = $invoice;
-    }
-
-    public function getLog()
-    {
-        return $this->log;
-    }
-
-    public function setLog($log)
-    {
-        $this->log = $log;
-    }
-
-    public function getNote()
+    public function getNote(): ?string
     {
         return $this->note;
     }
 
-    public function setNote($note)
+    public function setNote(?string $note): Affiliation
     {
         $this->note = $note;
+        return $this;
     }
 
-    public function getProject()
-    {
-        return $this->project;
-    }
-
-    public function setProject($project)
-    {
-        $this->project = $project;
-    }
-
-    public function getSelfFunded(bool $textual = false)
-    {
-        if ($textual) {
-            return self::$selfFundedTemplates[$this->selfFunded];
-        }
-
-        return $this->selfFunded;
-    }
-
-    public function setSelfFunded($selfFunded)
-    {
-        $this->selfFunded = $selfFunded;
-    }
-
-    public function getValueChain()
+    public function getValueChain(): ?string
     {
         return $this->valueChain;
     }
 
-    public function setValueChain($valueChain)
+    public function setValueChain(?string $valueChain): Affiliation
     {
         $this->valueChain = $valueChain;
-    }
-
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    public function setVersion($version)
-    {
-        $this->version = $version;
-    }
-
-    public function getAssociate()
-    {
-        return $this->associate;
-    }
-
-    public function setAssociate($associate)
-    {
-        $this->associate = $associate;
-    }
-
-    public function getCost()
-    {
-        return $this->cost;
-    }
-
-    public function setCost($cost)
-    {
-        $this->cost = $cost;
-    }
-
-    public function getFunding()
-    {
-        return $this->funding;
-    }
-
-    public function setFunding($funding)
-    {
-        $this->funding = $funding;
-    }
-
-    public function getSpent()
-    {
-        return $this->spent;
-    }
-
-    public function setSpent($spent): Affiliation
-    {
-        $this->spent = $spent;
-
-        return $this;
-    }
-
-    public function getEffort()
-    {
-        return $this->effort;
-    }
-
-    public function setEffort($effort): Affiliation
-    {
-        $this->effort = $effort;
-
-        return $this;
-    }
-
-    public function getLoi()
-    {
-        return $this->loi;
-    }
-
-    public function setLoi($loi): Affiliation
-    {
-        $this->loi = $loi;
-
-        return $this;
-    }
-
-    public function getDoa()
-    {
-        return $this->doa;
-    }
-
-    public function setDoa($doa): Affiliation
-    {
-        $this->doa = $doa;
-
-        return $this;
-    }
-
-    public function getMainContribution(): ?string
-    {
-        return $this->mainContribution;
-    }
-
-    public function setMainContribution($mainContribution): Affiliation
-    {
-        $this->mainContribution = $mainContribution;
-
         return $this;
     }
 
@@ -716,82 +504,9 @@ class Affiliation extends AbstractEntity
         return $this->marketAccess;
     }
 
-    public function setMarketAccess($marketAccess): Affiliation
+    public function setMarketAccess(?string $marketAccess): Affiliation
     {
         $this->marketAccess = $marketAccess;
-
-        return $this;
-    }
-
-    public function getDoaReminder()
-    {
-        return $this->doaReminder;
-    }
-
-    public function setDoaReminder($doaReminder): Affiliation
-    {
-        $this->doaReminder = $doaReminder;
-
-        return $this;
-    }
-
-    public function getAchievement()
-    {
-        return $this->achievement;
-    }
-
-    public function setAchievement($achievement): Affiliation
-    {
-        $this->achievement = $achievement;
-
-        return $this;
-    }
-
-    public function getProjectReportEffortSpent()
-    {
-        return $this->projectReportEffortSpent;
-    }
-
-    public function setProjectReportEffortSpent($projectReportEffortSpent): Affiliation
-    {
-        $this->projectReportEffortSpent = $projectReportEffortSpent;
-
-        return $this;
-    }
-
-    public function getChangeRequestCostChange()
-    {
-        return $this->changeRequestCostChange;
-    }
-
-    public function setChangeRequestCostChange($changeRequestCostChange): Affiliation
-    {
-        $this->changeRequestCostChange = $changeRequestCostChange;
-
-        return $this;
-    }
-
-    public function getChangeRequestCountry()
-    {
-        return $this->changeRequestCountry;
-    }
-
-    public function setChangeRequestCountry($changerequestCountry): Affiliation
-    {
-        $this->changeRequestCountry = $changerequestCountry;
-
-        return $this;
-    }
-
-    public function getProjectLog()
-    {
-        return $this->projectLog;
-    }
-
-    public function setProjectLog($projectLog): Affiliation
-    {
-        $this->projectLog = $projectLog;
-
         return $this;
     }
 
@@ -800,81 +515,97 @@ class Affiliation extends AbstractEntity
         return $this->strategicImportance;
     }
 
-    public function setStrategicImportance($strategicImportance): Affiliation
+    public function setStrategicImportance(?string $strategicImportance): Affiliation
     {
         $this->strategicImportance = $strategicImportance;
-
         return $this;
     }
 
-    public function getFunded()
+    public function getMainContribution(): ?string
     {
-        return $this->funded;
+        return $this->mainContribution;
     }
 
-    public function setFunded($funded): Affiliation
+    public function setMainContribution(?string $mainContribution): Affiliation
     {
-        $this->funded = $funded;
-
+        $this->mainContribution = $mainContribution;
         return $this;
     }
 
-    public function getContract()
+    public function getTasksAndAddedValue(): ?string
     {
-        return $this->contract;
+        return $this->tasksAndAddedValue;
     }
 
-    public function setContract($contract): Affiliation
+    public function setTasksAndAddedValue(?string $tasksAndAddedValue): Affiliation
     {
-        $this->contract = $contract;
-
+        $this->tasksAndAddedValue = $tasksAndAddedValue;
         return $this;
     }
 
-    public function getContractVersion()
+    public function getSelfFunded(): ?int
     {
-        return $this->contractVersion;
+        return $this->selfFunded;
     }
 
-    public function setContractVersion($contractVersion): Affiliation
+    public function setSelfFunded(?int $selfFunded): Affiliation
     {
-        $this->contractVersion = $contractVersion;
-
+        $this->selfFunded = $selfFunded;
         return $this;
     }
 
-    public function getContractCost()
+    public function getDateCreated(): ?DateTime
     {
-        return $this->contractCost;
+        return $this->dateCreated;
     }
 
-    public function setContractCost($contractCost): Affiliation
+    public function setDateCreated(?DateTime $dateCreated): Affiliation
     {
-        $this->contractCost = $contractCost;
-
+        $this->dateCreated = $dateCreated;
         return $this;
     }
 
-    public function getInvoiceMethod(): ?Method
+    public function getDateEnd(): ?DateTime
     {
-        return $this->invoiceMethod;
+        return $this->dateEnd;
     }
 
-    public function setInvoiceMethod(?Method $invoiceMethod): Affiliation
+    public function setDateEnd(?DateTime $dateEnd): Affiliation
     {
-        $this->invoiceMethod = $invoiceMethod;
-
+        $this->dateEnd = $dateEnd;
         return $this;
     }
 
-    public function getAnswers()
+    public function getDateSelfFunded(): ?DateTime
     {
-        return $this->answers;
+        return $this->dateSelfFunded;
     }
 
-    public function setAnswers($answers): Affiliation
+    public function setDateSelfFunded(?DateTime $dateSelfFunded): Affiliation
     {
-        $this->answers = $answers;
+        $this->dateSelfFunded = $dateSelfFunded;
+        return $this;
+    }
+
+    public function getContact(): ?Contact
+    {
+        return $this->contact;
+    }
+
+    public function setContact(?Contact $contact): Affiliation
+    {
+        $this->contact = $contact;
+        return $this;
+    }
+
+    public function getProxyContact()
+    {
+        return $this->proxyContact;
+    }
+
+    public function setProxyContact($proxyContact): Affiliation
+    {
+        $this->proxyContact = $proxyContact;
         return $this;
     }
 
@@ -883,7 +614,7 @@ class Affiliation extends AbstractEntity
         return $this->communicationContactName;
     }
 
-    public function setCommunicationContactName(string $communicationContactName): Affiliation
+    public function setCommunicationContactName(?string $communicationContactName): Affiliation
     {
         $this->communicationContactName = $communicationContactName;
         return $this;
@@ -900,25 +631,289 @@ class Affiliation extends AbstractEntity
         return $this;
     }
 
-    public function getProxyContact()
+    public function getParentOrganisation(): ?Organisation
     {
-        return $this->proxyContact;
+        return $this->parentOrganisation;
     }
 
-    public function setProxyContact($proxyContact): Affiliation
+    public function setParentOrganisation(?Organisation $parentOrganisation): Affiliation
     {
-        $this->proxyContact = $proxyContact;
+        $this->parentOrganisation = $parentOrganisation;
         return $this;
     }
 
-    public function getTasksAndAddedValue(): ?string
+    public function getProject(): ?Project
     {
-        return $this->tasksAndAddedValue;
+        return $this->project;
     }
 
-    public function setTasksAndAddedValue(?string $tasksAndAddedValue): Affiliation
+    public function setProject(?Project $project): Affiliation
     {
-        $this->tasksAndAddedValue = $tasksAndAddedValue;
+        $this->project = $project;
+        return $this;
+    }
+
+    public function getDescription(): ?Description
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?Description $description): Affiliation
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getFinancial(): ?Financial
+    {
+        return $this->financial;
+    }
+
+    public function setFinancial(?Financial $financial): Affiliation
+    {
+        $this->financial = $financial;
+        return $this;
+    }
+
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    public function setInvoice($invoice): Affiliation
+    {
+        $this->invoice = $invoice;
+        return $this;
+    }
+
+    public function getLog()
+    {
+        return $this->log;
+    }
+
+    public function setLog($log): Affiliation
+    {
+        $this->log = $log;
+        return $this;
+    }
+
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    public function setVersion($version): Affiliation
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+    public function getContract()
+    {
+        return $this->contract;
+    }
+
+    public function setContract($contract): Affiliation
+    {
+        $this->contract = $contract;
+        return $this;
+    }
+
+    public function getContractVersion()
+    {
+        return $this->contractVersion;
+    }
+
+    public function setContractVersion($contractVersion): Affiliation
+    {
+        $this->contractVersion = $contractVersion;
+        return $this;
+    }
+
+    public function getAssociate()
+    {
+        return $this->associate;
+    }
+
+    public function setAssociate($associate): Affiliation
+    {
+        $this->associate = $associate;
+        return $this;
+    }
+
+    public function getFunding()
+    {
+        return $this->funding;
+    }
+
+    public function setFunding($funding): Affiliation
+    {
+        $this->funding = $funding;
+        return $this;
+    }
+
+    public function getCost()
+    {
+        return $this->cost;
+    }
+
+    public function setCost($cost): Affiliation
+    {
+        $this->cost = $cost;
+        return $this;
+    }
+
+    public function getContractCost()
+    {
+        return $this->contractCost;
+    }
+
+    public function setContractCost($contractCost): Affiliation
+    {
+        $this->contractCost = $contractCost;
+        return $this;
+    }
+
+    public function getEffort()
+    {
+        return $this->effort;
+    }
+
+    public function setEffort($effort): Affiliation
+    {
+        $this->effort = $effort;
+        return $this;
+    }
+
+    public function getFunded()
+    {
+        return $this->funded;
+    }
+
+    public function setFunded($funded): Affiliation
+    {
+        $this->funded = $funded;
+        return $this;
+    }
+
+    public function getSpent()
+    {
+        return $this->spent;
+    }
+
+    public function setSpent($spent): Affiliation
+    {
+        $this->spent = $spent;
+        return $this;
+    }
+
+    public function getProjectReportEffortSpent()
+    {
+        return $this->projectReportEffortSpent;
+    }
+
+    public function setProjectReportEffortSpent($projectReportEffortSpent): Affiliation
+    {
+        $this->projectReportEffortSpent = $projectReportEffortSpent;
+        return $this;
+    }
+
+    public function getLoi(): ?Loi
+    {
+        return $this->loi;
+    }
+
+    public function setLoi(?Loi $loi): Affiliation
+    {
+        $this->loi = $loi;
+        return $this;
+    }
+
+    public function getDoa(): ?Doa
+    {
+        return $this->doa;
+    }
+
+    public function setDoa(?Doa $doa): Affiliation
+    {
+        $this->doa = $doa;
+        return $this;
+    }
+
+    public function getDoaReminder()
+    {
+        return $this->doaReminder;
+    }
+
+    public function setDoaReminder($doaReminder): Affiliation
+    {
+        $this->doaReminder = $doaReminder;
+        return $this;
+    }
+
+    public function getAchievement()
+    {
+        return $this->achievement;
+    }
+
+    public function setAchievement($achievement): Affiliation
+    {
+        $this->achievement = $achievement;
+        return $this;
+    }
+
+    public function getChangeRequestCostChange()
+    {
+        return $this->changeRequestCostChange;
+    }
+
+    public function setChangeRequestCostChange($changeRequestCostChange): Affiliation
+    {
+        $this->changeRequestCostChange = $changeRequestCostChange;
+        return $this;
+    }
+
+    public function getChangeRequestCountry()
+    {
+        return $this->changeRequestCountry;
+    }
+
+    public function setChangeRequestCountry($changeRequestCountry): Affiliation
+    {
+        $this->changeRequestCountry = $changeRequestCountry;
+        return $this;
+    }
+
+    public function getProjectLog()
+    {
+        return $this->projectLog;
+    }
+
+    public function setProjectLog($projectLog): Affiliation
+    {
+        $this->projectLog = $projectLog;
+        return $this;
+    }
+
+    public function getInvoiceMethod(): ?Method
+    {
+        return $this->invoiceMethod;
+    }
+
+    public function setInvoiceMethod(?Method $invoiceMethod): Affiliation
+    {
+        $this->invoiceMethod = $invoiceMethod;
+        return $this;
+    }
+
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
+
+    public function setAnswers($answers): Affiliation
+    {
+        $this->answers = $answers;
         return $this;
     }
 }

@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office all rights reserved
  *
- * @category    Affiliation
- * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 use Affiliation\Entity\Affiliation;
@@ -24,7 +23,7 @@ $communityNavigation = [
                         'pages' => [
                             'affiliation' => [
                                 'label'   => _('txt-nav-project-partner'),
-                                'route'   => 'community/affiliation/affiliation',
+                                'route'   => 'community/affiliation/details',
                                 'visible' => false,
                                 'params'  => [
                                     'entities'   => [

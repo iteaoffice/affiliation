@@ -1,0 +1,65 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-remind-doa-%s-in-%s")|format(
+    affiliation.parseBranchedName(),
+    affiliation.project
+)) %}
+
+<h1>{{ translate("txt-remind-doa-%s-in-%s")|format(
+        affiliation.parseBranchedName(),
+        affiliation.project
+    ) }}</h1>
+
+{% do form.prepare() %}
+{{ form().openTag(form)|raw }}
+
+
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-plaintext">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-admin') }}</p>
+    </div>
+</div>
+
+{{ ztbformelement(form.get('receiver')) }}
+
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">{{ translate("txt-sender") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-plaintext">{{ webInfo.sender }} {{ webInfoLink(webInfo,'edit','icon') }}</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">{{ translate("txt-subject") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-plaintext">{{ webInfo.subject }} {{ webInfoLink(webInfo,'edit','button') }}</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">{{ translate("txt-message") }}</label>
+
+    <div class="col-sm-9">
+        <p class="form-control-plaintext">{{ include(template_from_string(webInfo.content, {'contact': 'Contact Placeholder', 'project':affiliation.project,'organisation':affiliation.parseBranchedName(),'country':affiliation.organsation.country})) }}</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="offset-sm-3 col-sm-9">
+        {{ ztbformelement(form.get('submit')) }}
+        {{ ztbformelement(form.get('cancel')) }}
+    </div>
+</div>
+
+{{ form().closeTag()|raw }}

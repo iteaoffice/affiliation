@@ -1,0 +1,78 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+
+<h1>{{ affiliation.parseBranchedName() }}</h1>
+
+<p class="lead">
+    {{ translate("txt-partner-in-%s")|format(affiliation.project.parseFullName()) }}
+    {{ affiliationLink(affiliation,'view-admin','icon') }}
+    {{ organisationUpdateNotification(affiliation.organisation) }}
+</p>
+
+{% if not affiliation.isActive() %}
+    {{ ztbalert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(
+        affiliation,
+        affiliation.dateEnd|string_date
+    )|raw }}
+{% endif %}
+
+{% if affiliation.isSelfFunded() %}
+    {{ ztbalert().success(translate("txt-affiliation-%s-is-self-funded"))|format(
+        affiliation
+    )|raw }}
+{% endif %}
+
+{% if affiliation.selfFunded is constant("Affiliation\\Entity\\Affiliation::SELF_FUNDED") and not affiliation.dateSelfFunded %}
+    {{ ztbalert().info(translate("txt-affiliation-%s-is-indicated-as-self-funded-but-not-yet-approved-by-the-office"))|format(
+        affiliation
+    )|raw }}
+{% endif %}
+
+
+
+    {% set navigation =
+        {   'details' :
+            {   'route': 'zfcadmin/affiliation/details',
+                'text' : translate("txt-details")
+            },
+            'description':
+            {
+                'route': 'zfcadmin/affiliation/description',
+                'text' : translate("txt-desription")
+            },
+            'market-access':
+            {
+                'route': 'zfcadmin/affiliation/market-access',
+                'text' : translate("txt-market-access")
+            },
+            'costs-and-effort':
+            {
+                'route': 'zfcadmin/affiliation/costs-and-effort',
+                'text' : translate("txt-costs-and-effort")
+            },
+            'project-verions':
+            {
+                'route': 'zfcadmin/affiliation/project-versions',
+                'text' : translate("txt-project-versions")
+            },
+            'financial':
+            {
+                'route': 'zfcadmin/affiliation/financial',
+                'text' : translate("txt-financial")
+            },
+            'contacts':
+            {
+                'route': 'zfcadmin/affiliation/contacts',
+                'text' : translate("txt-contacts")
+            },
+        } %}
+
+
+<ul class="nav nav-tabs pt-3" role="tablist">
+    {% for key, params in navigation %}
+        <li class="nav-item"><a href="{{ url(params.route,{'id':affiliation.id}) }}"
+                                aria-controls="{{ key }}"
+                                role="tab"
+                                class="nav-link {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a></li>
+    {% endfor %}
+</ul>

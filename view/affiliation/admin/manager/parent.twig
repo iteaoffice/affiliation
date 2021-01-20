@@ -1,0 +1,27 @@
+{% include 'affiliation/admin/manger/tabs' %}
+
+<h2>{{ translate("txt-project-partner-parent-information") }}</h2>
+
+{% if affiliation.parentOrganisation %}
+    <dl class="dl-horizontal">
+        <dt>{{ translate("txt-parent") }}</dt>
+        <dd>{{ affiliation.parentOrganisation.parent.organisation }}
+            ({{ affiliation.parentOrganisation.parent.organisation.country }})
+        </dd>
+        <dt>{{ translate("txt-organisation-type") }}</dt>
+        <dd>{{ affiliation.parentOrganisation.parent.organisation.type }}</dd>
+        <dt>{{ translate("txt-parent-type") }}</dt>
+        <dd>{{ translate(affiliation.parentOrganisation.parent.getMemberType(true)) }}</dd>
+        <dt>{{ translate("txt-has-doa-for-program") }}</dt>
+        <dd>{% if parentService.hasDoaForProgram(affiliation.parentOrganisation.parent, affiliation.project.call.program) %}
+                {{ translate("txt-yes") }}
+            {% else %}
+                {{ translate("txt-no") }}
+            {% endif %}
+        </dd>
+    </dl>
+
+    <p>{{ translate("txt-parent-status-incorrect-contact-the-office-message") }}</p>
+{% else %}
+    {{ ztbalert().info(translate("txt-organisation-%s-in-%s-is-not-member")|format(affiliation.organisation, affiliation.organisation.country))|raw }}
+{% endif %}

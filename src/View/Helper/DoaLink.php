@@ -3,17 +3,16 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\View\Helper;
 
-use Affiliation\Acl\Assertion\Doa as DoaAssertion;
+use Affiliation\Acl\Assertion\DoaAssertion;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use General\ValueObject\Link\Link;

@@ -3,17 +3,16 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\View\Helper;
 
-use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
+use Affiliation\Acl\Assertion\AffiliationAssertion;
 use Affiliation\Entity\Affiliation;
 use General\ValueObject\Link\Link;
 use General\View\Helper\AbstractLink;
@@ -34,20 +33,20 @@ final class EffortSpentLink extends AbstractLink
             return '';
         }
 
-        $routeParams = [];
-        $routeParams['id'] = $affiliation->getId();
+        $routeParams           = [];
+        $routeParams['id']     = $affiliation->getId();
         $routeParams['report'] = $report->getId();
-        $showOptions['text'] = $this->translator->translate('txt-update');
+        $showOptions['text']   = $this->translator->translate('txt-update');
 
         $linkParams = [
-            'icon' => 'far fa-edit',
+            'icon'  => 'far fa-edit',
             'route' => 'community/affiliation/edit/update-effort-spent',
-            'text' => $showOptions[$show]
+            'text'  => $showOptions[$show]
                 ?? sprintf($this->translator->translate('txt-report-on-%s'), $report->parseName())
         ];
 
-        $linkParams['action'] = 'update-effort-spent';
-        $linkParams['show'] = $show;
+        $linkParams['action']      = 'update-effort-spent';
+        $linkParams['show']        = $show;
         $linkParams['routeParams'] = $routeParams;
 
         return $this->parse(Link::fromArray($linkParams));

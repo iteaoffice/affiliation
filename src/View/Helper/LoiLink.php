@@ -3,17 +3,16 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\View\Helper;
 
-use Affiliation\Acl\Assertion\Loi as LoiAssertion;
+use Affiliation\Acl\Assertion\LoiAssertion;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Loi;
 use General\ValueObject\Link\Link;
@@ -42,7 +41,7 @@ final class LoiLink extends AbstractLink
         $showOptions = [];
 
         if (! $loi->isEmpty()) {
-            $routeParams['id'] = $loi->getId();
+            $routeParams['id']   = $loi->getId();
             $showOptions['name'] = $loi->parseFileName();
         }
 
@@ -53,9 +52,9 @@ final class LoiLink extends AbstractLink
         switch ($action) {
             case 'submit':
                 $linkParams = [
-                    'icon' => 'far fa-share-square',
+                    'icon'  => 'far fa-share-square',
                     'route' => 'community/affiliation/loi/submit',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-submit-loi-for-organisation-%s-in-project-%s-link-title'),
                             $affiliation->parseBranchedName(),
@@ -65,9 +64,9 @@ final class LoiLink extends AbstractLink
                 break;
             case 'render':
                 $linkParams = [
-                    'icon' => 'far fa-file-pdf',
+                    'icon'  => 'far fa-file-pdf',
                     'route' => 'community/affiliation/loi/render',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-render-loi-for-organisation-%s-in-project-%s-link-title'),
                             $affiliation->parseBranchedName(),
@@ -78,9 +77,9 @@ final class LoiLink extends AbstractLink
                 break;
             case 'replace':
                 $linkParams = [
-                    'icon' => 'fa-refresh',
+                    'icon'  => 'fa-refresh',
                     'route' => 'community/affiliation/loi/replace',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-replace-loi-for-organisation-%s-in-project-%s-link-title'),
                             $loi->getAffiliation()->parseBranchedName(),
@@ -91,9 +90,9 @@ final class LoiLink extends AbstractLink
                 break;
             case 'download':
                 $linkParams = [
-                    'icon' => 'far fa-file-pdf',
+                    'icon'  => 'far fa-file-pdf',
                     'route' => 'community/affiliation/loi/download',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? sprintf(
                             $this->translator->translate('txt-download-loi-for-organisation-%s-in-project-%s-link-title'),
                             $loi->getAffiliation()->parseBranchedName(),
@@ -104,51 +103,51 @@ final class LoiLink extends AbstractLink
                 break;
             case 'remind-admin':
                 $linkParams = [
-                    'icon' => 'far fa-bell',
+                    'icon'  => 'far fa-bell',
                     'route' => 'zfcadmin/affiliation/loi/remind',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-send-reminder')
                 ];
                 break;
             case 'approval-admin':
                 $linkParams = [
-                    'icon' => 'far fa-thumbs-up',
+                    'icon'  => 'far fa-thumbs-up',
                     'route' => 'zfcadmin/affiliation/loi/approval',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-approval-loi')
                 ];
 
                 break;
             case 'missing-admin':
                 $linkParams = [
-                    'icon' => 'var fa-star-half-alt',
+                    'icon'  => 'var fa-star-half-alt',
                     'route' => 'zfcadmin/affiliation/loi/missing',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-missing-loi')
                 ];
 
                 break;
             case 'view-admin':
                 $linkParams = [
-                    'icon' => 'far fa-file',
+                    'icon'  => 'far fa-file',
                     'route' => 'zfcadmin/affiliation/loi/view',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-view-loi')
                 ];
 
                 break;
             case 'edit-admin':
                 $linkParams = [
-                    'icon' => 'far fa-edit',
+                    'icon'  => 'far fa-edit',
                     'route' => 'zfcadmin/affiliation/loi/edit',
-                    'text' => $showOptions[$show]
+                    'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-loi')
                 ];
                 break;
         }
 
-        $linkParams['action'] = $action;
-        $linkParams['show'] = $show;
+        $linkParams['action']      = $action;
+        $linkParams['show']        = $show;
         $linkParams['routeParams'] = $routeParams;
 
         return $this->parse(Link::fromArray($linkParams));

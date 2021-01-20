@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA copyright message placeholder.
- *
- * @category    Affiliation
+ * ITEA Office all rights reserved
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -60,10 +59,10 @@ class Doa extends AbstractEntity
      */
     private $size;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist","remove"}, mappedBy="doa")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\DoaObject", cascade={"persist","remove"}, mappedBy="doa")
      * @Annotation\Exclude()
      *
-     * @var DoaObject[]|ArrayCollection
+     * @var DoaObject
      */
     private $object;
     /**
@@ -83,7 +82,7 @@ class Doa extends AbstractEntity
      */
     private $dateUpdated;
     /**
-     * Date when the submitter sends in the DOA
+     * Date signed by the office
      *
      * @ORM\Column(name="date_signed", type="date", nullable=true)
      * @Annotation\Type("\Laminas\Form\Element\Date")
@@ -149,12 +148,6 @@ class Doa extends AbstractEntity
      * @var string
      */
     private $chamberOfCommerceLocation;
-
-
-    public function __construct()
-    {
-        $this->object = new ArrayCollection();
-    }
 
     public function hasObject(): bool
     {

@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA copyright message placeholder.
- *
- * @category    Project
+ * ITEA Office all rights reserved
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -15,8 +14,8 @@ namespace Affiliation\Entity;
 
 use Contact\Entity\Contact;
 use Doctrine\ORM\Mapping as ORM;
-use Organisation\Entity\Organisation;
 use Laminas\Form\Annotation;
+use Organisation\Entity\Organisation;
 
 use function sprintf;
 
@@ -32,50 +31,49 @@ class Financial extends AbstractEntity
      * @ORM\Column(name="affiliation_financial_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     *
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
     /**
      * @ORM\Column(name="branch", type="string", nullable=true)
-     *
-     * @var string
+     * @Annotation\Options({"label":"txt-affiliation-financial-branch-label","help-block":"txt-affiliation-financial-branch-help-block"})
+     * @Annotation\Options({"placeholder":"txt-affiliation-financial-branch-placeholder"})
      */
-    private $branch;
+    private ?string $branch = null;
     /**
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", inversedBy="financial", cascade={"persist"})
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
-     *
-     * @var Affiliation
+     * @Annotation\Exclude()
      */
-    private $affiliation;
+    private ?Affiliation $affiliation = null;
     /**
      * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", inversedBy="financial", cascade={"persist"})
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
-     *
-     * @var Contact
+     * @Annotation\Type("\Contact\Form\Element\Contact")
+     * @Annotation\Attributes({"label":"txt-affiliation-financial-contact-label"})
+     * @Annotation\Options({"help-block":"txt-affiliation-financial-contact-help-block"})
      */
-    private $contact;
+    private ?Contact $contact = null;
     /**
      * @ORM\ManyToOne(targetEntity="Organisation\Entity\Organisation", inversedBy="affiliationFinancial", cascade={"persist"})
      * @ORM\JoinColumn(name="organisation_id", referencedColumnName="organisation_id", nullable=false)
-     *
-     * @var Organisation
+     * @Annotation\Type("\Organisation\Form\Element\OrganisationElement")
+     * @Annotation\Attributes({"label":"txt-affiliation-financial-organisation-label"})
+     * @Annotation\Options({"help-block":"txt-affiliation-financial-organisation-help-block"})
      */
-    private $organisation;
+    private ?Organisation $organisation = null;
     /**
      * @ORM\Column(name="email_cc", type="string", nullable=true)
-     *
-     * @var string
+     * @Annotation\Options({"label":"txt-affiliation-financial-email-cc-label","help-block":"txt-affiliation-financial-branch-help-block"})
+     * @Annotation\Options({"placeholder":"txt-affiliation-financial-branch-placeholder"})
      */
-    private $emailCC;
+    private ?string $emailCC = null;
 
     public function __toString(): string
     {
-        return sprintf("%s financial", $this->affiliation);
+        return sprintf("%s financial", $this->affiliation->parseBranchedName());
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -87,7 +85,7 @@ class Financial extends AbstractEntity
         return $this;
     }
 
-    public function getBranch()
+    public function getBranch(): ?string
     {
         return $this->branch;
     }
@@ -99,52 +97,48 @@ class Financial extends AbstractEntity
         return $this;
     }
 
-    public function getAffiliation()
+    public function getAffiliation(): Affiliation
     {
         return $this->affiliation;
     }
 
-    public function setAffiliation($affiliation): Financial
+    public function setAffiliation(Affiliation $affiliation): Financial
     {
         $this->affiliation = $affiliation;
 
         return $this;
     }
 
-    /**
-     * @return Contact
-     */
-    public function getContact()
+    public function getContact(): Contact
     {
         return $this->contact;
     }
 
-    public function setContact($contact): Financial
+    public function setContact(Contact $contact): Financial
     {
         $this->contact = $contact;
 
         return $this;
     }
 
-    public function getOrganisation()
+    public function getOrganisation(): Organisation
     {
         return $this->organisation;
     }
 
-    public function setOrganisation($organisation): Financial
+    public function setOrganisation(Organisation $organisation): Financial
     {
         $this->organisation = $organisation;
 
         return $this;
     }
 
-
     public function getEmailCC(): ?string
     {
         return $this->emailCC;
     }
 
-    public function setEmailCC(string $emailCC): Financial
+    public function setEmailCC(?string $emailCC): Financial
     {
         $this->emailCC = $emailCC;
 

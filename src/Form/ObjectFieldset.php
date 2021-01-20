@@ -29,16 +29,18 @@ use Laminas\Form\Element\Radio;
 use Laminas\Form\Fieldset;
 use Laminas\Form\FieldsetInterface;
 
+use function array_key_exists;
+use function array_merge;
+use function sprintf;
+use function ucfirst;
+
 /**
  * Class ObjectFieldset
  * @package Affiliation\Form
  */
 class ObjectFieldset extends Fieldset
 {
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager, Entity\AbstractEntity $object)
     {
@@ -63,7 +65,7 @@ class ObjectFieldset extends Fieldset
         foreach ($dataFieldset->getElements() as $element) {
             $this->parseElement($element, $object);
             // Add only when a type is provided
-            if (! \array_key_exists('type', $element->getAttributes())) {
+            if (! array_key_exists('type', $element->getAttributes())) {
                 continue;
             }
 
@@ -104,12 +106,12 @@ class ObjectFieldset extends Fieldset
             $element instanceof EntitySelect || $element instanceof EntityMultiCheckbox
             || $element instanceof EntityRadio
         ) {
-            $element->setOptions(\array_merge($element->getOptions(), ['object_manager' => $this->entityManager]));
+            $element->setOptions(array_merge($element->getOptions(), ['object_manager' => $this->entityManager]));
         }
         if ($element instanceof Radio && ! ($element instanceof EntityRadio)) {
             $attributes        = $element->getAttributes();
-            $valueOptionsArray = \sprintf('get%s', \ucfirst($attributes['array']));
-            $element->setOptions(\array_merge(
+            $valueOptionsArray = sprintf('get%s', ucfirst($attributes['array']));
+            $element->setOptions(array_merge(
                 $element->getOptions(),
                 ['value_options' => $object::$valueOptionsArray()]
             ));

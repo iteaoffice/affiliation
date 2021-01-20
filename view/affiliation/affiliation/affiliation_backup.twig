@@ -1,0 +1,127 @@
+
+
+{% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
+
+{% set years = projectService.parseYearRange(affiliation.project) %}
+
+
+{# Produce the link first to have the resource :) #}
+{% set affiliationLink = affiliationLink(affiliation, 'edit-community','button') %}
+{% set useContract = affiliationService.useActiveContract(affiliation) %}
+{% set checklist = projectChecklist.getSingleAffiliationErrors(affiliation) %}
+
+
+
+{% if checklist %}
+<div class="row">
+    <div class="col-md-10">
+        {% endif %}
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item active">
+                <a class="nav-link active" href="#details" data-toggle="tab"
+                   role="tab">{{ translate("txt-partner-details") }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#description" data-toggle="tab"
+                   role="tab">
+                    {% if not affiliation.description %}<i
+                            class="fas fa-exclamation-triangle text-danger"></i>{% endif %}
+                    {{ translate("txt-description") }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#market-access" data-toggle="tab"
+                   role="tab">
+                    {% if not affiliation.marketAccess %}<i
+                            class="fas fa-exclamation-circle text-warning"></i>{% endif %}
+                    {{ translate("txt-market-access") }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#cost-and-effort" data-toggle="tab"
+                   role="tab">{{ translate("txt-cost-and-effort") }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#contacts" data-toggle="tab" role="tab">{{ translate("txt-contacts") }}</a>
+            </li>
+            {% if projectService.isLabelled(affiliation.project) %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#reporting" data-toggle="tab"
+                       role="tab">{{ translate("txt-reporting") }}</a>
+                </li>
+            {% endif %}
+            {% if not invoiceViaParent and (isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial')) %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#invoicing" data-toggle="tab"
+                       role="tab">{{ translate("txt-invoicing") }}</a>
+                </li>
+            {% endif %}
+            {% if invoiceViaParent %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#parent" data-toggle="tab"
+                       role="tab">{{ translate("txt-membership") }}</a>
+                </li>
+            {% endif %}
+            {% if isAllowed(affiliation,'payment-sheet') %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#payment-sheet" data-toggle="tab"
+                       role="tab">{{ translate("txt-payment-sheet") }}</a>
+                </li>
+            {% endif %}
+            {% if isAllowed(affiliation,'list-questionnaire') %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#questionnaires" data-toggle="tab"
+                       role="tab">{{ translate("txt-questionnaires") }}</a>
+                </li>
+            {% endif %}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane active" id="details">
+                {% include 'affiliation/community/tab/details' %}
+            </div>
+            <div class="tab-pane" role="tabpanel" id="description">
+                {% include 'affiliation/community/tab/description' %}
+            </div>
+            <div class="tab-pane" role="tabpanel" id="market-access">
+                {% include 'affiliation/community/tab/market-access' %}
+            </div>
+            <div class="tab-pane" role="tabpanel" id="cost-and-effort">
+                {% include 'affiliation/community/tab/cost-and-effort' %}
+            </div>
+            <div class="tab-pane" role="tabpanel" id="contacts">
+                {% include 'affiliation/community/tab/contacts' %}
+            </div>
+            {% if projectService.isLabelled(affiliation.project) %}
+                <div class="tab-pane" role="tabpanel" id="reporting">
+                    {% include 'affiliation/community/tab/reporting' %}
+                </div>
+            {% endif %}
+            {% if not invoiceViaParent and (isAllowed(affiliation,'edit-affiliation') or isAllowed(affiliation,'edit-financial')) %}
+                <div class="tab-pane" role="tabpanel" id="invoicing">
+                    {% include 'affiliation/community/tab/invoicing' %}
+                </div>
+            {% endif %}
+            {% if invoiceViaParent %}
+                <div class="tab-pane" role="tabpanel" id="parent">
+                    {% include 'affiliation/community/tab/parent' %}
+                </div>
+            {% endif %}
+            {% if isAllowed(affiliation,'payment-sheet') %}
+                <div class="tab-pane" role="tabpanel" id="payment-sheet">
+                    {% include 'affiliation/community/tab/payment-sheet' %}
+                </div>
+            {% endif %}
+            {% if isAllowed(affiliation,'list-questionnaire') %}
+                <div class="tab-pane" role="tabpanel" id="questionnaires">
+                    {% include 'affiliation/community/tab/questionnaires' %}
+                </div>
+            {% endif %}
+        </div>
+        {% if checklist %}
+    </div>
+    <div class="col-md-2">
+        {% include 'affiliation/partial/checklist' %}
+    </div>
+</div>
+{% endif %}

@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA copyright message placeholder.
- *
- * @category    Affiliation
+ * ITEA Office all rights reserved
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -16,8 +15,6 @@ namespace Affiliation\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ProjectDoaObject.
- *
  * @ORM\Table(name="project_doa_object")
  * @ORM\Entity
  */
@@ -27,10 +24,8 @@ class DoaObject extends AbstractEntity
      * @ORM\Column(name="object_id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     *
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
     /**
      * @ORM\Column(name="object", type="blob", nullable=false)
      *
@@ -38,20 +33,17 @@ class DoaObject extends AbstractEntity
      */
     private $object;
     /**
-     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\Doa", cascade="persist", inversedBy="object")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade="persist", inversedBy="object")
      * @ORM\JoinColumn(name="doa_id", referencedColumnName="doa_id", nullable=false)
-     *
-     * @var \Affiliation\Entity\Doa
      */
-    private $doa;
+    private \Affiliation\Entity\Doa $doa;
 
-
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): DoaObject
     {
         $this->id = $id;
 
@@ -63,19 +55,19 @@ class DoaObject extends AbstractEntity
         return $this->object;
     }
 
-    public function setObject($object)
+    public function setObject($object): DoaObject
     {
         $this->object = $object;
 
         return $this;
     }
 
-    public function getDoa()
+    public function getDoa(): Doa
     {
         return $this->doa;
     }
 
-    public function setDoa($doa)
+    public function setDoa($doa): DoaObject
     {
         $this->doa = $doa;
 

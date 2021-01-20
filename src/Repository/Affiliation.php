@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category  Affiliation
- *
- * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -21,7 +20,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 use General\Entity\Country;
 use InvalidArgumentException;
-use Organisation\Entity\OParent;
+use Organisation\Entity\ParentEntity;
 use Organisation\Entity\Organisation;
 use Program\Entity\Call\Call;
 use Program\Entity\Program;
@@ -35,8 +34,6 @@ use Project\Entity\Workpackage\Workpackage;
  *
  * @package Affiliation\Repository
  */
-/*final*/
-
 class Affiliation extends EntityRepository
 {
     public function findAffiliationByProjectAndWhich(Project $project, int $which): array
@@ -93,14 +90,14 @@ class Affiliation extends EntityRepository
         }
 
         switch ($criterion) {
-            case OParent::CRITERION_C_CHAMBER:
-                /** @var \Organisation\Repository\OParent $parentRepository */
-                $parentRepository = $this->_em->getRepository(OParent::class);
+            case ParentEntity::CRITERION_C_CHAMBER:
+                /** @var \Organisation\Repository\ParentEntity $parentRepository */
+                $parentRepository = $this->_em->getRepository(ParentEntity::class);
                 $queryBuilder     = $parentRepository->limitCChambers($queryBuilder);
                 break;
-            case OParent::CRITERION_FREE_RIDER:
-                /** @var \Organisation\Repository\OParent $parentRepository */
-                $parentRepository = $this->_em->getRepository(OParent::class);
+            case ParentEntity::CRITERION_FREE_RIDER:
+                /** @var \Organisation\Repository\ParentEntity $parentRepository */
+                $parentRepository = $this->_em->getRepository(ParentEntity::class);
                 $queryBuilder     = $parentRepository->limitFreeRiders($queryBuilder, $project->getCall()->getProgram());
                 break;
             default:
@@ -240,7 +237,7 @@ class Affiliation extends EntityRepository
         $subSelect->join('organisation_entity_parent_affiliation.parentOrganisation', 'organisation_entity_parent_affiliation_parent_organisation');
         $subSelect->join('organisation_entity_parent_affiliation_parent_organisation.parent', 'organisation_entity_parent_affiliation_parent_organisation_parent');
         $subSelect->andWhere($qb->expr()->isNull('organisation_entity_parent_affiliation_parent_organisation_parent.dateEnd'));
-        $subSelect->andWhere($qb->expr()->eq('organisation_entity_parent_affiliation_parent_organisation_parent.memberType', OParent::MEMBER_TYPE_MEMBER));
+        $subSelect->andWhere($qb->expr()->eq('organisation_entity_parent_affiliation_parent_organisation_parent.memberType', ParentEntity::MEMBER_TYPE_MEMBER));
         $qb->andWhere($qb->expr()->notIn('affiliation_entity_affiliation', $subSelect->getDQL()));
 
 
@@ -351,7 +348,7 @@ class Affiliation extends EntityRepository
     }
 
     public function findAffiliationByParentAndProgramAndWhich(
-        OParent $parent,
+        ParentEntity $parent,
         Program $program,
         int $which,
         ?int $year

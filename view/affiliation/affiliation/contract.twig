@@ -1,0 +1,31 @@
+{% include 'affiliation/affiliation/tabs' %}
+
+<h2>{{ translate("txt-contract-information") }}</h2>
+
+{% if affiliation.contract.count() > 0 %}
+    {% for contract in affiliation.contract %}
+        <h2>{{ translate("txt-contract") }}</h2>
+
+        <dl class="dl-horizontal">
+            <dt>{{ translate("txt-contract-country") }}</dt>
+            <dd>{{ contract.country }}</dd>
+            <dt>{{ translate("txt-currency") }}</dt>
+            <dd>{{ contract.currency.name }} ({{ contract.currency.symbol }})</dd>
+            <dt>{{ translate("txt-contact") }}</dt>
+            <dd>{{ contract.parseFullName() }}</dd>
+            <dt>{{ translate("txt-date-start") }}</dt>
+            <dd>{{ contract.dateStart|date('d-m-Y') }}</dd>
+            <dt>{{ translate("txt-date-end") }}</dt>
+            <dd>{{ contract.dateEnd|date('d-m-Y') }}</dd>
+        </dl>
+
+        <dl class="dl-horizontal">
+            <dt>{{ translate("txt-involved-partners") }}</dt>
+            {% for affiliation in contract.affiliation %}
+                <dd>{{ affiliation.parseBranchedName() }}</dd>
+            {% endfor %}
+        </dl>
+    {% endfor %}
+{% else %}
+    {{ ztbalert().info(translate("txt-there-are-no-contract-for-affiliation-%s")|format(affiliation.parseBranchedName()))|raw }}
+{% endif %}

@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category  Affiliation
- *
- * @author    Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -22,18 +21,20 @@ use Affiliation\Entity\LoiObject;
 use Affiliation\Repository;
 use Affiliation\ValueObject\PaymentSheetPeriod;
 use Contact\Controller\Plugin\ContactActions;
+use Contact\Entity\Address;
+use Contact\Entity\AddressType;
 use Contact\Entity\Contact;
 use Contact\Entity\ContactOrganisation;
 use Contact\Service\ContactService;
 use Contact\Service\SelectionContactService;
 use DateTime;
-use Deeplink\Service\DeeplinkService;
-use Deeplink\View\Helper\DeeplinkLink;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use DragonBe\Vies\Vies;
 use General\Entity\Country;
 use General\Entity\Currency;
+use General\Service\CountryService;
 use General\Service\EmailService;
 use General\Service\GeneralService;
 use InvalidArgumentException;
@@ -42,10 +43,9 @@ use Invoice\Service\InvoiceService;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Mvc\Controller\PluginManager;
 use Laminas\Validator\File\MimeType;
-use Laminas\View\HelperPluginManager;
 use Organisation\Entity\Financial;
-use Organisation\Entity\OParent;
 use Organisation\Entity\Organisation;
+use Organisation\Entity\ParentEntity;
 use Organisation\Entity\Type;
 use Organisation\Service\OrganisationService;
 use Organisation\Service\ParentService;
@@ -94,9 +94,8 @@ class AffiliationService extends AbstractService
     private VersionService $versionService;
     private ParentService $parentService;
     private ContactService $contactService;
-    private DeeplinkService $deeplinkService;
+    private CountryService $countryService;
     private EmailService $emailService;
-    private HelperPluginManager $viewHelperManager;
     private PluginManager $controllerPluginManager;
     private TranslatorInterface $translator;
 
@@ -111,9 +110,8 @@ class AffiliationService extends AbstractService
         VersionService $versionService,
         ParentService $parentService,
         ContactService $contactService,
-        DeeplinkService $deeplinkService,
+        CountryService $countryService,
         EmailService $emailService,
-        HelperPluginManager $viewHelperManager,
         PluginManager $controllerPluginManager,
         TranslatorInterface $translator
     ) {
@@ -127,9 +125,8 @@ class AffiliationService extends AbstractService
         $this->versionService          = $versionService;
         $this->parentService           = $parentService;
         $this->contactService          = $contactService;
-        $this->deeplinkService         = $deeplinkService;
+        $this->countryService          = $countryService;
         $this->emailService            = $emailService;
-        $this->viewHelperManager       = $viewHelperManager;
         $this->controllerPluginManager = $controllerPluginManager;
         $this->translator              = $translator;
     }
@@ -188,11 +185,6 @@ class AffiliationService extends AbstractService
     public function findAffiliationById(int $id): ?Affiliation
     {
         return $this->entityManager->getRepository(Affiliation::class)->find($id);
-    }
-
-    public function isSelfFunded(Affiliation $affiliation): bool
-    {
-        return $affiliation->getSelfFunded() === Affiliation::SELF_FUNDED && null !== $affiliation->getDateSelfFunded();
     }
 
     public function isActiveInVersion(Affiliation $affiliation): bool
@@ -332,6 +324,187 @@ class AffiliationService extends AbstractService
         $this->save($doa);
 
         return $doa;
+    }
+
+    public function getFinancialFormData(Affiliation $affiliation): array
+    {
+        $formData              = [
+            'preferredDelivery' => \Organisation\Entity\Financial::EMAIL_DELIVERY,
+            'omitContact'       => \Organisation\Entity\Financial::OMIT_CONTACT,
+        ];
+        $branch                = null;
+        $financialAddress      = null;
+        $organisationFinancial = null;
+
+        if ($affiliation->hasFinancial()) {
+            $organisationFinancial = $affiliation->getFinancial()->getOrganisation()->getFinancial();
+            $branch                = $affiliation->getFinancial()->getBranch();
+
+            /** @var ContactService $contactService */
+            $formData['contact'] = $affiliation->getFinancial()->getContact()->getId();
+
+            $financialAddress = $this->contactService->getFinancialAddress(
+                $affiliation->getFinancial()->getContact()
+            );
+
+            if (null !== $financialAddress) {
+                $formData['address'] = $financialAddress->getAddress();
+                $formData['zipCode'] = $financialAddress->getZipCode();
+                $formData['city']    = $financialAddress->getCity();
+                $formData['country'] = $financialAddress->getCountry()->getId();
+            }
+
+            $formData['organisation']      = $this->organisationService
+                ->parseOrganisationWithBranch($branch, $affiliation->getFinancial()->getOrganisation());
+            $formData['registeredCountry'] = $affiliation->getFinancial()->getOrganisation()->getCountry()->getId();
+        }
+
+        if (! $affiliation->hasFinancial()) {
+            $formData['organisation']      = $this->organisationService
+                ->parseOrganisationWithBranch($branch, $affiliation->getOrganisation());
+            $formData['registeredCountry'] = $affiliation->getOrganisation()->getCountry()->getId();
+        }
+
+        if (null !== $organisationFinancial) {
+            $formData['preferredDelivery'] = $organisationFinancial->getEmail();
+            $formData['vat']               = $organisationFinancial->getVat();
+            $formData['omitContact']       = $organisationFinancial->getOmitContact();
+        }
+
+        return $formData;
+    }
+
+    public function saveFinancial(
+        Affiliation $affiliation,
+        string $vat,
+        int $countryId,
+        string $organisationName,
+        int $contactId,
+        int $preferredDelivery,
+        int $omitContact,
+        string $address,
+        string $zipCode,
+        string $city
+    ): void {
+        //We need to find the organisation, first by trying the VAT, then via the name and country and then just create it
+        $organisation = null;
+
+        //Check if an organisation with the given VAT is already found
+        $organisationFinancial = $this->organisationService->findFinancialOrganisationWithVAT($vat);
+
+
+        //If the organisation is found, it has by default an organisation
+        if (null !== $organisationFinancial) {
+            $organisation = $organisationFinancial->getOrganisation();
+        }
+
+        /** @var Country $country */
+        $country = $this->countryService->find(Country::class, $countryId);
+        /** @var Contact $contact */
+        $contact = $this->contactService->findContactById($contactId);
+
+        //try to find the organisation based on te country and name
+        if (null === $organisation) {
+            $organisation = $this->organisationService
+                ->findOrganisationByNameCountry(
+                    $organisationName,
+                    $country
+                );
+        }
+
+        /**
+         * If the organisation is still not found, create it
+         */
+        if (null === $organisation) {
+            $organisation = new \Organisation\Entity\Organisation();
+            $organisation->setOrganisation($$organisationName);
+            $organisation->setCountry($country);
+            $organisationType = $this->organisationService->find(Type::class, Type::TYPE_UNKNOWN);
+            $organisation->setType($organisationType);
+        }
+
+        /**
+         * Update the affiliationFinancial
+         */
+        $affiliationFinancial = $affiliation->getFinancial();
+        if (null === $affiliationFinancial) {
+            $affiliationFinancial = new \Affiliation\Entity\Financial();
+            $affiliationFinancial->setAffiliation($affiliation);
+        }
+
+        $affiliationFinancial->setContact($contact);
+        $affiliationFinancial->setOrganisation($organisation);
+
+        //Update the branch is complicated so we create a dedicated function for it in the
+        $affiliationFinancial->setBranch(OrganisationService::determineBranch($organisationName, $organisation->getOrganisation()));
+        $this->save($affiliationFinancial);
+
+        /**
+         * Update the organisation financial
+         */
+        $organisationFinancial = $organisation->getFinancial();
+        if (null === $organisationFinancial) {
+            $organisationFinancial = new \Organisation\Entity\Financial();
+            $organisationFinancial->setOrganisation($organisation);
+        }
+
+
+        /**
+         * The presence of a VAT number triggers the creation of a financial organisation
+         */
+        $organisationFinancial->setVat(null);
+
+        if (! empty($vat)) {
+            $organisationFinancial->setVat($vat);
+
+            //Do an in-situ vat check
+            $vies = new Vies();
+            try {
+                $countryCode = $country->getCd();
+                $result      = $vies->validateVat($countryCode, str_replace($countryCode, '', $vat));
+
+                if ($result->isValid()) {
+                    //Update the financial
+                    $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_VALID);
+                    $organisationFinancial->setDateVat(new \DateTime());
+                } else {
+                    //Update the financial
+                    $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_INVALID);
+                    $organisationFinancial->setDateVat(new \DateTime());
+                }
+            } catch (\Throwable $e) {
+                //Only update the vatStatus when not set already
+                if (null === $organisationFinancial->getVatStatus()) {
+                    $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_UNCHECKED);
+                    $organisationFinancial->setDateVat(new \DateTime());
+                }
+            }
+        }
+
+        $organisationFinancial->setEmail($preferredDelivery);
+        $organisationFinancial->setOmitContact($omitContact);
+        $this->organisationService->save($organisationFinancial);
+
+        /**
+         * save the financial address
+         */
+        $financialAddress = $this->contactService->getFinancialAddress($contact);
+
+        if (null === $financialAddress) {
+            $financialAddress = new Address();
+            $financialAddress->setContact($contact);
+            /**
+             * @var $addressType AddressType
+             */
+            $addressType = $this->contactService->find(AddressType::class, AddressType::ADDRESS_TYPE_FINANCIAL);
+            $financialAddress->setType($addressType);
+        }
+
+        $financialAddress->setAddress($address);
+        $financialAddress->setZipCode($zipCode);
+        $financialAddress->setCity($city);
+        $financialAddress->setCountry($country);
+        $this->contactService->save($financialAddress);
     }
 
     /**
@@ -740,7 +913,7 @@ class AffiliationService extends AbstractService
         return (float)$base;
     }
 
-    public function parseContributionFee(Affiliation $affiliation, int $year, OParent $parent = null)
+    public function parseContributionFee(Affiliation $affiliation, int $year, ParentEntity $parent = null)
     {
         /**
          * Based on the invoiceMethod we return or a percentage or the contribution
@@ -1260,7 +1433,7 @@ class AffiliationService extends AbstractService
     }
 
     public function findAffiliationByParentAndProgramAndWhich(
-        OParent $parent,
+        ParentEntity $parent,
         Program $program,
         int $which = self::WHICH_ONLY_ACTIVE,
         int $year = null
@@ -1354,36 +1527,25 @@ class AffiliationService extends AbstractService
         $affiliation->addAssociate($contact);
         $this->save($affiliation);
 
-        // Send an email to the invitee
-        $this->emailService->setWebInfo("/project/add_associate:associate");
-        $this->emailService->addTo($contact);
 
-        $deeplinkLink = $this->viewHelperManager->get(DeeplinkLink::class);
+        $emailBuilder = $this->emailService->createNewWebInfoEmailBuilder('/project/add_associate:associate');
+        $emailBuilder->addContactTo($contact);
 
-        // The contact can be found. But we forward him to the profile-edit
-        $targetProfile   = $this->deeplinkService->createTargetFromRoute('community/contact/profile/edit');
-        $deeplinkProfile = $this->deeplinkService->createDeeplink($targetProfile, $contact);
-        $targetPartner   = $this->deeplinkService->createTargetFromRoute('community/affiliation/affiliation');
-        $deeplinkPartner = $this->deeplinkService->createDeeplink(
-            $targetPartner,
-            $contact,
-            null,
-            $affiliation->getId()
-        );
+        $emailBuilder->addDeeplink('community/contact/profile/edit', 'edit_profile_url', $contact);
+        $emailBuilder->addDeeplink('community/affiliation/details', 'partner_page_url', $contact, null, $affiliation->getId());
 
-        $this->emailService->setTemplateVariable('edit_profile_url', $deeplinkLink($deeplinkProfile));
-        $this->emailService->setTemplateVariable('partner_page_url', $deeplinkLink($deeplinkPartner));
-        $this->emailService->setTemplateVariable('project', $affiliation->getProject()->parseFullName());
-        $this->emailService->setTemplateVariable('organisation', $affiliation->parseBranchedName());
-        $this->emailService->setTemplateVariable('has_contact', $hasContact);
-        $this->emailService->setTemplateVariable('technical_contact', $affiliation->getContact()->parseFullName());
-        $this->emailService->setTemplateVariable(
-            'technical_contact_organisation',
-            $this->contactService->parseOrganisation($affiliation->getContact())
-        );
-        $this->emailService->setTemplateVariable('technical_contact_email', $affiliation->getContact()->getEmail());
+        $templateVariables = [
+            'project'                        => $affiliation->getProject()->parseFullName(),
+            'organisation'                   => $affiliation->parseBranchedName(),
+            'has_contact'                    => $hasContact,
+            'technical_contact'              => $affiliation->getContact()->parseFullName(),
+            'technical_contact_organisation' => $this->contactService->parseOrganisation($affiliation->getContact()),
+            'technical_contact_country'      => $this->contactService->parseCountry($affiliation->getContact()),
+            'technical_contact_email'        => $affiliation->getContact()->getEmail()
+        ];
+        $emailBuilder->setTemplateVariables($templateVariables);
 
-        $this->emailService->send();
+        $this->emailService->sendBuilder($emailBuilder);
 
         return $contact;
     }

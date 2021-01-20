@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -78,9 +77,9 @@ class AffiliationPdf extends Fpdi
         $this->SetTextColor(0);
         $this->SetFont('');
         // Data
-        $fill = true;
+        $fill       = true;
         $rowCounter = 1;
-        $rowHeight = 6;
+        $rowHeight  = 6;
         foreach ($data as $row) {
             $counter = 0;
 
@@ -123,7 +122,7 @@ class AffiliationPdf extends Fpdi
 
     public function footer()
     {
-        // emtpy method body
+        // empty method body
     }
 
     public function setTemplate($template)

@@ -1,0 +1,43 @@
+{% include 'affiliation/affiliation/tabs' %}
+
+<h2>{{ translate("txt-version-information") }}</h2>
+
+{% if affiliation.version.count() > 0 %}
+    <table class="table table-hover table-striped table-sm">
+        <thead>
+        <tr>
+            <th>{{ translate("txt-version") }}</th>
+            <th>{{ translate("txt-status") }}</th>
+            <th>{{ translate("txt-date-reviewed") }}</th>
+            <th class="text-right">{{ translate("txt-total-effort") }}</th>
+            <th class="text-right">{{ translate("txt-total-cost") }}</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <td colspan="5"></td>
+        </tr>
+        </tfoot>
+        <tbody>
+        {% for affiliationVersion in affiliation.version %}
+            <tr>
+                {% set version = affiliationVersion.version %}
+                <td>{{ versionLink(version,'general','description') }}</td>
+                <td>{{ versionService.parseStatus(version) }}</td>
+                <td>{{ version.dateReviewed|string_date }}</td>
+                <td class="text-right">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
+                <td class="text-right">
+                    {% if affiliationVersion.hasContractVersion() %}
+                        {{ versionService.findTotalCostVersionByAffiliationAndVersionIncludingContract(affiliationVersion.affiliation, version, true)|currency_decimal(affiliationVersion.contractVersion.version.contract.currency) }}
+                        <i class="far fa-handshake"></i>
+                    {% else %}
+                        {{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|currency_decimal }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {{ ztbalert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
+{% endif %}

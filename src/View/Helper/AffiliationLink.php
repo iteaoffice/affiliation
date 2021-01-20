@@ -3,17 +3,16 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
 
 namespace Affiliation\View\Helper;
 
-use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
+use Affiliation\Acl\Assertion\AffiliationAssertion;
 use Affiliation\Entity\Affiliation;
 use General\ValueObject\Link\Link;
 use General\View\Helper\AbstractLink;
@@ -33,8 +32,7 @@ final class AffiliationLink extends AbstractLink
         int $period = null
     ): string {
         if (! $this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
-            return $action !== 'view-community' ? ''
-                : $affiliation->getOrganisation()->getOrganisation();
+            return $action !== 'view-community' ? '' : $affiliation->parseBranchedName();
         }
 
         $routeParams = [];
@@ -56,15 +54,16 @@ final class AffiliationLink extends AbstractLink
             case 'view-community':
                 $linkParams = [
                     'icon'  => 'far fa-circle',
-                    'route' => 'community/affiliation/affiliation',
+                    'route' => 'community/affiliation/details',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-view-affiliation-%s'), $affiliation->parseBranchedName())
                 ];
                 break;
-            case 'technical-contact':
+            case 'technical-contact': //deprecated
+            case 'edit-technical-contact':
                 $linkParams = [
                     'icon'  => 'far fa-user',
-                    'route' => 'community/affiliation/technical-contact',
+                    'route' => 'community/affiliation/edit/technical-contact',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-manage-technical-contact-link-text'))];
                 break;
@@ -116,14 +115,6 @@ final class AffiliationLink extends AbstractLink
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-edit-cost-and-effort')
                 ];
                 break;
-            case 'add-associate-admin':
-                $linkParams = [
-                    'icon'  => 'fas fa-user-plus',
-                    'route' => 'zfcadmin/affiliation/add-associate',
-                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-add-associate')
-                ];
-
-                break;
             case 'edit-description':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
@@ -134,7 +125,7 @@ final class AffiliationLink extends AbstractLink
             case 'view-admin':
                 $linkParams = [
                     'icon'  => 'far fa-circle',
-                    'route' => 'zfcadmin/affiliation/view',
+                    'route' => 'zfcadmin/affiliation/details',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-view-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
                 ];
@@ -143,7 +134,7 @@ final class AffiliationLink extends AbstractLink
             case 'edit-admin':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
-                    'route' => 'zfcadmin/affiliation/edit',
+                    'route' => 'zfcadmin/affiliation/edit/affiliation',
                     'text'  => $showOptions[$show]
                         ?? sprintf($this->translator->translate('txt-edit-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
                 ];
@@ -151,7 +142,7 @@ final class AffiliationLink extends AbstractLink
             case 'edit-description-admin':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
-                    'route' => 'zfcadmin/affiliation/edit-description',
+                    'route' => 'zfcadmin/affiliation/edit/description',
                     'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-description')
                 ];
@@ -159,10 +150,33 @@ final class AffiliationLink extends AbstractLink
             case 'edit-market-access-admin':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
-                    'route' => 'zfcadmin/affiliation/edit-market-access',
+                    'route' => 'zfcadmin/affiliation/edit/market-access',
                     'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-market-access')
                 ];
+                break;
+            case 'edit-financial-admin':
+                $linkParams = [
+                    'icon'  => 'far fa-edit',
+                    'route' => 'zfcadmin/affiliation/edit/financial',
+                    'text'  => $showOptions[$show]
+                        ?? $this->translator->translate('txt-financial')
+                ];
+                break;
+            case 'manage-associate-admin':
+                $linkParams = [
+                    'icon'  => 'fas fa-users',
+                    'route' => 'zfcadmin/affiliation/edit/manage-associate',
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-manage-associates')
+                ];
+                break;
+            case 'add-associate-admin':
+                $linkParams = [
+                    'icon'  => 'fas fa-user-plus',
+                    'route' => 'zfcadmin/affiliation/add-associate',
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-add-associate')
+                ];
+
                 break;
             case 'merge-admin':
                 $linkParams = [

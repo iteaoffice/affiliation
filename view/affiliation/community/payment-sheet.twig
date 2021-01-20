@@ -1,4 +1,0 @@
-{% do headTitle().append(translate("txt-payment-sheet-for-affiliation-%s")|format(affiliation)) %}
-{% do headLink().appendStylesheet(url('assets/funding-status-css')) %}
-<h1>{{ translate("txt-payment-sheet-for-affiliation-%s")|format(affiliation) }} {{ affiliationLink(affiliation,'view-admin','icon') }}</h1>
-{{ paymentSheet(affiliation,year,period, useContractData) }}

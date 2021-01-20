@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA copyright message placeholder.
- *
- * @category    Affiliation
+ * ITEA Office all rights reserved
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -79,10 +78,10 @@ class Loi extends AbstractEntity
      */
     private $size;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist","remove"}, mappedBy="loi")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist","remove"}, mappedBy="loi")
      * @Annotation\Exclude()
      *
-     * @var LoiObject[]|ArrayCollection
+     * @var \Affiliation\Entity\LoiObject
      */
     private $object;
     /**
@@ -119,19 +118,9 @@ class Loi extends AbstractEntity
      */
     private $contact;
 
-    public function __construct()
-    {
-        $this->object = new ArrayCollection();
-    }
-
     public function hasObject(): bool
     {
-        return ! $this->object->isEmpty();
-    }
-
-    public function __toString(): string
-    {
-        return sprintf('Loi: %s', $this->id);
+        return null !== $this->object;
     }
 
     public function parseFileName(): string

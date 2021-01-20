@@ -1,0 +1,92 @@
+{% include 'affiliation/admin/manger/tabs' %}
+
+<h2>{{ translate("txt-invoicing-details") }}</h2>
+
+{% if affiliation.hasFinancial() %}
+
+    <dl class="dl-horizontal">
+        <dt>{{ translate("txt-billing-organisation") }}</dt>
+        <dd>{{ organisationLink(affiliation.financial.organisation,'view-admin','name') }}</dd>
+        <dt>{{ translate("txt-country") }}</dt>
+        <dd>{{ affiliation.financial.organisation.country }}</dd>
+        <dt>{{ translate("txt-financial-contact") }}</dt>
+        <dd>{{ contactLink(affiliation.financial.contact, 'view-admin','name') }}</dd>
+
+        <dt>{{ translate("txt-address-label") }}</dt>
+        <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch, affiliation.financial.organisation) }}</dd>
+
+        {% if organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
+            <dd>{{ contactService.parseAttention(affiliation.financial.contact) }} {{ affiliation.financial.contact.parseFullName() }}</dd>
+        {% endif %}
+
+        {% if affiliation.organisation.hasFinancial() and not affiliation.organisation.financial.hasOmitContact %}
+            <dd>{{ contactService.parseAttention(affiliation.financial.contact) }} {{ affiliation.financial.contact.parseFullName() }}</dd>
+        {% endif %}
+
+        {% if affiliation.financial.contact.department %}
+            <dd>{{ affiliation.financial.contact.department }}</dd>
+        {% endif %}
+
+        {% set financialAddress = contactService.getFinancialAddress(affiliation.financial.contact) %}
+        <dd>{{ financialAddress.address }}</dd>
+        <dd>{{ financialAddress.zipcode }} {{ financialAddress.city }}</dd>
+        <dd>{{ financialAddress.country|upper }}</dd>
+
+        <dt>{{ translate("txt-vat-number") }}</dt>
+        {% if affiliation.financial.organisation.financial %}
+            <dd>{{ affiliation.financial.organisation.financial.vat }}</dd>
+        {% else %}
+            <dd>{{ translate("txt-no-finanical-organisation-for-%s")|format(affiliation.financial.organisation) }}</dd>
+        {% endif %}
+
+        <dt>{{ translate("txt-preferred-delivery") }}</dt>
+        {% if affiliation.organisation.financial.sendByEmail() %}
+            <dd>{{ translate("txt-by-email-to-%s")|format(affiliation.financial.contact.email) }}</dd>
+        {% else %}
+            <dd>{{ translate("txt-by-postal-mail") }}</dd>
+        {% endif %}
+    </dl>
+
+{% else %}
+    {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliation.parseBranchedName()))|raw }}
+{% endif %}
+
+{{ affiliationLink(affiliation, 'edit-financial-edit','button') }}
+
+{% if affiliation.invoice|length > 0 %}
+    <h2>{{ translate("txt-partner-invoices") }}</h2>
+
+    <table class="table table-hover table-striped table-sm">
+        <thead>
+        <tr>
+            <th>{{ translate("txt-no") }}</th>
+            <th>{{ translate("txt-invoice-number") }}</th>
+            <th>{{ translate("txt-invoice-date") }}</th>
+            <th>{{ translate("txt-period") }}</th>
+            <th>{{ translate("txt-amount") }}</th>
+            <th>{{ translate("txt-status") }}</th>
+            <th>{{ translate("txt-download") }}</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <td colspan="7"></td>
+        </tr>
+        </tfoot>
+        <tbody>
+        {% for affiliationInvoice in affiliation.invoice %}
+            {% if invoiceService.isSent(affiliationInvoice.invoice) %}
+                <tr>
+                    <td><small class="text-muted">{{ loop.index }}</small></td>
+                    <td>{{ invoiceLink(affiliationInvoice.invoice,'view','number') }}</td>
+                    <td>{{ affiliationInvoice.invoice.dateInvoice|date("d-m-Y") }}</td>
+                    <td>{{ affiliationInvoice.year }}-{{ affiliationInvoice.period }}</td>
+                    <td>{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                    <td>{{ invoiceService.parseStatus(affiliationInvoice.invoice)['name'] }}</td>
+                    <td>{{ invoiceLink(affiliationInvoice.invoice,'download','icon') }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

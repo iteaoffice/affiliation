@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -30,14 +29,8 @@ use Laminas\Permissions\Acl\Role\RoleInterface;
  */
 final class QuestionnaireAssertion extends AbstractAssertion
 {
-    /**
-     * @var QuestionnaireService
-     */
-    private $questionnaireService;
-    /**
-     * @var AffiliationService
-     */
-    private $affiliationService;
+    private QuestionnaireService $questionnaireService;
+    private AffiliationService $affiliationService;
 
     public function __construct(ContainerInterface $container)
     {
@@ -66,7 +59,7 @@ final class QuestionnaireAssertion extends AbstractAssertion
 
         $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
 
-        $affiliation   = null;
+        $affiliation = null;
         if ($affiliationId !== null) {
             $affiliation = $this->affiliationService->findAffiliationById((int)$affiliationId);
         }

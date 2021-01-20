@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office all rights reserved
  *
- * @category    Affiliation
- * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -20,50 +19,150 @@ return [
         'routes' => [
             'community' => [
                 'child_routes' => [
-                    'affiliation' => [
+                    'affiliation'   => [
                         'type'          => 'Segment',
                         'priority'      => 1000,
                         'options'       => [
                             'route'    => '/affiliation',
                             'defaults' => [
                                 'namespace'  => 'affiliation',
-                                'controller' => Controller\CommunityController::class,
+                                'controller' => Controller\AffiliationController::class,
                                 'action'     => 'index',
                             ],
                         ],
                         'may_terminate' => true,
                         'child_routes'  => [
-                            'affiliation'       => [
+                            'affiliation'      => [ //Keep a legacy affiliation link
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/details/[:id].html',
+                                    'route'    => '/[:id]/details.html',
                                     'defaults' => [
-                                        'action'    => 'affiliation',
-                                        'privilege' => 'view-community',
+                                        'action' => 'details',
                                     ],
                                 ],
                             ],
-                            'technical-contact' => [
+                            'details'          => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/[:id]/technical-contact.html',
+                                    'route'    => '/[:id]/details.html',
                                     'defaults' => [
-                                        'controller' => Controller\EditController::class,
-                                        'action'     => 'technical-contact',
-                                        'privilege'  => 'technical-contact',
+                                        'action' => 'details',
                                     ],
                                 ],
                             ],
-                            'payment-sheet'     => [
+                            'description'      => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/payment-sheet/[:id]/year-[:year]/period-[:period][/:contract].html',
+                                    'route'    => '/[:id]/description.html',
                                     'defaults' => [
-                                        'action'    => 'payment-sheet',
-                                        'privilege' => 'payment-sheet',
+                                        'action' => 'description',
                                     ],
                                 ],
                             ],
+                            'market-access'    => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/market-access.html',
+                                    'defaults' => [
+                                        'action' => 'market-access',
+                                    ],
+                                ],
+                            ],
+                            'costs-and-effort' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/costs-and-effort.html',
+                                    'defaults' => [
+                                        'action' => 'costs-and-effort',
+                                    ],
+                                ],
+                            ],
+                            'project-versions' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/project-versions.html',
+                                    'defaults' => [
+                                        'action' => 'project-versions',
+                                    ],
+                                ],
+                            ],
+
+
+                            'financial'     => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/financial.html',
+                                    'defaults' => [
+                                        'action' => 'financial',
+                                    ],
+                                ],
+                            ],
+                            'contract'      => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/contract.html',
+                                    'defaults' => [
+                                        'action' => 'contract',
+                                    ],
+                                ],
+                            ],
+                            'parent'      => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/parent.html',
+                                    'defaults' => [
+                                        'action' => 'parent',
+                                    ],
+                                ],
+                            ],
+                            'payment-sheet' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/payment-sheet/year-[:year]/period-[:period][/:contract].html',
+                                    'defaults' => [
+                                        'action' => 'payment-sheet',
+                                    ],
+                                ],
+                            ],
+
+
+                            'contacts'       => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/contacts.html',
+                                    'defaults' => [
+                                        'action' => 'contacts',
+                                    ],
+                                ],
+                            ],
+                            'reporting'      => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/reporting.html',
+                                    'defaults' => [
+                                        'action' => 'reporting',
+                                    ],
+                                ],
+                            ],
+                            'achievements'   => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/achievements.html',
+                                    'defaults' => [
+                                        'action' => 'achievements',
+                                    ],
+                                ],
+                            ],
+                            'questionnaires' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/questionnaires.html',
+                                    'defaults' => [
+                                        'action' => 'questionnaires',
+                                    ],
+                                ],
+                            ],
+
                             'payment-sheet-pdf' => [
                                 'type'    => 'Segment',
                                 'options' => [
@@ -85,232 +184,234 @@ return [
                                 ],
                                 'may_terminate' => true,
                                 'child_routes'  => [
-                                    'affiliation'         => [
+                                    'affiliation'       => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/affiliation/[:id].html',
+                                            'route'    => '/[:id]/affiliation.html',
                                             'defaults' => [
                                                 'action'    => 'affiliation',
-                                                'privilege' => 'edit-affiliation',
+                                                'privilege' => 'edit',
                                             ],
                                         ],
                                     ],
-                                    'add-associate'       => [
+                                    'technical-contact' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/add-associate/[:id].html',
+                                            'route'    => '/[:id]/technical-contact.html',
                                             'defaults' => [
-                                                'action'    => 'add-associate',
-                                                'privilege' => 'add-associate',
+                                                'action' => 'technical-contact',
                                             ],
                                         ],
                                     ],
-                                    'manage-associate'    => [
+                                    'manage-associates' => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/manage-associate/[:id].html',
+                                            'route'    => '/[:id]/manage/associates.html',
                                             'defaults' => [
-                                                'action'    => 'manage-associate',
-                                                'privilege' => 'manage-associate',
+                                                'action' => 'manage-associates',
                                             ],
                                         ],
                                     ],
-                                    'cost-and-effort'     => [
+                                    'add-associate'     => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/cost-and-effort/[:id].html',
+                                            'route'    => '/[:id]/associate/add.html',
                                             'defaults' => [
-                                                'action'    => 'cost-and-effort',
-                                                'privilege' => 'edit-cost-and-effort',
+                                                'action' => 'add-associate',
                                             ],
                                         ],
                                     ],
-                                    'financial'           => [
+                                    'costs-and-effort'  => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/financial/[:id].html',
+                                            'route'    => '[:id]/costs-and-effort.html',
                                             'defaults' => [
-                                                'action'    => 'financial',
-                                                'privilege' => 'edit-financial',
+                                                'action' => 'costs-and-effort',
                                             ],
                                         ],
                                     ],
-                                    'description'         => [
+                                    'financial'         => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/description/[:id].html',
+                                            'route'    => '/[:id]/financial.html',
                                             'defaults' => [
-                                                'action'    => 'description',
-                                                'privilege' => 'edit-description',
+                                                'action' => 'financial',
                                             ],
                                         ],
                                     ],
-                                    'market-access'       => [
+                                    'description'       => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/market-access/[:id].html',
+                                            'route'    => '/[:id]/description.html',
                                             'defaults' => [
-                                                'action'    => 'market-access',
-                                                'privilege' => 'edit-market-access',
+                                                'action' => 'description',
                                             ],
                                         ],
                                     ],
-                                    'update-effort-spent' => [
+                                    'market-access'     => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '/update-effort-spent/affiliation-[:id]/report-[:report].html',
+                                            'route'    => '/[:id]/market-access.html',
                                             'defaults' => [
-                                                'action'    => 'update-effort-spent',
-                                                'privilege' => 'update-effort-spent',
+                                                'action' => 'market-access',
+                                            ],
+                                        ],
+                                    ],
+                                    'effort-spent'      => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/effort/spent/report-[:report].html',
+                                            'defaults' => [
+                                                'action' => 'effort-spent',
                                             ],
                                         ],
                                     ],
                                 ],
                             ],
-                            'doa'               => [
-                                'type'         => 'Segment',
-                                'options'      => [
-                                    'route'    => '/doa',
+                        ],
+                    ],
+                    'questionnaire' => [
+                        'type'          => 'Segment',
+                        'options'       => [
+                            'route'    => '/questionnaire',
+                            'defaults' => [
+                                'controller' => Controller\Questionnaire\QuestionnaireController::class,
+                                'action'     => 'view',
+                            ],
+                        ],
+                        'may_terminate' => false,
+                        'child_routes'  => [
+                            'view'     => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/view[/:affiliationId]/q-[:id].html',
                                     'defaults' => [
-                                        'controller' => Controller\DoaController::class,
-                                        'action'     => 'index',
-                                    ],
-                                ],
-                                'child_routes' => [
-                                    'render'   => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/render/affiliation-[:affiliationId].pdf',
-                                            'defaults' => [
-                                                'action'    => 'render',
-                                                'privilege' => 'render',
-                                            ],
-                                        ],
-                                    ],
-                                    'submit'   => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/submit/affiliation-[:affiliationId].html',
-                                            'defaults' => [
-                                                'action'    => 'submit',
-                                                'privilege' => 'submit',
-                                            ],
-                                        ],
-                                    ],
-                                    'replace'  => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/replace/[:id].html',
-                                            'defaults' => [
-                                                'action'    => 'replace',
-                                                'privilege' => 'replace',
-                                            ],
-                                        ],
-                                    ],
-                                    'download' => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/download/[:id].html',
-                                            'defaults' => [
-                                                'action'    => 'download',
-                                                'privilege' => 'download',
-                                            ],
-                                        ],
+                                        'action'    => 'view',
+                                        'privilege' => 'view-community',
                                     ],
                                 ],
                             ],
-                            'loi'               => [
-                                'type'         => 'Segment',
-                                'options'      => [
-                                    'route'    => '/loi',
+                            'edit'     => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/edit[/:affiliationId]/q-[:id].html',
                                     'defaults' => [
-                                        'controller' => Controller\LoiController::class,
-                                        'action'     => 'index',
-                                    ],
-                                ],
-                                'child_routes' => [
-                                    'render'   => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/render/affiliation-[:affiliationId].pdf',
-                                            'defaults' => [
-                                                'action'    => 'render',
-                                                'privilege' => 'render',
-                                            ],
-                                        ],
-                                    ],
-                                    'submit'   => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/submit/affiliation-[:affiliationId].html',
-                                            'defaults' => [
-                                                'action'    => 'submit',
-                                                'privilege' => 'submit',
-                                            ],
-                                        ],
-                                    ],
-                                    'replace'  => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/replace/[:id].html',
-                                            'defaults' => [
-                                                'action'    => 'replace',
-                                                'privilege' => 'replace',
-                                            ],
-                                        ],
-                                    ],
-                                    'download' => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/download/[:id].html',
-                                            'defaults' => [
-                                                'action'    => 'download',
-                                                'privilege' => 'download',
-                                            ],
-                                        ],
+                                        'action'    => 'edit',
+                                        'privilege' => 'edit-community',
                                     ],
                                 ],
                             ],
-                            'questionnaire'     => [
-                                'type'          => 'Segment',
-                                'options'       => [
-                                    'route'    => '/questionnaire',
+                            'overview' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/overview.html',
                                     'defaults' => [
-                                        'controller' => Controller\Questionnaire\QuestionnaireController::class,
-                                        'action'     => 'view',
+                                        'action'    => 'overview',
+                                        'privilege' => 'overview',
                                     ],
                                 ],
-                                'may_terminate' => false,
-                                'child_routes'  => [
-                                    'view'     => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/view[/:affiliationId]/q-[:id].html',
-                                            'defaults' => [
-                                                'action'    => 'view',
-                                                'privilege' => 'view-community',
-                                            ],
-                                        ],
+                            ],
+                        ],
+                    ],
+                    'doa'           => [
+                        'type'         => 'Segment',
+                        'options'      => [
+                            'route'    => '/doa',
+                            'defaults' => [
+                                'controller' => Controller\DoaController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
+                        'child_routes' => [
+                            'render'   => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/render/affiliation-[:affiliationId].pdf',
+                                    'defaults' => [
+                                        'action'    => 'render',
+                                        'privilege' => 'render',
                                     ],
-                                    'edit'     => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/edit[/:affiliationId]/q-[:id].html',
-                                            'defaults' => [
-                                                'action'    => 'edit',
-                                                'privilege' => 'edit-community',
-                                            ],
-                                        ],
+                                ],
+                            ],
+                            'submit'   => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/submit/affiliation-[:affiliationId].html',
+                                    'defaults' => [
+                                        'action'    => 'submit',
+                                        'privilege' => 'submit',
                                     ],
-                                    'overview' => [
-                                        'type'    => 'Segment',
-                                        'options' => [
-                                            'route'    => '/overview.html',
-                                            'defaults' => [
-                                                'action'    => 'overview',
-                                                'privilege' => 'overview',
-                                            ],
-                                        ],
+                                ],
+                            ],
+                            'replace'  => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/replace/[:id].html',
+                                    'defaults' => [
+                                        'action'    => 'replace',
+                                        'privilege' => 'replace',
+                                    ],
+                                ],
+                            ],
+                            'download' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/download/[:id].html',
+                                    'defaults' => [
+                                        'action'    => 'download',
+                                        'privilege' => 'download',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'loi'           => [
+                        'type'         => 'Segment',
+                        'options'      => [
+                            'route'    => '/loi',
+                            'defaults' => [
+                                'controller' => Controller\LoiController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
+                        'child_routes' => [
+                            'render'   => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/render/affiliation-[:affiliationId].pdf',
+                                    'defaults' => [
+                                        'action'    => 'render',
+                                        'privilege' => 'render',
+                                    ],
+                                ],
+                            ],
+                            'submit'   => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/submit/affiliation-[:affiliationId].html',
+                                    'defaults' => [
+                                        'action'    => 'submit',
+                                        'privilege' => 'submit',
+                                    ],
+                                ],
+                            ],
+                            'replace'  => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/replace/[:id].html',
+                                    'defaults' => [
+                                        'action'    => 'replace',
+                                        'privilege' => 'replace',
+                                    ],
+                                ],
+                            ],
+                            'download' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/download/[:id].html',
+                                    'defaults' => [
+                                        'action'    => 'download',
+                                        'privilege' => 'download',
                                     ],
                                 ],
                             ],

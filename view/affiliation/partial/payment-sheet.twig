@@ -157,7 +157,7 @@
         <tr>
             <th scope="row">{{ projectYear }}</th>
             <td>
-                {% if affiliationService.isSelfFunded(affiliation) %}
+                {% if affiliation.isSelfFunded() %}
                     {{ translate("txt-self-funded") }}
                 {% else %}
                     <span class="badge funding-status {{ affiliationService.getFundingInYear(affiliation,projectYear).status.parseCssName }}">{{ affiliationService.getFundingInYear(affiliation,projectYear).status.statusFunding }}</span>

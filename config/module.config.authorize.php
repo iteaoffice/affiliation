@@ -1,9 +1,14 @@
 <?php
 
-use Affiliation\Acl\Assertion\Affiliation as AffiliationAssertion;
-use Affiliation\Acl\Assertion\Doa as DoaAssertion;
-use Affiliation\Acl\Assertion\Loi as LoiAssertion;
-use Affiliation\Acl\Assertion\QuestionnaireAssertion;
+/**
+ * ITEA Office all rights reserved
+ *
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
+ */
+
+use Affiliation\Acl\Assertion;
 use BjyAuthorize\Guard\Route;
 
 return [
@@ -11,277 +16,184 @@ return [
         'guards' => [
             Route::class => [
                 [
-                    'route' => 'zfcadmin/affiliation/list-csv',
-                    'roles' => ['office'],
+                    'route'     => 'community/affiliation/affiliation',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/view',
-                    'roles'     => ['office'],
-                    'assertion' => AffiliationAssertion::class,
+                    'route'     => 'community/affiliation/details',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/edit',
-                    'roles'     => ['office'],
-                    'assertion' => AffiliationAssertion::class,
+                    'route'     => 'community/affiliation/description',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/merge',
-                    'roles'     => ['office'],
-                    'assertion' => AffiliationAssertion::class,
+                    'route'     => 'community/affiliation/market-access',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/missing-affiliation-parent',
-                    'roles'     => ['office'],
-                    'assertion' => AffiliationAssertion::class,
+                    'route'     => 'community/affiliation/costs-and-effort',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/edit-associate',
-                    'roles'     => ['office']
+                    'route'     => 'community/affiliation/project-versions',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/edit-description',
-                    'roles'     => ['office']
+                    'route'     => 'community/affiliation/financial',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/edit-market-access',
-                    'roles'     => ['office']
+                    'route'     => 'community/affiliation/parent',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'zfcadmin/affiliation/add-associate',
-                    'roles'     => ['office'],
-                    'assertion' => AffiliationAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/approval',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/missing',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/view',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/edit',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/remind',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/reminders',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/approve',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/doa/decline',
-                    'roles'     => ['office'],
-                    'assertion' => DoaAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/loi/approval',
-                    'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/loi/missing',
-                    'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/loi/view',
-                    'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/loi/edit',
-                    'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
-                ],
-                [
-                    'route'     => 'zfcadmin/affiliation/loi/approve',
-                    'roles'     => ['office'],
-                    'assertion' => LoiAssertion::class,
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/list',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/view',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/new',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/edit',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/copy',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/question/list',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/question/view',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/question/new',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/question/edit',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/category/list',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/category/view',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/category/new',
-                    'roles' => ['office'],
-                ],
-                [
-                    'route' => 'zfcadmin/affiliation/questionnaire/category/edit',
-                    'roles' => ['office'],
+                    'route'     => 'community/affiliation/contract',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/payment-sheet',
                     'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/payment-sheet-pdf',
                     'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/affiliation',
+                    'route'     => 'community/affiliation/contacts',
                     'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/technical-contact',
-                    'roles'     => [],
-                    'assertion' => AffiliationAssertion::class,
+                    'route'     => 'community/affiliation/reporting',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/achievements',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/questionnaires',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/affiliation',
                     'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/financial',
+                    'roles'     => [],
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/manage-associates',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/add-associate',
                     'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/edit/manage-associate',
+                    'route'     => 'community/affiliation/edit/costs-and-effort',
                     'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
-                ],
-                [
-                    'route'     => 'community/affiliation/edit/cost-and-effort',
-                    'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
-                ],
-                [
-                    'route'     => 'community/affiliation/edit/market-access',
-                    'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
-                ],
-                [
-                    'route'     => 'community/affiliation/edit/financial',
-                    'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
-                ],
-                [
-                    'route'     => 'community/affiliation/edit/update-effort-spent',
-                    'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/edit/description',
                     'roles'     => ['user'],
-                    'assertion' => AffiliationAssertion::class,
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/market-access',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/technical-contact',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/financial',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
+                ],
+                [
+                    'route'     => 'community/affiliation/edit/effort-spent',
+                    'roles'     => ['user'],
+                    'assertion' => Assertion\AffiliationAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/submit',
                     'roles'     => ['user'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => Assertion\DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/render',
                     'roles'     => ['user'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => Assertion\DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/replace',
                     'roles'     => ['user'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => Assertion\DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/doa/download',
                     'roles'     => ['user'],
-                    'assertion' => DoaAssertion::class,
+                    'assertion' => Assertion\DoaAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/loi/submit',
                     'roles'     => ['user'],
-                    'assertion' => LoiAssertion::class,
+                    'assertion' => Assertion\LoiAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/loi/render',
                     'roles'     => ['user'],
-                    'assertion' => LoiAssertion::class,
+                    'assertion' => Assertion\LoiAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/loi/replace',
                     'roles'     => ['user'],
-                    'assertion' => LoiAssertion::class,
+                    'assertion' => Assertion\LoiAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/loi/download',
                     'roles'     => ['user'],
-                    'assertion' => LoiAssertion::class,
+                    'assertion' => Assertion\LoiAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/questionnaire/view',
                     'roles'     => ['user'],
-                    'assertion' => QuestionnaireAssertion::class,
+                    'assertion' => Assertion\QuestionnaireAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/questionnaire/edit',
                     'roles'     => ['user'],
-                    'assertion' => QuestionnaireAssertion::class,
+                    'assertion' => Assertion\QuestionnaireAssertion::class,
                 ],
                 [
                     'route'     => 'community/affiliation/questionnaire/overview',
                     'roles'     => ['user'],
-                    'assertion' => QuestionnaireAssertion::class,
+                    'assertion' => Assertion\QuestionnaireAssertion::class,
                 ],
             ],
         ],

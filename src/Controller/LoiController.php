@@ -3,10 +3,9 @@
 /**
  * ITEA Office all rights reserved
  *
- * @category    Affiliation
- *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -15,18 +14,20 @@ namespace Affiliation\Controller;
 
 use Affiliation\Entity;
 use Affiliation\Entity\Loi;
+use Affiliation\Form\Loi\SubmitForm;
+use Affiliation\Form\Loi\UploadForm;
 use Affiliation\Form\SubmitLoi;
 use Affiliation\Form\UploadLoi;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\LoiService;
 use General\Service\GeneralService;
-use Project\Entity\Changelog;
-use Project\Service\ProjectService;
 use Laminas\Http\Response;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Validator\File\FilesSize;
 use Laminas\Validator\File\MimeType;
 use Laminas\View\Model\ViewModel;
+use Project\Entity\Changelog;
+use Project\Service\ProjectService;
 
 /**
  * Class LoiController
@@ -48,11 +49,11 @@ final class LoiController extends AffiliationAbstractController
         GeneralService $generalService,
         TranslatorInterface $translator
     ) {
-        $this->loiService = $loiService;
+        $this->loiService         = $loiService;
         $this->affiliationService = $affiliationService;
-        $this->projectService = $projectService;
-        $this->generalService = $generalService;
-        $this->translator = $translator;
+        $this->projectService     = $projectService;
+        $this->generalService     = $generalService;
+        $this->translator         = $translator;
     }
 
 
@@ -71,11 +72,11 @@ final class LoiController extends AffiliationAbstractController
             $this->getRequest()->getFiles()->toArray()
         );
 
-        $form = new SubmitLoi();
+        $form = new SubmitForm();
         $form->setData($data);
 
         if ($this->getRequest()->isPost() && isset($data['cancel'])) {
-            return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
+            return $this->redirect()->toRoute('community/affiliation/details', ['id' => $affiliation->getId()]);
         }
 
         if ($this->getRequest()->isPost() && ! isset($data['approve']) && $form->isValid()) {
@@ -89,7 +90,7 @@ final class LoiController extends AffiliationAbstractController
             }
 
 
-            return $this->redirect()->toRoute('community/affiliation/affiliation', ['id' => $affiliation->getId()]);
+            return $this->redirect()->toRoute('community/affiliation/details', ['id' => $affiliation->getId()]);
         }
 
         if ($this->getRequest()->isPost() && isset($data['approve'])) {
@@ -118,7 +119,7 @@ final class LoiController extends AffiliationAbstractController
                 );
 
                 return $this->redirect()->toRoute(
-                    'community/affiliation/affiliation',
+                    'community/affiliation/details',
                     ['id' => $affiliation->getId()]
                 );
             }
@@ -143,16 +144,15 @@ final class LoiController extends AffiliationAbstractController
             $this->getRequest()->getPost()->toArray(),
             $this->getRequest()->getFiles()->toArray()
         );
-        $form = new UploadLoi();
+        $form = new UploadForm();
         $form->get('submit')->setValue(_('txt-replace-loi'));
         $form->setData($data);
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
                 return $this->redirect()
                     ->toRoute(
-                        'community/affiliation/affiliation',
-                        ['id' => $loi->getAffiliation()->getId()],
-                        ['fragment' => 'details']
+                        'community/affiliation/details',
+                        ['id' => $loi->getAffiliation()->getId()]
                     );
             }
 
@@ -201,9 +201,8 @@ final class LoiController extends AffiliationAbstractController
 
                 return $this->redirect()
                     ->toRoute(
-                        'community/affiliation/affiliation',
-                        ['id' => $loi->getAffiliation()->getId()],
-                        ['fragment' => 'details']
+                        'community/affiliation/details',
+                        ['id' => $loi->getAffiliation()->getId()]
                     );
             }
         }

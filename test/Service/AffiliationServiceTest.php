@@ -1,12 +1,11 @@
 <?php
 
 /**
+ * ITEA Office all rights reserved
  *
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
  * @license     https://itea3.org/license.txt proprietary
- *
- * @link        http://github.com/iteaoffice/project for the canonical source repository
  */
 
 declare(strict_types=1);
@@ -32,7 +31,7 @@ use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Mvc\Controller\PluginManager;
 use Laminas\View\HelperPluginManager;
 use Organisation\Entity\Financial;
-use Organisation\Entity\OParent;
+use Organisation\Entity\ParentEntity;
 use Organisation\Entity\Organisation;
 use Organisation\Entity\Type;
 use Organisation\Service\OrganisationService;
@@ -87,36 +86,6 @@ class AffiliationServiceTest extends AbstractServiceTest
         self::assertEquals($affiliation, $service->findAffiliationById((int)$affiliationId));
     }
 
-
-    public function testIsSelfFunded(): void
-    {
-        $service     = new AffiliationService(
-            $this->getMockBuilder(EntityManager::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(SelectionContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(GeneralService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(ProjectService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(InvoiceService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(ContractService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(OrganisationService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
-        );
-        $affiliation = new Entity\Affiliation();
-        self::assertFalse($service->isSelfFunded($affiliation));
-        $partlySelfFundedAffiliation = new Entity\Affiliation();
-        $partlySelfFundedAffiliation->setSelfFunded(Entity\Affiliation::SELF_FUNDED);
-        self::assertFalse($service->isSelfFunded($partlySelfFundedAffiliation));
-        $selfFundedAffiliation = new Entity\Affiliation();
-        $selfFundedAffiliation->setSelfFunded(Entity\Affiliation::SELF_FUNDED);
-        $selfFundedAffiliation->setDateSelfFunded(new \DateTime());
-        self::assertTrue($service->isSelfFunded($selfFundedAffiliation));
-    }
 
     public function testIsActiveInVersion(): void
     {
@@ -301,7 +270,7 @@ class AffiliationServiceTest extends AbstractServiceTest
 //        $affiliation->setOrganisation($organisation);
 //        $this->assertNull($service->parseVatNumber($affiliation));
 //        $affiliation  = new Entity\Affiliation();
-//        $parent       = new OParent();
+//        $parent       = new ParentEntity();
 //        $organisation = new Organisation();
 //        $parent->setOrganisation($organisation);
 //        $parentOrganisation = new \Organisation\Entity\Parent\Organisation();
@@ -315,7 +284,7 @@ class AffiliationServiceTest extends AbstractServiceTest
         //Situation with a parent and no parent financial
 //        $vatNumber    = 'VATNUMBER';
 //        $affiliation  = new Entity\Affiliation();
-//        $parent       = new OParent();
+//        $parent       = new ParentEntity();
 //        $organisation = new Organisation();
 //        $financial    = new Financial();
 //        $financial->setVat($vatNumber);
@@ -333,7 +302,7 @@ class AffiliationServiceTest extends AbstractServiceTest
         //Situation with a parent and a parent financial
         $vatNumber    = 'VATNUMBER';
         $affiliation  = new Entity\Affiliation();
-        $parent       = new OParent();
+        $parent       = new ParentEntity();
         $organisation = new Organisation();
         $financial    = new Financial();
         $financial->setVat($vatNumber);

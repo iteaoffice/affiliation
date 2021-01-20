@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office all rights reserved
  *
- * @category    Affiliation
- * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 declare(strict_types=1);
@@ -21,139 +20,295 @@ return [
         'routes' => [
             'zfcadmin' => [
                 'child_routes' => [
-                    'affiliation' => [
+                    'affiliation'   => [
                         'type'          => 'Segment',
                         'options'       => [
                             'route'    => '/affiliation',
                             'defaults' => [
-                                'controller' => Controller\AffiliationManagerController::class,
+                                'controller' => Controller\Admin\AffiliationController::class,
                                 'action'     => 'index',
                             ],
                         ],
                         'may_terminate' => false,
                         'child_routes'  => [
-                            'view'                       => [
+                            'details'          => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/view/[:id].html',
+                                    'route'    => '/[:id]/details.html',
                                     'defaults' => [
-                                        'action'    => 'view',
-                                        'privilege' => 'view-admin',
+                                        'action' => 'details',
                                     ],
                                 ],
                             ],
-                            'edit'                       => [
+                            'description'      => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/edit/[:id].html',
+                                    'route'    => '/[:id]/description.html',
                                     'defaults' => [
-                                        'action'    => 'edit',
-                                        'privilege' => 'edit-admin',
+                                        'action' => 'description',
                                     ],
                                 ],
                             ],
-                            'merge'                      => [
+                            'market-access'    => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/market-access.html',
+                                    'defaults' => [
+                                        'action' => 'market-access',
+                                    ],
+                                ],
+                            ],
+                            'costs-and-effort' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/costs-and-effort.html',
+                                    'defaults' => [
+                                        'action' => 'costs-and-effort',
+                                    ],
+                                ],
+                            ],
+                            'project-versions' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/project-versions.html',
+                                    'defaults' => [
+                                        'action' => 'project-versions',
+                                    ],
+                                ],
+                            ],
+
+                            'financial'     => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/financial.html',
+                                    'defaults' => [
+                                        'action' => 'financial',
+                                    ],
+                                ],
+                            ],
+                            'contract'      => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/contract.html',
+                                    'defaults' => [
+                                        'action' => 'contacts',
+                                    ],
+                                ],
+                            ],
+                            'parent'        => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/parent.html',
+                                    'defaults' => [
+                                        'action' => 'parent',
+                                    ],
+                                ],
+                            ],
+                            'payment-sheet' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/payment-sheet/year-[:year]/period-[:period][/:contract].html',
+                                    'defaults' => [
+                                        'action'    => 'payment-sheet',
+                                        'privilege' => 'payment-sheet',
+                                    ],
+                                ],
+                            ],
+
+                            'contacts'       => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/contacts.html',
+                                    'defaults' => [
+                                        'action' => 'contacts',
+                                    ],
+                                ],
+                            ],
+                            'reporting'      => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/reporting.html',
+                                    'defaults' => [
+                                        'action' => 'reporting',
+                                    ],
+                                ],
+                            ],
+                            'achievements'   => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/achievements.html',
+                                    'defaults' => [
+                                        'action' => 'achievements',
+                                    ],
+                                ],
+                            ],
+                            'questionnaires' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/[:id]/questionnaires.html',
+                                    'defaults' => [
+                                        'action' => 'questionnaires',
+                                    ],
+                                ],
+                            ],
+                            'merge'          => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/merge/[:id].html',
                                     'defaults' => [
-                                        'action'    => 'merge',
-                                        'privilege' => 'merge-admin',
+                                        'action' => 'merge',
                                     ],
                                 ],
                             ],
-                            'missing-affiliation-parent' => [
+                            'missing-parent' => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/missing-affiliation-parent[/f-:encodedFilter][/page-:page].html',
+                                    'route'    => '/missing-parent[/f-:encodedFilter][/page-:page].html',
                                     'defaults' => [
-                                        'action' => 'missing-affiliation-parent',
+                                        'controller' => Controller\Admin\IndexController::class,
+                                        'action'     => 'missing-parent',
                                     ],
                                 ],
                             ],
-                            'edit-associate'             => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/edit-associate/affiliation-[:id]/contact-[:contact].html',
+                            'edit'           => [
+                                'type'         => 'Literal',
+                                'options'      => [
+                                    'route'    => '/edit',
                                     'defaults' => [
-                                        'action'    => 'edit-associate',
-                                        'privilege' => 'edit-admin',
+                                        'action' => 'edit',
                                     ],
                                 ],
-                            ],
-                            'add-associate'              => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/add-associate/affiliation-[:id].html',
-                                    'defaults' => [
-                                        'action'    => 'add-associate',
-                                        'privilege' => 'edit-admin',
+                                'child_routes' => [
+                                    'affiliation'       => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/affiliation.html',
+                                            'defaults' => [
+                                                'action' => 'affiliation',
+                                            ],
+                                        ],
                                     ],
-                                ],
-                            ],
-                            'edit-description'           => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/edit-description/[:id].html',
-                                    'defaults' => [
-                                        'action' => 'edit-description',
+                                    'associate'         => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/associate/affiliation-[:id]/contact-[:contact].html',
+                                            'defaults' => [
+                                                'action' => 'associate',
+                                            ],
+                                        ],
                                     ],
-                                ],
-                            ],
-                            'edit-market-access'         => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/edit-market-access/[:id].html',
-                                    'defaults' => [
-                                        'action' => 'edit-market-access',
+                                    'technical-contact' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/technical-contact.html',
+                                            'defaults' => [
+                                                'action' => 'technical-contact',
+                                            ],
+                                        ],
                                     ],
-                                ],
+                                    'manage-associates' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/manage/associates.html',
+                                            'defaults' => [
+                                                'action' => 'manage-associates',
+                                            ],
+                                        ],
+                                    ],
+                                    'add-associate'     => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/associate/add.html',
+                                            'defaults' => [
+                                                'action' => 'add-associate',
+                                            ],
+                                        ],
+                                    ],
+                                    'costs-and-effort'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '[:id]/costs-and-effort.html',
+                                            'defaults' => [
+                                                'action' => 'costs-and-effort',
+                                            ],
+                                        ],
+                                    ],
+                                    'financial'         => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/financial.html',
+                                            'defaults' => [
+                                                'action' => 'financial',
+                                            ],
+                                        ],
+                                    ],
+                                    'description'       => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/description.html',
+                                            'defaults' => [
+                                                'action' => 'description',
+                                            ],
+                                        ],
+                                    ],
+                                    'market-access'     => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/market-access.html',
+                                            'defaults' => [
+                                                'action' => 'market-access',
+                                            ],
+                                        ],
+                                    ],
+                                    'effort-spent'      => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/[:id]/effort/spent/report-[:report].html',
+                                            'defaults' => [
+                                                'action' => 'effort-spent',
+                                            ],
+                                        ],
+                                    ],
+                                ]
                             ],
-                            'loi'                        => [
+                            'loi'            => [
                                 'type'          => 'Segment',
-                                'priority'      => 1000,
                                 'options'       => [
                                     'route'    => '/loi',
                                     'defaults' => [
-                                        'controller' => Controller\LoiManagerController::class,
+                                        'controller' => Controller\Loi\ManagerController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
                                 'may_terminate' => false,
                                 'child_routes'  => [
                                     'approval' => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
                                             'route'    => '/approval.html',
                                             'defaults' => [
-                                                'action'    => 'approval',
-                                                'privilege' => 'approval-admin',
+                                                'action' => 'approval',
                                             ],
                                         ],
                                     ],
                                     'missing'  => [
-                                        'type'     => 'Segment',
-                                        'priority' => 1000,
-                                        'options'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
                                             'route'    => '/missing[/page-:page].html',
                                             'defaults' => [
-                                                'action'    => 'missing',
-                                                'privilege' => 'missing-admin',
+                                                'action' => 'missing',
                                             ],
                                         ],
                                     ],
                                     'view'     => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'priority'    => 100,
                                             'route'       => '/[:id].html',
                                             'constraints' => [
                                                 'id' => '[0-9_-]+',
                                             ],
                                             'defaults'    => [
-                                                'action'    => 'view',
-                                                'privilege' => 'view-admin',
+                                                'action' => 'view',
                                             ],
                                         ],
                                     ],
@@ -166,7 +321,6 @@ return [
                                                     'id' => '[0-9_-]+',
                                                 ],
                                                 'action'      => 'edit',
-                                                'privilege'   => 'edit-admin',
                                             ],
                                         ],
                                     ],
@@ -175,19 +329,18 @@ return [
                                         'options' => [
                                             'route'    => '/approve.html',
                                             'defaults' => [
-                                                'action'    => 'approve',
-                                                'privilege' => 'edit-admin',
+                                                'action' => 'approve',
                                             ],
                                         ],
                                     ],
                                 ],
                             ],
-                            'doa'                        => [
+                            'doa'            => [
                                 'type'          => 'Segment',
                                 'options'       => [
                                     'route'    => '/doa',
                                     'defaults' => [
-                                        'controller' => Controller\DoaManagerController::class,
+                                        'controller' => Controller\Doa\ManagerController::class,
                                         'action'     => 'index',
                                     ],
                                 ],
@@ -198,8 +351,7 @@ return [
                                         'options' => [
                                             'route'    => '/approval.html',
                                             'defaults' => [
-                                                'action'    => 'approval',
-                                                'privilege' => 'approval-admin',
+                                                'action' => 'approval',
                                             ],
                                         ],
                                     ],
@@ -208,8 +360,7 @@ return [
                                         'options' => [
                                             'route'    => '/missing[/page-:page].html',
                                             'defaults' => [
-                                                'action'    => 'missing',
-                                                'privilege' => 'missing-admin',
+                                                'action' => 'missing',
                                             ],
                                         ],
                                     ],
@@ -221,8 +372,7 @@ return [
                                                 'id' => '[0-9_-]+',
                                             ],
                                             'defaults'    => [
-                                                'action'    => 'view',
-                                                'privilege' => 'view-admin',
+                                                'action' => 'view',
                                             ],
                                         ],
                                     ],
@@ -235,7 +385,6 @@ return [
                                                     'id' => '[0-9_-]+',
                                                 ],
                                                 'action'      => 'edit',
-                                                'privilege'   => 'edit-admin',
                                             ],
                                         ],
                                     ],
@@ -245,10 +394,9 @@ return [
                                             'route'    => '/remind/[:affiliationId].html',
                                             'defaults' => [
                                                 'constraints' => [
-                                                    'id' => '[0-9_-]+',
+                                                    'affiliationId' => '[0-9_-]+',
                                                 ],
                                                 'action'      => 'remind',
-                                                'privilege'   => 'remind-admin',
                                             ],
                                         ],
                                     ],
@@ -258,10 +406,9 @@ return [
                                             'route'    => '/reminders/[:affiliationId].html',
                                             'defaults' => [
                                                 'constraints' => [
-                                                    'id' => '[0-9_-]+',
+                                                    'affiliationId' => '[0-9_-]+',
                                                 ],
                                                 'action'      => 'reminders',
-                                                'privilege'   => 'reminders-admin',
                                             ],
                                         ],
                                     ],
@@ -269,10 +416,9 @@ return [
                                         'type'     => 'Segment',
                                         'priority' => 1000,
                                         'options'  => [
-                                            'route'    => '/finalise.html',
+                                            'route'    => '/approve.html',
                                             'defaults' => [
-                                                'action'    => 'approve',
-                                                'privilege' => 'edit-admin',
+                                                'action' => 'approve',
                                             ],
                                         ],
                                     ],
@@ -281,34 +427,94 @@ return [
                                         'options' => [
                                             'route'    => '/decline.json',
                                             'defaults' => [
-                                                'action'    => 'decline',
-                                                'privilege' => 'edit-admin',
+                                                'action' => 'decline',
                                             ],
                                         ],
                                     ],
                                 ],
                             ],
-                            'questionnaire'              => [
+
+                        ],
+                    ],
+                    'questionnaire' => [
+                        'type'          => Segment::class,
+                        'options'       => [
+                            'route'    => '/questionnaire',
+                            'defaults' => [
+                                'controller' => Controller\Questionnaire\QuestionnaireManagerController::class,
+                                'action'     => 'list',
+                            ],
+                        ],
+                        'may_terminate' => false,
+                        'child_routes'  => [
+                            'list'     => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
+                                    'defaults' => [
+                                        'action' => 'list',
+                                    ],
+                                ],
+                            ],
+                            'view'     => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/view/[:id].html',
+                                    'defaults' => [
+                                        'action' => 'view',
+
+                                    ],
+                                ],
+                            ],
+                            'edit'     => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/edit/[:id].html',
+                                    'defaults' => [
+                                        'action' => 'edit',
+                                    ],
+                                ],
+                            ],
+                            'copy'     => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/copy/[:id].html',
+                                    'defaults' => [
+                                        'action' => 'copy',
+                                    ],
+                                ],
+                            ],
+                            'new'      => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/new.html',
+                                    'defaults' => [
+                                        'action' => 'new',
+                                    ],
+                                ],
+                            ],
+                            'question' => [
                                 'type'          => Segment::class,
                                 'options'       => [
-                                    'route'    => '/questionnaire',
+                                    'route'    => '/question',
                                     'defaults' => [
-                                        'controller' => Controller\Questionnaire\QuestionnaireManagerController::class,
                                         'action'     => 'list',
+                                        'controller' => Controller\Questionnaire\QuestionManagerController::class,
                                     ],
                                 ],
                                 'may_terminate' => false,
                                 'child_routes'  => [
-                                    'list'     => [
-                                        'type'    => Segment::class,
-                                        'options' => [
+                                    'list' => [
+                                        'type'     => Segment::class,
+                                        'priority' => 1000,
+                                        'options'  => [
                                             'route'    => '/list[/f-:encodedFilter][/page-:page].html',
                                             'defaults' => [
                                                 'action' => 'list',
                                             ],
                                         ],
                                     ],
-                                    'view'     => [
+                                    'view' => [
                                         'type'    => Segment::class,
                                         'options' => [
                                             'route'    => '/view/[:id].html',
@@ -318,7 +524,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'edit'     => [
+                                    'edit' => [
                                         'type'    => Segment::class,
                                         'options' => [
                                             'route'    => '/edit/[:id].html',
@@ -327,16 +533,7 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'copy'     => [
-                                        'type'    => Segment::class,
-                                        'options' => [
-                                            'route'    => '/copy/[:id].html',
-                                            'defaults' => [
-                                                'action' => 'copy',
-                                            ],
-                                        ],
-                                    ],
-                                    'new'      => [
+                                    'new'  => [
                                         'type'    => Segment::class,
                                         'options' => [
                                             'route'    => '/new.html',
@@ -345,105 +542,54 @@ return [
                                             ],
                                         ],
                                     ],
-                                    'question' => [
-                                        'type'          => Segment::class,
-                                        'options'       => [
-                                            'route'    => '/question',
+                                ],
+                            ],
+                            'category' => [
+                                'type'          => Segment::class,
+                                'options'       => [
+                                    'route'    => '/category',
+                                    'defaults' => [
+                                        'action'     => 'list',
+                                        'controller' => Controller\Questionnaire\CategoryManagerController::class,
+                                    ],
+                                ],
+                                'may_terminate' => false,
+                                'child_routes'  => [
+                                    'list' => [
+                                        'type'     => Segment::class,
+                                        'priority' => 1000,
+                                        'options'  => [
+                                            'route'    => '/list[/f-:encodedFilter][/page-:page].html',
                                             'defaults' => [
-                                                'action'     => 'list',
-                                                'controller' => Controller\Questionnaire\QuestionManagerController::class,
-                                            ],
-                                        ],
-                                        'may_terminate' => false,
-                                        'child_routes'  => [
-                                            'list' => [
-                                                'type'     => Segment::class,
-                                                'priority' => 1000,
-                                                'options'  => [
-                                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
-                                                    'defaults' => [
-                                                        'action' => 'list',
-                                                    ],
-                                                ],
-                                            ],
-                                            'view' => [
-                                                'type'    => Segment::class,
-                                                'options' => [
-                                                    'route'    => '/view/[:id].html',
-                                                    'defaults' => [
-                                                        'action' => 'view',
-
-                                                    ],
-                                                ],
-                                            ],
-                                            'edit' => [
-                                                'type'    => Segment::class,
-                                                'options' => [
-                                                    'route'    => '/edit/[:id].html',
-                                                    'defaults' => [
-                                                        'action' => 'edit',
-                                                    ],
-                                                ],
-                                            ],
-                                            'new'  => [
-                                                'type'    => Segment::class,
-                                                'options' => [
-                                                    'route'    => '/new.html',
-                                                    'defaults' => [
-                                                        'action' => 'new',
-                                                    ],
-                                                ],
+                                                'action' => 'list',
                                             ],
                                         ],
                                     ],
-                                    'category' => [
-                                        'type'          => Segment::class,
-                                        'options'       => [
-                                            'route'    => '/category',
+                                    'view' => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/view/[:id].html',
                                             'defaults' => [
-                                                'action'     => 'list',
-                                                'controller' => Controller\Questionnaire\CategoryManagerController::class,
+                                                'action' => 'view',
+
                                             ],
                                         ],
-                                        'may_terminate' => false,
-                                        'child_routes'  => [
-                                            'list' => [
-                                                'type'     => Segment::class,
-                                                'priority' => 1000,
-                                                'options'  => [
-                                                    'route'    => '/list[/f-:encodedFilter][/page-:page].html',
-                                                    'defaults' => [
-                                                        'action' => 'list',
-                                                    ],
-                                                ],
+                                    ],
+                                    'edit' => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/edit/[:id].html',
+                                            'defaults' => [
+                                                'action' => 'edit',
                                             ],
-                                            'view' => [
-                                                'type'    => Segment::class,
-                                                'options' => [
-                                                    'route'    => '/view/[:id].html',
-                                                    'defaults' => [
-                                                        'action' => 'view',
-
-                                                    ],
-                                                ],
-                                            ],
-                                            'edit' => [
-                                                'type'    => Segment::class,
-                                                'options' => [
-                                                    'route'    => '/edit/[:id].html',
-                                                    'defaults' => [
-                                                        'action' => 'edit',
-                                                    ],
-                                                ],
-                                            ],
-                                            'new'  => [
-                                                'type'    => Segment::class,
-                                                'options' => [
-                                                    'route'    => '/new.html',
-                                                    'defaults' => [
-                                                        'action' => 'new',
-                                                    ],
-                                                ],
+                                        ],
+                                    ],
+                                    'new'  => [
+                                        'type'    => Segment::class,
+                                        'options' => [
+                                            'route'    => '/new.html',
+                                            'defaults' => [
+                                                'action' => 'new',
                                             ],
                                         ],
                                     ],

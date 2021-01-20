@@ -1,12 +1,11 @@
 <?php
 
 /**
- * ITEA Office copyright message placeholder
+ * ITEA Office all rights reserved
  *
- * @category    Affiliation
- * @package     Config
  * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2019 ITEA Office (https://itea3.org)
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
  */
 
 use Affiliation\Acl;
@@ -28,13 +27,17 @@ use Laminas\Stdlib;
 $config = [
     'controllers'        => [
         'factories' => [
-            Controller\AffiliationManagerController::class                 => ConfigAbstractFactory::class,
-            Controller\CommunityController::class                          => ConfigAbstractFactory::class,
-            Controller\DoaController::class                                => ConfigAbstractFactory::class,
-            Controller\DoaManagerController::class                         => ConfigAbstractFactory::class,
+            Controller\AffiliationController::class                        => ConfigAbstractFactory::class,
             Controller\EditController::class                               => ConfigAbstractFactory::class,
+            Controller\Admin\AffiliationController::class                  => ConfigAbstractFactory::class,
+            Controller\Admin\EditController::class                         => ConfigAbstractFactory::class,
+            Controller\Admin\IndexController::class                        => ConfigAbstractFactory::class,
+            Controller\DoaController::class                                => ConfigAbstractFactory::class,
+            Controller\Doa\ManagerController::class                        => ConfigAbstractFactory::class,
             Controller\LoiController::class                                => ConfigAbstractFactory::class,
-            Controller\LoiManagerController::class                         => ConfigAbstractFactory::class,
+            Controller\Loi\ManagerController::class                        => ConfigAbstractFactory::class,
+            Controller\Json\DoaController::class                           => ConfigAbstractFactory::class,
+            Controller\Json\LoiController::class                           => ConfigAbstractFactory::class,
             Controller\Questionnaire\CategoryManagerController::class      => ConfigAbstractFactory::class,
             Controller\Questionnaire\QuestionManagerController::class      => ConfigAbstractFactory::class,
             Controller\Questionnaire\QuestionnaireManagerController::class => ConfigAbstractFactory::class,
@@ -52,9 +55,9 @@ $config = [
             InputFilter\DescriptionFilter::class                         => Factory\InputFilterFactory::class,
             InputFilter\DoaFilter::class                                 => Factory\InputFilterFactory::class,
             Options\ModuleOptions::class                                 => Factory\ModuleOptionsFactory::class,
-            Acl\Assertion\Affiliation::class                             => Factory\InvokableFactory::class,
-            Acl\Assertion\Doa::class                                     => Factory\InvokableFactory::class,
-            Acl\Assertion\Loi::class                                     => Factory\InvokableFactory::class,
+            Acl\Assertion\AffiliationAssertion::class                    => Factory\InvokableFactory::class,
+            Acl\Assertion\DoaAssertion::class                            => Factory\InvokableFactory::class,
+            Acl\Assertion\LoiAssertion::class                            => Factory\InvokableFactory::class,
             Acl\Assertion\QuestionnaireAssertion::class                  => Factory\InvokableFactory::class,
             Navigation\Invokable\AffiliationLabel::class                 => NavigationInvokableFactory::class,
             Navigation\Invokable\DoaLabel::class                         => NavigationInvokableFactory::class,
@@ -80,9 +83,9 @@ $config = [
     ],
     'view_helpers'       => [
         'aliases'   => [
-            'doaLink'                         => View\Helper\DoaLink::class,
             'associateLink'                   => View\Helper\AssociateLink::class,
             'affiliationLink'                 => View\Helper\AffiliationLink::class,
+            'doaLink'                         => View\Helper\DoaLink::class,
             'loiLink'                         => View\Helper\LoiLink::class,
             'paymentSheet'                    => View\Helper\PaymentSheet::class,
             'affiliationEffortSpentLink'      => View\Helper\EffortSpentLink::class,
