@@ -1,12 +1,7 @@
-{% do headTitle().append(translate("txt-edit-affiliation-description-%s-in-%s")|format(
-    affiliation.parseBranchedName(),
-    affiliation.project.parseFullName()
-    )) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-edit-description")) %}
 
-<h1>{{ translate("txt-edit-affiliation-description-%s-in-%s")|format(
-        affiliation.parseBranchedName(),
-        affiliation.project.parseFullName()
-    ) }}</h1>
+<h1>{{ translate("txt-edit-description") }}</h1>
 
 {% do form.prepare() %}
 {{ form().openTag(form)|raw }}
@@ -24,15 +19,8 @@
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
-    </div>
-</div>
-
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">{{ translate("txt-country") }}</label>
-
-    <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ affiliation.organisation.country }}</p>
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}
+            ({{ affiliation.organisation.country }})</p>
     </div>
 </div>
 

@@ -1,12 +1,7 @@
-{% do headTitle().append(translate("txt-add-contact-to-affiliation-%s-in-%s")|format(
-    affiliation.parseBranchedName(),
-    affiliation.project.parseFullName()
-    ) ) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-add-associate")) %}
 
-<h1>{{ translate("txt-add-contact-to-affiliation-%s-in-%s")|format(
-        affiliation.parseBranchedName(),
-        affiliation.project.parseFullName()
-    ) }}</h1>
+<h1>{{ translate("txt-add-associate") }}</h1>
 
 <p>{{ translate("txt-add-contact-to-affiliation-explanation") }}</p>
 
@@ -26,7 +21,8 @@
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }} ({{ affiliation.organisation.country.iso3 }})</p>
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}
+            ({{ affiliation.organisation.country.country }})</p>
     </div>
 </div>
 

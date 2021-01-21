@@ -1,7 +1,8 @@
-{% do headTitle().append(translate("txt-project")) %}
-{% do headTitle().append(translate("txt-manage-technical-contact-of-%s")|format(affiliation.parseBranchedName())) %}
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-manage-technical-contact")) %}
 
-<h1>{{ translate("txt-manage-technical-contact-of-%s")|format(affiliation.parseBranchedName()) }}</h1>
+<h1>{{ translate("txt-manage-technical-contacts") }}</h1>
 
 {% do form.prepare() %}
 {{ form().openTag(form)|raw }}
@@ -21,7 +22,6 @@
         <p class="form-control-plaintext">{{ affiliation.parseBranchedName() }}</p>
     </div>
 </div>
-
 
 {{ ztbformelement(form.get('technicalContact')) }}
 {{ ztbformelement(form.get('proxyTechnicalContact')) }}

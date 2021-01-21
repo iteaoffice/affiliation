@@ -5,7 +5,7 @@
 
 <p class="lead">
     {{ translate("txt-partner-in-%s")|format(affiliation.project.parseFullName()) }}
-    {{ affiliationLink(affiliation,'view-admin','icon') }}
+    {{ affiliationLink(affiliation,'view-community','icon') }}
     {{ organisationUpdateNotification(affiliation.organisation) }}
 </p>
 
@@ -50,7 +50,7 @@
                 'route': 'zfcadmin/affiliation/costs-and-effort',
                 'text' : translate("txt-costs-and-effort")
             },
-            'project-verions':
+            'project-versions':
             {
                 'route': 'zfcadmin/affiliation/project-versions',
                 'text' : translate("txt-project-versions")

@@ -1,4 +1,4 @@
-{% include 'affiliation/admin/manger/tabs' %}
+{% include 'affiliation/admin/affiliation/tabs' %}
 
 <h2>{{ translate("txt-associate-details") }}</h2>
 
@@ -15,8 +15,11 @@
         <tbody>
         {% for contact in contactsInAffiliation.contacts %}
             <tr>
-                <td>{{ contact.displayName }} <a
-                            href="mailto:{{ contact.email }}"><i class="far fa-envelope"></i></a></td>
+                <td>
+                    {{ contactLink(contact,'view-admin','name') }} <a
+                            href="mailto:{{ contact.email }}"><i class="far fa-envelope"></i></a>
+                    {{ associateLink(affiliation,'edit-admin','icon', contact) }}
+                </td>
                 {% if contactService.hasOrganisation(contact) %}
                     <td>{{ organisationLink(contact.contactOrganisation.organisation,'view-admin') }}
                         {% if contact.contactOrganisation.organisation != affiliation.organisation %}
@@ -41,5 +44,5 @@
 
 {{ affiliationLink(affiliation,'add-associate-admin','button') }}
 {% if contactsInAffiliation.contacts|length > 0 %}
-    {{ affiliationLink(affiliation,'manage-associate','button') }}
+    {{ affiliationLink(affiliation,'manage-associates-admin','button') }}
 {% endif %}

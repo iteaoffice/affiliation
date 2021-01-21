@@ -1,4 +1,11 @@
 <?php
+/**
+ * ITEA Office all rights reserved
+ *
+ * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
+ * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
+ * @license     https://itea3.org/license.txt proprietary
+ */
 
 _('txt-affiliation-description-placeholder');
 _('txt-affiliation-description');
@@ -23,10 +30,6 @@ _('txt-affiliation-loi-approver-label');
 _('txt-affiliation-loi-approver-help-block');
 _('txt-affiliation-loi-contact-label');
 _('txt-affiliation-loi-contact-help-block');
-_('txt-affiliation-financial-contact-label');
-_('txt-affiliation-financial-contact-help-block');
-_('txt-affiliation-financial-organisation-label');
-_('txt-affiliation-financial-organisation-help-block');
 _('txt-sequence');
 _('txt-sequence-help-block');
 _('txt-question');

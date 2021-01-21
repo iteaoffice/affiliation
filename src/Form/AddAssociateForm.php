@@ -52,7 +52,7 @@ final class AddAssociateForm extends Form implements InputFilterProviderInterfac
             $validator = new EmailAddress();
             if (
                 $validator->isValid($email)
-                && ! in_array(
+                && !in_array(
                     $validator->hostname,
                     ['hotmail.com', 'gmail.com', 'yahoo.com', 'gmx.de'],
                     true
@@ -77,17 +77,14 @@ final class AddAssociateForm extends Form implements InputFilterProviderInterfac
 
         $this->add(
             [
-                'type'       => Contact::class,
-                'name'       => 'contact',
-                'options'    => [
+                'type'    => Contact::class,
+                'name'    => 'contact',
+                'options' => [
                     'value_options' => $contacts,
                     'allow_empty'   => true,
                     'empty_option'  => '-- ' . ('Select here the known contact'),
                     'label'         => _('txt-add-associate-by-known-contact-label'),
                     'help-block'    => _('txt-add-associate-by-known-contact-help-block'),
-                ],
-                'attributes' => [
-                    'class' => 'form-control',
                 ],
             ]
         );
@@ -176,7 +173,7 @@ final class AddAssociateForm extends Form implements InputFilterProviderInterfac
                             ],
                             'callback' => function ($value) {
                                 $validator = new EmailAddress();
-                                if (! $validator->isValid($value)) {
+                                if (!$validator->isValid($value)) {
                                     return false;
                                 }
 

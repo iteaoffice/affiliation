@@ -1,12 +1,7 @@
-{% do headTitle().append(translate("txt-edit-cost-and-effort-of-affiliation-%s-in-%s")|format(
-    affiliation.parseBranchedName(),
-    affiliation.project.parseFullName()
-    ) ) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-edit-costs-and-effort")) %}
 
-<h1>{{ translate("txt-edit-cost-and-effort-of-affiliation-%s-in-%s")|format(
-        affiliation.parseBranchedName(),
-        affiliation.project.parseFullName()
-    ) }}</h1>
+<h1>{{ translate("txt-edit-costs-and-effort") }}</h1>
 
 <p>{{ translate("txt-edit-cost-and-effort-of-affiliation-%s-in-%s-explanation")|format(
         affiliation.parseBranchedName(),
@@ -30,7 +25,7 @@
 
     <div class="col-sm-9">
         <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}
-            ({{ affiliation.organisation.country.iso3 }})</p>
+            ({{ affiliation.organisation.country.country }})</p>
     </div>
 </div>
 
@@ -136,40 +131,7 @@
 
     {% if not hasWorkPackages %}
         <tr>
-        <td></td>
-        {% for year in yearRange %}
-            {% if projectService.isOutOfBounds(project, year) %}
-                <td class="table-danger">
-            {% else %}
-                <td>
-            {% endif %}
-            {% if year in editYearRange %}
-                {% set effortPerAffiliationAndYear = form.get('effortPerAffiliationAndYear') %}
-                {% set effortPerAffiliationAndYear = effortPerAffiliationAndYear.get(affiliation.id).get(year) %}
-                {{ formelement(effortPerAffiliationAndYear.get('effort')) }}
-            {% else %}
-                {% for effort in affiliation.effort|filter(effort => not effort.hasWorkPackage() and effort.dateStart|date('Y') == year) -%}
-                    <span class="effort-input total-effort-year-{{ year }}">{{ effort.effort|parse_effort }}</span>
-                {% else %}
-                    {{ 0|parse_effort }}
-                {% endfor %}
-            {% endif %}
-            </td>
-        {% endfor %}
-
-        <td class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}">
-            {{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}
-        </td>
-        </tr>
-    {% endif %}
-
-
-
-    {% if hasWorkPackages %}
-    {# rows for the effort#}
-    {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(project) %}
-        <tr>
-            <td>{{ workpackage }}</td>
+            <td></td>
             {% for year in yearRange %}
                 {% if projectService.isOutOfBounds(project, year) %}
                     <td class="table-danger">
@@ -177,15 +139,12 @@
                     <td>
                 {% endif %}
                 {% if year in editYearRange %}
-                    {% set effortPerAffiliationAndYear = form.get('effortPerAffiliationAndYear').get(workpackage.id) %}
+                    {% set effortPerAffiliationAndYear = form.get('effortPerAffiliationAndYear') %}
                     {% set effortPerAffiliationAndYear = effortPerAffiliationAndYear.get(affiliation.id).get(year) %}
                     {{ formelement(effortPerAffiliationAndYear.get('effort')) }}
                 {% else %}
-                    {% for effort in affiliation.effort|filter(effort =>
-                        effort.dateStart|date('Y') == year and
-                        effort.workpackage.id == workpackage.id) -%}
-                        <span class="effort-input" data-workpackage="{{ workpackage.id }}"
-                              data-year="{{ year }}">{{ effort.effort|parse_effort }}</span>
+                    {% for effort in affiliation.effort|filter(effort => not effort.hasWorkPackage() and effort.dateStart|date('Y') == year) -%}
+                        <span class="effort-input total-effort-year-{{ year }}">{{ effort.effort|parse_effort }}</span>
                     {% else %}
                         {{ 0|parse_effort }}
                     {% endfor %}
@@ -193,11 +152,47 @@
                 </td>
             {% endfor %}
 
-            <td class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}-workpackage-{{ workpackage.id }}">
-                {{ projectService.findTotalEffortByWorkpackageAndAffiliation(workpackage, affiliation)|parse_effort }}
+            <td class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}">
+                {{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}
             </td>
         </tr>
-    {% endfor %}
+    {% endif %}
+
+
+
+    {% if hasWorkPackages %}
+        {# rows for the effort #}
+        {% for workpackage in workpackageService.findWorkpackageByProjectAndWhich(project) %}
+            <tr>
+                <td>{{ workpackage }}</td>
+                {% for year in yearRange %}
+                    {% if projectService.isOutOfBounds(project, year) %}
+                        <td class="table-danger">
+                    {% else %}
+                        <td>
+                    {% endif %}
+                    {% if year in editYearRange %}
+                        {% set effortPerAffiliationAndYear = form.get('effortPerAffiliationAndYear').get(workpackage.id) %}
+                        {% set effortPerAffiliationAndYear = effortPerAffiliationAndYear.get(affiliation.id).get(year) %}
+                        {{ formelement(effortPerAffiliationAndYear.get('effort')) }}
+                    {% else %}
+                        {% for effort in affiliation.effort|filter(effort =>
+                            effort.dateStart|date('Y') == year and
+                            effort.workpackage.id == workpackage.id) -%}
+                            <span class="effort-input" data-workpackage="{{ workpackage.id }}"
+                                  data-year="{{ year }}">{{ effort.effort|parse_effort }}</span>
+                        {% else %}
+                            {{ 0|parse_effort }}
+                        {% endfor %}
+                    {% endif %}
+                    </td>
+                {% endfor %}
+
+                <td class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}-workpackage-{{ workpackage.id }}">
+                    {{ projectService.findTotalEffortByWorkpackageAndAffiliation(workpackage, affiliation)|parse_effort }}
+                </td>
+            </tr>
+        {% endfor %}
 
         <tr>
             <th>{{ translate("txt-effort-total") }}</th>

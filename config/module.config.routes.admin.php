@@ -175,7 +175,8 @@ return [
                                 'options'      => [
                                     'route'    => '/edit',
                                     'defaults' => [
-                                        'action' => 'edit',
+                                        'controller' => Controller\Admin\EditController::class,
+                                        'action'     => 'edit',
                                     ],
                                 ],
                                 'child_routes' => [

@@ -1,4 +1,4 @@
-{% include 'affiliation/affiliation/tabs' %}
+{% include 'affiliation/admin/affiliation/tabs' %}
 
 {% if latestVersion %}
     {% set hasSomeCostAndEffortEditRights = false %}
@@ -360,7 +360,7 @@
     </table>
 
     {% if isAllowed(project,'edit-community') or isAllowed(affiliation, 'edit-affiliation') %}
-        {{ affiliationLink(affiliation, 'edit-cost-and-effort', 'button') }}
+        {{ affiliationLink(affiliation, 'edit-costs-and-effort', 'button') }}
 
         <span class="float-right">
          {{ projectLink(affiliation.project, 'edit-cost-and-effort-community', 'button') }}

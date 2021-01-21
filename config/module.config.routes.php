@@ -106,7 +106,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'parent'      => [
+                            'parent'        => [
                                 'type'    => 'Segment',
                                 'options' => [
                                     'route'    => '/[:id]/parent.html',
@@ -224,7 +224,7 @@ return [
                                     'costs-and-effort'  => [
                                         'type'    => 'Segment',
                                         'options' => [
-                                            'route'    => '[:id]/costs-and-effort.html',
+                                            'route'    => '/[:id]/costs-and-effort.html',
                                             'defaults' => [
                                                 'action' => 'costs-and-effort',
                                             ],
@@ -263,6 +263,110 @@ return [
                                             'route'    => '/[:id]/effort/spent/report-[:report].html',
                                             'defaults' => [
                                                 'action' => 'effort-spent',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'doa'               => [
+                                'type'         => 'Segment',
+                                'options'      => [
+                                    'route'    => '/doa',
+                                    'defaults' => [
+                                        'controller' => Controller\DoaController::class,
+                                        'action'     => 'index',
+                                    ],
+                                ],
+                                'child_routes' => [
+                                    'render'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/render/affiliation-[:affiliationId].pdf',
+                                            'defaults' => [
+                                                'action'    => 'render',
+                                                'privilege' => 'render',
+                                            ],
+                                        ],
+                                    ],
+                                    'submit'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/submit/affiliation-[:affiliationId].html',
+                                            'defaults' => [
+                                                'action'    => 'submit',
+                                                'privilege' => 'submit',
+                                            ],
+                                        ],
+                                    ],
+                                    'replace'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/replace/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'replace',
+                                                'privilege' => 'replace',
+                                            ],
+                                        ],
+                                    ],
+                                    'download' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/download/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'download',
+                                                'privilege' => 'download',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'loi'               => [
+                                'type'         => 'Segment',
+                                'options'      => [
+                                    'route'    => '/loi',
+                                    'defaults' => [
+                                        'controller' => Controller\LoiController::class,
+                                        'action'     => 'index',
+                                    ],
+                                ],
+                                'child_routes' => [
+                                    'render'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/render/affiliation-[:affiliationId].pdf',
+                                            'defaults' => [
+                                                'action'    => 'render',
+                                                'privilege' => 'render',
+                                            ],
+                                        ],
+                                    ],
+                                    'submit'   => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/submit/affiliation-[:affiliationId].html',
+                                            'defaults' => [
+                                                'action'    => 'submit',
+                                                'privilege' => 'submit',
+                                            ],
+                                        ],
+                                    ],
+                                    'replace'  => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/replace/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'replace',
+                                                'privilege' => 'replace',
+                                            ],
+                                        ],
+                                    ],
+                                    'download' => [
+                                        'type'    => 'Segment',
+                                        'options' => [
+                                            'route'    => '/download/[:id].html',
+                                            'defaults' => [
+                                                'action'    => 'download',
+                                                'privilege' => 'download',
                                             ],
                                         ],
                                     ],
@@ -308,110 +412,6 @@ return [
                                     'defaults' => [
                                         'action'    => 'overview',
                                         'privilege' => 'overview',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    'doa'           => [
-                        'type'         => 'Segment',
-                        'options'      => [
-                            'route'    => '/doa',
-                            'defaults' => [
-                                'controller' => Controller\DoaController::class,
-                                'action'     => 'index',
-                            ],
-                        ],
-                        'child_routes' => [
-                            'render'   => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/render/affiliation-[:affiliationId].pdf',
-                                    'defaults' => [
-                                        'action'    => 'render',
-                                        'privilege' => 'render',
-                                    ],
-                                ],
-                            ],
-                            'submit'   => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/submit/affiliation-[:affiliationId].html',
-                                    'defaults' => [
-                                        'action'    => 'submit',
-                                        'privilege' => 'submit',
-                                    ],
-                                ],
-                            ],
-                            'replace'  => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/replace/[:id].html',
-                                    'defaults' => [
-                                        'action'    => 'replace',
-                                        'privilege' => 'replace',
-                                    ],
-                                ],
-                            ],
-                            'download' => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/download/[:id].html',
-                                    'defaults' => [
-                                        'action'    => 'download',
-                                        'privilege' => 'download',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    'loi'           => [
-                        'type'         => 'Segment',
-                        'options'      => [
-                            'route'    => '/loi',
-                            'defaults' => [
-                                'controller' => Controller\LoiController::class,
-                                'action'     => 'index',
-                            ],
-                        ],
-                        'child_routes' => [
-                            'render'   => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/render/affiliation-[:affiliationId].pdf',
-                                    'defaults' => [
-                                        'action'    => 'render',
-                                        'privilege' => 'render',
-                                    ],
-                                ],
-                            ],
-                            'submit'   => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/submit/affiliation-[:affiliationId].html',
-                                    'defaults' => [
-                                        'action'    => 'submit',
-                                        'privilege' => 'submit',
-                                    ],
-                                ],
-                            ],
-                            'replace'  => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/replace/[:id].html',
-                                    'defaults' => [
-                                        'action'    => 'replace',
-                                        'privilege' => 'replace',
-                                    ],
-                                ],
-                            ],
-                            'download' => [
-                                'type'    => 'Segment',
-                                'options' => [
-                                    'route'    => '/download/[:id].html',
-                                    'defaults' => [
-                                        'action'    => 'download',
-                                        'privilege' => 'download',
                                     ],
                                 ],
                             ],

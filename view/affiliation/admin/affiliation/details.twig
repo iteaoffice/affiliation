@@ -1,4 +1,4 @@
-{% include 'affiliation/admin/manger/tabs' %}
+{% include 'affiliation/admin/affiliation/tabs' %}
 
 <h2>{{ translate("txt-affiliation-information") }}</h2>
 
@@ -25,6 +25,12 @@
     <dt>{{ translate("txt-branched-name") }}</dt>
     <dd>{{ affiliation.parseBranchedName() }}</dd>
 
+    <dt>{{ translate("txt-technical-contact") }}</dt>
+    <dd>{{ contactLink(affiliation.contact,'view-admin','name') }} <a
+                href="mailto:{{ affiliation.contact.email }}"><i
+                    class="far fa-envelope"></i></a></dd>
+</dl>
+<dl class="dl-horizontal">
     <dt>{{ translate("txt-project-name") }}</dt>
     <dd>{{ projectLink(project,'view-admin', 'name') }}
         {{ projectLink(project,'view-community', 'icon') }}
@@ -173,10 +179,7 @@
     {% endif %}
 </dl>
 <dl class="dl-horizontal">
-    <dt>{{ translate("txt-technical-contact") }}</dt>
-    <dd>{{ contactLink(affiliation.contact,'view-admin','name') }} <a
-                href="mailto:{{ affiliation.contact.email }}"><i
-                    class="far fa-envelope"></i></a></dd>
+
     {% if affiliation.communicationContactName %}
         <dt>{{ translate("txt-communication-contact") }}</dt>
         <dd>{{ affiliation.communicationContactName }} {% if affiliation.communicationContactEmail %} <a
@@ -186,16 +189,6 @@
     {% endif %}
 
 
-    {% if affiliation.financial %}
-        <dt>{{ translate("txt-financial-contact") }}</dt>
-        <dd>{{ contactLink(affiliation.financial.contact,'view-admin','name') }} <a
-                    href="mailto:{{ affiliation.financial.contact.email }}"><i
-                        class="far fa-envelope"></i></a></dd>
-        {% if affiliation.financial.branch %}
-            <dt>{{ translate("txt-financial-branch") }}</dt>
-            <dd><code>{{ affiliation.financial.branch }}</code></dd>
-        {% endif %}
-    {% endif %}
     <dt>{{ translate("txt-invoice-method") }}</dt>
     <dd>{{ affiliation.invoiceMethod.method|default(translate("txt-no-invoice-method-forced")) }}</dd>
 </dl>

@@ -14,7 +14,10 @@ namespace Affiliation\Form\Admin;
 
 use Affiliation\Entity\Affiliation;
 use Contact\Form\Element\Contact;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
+use DoctrineORMModule\Form\Element\EntitySelect;
+use Invoice\Entity\Method;
 use Laminas\Form\Element\Checkbox;
 use Laminas\Form\Element\Date;
 use Laminas\Form\Element\Radio;
@@ -35,7 +38,7 @@ use Organisation\Service\ParentService;
  */
 final class AffiliationForm extends Form implements InputFilterProviderInterface
 {
-    public function __construct(Affiliation $affiliation, ParentService $parentService)
+    public function __construct(Affiliation $affiliation, ParentService $parentService, EntityManager $entityManager)
     {
         parent::__construct();
         $this->setAttribute('method', 'post');
@@ -274,18 +277,6 @@ final class AffiliationForm extends Form implements InputFilterProviderInterface
                 ],
             ]
         );
-
-
-        $this->add(
-            [
-                'type'    => Contact::class,
-                'name'    => 'financialContact',
-                'options' => [
-                    'label'      => _('txt-financial-contact'),
-                    'help-block' => _('txt-financial-contact-help-block'),
-                ],
-            ]
-        );
         $this->add(
             [
                 'type'       => Text::class,
@@ -312,8 +303,26 @@ final class AffiliationForm extends Form implements InputFilterProviderInterface
                 ]
             ]
         );
-
-
+        $this->add(
+            [
+                'type'    => EntitySelect::class,
+                'name'    => 'invoiceMethod',
+                'options' => [
+                    'target_class'   => Method::class,
+                    'allow_empty'    => true,
+                    'empty_option'   => _('txt-choose-an-invoice-method'),
+                    'object_manager' => $entityManager,
+                    'label'          => _('txt-invoice-method'),
+                    'find_method'    => [
+                        'name'   => 'findBy',
+                        'params' => [
+                            'criteria' => [],
+                            'orderBy'  => ['method' => Criteria::ASC],
+                        ],
+                    ],
+                ],
+            ]
+        );
         $this->add(
             [
                 'type'       => Submit::class,

@@ -1,10 +1,8 @@
 {% do headTitle().append(translate("txt-admin")) %}
-{% do headTitle().append(translate("txt-edit-affiliation-%s")|format(affiliation.displayName)) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-edit-affiliation")) %}
 
-<h1>{{ translate("txt-edit-affiliation-%s-in-%s")|format(
-    affiliation.parseBranchedName(),
-    affiliation.project.parseFullName()
-    ) }} </h1>
+<h1>{{ translate("txt-edit-affiliation") }}</h1>
 
 {% do form.prepare() %}
 {{ form().openTag(form)|raw }}

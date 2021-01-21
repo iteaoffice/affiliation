@@ -27,6 +27,7 @@ use Organisation\Service\OrganisationService;
 use Project\Entity\Changelog;
 use Project\Entity\Cost\Cost;
 use Project\Entity\Effort\Effort;
+use Project\Entity\Project;
 use Project\Entity\Report\EffortSpent as ReportEffortSpent;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
@@ -72,7 +73,8 @@ final class EditController extends AffiliationAbstractController
         FormService $formService,
         EntityManager $entityManager,
         TranslatorInterface $translator
-    ) {
+    )
+    {
         $this->affiliationService  = $affiliationService;
         $this->projectService      = $projectService;
         $this->versionService      = $versionService;
@@ -116,12 +118,12 @@ final class EditController extends AffiliationAbstractController
         $form = new Form\AffiliationForm($affiliation, $this->affiliationService, $this->contactService);
         $form->setData($formData);
 
-        if (! $this->projectService->hasTasksAndAddedValue($affiliation->getProject())) {
+        if (!$this->projectService->hasTasksAndAddedValue($affiliation->getProject())) {
             $form->remove('tasksAndAddedValue');
         }
 
         //Remove the de-activate-button when partner is not active
-        if (! $affiliation->isActive()) {
+        if (!$affiliation->isActive()) {
             $form->remove('deactivate');
         }
 
@@ -434,8 +436,7 @@ final class EditController extends AffiliationAbstractController
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'community/affiliation/contacts',
-                    ['id' => $affiliation->getId()],
-                    ['fragment' => 'contact']
+                    ['id' => $affiliation->getId()]
                 );
             }
 
@@ -454,7 +455,7 @@ final class EditController extends AffiliationAbstractController
             }
 
 
-            if (isset($data['addKnownContact']) && ! empty($data['contact'])) {
+            if (isset($data['addKnownContact']) && !empty($data['contact'])) {
 
                 /** @var Contact $contact */
                 $contact = $this->contactService->findContactById((int)$data['contact']);
@@ -478,7 +479,7 @@ final class EditController extends AffiliationAbstractController
                 );
             }
 
-            if (isset($data['addEmail']) && ! empty($data['email'])) {
+            if (isset($data['addEmail']) && !empty($data['email'])) {
                 $this->affiliationService->addAssociate($affiliation, null, $data['email']);
 
                 $changelogMessage = sprintf(
@@ -665,7 +666,7 @@ final class EditController extends AffiliationAbstractController
             );
 
         if (
-            ! $effortSpent
+        !$effortSpent
             = $this->reportService->findEffortSpentByReportAndAffiliation($report, $affiliation)
         ) {
             $effortSpent = new ReportEffortSpent();
@@ -761,12 +762,13 @@ final class EditController extends AffiliationAbstractController
         }
 
         //Prepare the formData
+        /** @var Project $project */
         $project = $affiliation->getProject();
 
         $formData = [];
         foreach ($this->projectService->parseEditYearRange($project) as $year) {
             $costPerYear = $this->projectService->findTotalCostByAffiliationPerYear($affiliation);
-            if (! array_key_exists($year, $costPerYear)) {
+            if (!array_key_exists($year, $costPerYear)) {
                 $costPerYear[$year] = 0;
             }
             $formData['costPerAffiliationAndYear']
@@ -774,9 +776,9 @@ final class EditController extends AffiliationAbstractController
             [$year]
                 = ['cost' => $costPerYear[$year] / 1000];
 
-            if (! $this->projectService->hasWorkPackages($project)) {
+            if (!$this->projectService->hasWorkPackages($project)) {
                 $effortPerYear = $this->projectService->findTotalEffortByAffiliationPerYear($affiliation);
-                if (! array_key_exists($year, $effortPerYear)) {
+                if (!array_key_exists($year, $effortPerYear)) {
                     $effortPerYear[$year] = 0;
                 }
                 $formData['effortPerAffiliationAndYear']
@@ -792,10 +794,10 @@ final class EditController extends AffiliationAbstractController
                 foreach ($this->workpackageService->findWorkpackageByProjectAndWhich($project) as $workpackage) {
                     $effortPerWorkpackageAndYear
                         = $this->projectService->findTotalEffortByWorkpackageAndAffiliationPerYear(
-                            $workpackage,
-                            $affiliation
-                        );
-                    if (! array_key_exists($year, $effortPerWorkpackageAndYear)) {
+                        $workpackage,
+                        $affiliation
+                    );
+                    if (!array_key_exists($year, $effortPerWorkpackageAndYear)) {
                         $effortPerWorkpackageAndYear[$year] = 0;
                     }
                     $formData['effortPerAffiliationAndYear']
@@ -824,6 +826,7 @@ final class EditController extends AffiliationAbstractController
             }
 
             if ($form->isValid()) {
+
                 $formData = $form->getData();
 
                 /*
@@ -855,7 +858,7 @@ final class EditController extends AffiliationAbstractController
                     }
                 }
 
-                if (! $this->projectService->hasWorkPackages($project)) {
+                if (!$this->projectService->hasWorkPackages($project)) {
                     /*
                      * Update the cost
                      */
@@ -981,7 +984,7 @@ final class EditController extends AffiliationAbstractController
 
         //Create an array for the proxies, but not on submission
         $proxyContacts = [];
-        if (! $this->getRequest()->isPost()) {
+        if (!$this->getRequest()->isPost()) {
             foreach ($affiliation->getProxyContact() as $contact) {
                 $proxyContacts[] = $contact->getId();
             }

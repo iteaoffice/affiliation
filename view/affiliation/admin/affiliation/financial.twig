@@ -1,4 +1,4 @@
-{% include 'affiliation/admin/manger/tabs' %}
+{% include 'affiliation/admin/affiliation/tabs' %}
 
 <h2>{{ translate("txt-invoicing-details") }}</h2>
 
@@ -51,7 +51,7 @@
     {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliation.parseBranchedName()))|raw }}
 {% endif %}
 
-{{ affiliationLink(affiliation, 'edit-financial-edit','button') }}
+{{ affiliationLink(affiliation, 'edit-financial-admin','button') }}
 
 {% if affiliation.invoice|length > 0 %}
     <h2>{{ translate("txt-partner-invoices") }}</h2>

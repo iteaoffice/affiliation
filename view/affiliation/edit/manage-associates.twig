@@ -1,13 +1,7 @@
-{% do headTitle().append(translate("txt-manage-associate-of-affiliation-%s-in-%s")|format(
-    affiliation.parseBranchedName(),
-    affiliation.project.parseFullName()
-    ) ) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-manage-associates")) %}
 
-<h1>{{ translate("txt-manage-associate-of-affiliation-%s-in-%s")|format(
-        affiliation.parseBranchedName(),
-        affiliation.project.parseFullName()
-    ) }}</h1>
-
+<h1>{{ translate("txt-manage-associates") }}</h1>
 <p>{{ translate("txt-manage-contact-to-affiliation-explanation-select-and-press-delete-button") }}</p>
 
 <form class="form-horizontal" action="" method="post">
@@ -40,6 +34,11 @@
                 <th>{{ translate("txt-roles") }}</th>
             </tr>
             </thead>
+            <tfoot>
+            <tr>
+                <td colspan="5"></td>
+            </tr>
+            </tfoot>
             <tbody>
             {% for contact in affiliation.associate %}
                 <tr>

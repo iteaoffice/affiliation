@@ -30,8 +30,9 @@ final class AffiliationLink extends AbstractLink
         string $show = 'organisation-branch',
         int $year = null,
         int $period = null
-    ): string {
-        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
+    ): string
+    {
+        if (!$this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
             return $action !== 'view-community' ? '' : $affiliation->parseBranchedName();
         }
 
@@ -101,17 +102,17 @@ final class AffiliationLink extends AbstractLink
                 ];
 
                 break;
-            case 'manage-associate':
+            case 'manage-associates':
                 $linkParams = [
                     'icon'  => 'fas fa-users',
-                    'route' => 'community/affiliation/edit/manage-associate',
+                    'route' => 'community/affiliation/edit/manage-associates',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-manage-associates')
                 ];
                 break;
-            case 'edit-cost-and-effort':
+            case 'edit-costs-and-effort':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
-                    'route' => 'community/affiliation/edit/cost-and-effort',
+                    'route' => 'community/affiliation/edit/costs-and-effort',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-edit-cost-and-effort')
                 ];
                 break;
@@ -160,20 +161,20 @@ final class AffiliationLink extends AbstractLink
                     'icon'  => 'far fa-edit',
                     'route' => 'zfcadmin/affiliation/edit/financial',
                     'text'  => $showOptions[$show]
-                        ?? $this->translator->translate('txt-financial')
+                        ?? $this->translator->translate('txt-edit-financial')
                 ];
                 break;
-            case 'manage-associate-admin':
+            case 'manage-associates-admin':
                 $linkParams = [
                     'icon'  => 'fas fa-users',
-                    'route' => 'zfcadmin/affiliation/edit/manage-associate',
+                    'route' => 'zfcadmin/affiliation/edit/manage-associates',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-manage-associates')
                 ];
                 break;
             case 'add-associate-admin':
                 $linkParams = [
                     'icon'  => 'fas fa-user-plus',
-                    'route' => 'zfcadmin/affiliation/add-associate',
+                    'route' => 'zfcadmin/affiliation/edit/add-associate',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-add-associate')
                 ];
 

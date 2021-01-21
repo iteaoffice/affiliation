@@ -1,13 +1,8 @@
-{% do headTitle().append(translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
-affiliation.parseBranchedName(),
-report.parseName()
-)) %}
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+{% do headTitle().append(translate("txt-edit-costs-and-effort")) %}
 
-
-<h1>{{ translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(
-    affiliation.parseBranchedName(),
-    report.parseName()
-    ) }}</h1>
+<h1>{{ translate("txt-update-effort-spent") }}</h1>
 
 {% do form.prepare() %}
 {{ form().openTag(form)|raw }}
@@ -17,7 +12,7 @@ report.parseName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ projectLink(affiliation.project,'view-community', 'name') }}</p>
+        <p class="form-control-plaintext">{{ projectLink(affiliation.project,'view-admin', 'name') }}</p>
     </div>
 </div>
 
@@ -25,7 +20,8 @@ report.parseName()
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community') }}</p>
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-admin') }}
+            ({{ affiliation.organisation.country }})</p>
     </div>
 </div>
 
