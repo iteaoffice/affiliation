@@ -47,6 +47,7 @@ final class ApprovalForm extends Form implements InputFilterProviderInterface
                         'label'         => _('txt-contact-name'),
                     ],
                     'attributes' => [
+                        'class'    => 'form-control',
                         'id'       => 'contact-' . $loi->getId(),
                         'required' => true,
                     ],
@@ -59,6 +60,7 @@ final class ApprovalForm extends Form implements InputFilterProviderInterface
                     'name'       => 'dateSigned',
                     'attributes' => [
                         'id'       => 'dateSigned-' . $loi->getId(),
+                        'class'    => 'form-control',
                         'required' => true,
                     ],
                 ]

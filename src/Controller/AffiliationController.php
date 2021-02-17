@@ -70,8 +70,7 @@ final class AffiliationController extends AffiliationAbstractController
         ParentService $parentService,
         ModuleOptions $invoiceModuleOptions,
         AssertionService $assertionService
-    )
-    {
+    ) {
         $this->affiliationService   = $affiliationService;
         $this->questionnaireService = $questionnaireService;
         $this->projectService       = $projectService;
@@ -86,7 +85,6 @@ final class AffiliationController extends AffiliationAbstractController
         $this->parentService        = $parentService;
         $this->invoiceModuleOptions = $invoiceModuleOptions;
         $this->assertionService     = $assertionService;
-
     }
 
     public function detailsAction(): ViewModel
@@ -106,10 +104,11 @@ final class AffiliationController extends AffiliationAbstractController
                 'projectService'     => $this->projectService,
                 'affiliation'        => $affiliation,
                 'project'            => $affiliation->getProject(),
-                'checkList'          => $this->projectChecklist($affiliation->getProject()),
+                'projectChecklist'   => $this->projectChecklist($affiliation->getProject()),
                 'showParentTab'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
                 'tab'                => 'details'
-            ]);
+            ]
+        );
     }
 
     public function descriptionAction(): ViewModel
@@ -122,11 +121,12 @@ final class AffiliationController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliation'   => $affiliation,
-                'checkList'     => $this->projectChecklist($affiliation->getProject()),
-                'showParentTab' => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'           => 'description'
-            ]);
+                'affiliation'      => $affiliation,
+                'projectChecklist' => $this->projectChecklist($affiliation->getProject()),
+                'showParentTab'    => $this->invoiceModuleOptions->getInvoiceViaParent(),
+                'tab'              => 'description'
+            ]
+        );
     }
 
     public function marketAccessAction(): ViewModel
@@ -139,11 +139,12 @@ final class AffiliationController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliation'   => $affiliation,
-                'checkList'     => $this->projectChecklist($affiliation->getProject()),
-                'showParentTab' => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'           => 'market-access'
-            ]);
+                'affiliation'      => $affiliation,
+                'projectChecklist' => $this->projectChecklist($affiliation->getProject()),
+                'showParentTab'    => $this->invoiceModuleOptions->getInvoiceViaParent(),
+                'tab'              => 'market-access'
+            ]
+        );
     }
 
     public function costsAndEffortAction(): ViewModel
@@ -169,13 +170,14 @@ final class AffiliationController extends AffiliationAbstractController
                 'affiliation'           => $affiliation,
                 'project'               => $affiliation->getProject(),
                 'years'                 => $this->projectService->parseYearRange($affiliation->getProject(), true),
-                'checkList'             => $this->projectChecklist($affiliation->getProject()),
+                'projectChecklist'      => $this->projectChecklist($affiliation->getProject()),
                 'latestVersion'         => $this->projectService->getLatestNotRejectedProjectVersion($affiliation->getProject()),
                 'latestContractVersion' => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
                 'useContract'           => AffiliationService::useActiveContract($affiliation),
                 'showParentTab'         => $this->invoiceModuleOptions->getInvoiceViaParent(),
                 'tab'                   => 'costs-and-effort'
-            ]);
+            ]
+        );
     }
 
     public function projectVersionsAction(): ViewModel
@@ -190,10 +192,12 @@ final class AffiliationController extends AffiliationAbstractController
             [
                 'affiliationService' => $this->affiliationService,
                 'versionService'     => $this->versionService,
+                'projectChecklist'   => $this->projectChecklist($affiliation->getProject()),
                 'affiliation'        => $affiliation,
                 'showParentTab'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
                 'tab'                => 'project-versions'
-            ]);
+            ]
+        );
     }
 
     public function financialAction(): ViewModel
@@ -209,10 +213,12 @@ final class AffiliationController extends AffiliationAbstractController
                 'affiliation'         => $affiliation,
                 'invoiceService'      => $this->invoiceService,
                 'contactService'      => $this->contactService,
+                'projectChecklist'    => $this->projectChecklist($affiliation->getProject()),
                 'organisationService' => $this->organisationService,
                 'showParentTab'       => $this->invoiceModuleOptions->getInvoiceViaParent(),
                 'tab'                 => 'financial'
-            ]);
+            ]
+        );
     }
 
     public function contractAction(): ViewModel
@@ -225,10 +231,12 @@ final class AffiliationController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliation'   => $affiliation,
-                'showParentTab' => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'           => 'contract'
-            ]);
+                'affiliation'      => $affiliation,
+                'showParentTab'    => $this->invoiceModuleOptions->getInvoiceViaParent(),
+                'projectChecklist' => $this->projectChecklist($affiliation->getProject()),
+                'tab'              => 'financial'
+            ]
+        );
     }
 
     public function parentAction(): ViewModel
@@ -241,11 +249,13 @@ final class AffiliationController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliation'   => $affiliation,
-                'parentService' => $this->parentService,
-                'showParentTab' => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'           => 'parent'
-            ]);
+                'affiliation'      => $affiliation,
+                'parentService'    => $this->parentService,
+                'projectChecklist' => $this->projectChecklist($affiliation->getProject()),
+                'showParentTab'    => $this->invoiceModuleOptions->getInvoiceViaParent(),
+                'tab'              => 'financial'
+            ]
+        );
     }
 
     public function paymentSheetAction(): ViewModel
@@ -257,18 +267,16 @@ final class AffiliationController extends AffiliationAbstractController
             return $this->notFoundAction();
         }
 
-        $year   = (int)$this->params('year');
-        $period = (int)$this->params('period');
-
         return new ViewModel(
             [
-                'year'               => $year,
-                'period'             => $period,
+                'year'               => date('Y'),
+                'period'             => date('n') <= 6 ? 1 : 2,
                 'useContractData'    => null !== $contract,
                 'affiliationService' => $this->affiliationService,
                 'affiliation'        => $affiliation,
+                'projectChecklist'   => $this->projectChecklist($affiliation->getProject()),
                 'showParentTab'      => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'                => 'payment-sheet'
+                'tab'                => 'financial'
             ]
         );
     }
@@ -284,10 +292,12 @@ final class AffiliationController extends AffiliationAbstractController
         return new ViewModel(
             [
                 'affiliation'           => $affiliation,
+                'projectChecklist'      => $this->projectChecklist($affiliation->getProject()),
                 'contactsInAffiliation' => $this->contactService->findContactsInAffiliation($affiliation),
                 'showParentTab'         => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'                   => 'contacts'
-            ]);
+                'tab'                   => 'management'
+            ]
+        );
     }
 
     public function reportingAction(): ViewModel
@@ -300,12 +310,14 @@ final class AffiliationController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliation'    => $affiliation,
-                'reportService'  => $this->reportService,
-                'versionService' => $this->versionService,
-                'showParentTab'  => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'            => 'reporting'
-            ]);
+                'affiliation'      => $affiliation,
+                'projectChecklist' => $this->projectChecklist($affiliation->getProject()),
+                'reportService'    => $this->reportService,
+                'versionService'   => $this->versionService,
+                'showParentTab'    => $this->invoiceModuleOptions->getInvoiceViaParent(),
+                'tab'              => 'management'
+            ]
+        );
     }
 
     public function achievementsAction(): ViewModel
@@ -319,11 +331,13 @@ final class AffiliationController extends AffiliationAbstractController
         return new ViewModel(
             [
                 'affiliationService'  => $this->affiliationService,
+                'projectChecklist'    => $this->projectChecklist($affiliation->getProject()),
                 'latestReviewMeeting' => $this->calendarService->findLatestProjectCalendar($affiliation->getProject()),
                 'affiliation'         => $affiliation,
                 'showParentTab'       => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'                 => 'achievements'
-            ]);
+                'tab'                 => 'management'
+            ]
+        );
     }
 
     public function questionnairesAction(): ViewModel
@@ -344,11 +358,13 @@ final class AffiliationController extends AffiliationAbstractController
 
         return new ViewModel(
             [
-                'affiliation'    => $affiliation,
-                'questionnaires' => $questionnaires,
-                'showParentTab'  => $this->invoiceModuleOptions->getInvoiceViaParent(),
-                'tab'            => 'questionnaires'
-            ]);
+                'affiliation'      => $affiliation,
+                'projectChecklist' => $this->projectChecklist($affiliation->getProject()),
+                'questionnaires'   => $questionnaires,
+                'showParentTab'    => $this->invoiceModuleOptions->getInvoiceViaParent(),
+                'tab'              => 'management'
+            ]
+        );
     }
 
     public function paymentSheetPdfAction(): Response
@@ -378,8 +394,8 @@ final class AffiliationController extends AffiliationAbstractController
             ->addHeaderLine(
                 'Content-Disposition',
                 'attachment; filename="' . sprintf(
-                    'payment_sheet_%s_%s_%sH.pdf',
-                    $affiliation->getOrganisation()->getDocRef(),
+                    'Payment Sheet %s (%s-%sH).pdf',
+                    $affiliation->parseBranchedName(),
                     $year,
                     $period
                 ) . '"'

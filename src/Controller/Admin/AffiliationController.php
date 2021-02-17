@@ -18,6 +18,7 @@ use Affiliation\Service\QuestionnaireService;
 use Application\Service\AssertionService;
 use Calendar\Service\CalendarService;
 use Contact\Service\ContactService;
+use Invoice\Entity\Method;
 use Invoice\Service\InvoiceService;
 use Laminas\Http\Request;
 use Laminas\I18n\Translator\TranslatorInterface;
@@ -67,8 +68,7 @@ final class AffiliationController extends AffiliationAbstractController
         ParentService $parentService,
         AssertionService $assertionService,
         TranslatorInterface $translator
-    )
-    {
+    ) {
         $this->affiliationService   = $affiliationService;
         $this->questionnaireService = $questionnaireService;
         $this->translator           = $translator;
@@ -83,7 +83,6 @@ final class AffiliationController extends AffiliationAbstractController
         $this->calendarService      = $calendarService;
         $this->parentService        = $parentService;
         $this->assertionService     = $assertionService;
-
     }
 
     public function detailsAction(): ViewModel
@@ -105,7 +104,8 @@ final class AffiliationController extends AffiliationAbstractController
                 'project'            => $affiliation->getProject(),
                 'organisation'       => $affiliation->getOrganisation(),
                 'tab'                => 'details'
-            ]);
+            ]
+        );
     }
 
     public function descriptionAction(): ViewModel
@@ -120,7 +120,8 @@ final class AffiliationController extends AffiliationAbstractController
             [
                 'affiliation' => $affiliation,
                 'tab'         => 'description'
-            ]);
+            ]
+        );
     }
 
     public function marketAccessAction(): ViewModel
@@ -135,7 +136,8 @@ final class AffiliationController extends AffiliationAbstractController
             [
                 'affiliation' => $affiliation,
                 'tab'         => 'market-access'
-            ]);
+            ]
+        );
     }
 
     public function costsAndEffortAction(): ViewModel
@@ -165,7 +167,8 @@ final class AffiliationController extends AffiliationAbstractController
                 'latestContractVersion' => $this->contractService->findLatestContractVersionByAffiliation($affiliation),
                 'useContract'           => AffiliationService::useActiveContract($affiliation),
                 'tab'                   => 'costs-and-effort'
-            ]);
+            ]
+        );
     }
 
     public function projectVersionsAction(): ViewModel
@@ -187,7 +190,8 @@ final class AffiliationController extends AffiliationAbstractController
                 'project'            => $affiliation->getProject(),
                 'years'              => $this->projectService->parseYearRange($affiliation->getProject(), true),
                 'tab'                => 'project-versions'
-            ]);
+            ]
+        );
     }
 
     public function financialAction(): ViewModel
@@ -205,7 +209,8 @@ final class AffiliationController extends AffiliationAbstractController
                 'contactService'      => $this->contactService,
                 'organisationService' => $this->organisationService,
                 'tab'                 => 'financial'
-            ]);
+            ]
+        );
     }
 
     public function contractAction(): ViewModel
@@ -219,8 +224,9 @@ final class AffiliationController extends AffiliationAbstractController
         return new ViewModel(
             [
                 'affiliation' => $affiliation,
-                'tab'         => 'contract'
-            ]);
+                'tab'         => 'financial'
+            ]
+        );
     }
 
     public function parentAction(): ViewModel
@@ -235,30 +241,27 @@ final class AffiliationController extends AffiliationAbstractController
             [
                 'affiliation'   => $affiliation,
                 'parentService' => $this->parentService,
-                'tab'           => 'parent'
-            ]);
+                'tab'           => 'financial'
+            ]
+        );
     }
 
     public function paymentSheetAction(): ViewModel
     {
         $affiliation = $this->affiliationService->findAffiliationById((int)$this->params('id'));
-        $contract    = $this->params('contract');
 
         if (null === $affiliation) {
             return $this->notFoundAction();
         }
 
-        $year   = (int)$this->params('year');
-        $period = (int)$this->params('period');
-
         return new ViewModel(
             [
-                'year'               => $year,
-                'period'             => $period,
-                'useContractData'    => null !== $contract,
+                'year'               => date('Y'),
+                'period'             => date('n') <= 6 ? 1 : 2,
+                'useContractData'    => null !== $affiliation->getInvoiceMethod() && $affiliation->getInvoiceMethod()->getId() === Method::METHOD_PERCENTAGE_CONTRACT,
                 'affiliationService' => $this->affiliationService,
                 'affiliation'        => $affiliation,
-                'tab'                => 'payment-sheet'
+                'tab'                => 'financial'
             ]
         );
     }
@@ -276,8 +279,9 @@ final class AffiliationController extends AffiliationAbstractController
                 'affiliation'           => $affiliation,
                 'contactsInAffiliation' => $this->contactService->findContactsInAffiliation($affiliation),
                 'contactService'        => $this->contactService,
-                'tab'                   => 'contacts'
-            ]);
+                'tab'                   => 'management'
+            ]
+        );
     }
 
     public function reportingAction(): ViewModel
@@ -293,8 +297,9 @@ final class AffiliationController extends AffiliationAbstractController
                 'affiliation'    => $affiliation,
                 'reportService'  => $this->reportService,
                 'versionService' => $this->versionService,
-                'tab'            => 'reporting'
-            ]);
+                'tab'            => 'management'
+            ]
+        );
     }
 
     public function achievementsAction(): ViewModel
@@ -310,8 +315,9 @@ final class AffiliationController extends AffiliationAbstractController
                 'affiliationService'  => $this->affiliationService,
                 'latestReviewMeeting' => $this->calendarService->findLatestProjectCalendar($affiliation->getProject()),
                 'affiliation'         => $affiliation,
-                'tab'                 => 'achievements'
-            ]);
+                'tab'                 => 'management'
+            ]
+        );
     }
 
     public function questionnairesAction(): ViewModel
@@ -334,8 +340,9 @@ final class AffiliationController extends AffiliationAbstractController
             [
                 'affiliation'    => $affiliation,
                 'questionnaires' => $questionnaires,
-                'tab'            => 'questionnaires'
-            ]);
+                'tab'            => 'management'
+            ]
+        );
     }
 
     public function mergeAction()
@@ -388,6 +395,7 @@ final class AffiliationController extends AffiliationAbstractController
                 'merge'               => $data['merge'] ?? null,
                 'projectService'      => $this->projectService,
                 'organisationService' => $this->organisationService,
+                'tab'                 => 'management'
             ]
         );
     }

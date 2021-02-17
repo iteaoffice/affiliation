@@ -38,13 +38,13 @@
                 <td>{{ affiliation.organisation.country.iso3 }}</td>
                 <td>{{ projectLink(affiliation.project,'view-admin','name') }}</td>
                 <td>{{ projectService.parseStatus(affiliation.project) }}</td>
-                <td>{{ doaLink(null, 'reminders-admin', 'text', affiliation) }}</td>
+                <td>{{ affiliationDoaLink(null, 'reminders-admin', 'text', affiliation) }}</td>
                 <td>
                     {% if affiliation.doaReminder.last.dateCreated %}
                         {{ affiliation.doaReminder.last.dateCreated|string_date }}
                     {% endif %}
                 </td>
-                <td>{{ doaLink(null, 'remind-admin', 'text', affiliation) }}</td>
+                <td>{{ affiliationDoaLink(null, 'remind-admin', 'text', affiliation) }}</td>
             </tr>
         {% endfor %}
         </tbody>

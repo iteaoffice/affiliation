@@ -1,16 +1,22 @@
 {% include 'affiliation/affiliation/tabs' %}
+<div class="row">
+    <div class="col-md-10">
+        <h2>{{ translate("txt-partner-description") }}</h2>
 
-<h2>{{ translate("txt-partner-description") }}</h2>
+        {% if affiliation.description %}
+            <dl class="dl-horizontal">
+                <dt>{{ translate("txt-description") }}</dt>
+                <dd>{{ affiliation.description.description|nl2br }}</dd>
+            </dl>
+        {% else %}
+            {{ ztbalert().danger(translate("txt-no-description-found-for-%s")|format(
+                affiliation.parseBranchedName()
+            ))|raw }}
+        {% endif %}
 
-{% if affiliation.description %}
-    <dl class="dl-horizontal">
-        <dt>{{ translate("txt-description") }}</dt>
-        <dd>{{ affiliation.description.description|nl2br }}</dd>
-    </dl>
-{% else %}
-    {{ ztbalert().danger(translate("txt-no-description-found-for-%s")|format(
-        affiliation.parseBranchedName()
-    ))|raw }}
-{% endif %}
-
-{{ affiliationLink(affiliation, 'edit-description','button') }}
+        {{ affiliationLink(affiliation, 'edit-description','button') }}
+    </div>
+    <div class="col-md-2">
+        {% include 'affiliation/partial/checklist' %}
+    </div>
+</div>

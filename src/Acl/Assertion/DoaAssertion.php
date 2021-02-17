@@ -64,7 +64,6 @@ final class DoaAssertion extends AbstractAssertion
                     $affiliationId = $this->getRouteMatch()->getParam('affiliationId');
                     $affiliation   = $this->affiliationService->findAffiliationById((int)$affiliationId);
                 }
-
                 return $this->affiliationAssertion->assert($acl, $role, $affiliation, 'edit-community');
             case 'replace':
                 /*

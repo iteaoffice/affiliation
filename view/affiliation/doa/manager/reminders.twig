@@ -8,7 +8,7 @@ affiliation.project
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
     affiliation.parseBranchedName(),
     affiliation.project
-    ) }} {{ doaLink(null, 'remind-admin', 'button', affiliation) }}</h1>
+    ) }} {{ affiliationDoaLink(null, 'remind-admin', 'button', affiliation) }}</h1>
 
 {% if affiliation.doaReminder.count() > 0 %}
 

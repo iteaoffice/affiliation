@@ -40,12 +40,12 @@ final class EffortSpentLink extends AbstractLink
 
         $linkParams = [
             'icon'  => 'far fa-edit',
-            'route' => 'community/affiliation/edit/update-effort-spent',
+            'route' => 'community/affiliation/edit/effort-spent',
             'text'  => $showOptions[$show]
                 ?? sprintf($this->translator->translate('txt-report-on-%s'), $report->parseName())
         ];
 
-        $linkParams['action']      = 'update-effort-spent';
+        $linkParams['action']      = 'effort-spent';
         $linkParams['show']        = $show;
         $linkParams['routeParams'] = $routeParams;
 

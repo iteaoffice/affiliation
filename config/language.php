@@ -1,11 +1,4 @@
 <?php
-/**
- * ITEA Office all rights reserved
- *
- * @author      Johan van der Heide <johan.van.der.heide@itea3.org>
- * @copyright   Copyright (c) 2021 ITEA Office (https://itea3.org)
- * @license     https://itea3.org/license.txt proprietary
- */
 
 _('txt-affiliation-description-placeholder');
 _('txt-affiliation-description');
@@ -14,6 +7,7 @@ _('txt-not-self-funded');
 _('txt-self-funded');
 _('txt-date-signed');
 _('txt-date-approved');
+_('txt-affiliation-doa-date-approved-help-block');
 _('txt-affiliation-doa-approver-label');
 _('txt-affiliation-doa-approver-help-block');
 _('txt-doa-group-name-placeholder');
@@ -30,6 +24,16 @@ _('txt-affiliation-loi-approver-label');
 _('txt-affiliation-loi-approver-help-block');
 _('txt-affiliation-loi-contact-label');
 _('txt-affiliation-loi-contact-help-block');
+_('txt-affiliation-financial-branch-label');
+_('txt-affiliation-financial-branch-help-block');
+_('txt-affiliation-financial-branch-placeholder');
+_('txt-affiliation-financial-contact-label');
+_('txt-affiliation-financial-contact-help-block');
+_('txt-affiliation-financial-organisation-label');
+_('txt-affiliation-financial-organisation-help-block');
+_('txt-affiliation-financial-email-cc-label');
+_('txt-affiliation-financial-email-cc-help-block');
+_('txt-affiliation-financial-email-cc-placeholder');
 _('txt-sequence');
 _('txt-sequence-help-block');
 _('txt-question');

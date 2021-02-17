@@ -359,13 +359,10 @@
         {% endif %}
     </table>
 
-    {% if isAllowed(project,'edit-community') or isAllowed(affiliation, 'edit-affiliation') %}
-        {{ affiliationLink(affiliation, 'edit-costs-and-effort', 'button') }}
 
-        <span class="float-right">
-         {{ projectLink(affiliation.project, 'edit-cost-and-effort-community', 'button') }}
-    </span>
-    {% endif %}
+    <strong>{{ translate("txt-community-links") }}</strong><br>
+    {{ affiliationLink(affiliation, 'edit-costs-and-effort', 'button') }}
+    {{ projectLink(affiliation.project, 'edit-costs-and-effort-community', 'button') }}
 {% endif %}
 
 

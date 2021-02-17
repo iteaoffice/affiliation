@@ -28,51 +28,115 @@
     )|raw }}
 {% endif %}
 
+{% set financial =
+    {   'financial' :
+        {   'route': 'zfcadmin/affiliation/financial',
+            'text' : translate("txt-invoicing-details")
+        },
+        'contract':
+        {
+            'route': 'zfcadmin/affiliation/contract',
+            'text' : translate("txt-funding-contract")
+        },
+        'parent':
+        {
+            'route': 'zfcadmin/affiliation/parent',
+            'text' : translate("txt-membership")
+        },
+        'payment-sheet':
+        {
+            'route': 'zfcadmin/affiliation/payment-sheet',
+            'text' : translate("txt-payment-sheet")
+        },
+    } %}
 
+{% set management =
+    {
+        'contacts':
+        {
+            'route': 'zfcadmin/affiliation/contacts',
+            'text' : translate("txt-contacts")
+        },
+        'reporting':
+        {
+            'route': 'zfcadmin/affiliation/reporting',
+            'text' : translate("txt-reporting")
+        },
+        'achievements':
+        {
+            'route': 'zfcadmin/affiliation/achievements',
+            'text' : translate("txt-achievements")
+        },
+        'questionnaires':
+        {
+            'route': 'zfcadmin/affiliation/questionnaires',
+            'text' : translate("txt-questionnaires")
+        },
+        'merge':
+        {
+            'route': 'zfcadmin/affiliation/merge',
+            'text' : translate("txt-merge")
+        },
+    } %}
 
-    {% set navigation =
-        {   'details' :
-            {   'route': 'zfcadmin/affiliation/details',
-                'text' : translate("txt-details")
-            },
-            'description':
-            {
-                'route': 'zfcadmin/affiliation/description',
-                'text' : translate("txt-desription")
-            },
-            'market-access':
-            {
-                'route': 'zfcadmin/affiliation/market-access',
-                'text' : translate("txt-market-access")
-            },
-            'costs-and-effort':
-            {
-                'route': 'zfcadmin/affiliation/costs-and-effort',
-                'text' : translate("txt-costs-and-effort")
-            },
-            'project-versions':
-            {
-                'route': 'zfcadmin/affiliation/project-versions',
-                'text' : translate("txt-project-versions")
-            },
-            'financial':
-            {
-                'route': 'zfcadmin/affiliation/financial',
-                'text' : translate("txt-financial")
-            },
-            'contacts':
-            {
-                'route': 'zfcadmin/affiliation/contacts',
-                'text' : translate("txt-contacts")
-            },
-        } %}
-
+{% set navigation =
+    {   'details' :
+        {   'route': 'zfcadmin/affiliation/details',
+            'text' : translate("txt-details")
+        },
+        'description':
+        {
+            'route': 'zfcadmin/affiliation/description',
+            'text' : translate("txt-description")
+        },
+        'market-access':
+        {
+            'route': 'zfcadmin/affiliation/market-access',
+            'text' : translate("txt-market-access")
+        },
+        'costs-and-effort':
+        {
+            'route': 'zfcadmin/affiliation/costs-and-effort',
+            'text' : translate("txt-costs-and-effort")
+        },
+        'project-versions':
+        {
+            'route': 'zfcadmin/affiliation/project-versions',
+            'text' : translate("txt-project-versions")
+        },
+        'financial':
+        {
+            'route': 'community/affiliation/financial',
+            'text' : translate("txt-financial"),
+            'pages': financial
+        },
+        'management':
+        {
+            'route': 'community/affiliation/contacts',
+            'text' : translate("txt-management"),
+            'pages': management
+        },
+    } %}
 
 <ul class="nav nav-tabs pt-3" role="tablist">
     {% for key, params in navigation %}
-        <li class="nav-item"><a href="{{ url(params.route,{'id':affiliation.id}) }}"
-                                aria-controls="{{ key }}"
-                                role="tab"
-                                class="nav-link {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a></li>
+        {% if not params.pages %}
+            <li class="nav-item"><a href="{{ url(params.route,{'id':affiliation.id}) }}" aria-controls="{{ key }}"
+                                    role="tab"
+                                    class="nav-link {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a></li>
+        {% endif %}
+        {% if params.pages %}
+            <li class="nav-item dropdown">
+                <a href="{{ url(params.route,{'id':affiliation.id}) }}" aria-controls="{{ key }}" aria-expanded="false"
+                   aria-haspopup="true" role="button" data-toggle="dropdown"
+                   class="nav-link dropdown-toggle {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a>
+                <ul class="dropdown-menu">
+                    {% for key, params in params.pages %}
+                        <li><a href="{{ url(params.route,{'id':affiliation.id}) }}" aria-controls="{{ key }}"
+                               class="dropdown-item">{{ params.text|raw }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endif %}
     {% endfor %}
 </ul>

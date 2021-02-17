@@ -6,15 +6,22 @@
     <table class="table table-striped table-hover table-sm">
         <thead>
         <tr>
+            <th>{{ translate("txt-id") }}</th>
             <th>{{ translate("txt-associate-name") }}</th>
             <th>{{ translate("txt-organisation") }}</th>
             <th>{{ translate("txt-country") }}</th>
             <th>{{ translate("txt-roles") }}</th>
         </tr>
         </thead>
+        <tfoot>
+        <tr>
+            <td colspan="5"></td>
+        </tr>
+        </tfoot>
         <tbody>
         {% for contact in contactsInAffiliation.contacts %}
             <tr>
+                <td><small class="text-muted">{{ contact.id }}</small></td>
                 <td>
                     {{ contactLink(contact,'view-admin','name') }} <a
                             href="mailto:{{ contact.email }}"><i class="far fa-envelope"></i></a>

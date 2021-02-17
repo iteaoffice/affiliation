@@ -93,6 +93,10 @@ final class LoiAssertion extends AbstractAssertion
                 return null === $loi->getDateApproved()
                     && $this->affiliationAssertion->assert($acl, $role, $loi->getAffiliation(), 'edit-community');
             case 'download':
+                if (! $loi->hasObject()) {
+                    return false;
+                }
+
                 return $this->affiliationAssertion->assert($acl, $role, $loi->getAffiliation(), 'view-community');
             case 'view-admin':
             case 'edit-admin':

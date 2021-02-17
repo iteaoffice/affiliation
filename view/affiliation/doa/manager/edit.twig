@@ -1,12 +1,12 @@
 {% do headTitle().append(translate("txt-admin")) %}
 {% do headTitle().append(translate("txt-edit-doa-%s-in-%s")|format(
-doa.affiliation.parseBranchedName(),
-doa.affiliation.project.parseFullname()
+    doa.affiliation.parseBranchedName(),
+    doa.affiliation.project.parseFullname()
 )) %}
 
 <h1>{{ translate("txt-edit-doa-%s-in-%s")|format(
-    doa.affiliation.parseBranchedName(),
-    doa.affiliation.project
+        doa.affiliation.parseBranchedName(),
+        doa.affiliation.project
     ) }}</h1>
 
 {% do form.prepare() %}
@@ -32,16 +32,24 @@ doa.affiliation.project.parseFullname()
 {% set doaForm = form.get('affiliation_entity_doa') %}
 
 {{ ztbformelement(doaForm.get('dateSigned')) }}
-{{ ztbformelement(doaForm.get('dateApproved')) }}
 {{ contactformelement(doaForm.get('contact')) }}
 
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">{{ translate("txt-download-current-doa") }}</label>
+{{ ztbformelement(doaForm.get('dateApproved')) }}
+{{ contactformelement(doaForm.get('approver')) }}
 
-    <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ doaLink(doa,'download','text') }}</p>
+{{ ztbformelement(doaForm.get('groupName')) }}
+{{ ztbformelement(doaForm.get('chamberOfCommerceNumber')) }}
+{{ ztbformelement(doaForm.get('chamberOfCommerceLocation')) }}
+
+{% if doa.hasObject() %}
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label">{{ translate("txt-download") }}</label>
+
+        <div class="col-sm-9">
+            <p class="form-control-plaintext">{{ affiliationDoaLink(doa,'download','text') }}</p>
+        </div>
     </div>
-</div>
+{% endif %}
 
 {{ ztbformelement(doaForm.get('file')) }}
 

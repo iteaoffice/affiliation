@@ -3,12 +3,8 @@
 
 <h1>{{ translate("txt-edit-affiliation") }}</h1>
 
-
-<h1>{{ translate("txt-edit-affiliation") }}</h1>
-
 {% do form.prepare() %}
 {{ form().openTag(form)|raw }}
-
 
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">{{ translate("txt-project-name") }}</label>
@@ -22,29 +18,12 @@
     <label class="col-sm-3 col-form-label">{{ translate("txt-affiliation") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community','organisation-branch') }}</p>
-    </div>
-</div>
-
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">{{ translate("txt-organisation") }}</label>
-
-    <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ affiliation.organisation }}</p>
-    </div>
-</div>
-
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">{{ translate("txt-country") }}</label>
-
-    <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ affiliation.organisation.country }}</p>
+        <p class="form-control-plaintext">{{ affiliationLink(affiliation,'view-community','organisation-branch') }} ({{ affiliation.organisation.country }})</p>
     </div>
 </div>
 
 {{ ztbformelement(form.get('affiliation')) }}
 {{ ztbformelement(form.get('technical')) }}
-{{ ztbformelement(form.get('financial')) }}
 {{ ztbformelement(form.get('communicationContactName')) }}
 {{ ztbformelement(form.get('communicationContactEmail')) }}
 {{ ztbformelement(form.get('valueChain')) }}
@@ -53,11 +32,7 @@
     {{ ztbformelement(form.get('tasksAndAddedValue')) }}
 {% endif %}
 {{ ztbformelement(form.get('strategicImportance')) }}
-{# {{ ztbformelement(form.get('marketAccess')) }} #}
 {{ ztbformelement(form.get('selfFunded')) }}
-
-
-<hr>
 
 <div class="form-group row">
     <div class="offset-sm-3 col-sm-9">

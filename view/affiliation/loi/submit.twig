@@ -112,10 +112,10 @@
         <dd>{{ identity().displayName() }}</dd>
         {% if not loi.object.isEmpty() %}
             <dt>{{ translate("txt-download-loi") }}</dt>
-            <dd>{{ loiLink(loi,'download', 'text') }}</dd>
+            <dd>{{ affiliationLoiLink(loi,'download', 'text') }}</dd>
         {% endif %}
     </dl>
 
-    {{ loiLink(loi,'replace','button') }}
+    {{ affiliationLoiLink(loi,'replace','button') }}
 
 {% endif %}

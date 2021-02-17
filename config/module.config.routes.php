@@ -118,7 +118,7 @@ return [
                             'payment-sheet' => [
                                 'type'    => 'Segment',
                                 'options' => [
-                                    'route'    => '/[:id]/payment-sheet/year-[:year]/period-[:period][/:contract].html',
+                                    'route'    => '/[:id]/payment-sheet.html',
                                     'defaults' => [
                                         'action' => 'payment-sheet',
                                     ],

@@ -178,7 +178,6 @@ final class ManagerController extends AffiliationAbstractController
                         $this->loiService->save($loiObject);
                     }
 
-                    //Create a article object element
                     $fileSizeValidator = new FilesSize(PHP_INT_MAX);
                     $fileSizeValidator->isValid($fileData['affiliation_entity_loi']['file']);
                     $loi->setSize($fileSizeValidator->size);

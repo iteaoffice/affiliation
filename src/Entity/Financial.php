@@ -35,6 +35,7 @@ class Financial extends AbstractEntity
     private ?int $id = null;
     /**
      * @ORM\Column(name="branch", type="string", nullable=true)
+     * @Annotation\Type("\Laminas\Form\Element\Text")
      * @Annotation\Options({"label":"txt-affiliation-financial-branch-label","help-block":"txt-affiliation-financial-branch-help-block"})
      * @Annotation\Options({"placeholder":"txt-affiliation-financial-branch-placeholder"})
      */
@@ -63,8 +64,9 @@ class Financial extends AbstractEntity
     private ?Organisation $organisation = null;
     /**
      * @ORM\Column(name="email_cc", type="string", nullable=true)
-     * @Annotation\Options({"label":"txt-affiliation-financial-email-cc-label","help-block":"txt-affiliation-financial-branch-help-block"})
-     * @Annotation\Options({"placeholder":"txt-affiliation-financial-branch-placeholder"})
+     * @Annotation\Type("\Laminas\Form\Element\Email")
+     * @Annotation\Options({"label":"txt-affiliation-financial-email-cc-label","help-block":"txt-affiliation-financial-email-cc-help-block"})
+     * @Annotation\Options({"placeholder":"txt-affiliation-financial-email-cc-placeholder"})
      */
     private ?string $emailCC = null;
 
@@ -97,7 +99,7 @@ class Financial extends AbstractEntity
         return $this;
     }
 
-    public function getAffiliation(): Affiliation
+    public function getAffiliation(): ?Affiliation
     {
         return $this->affiliation;
     }
@@ -109,7 +111,7 @@ class Financial extends AbstractEntity
         return $this;
     }
 
-    public function getContact(): Contact
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
@@ -121,7 +123,7 @@ class Financial extends AbstractEntity
         return $this;
     }
 
-    public function getOrganisation(): Organisation
+    public function getOrganisation(): ?Organisation
     {
         return $this->organisation;
     }

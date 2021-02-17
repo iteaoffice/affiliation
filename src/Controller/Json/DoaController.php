@@ -59,6 +59,15 @@ final class DoaController extends AffiliationAbstractController
          */
         $doa = $this->affiliationService->find(Doa::class, (int)$doa);
 
+        if (null === $doa) {
+            return new JsonModel(
+                [
+                    'result' => 'error',
+                    'error'  => $this->translator->translate('txt-requested-doa-could-not-be-found'),
+                ]
+            );
+        }
+
         if ($doa->hasObject()) {
             $contact    = $this->params()->fromPost('contact');
             $dateSigned = $this->params()->fromPost('dateSigned');
@@ -120,6 +129,16 @@ final class DoaController extends AffiliationAbstractController
     {
         $doa = $this->params()->fromPost('doa');
         $doa = $this->affiliationService->find(Doa::class, (int)$doa);
+
+        if (null === $doa) {
+            return new JsonModel(
+                [
+                    'result' => 'error',
+                    'error'  => $this->translator->translate('txt-requested-doa-could-not-be-found'),
+                ]
+            );
+        }
+
         $this->doaService->delete($doa);
 
         return new JsonModel(

@@ -203,6 +203,7 @@ final class ManagerController extends AffiliationAbstractController
     public function editAction()
     {
         $doa = $this->doaService->findDoaById((int)$this->params('id'));
+
         if (null === $doa) {
             return $this->notFoundAction();
         }
@@ -236,15 +237,21 @@ final class ManagerController extends AffiliationAbstractController
             }
 
             if ($form->isValid()) {
+
                 /** @var $doa Entity\Doa */
                 $doa      = $form->getData();
                 $fileData = $this->params()->fromFiles();
+
+                //If we have no date_approved, we remove the approver
+                if (empty($data['affiliation_entity_doa']['date_approved'])) {
+                    $doa->setApprover(null);
+                }
 
                 if ($fileData['affiliation_entity_doa']['file']['error'] === 0) {
                     /*
                      * Replace the content of the object
                      */
-                    if (null !== $doa->getObject()) {
+                    if ($doa->hasObject()) {
                         $doa->getObject()->setObject(
                             file_get_contents($fileData['affiliation_entity_doa']['file']['tmp_name'])
                         );

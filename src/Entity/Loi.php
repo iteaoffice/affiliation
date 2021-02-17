@@ -14,7 +14,6 @@ namespace Affiliation\Entity;
 
 use Contact\Entity\Contact;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use General\Entity\ContentType;
@@ -81,7 +80,7 @@ class Loi extends AbstractEntity
      * @ORM\OneToOne(targetEntity="Affiliation\Entity\LoiObject", cascade={"persist","remove"}, mappedBy="loi")
      * @Annotation\Exclude()
      *
-     * @var \Affiliation\Entity\LoiObject
+     * @var \Affiliation\Entity\LoiObject|null
      */
     private $object;
     /**
@@ -118,14 +117,29 @@ class Loi extends AbstractEntity
      */
     private $contact;
 
+    public function __toString(): string
+    {
+        return $this->parseFileName();
+    }
+
+    public function parseFileName(): string
+    {
+        return sprintf('LOI_%s_%s', $this->affiliation->parseBranchedName(), $this->affiliation->getProject());
+    }
+
     public function hasObject(): bool
     {
         return null !== $this->object;
     }
 
-    public function parseFileName(): string
+    public function isSigned(): bool
     {
-        return sprintf('LOI_%s_%s', $this->getAffiliation()->getOrganisation(), $this->getAffiliation()->getProject());
+        return null !== $this->dateSigned;
+    }
+
+    public function isApproved(): bool
+    {
+        return null !== $this->dateApproved;
     }
 
     public function getAffiliation(): Affiliation
@@ -140,7 +154,7 @@ class Loi extends AbstractEntity
         return $this;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -188,7 +202,7 @@ class Loi extends AbstractEntity
         return $this;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
@@ -200,12 +214,12 @@ class Loi extends AbstractEntity
         return $this;
     }
 
-    public function getObject()
+    public function getObject(): ?LoiObject
     {
         return $this->object;
     }
 
-    public function setObject($object): Loi
+    public function setObject(?LoiObject $object): Loi
     {
         $this->object = $object;
 
@@ -241,7 +255,7 @@ class Loi extends AbstractEntity
         return $this->contact;
     }
 
-    public function setContact($contact)
+    public function setContact($contact): Loi
     {
         $this->contact = $contact;
 

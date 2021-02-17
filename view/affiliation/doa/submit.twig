@@ -112,9 +112,9 @@
         <dd>{{ identity().displayName() }}</dd>
         {% if not doa.object.isEmpty() %}
             <dt>{{ translate("txt-download-doa") }}</dt>
-            <dd>{{ doaLink(doa,'download', 'text') }}</dd>
+            <dd>{{ affiliationDoaLink(doa,'download', 'text') }}</dd>
         {% endif %}
     </dl>
 
-    {{ doaLink(doa,'replace','button') }}
+    {{ affiliationDoaLink(doa,'replace','button') }}
 {% endif %}

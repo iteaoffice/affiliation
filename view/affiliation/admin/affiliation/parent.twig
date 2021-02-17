@@ -5,11 +5,11 @@
 {% if affiliation.parentOrganisation %}
     <dl class="dl-horizontal">
         <dt>{{ translate("txt-parent") }}</dt>
-        <dd>{{ affiliation.parentOrganisation.parent.organisation }}
+        <dd>{{ parentLink(affiliation.parentOrganisation.parent,'view') }}
             ({{ affiliation.parentOrganisation.parent.organisation.country }})
         </dd>
         <dt>{{ translate("txt-organisation-type") }}</dt>
-        <dd>{{ affiliation.parentOrganisation.parent.organisation.type }}</dd>
+        <dd>{{ organisationTypeLink(affiliation.parentOrganisation.parent.organisation.type,'view', 'description') }}</dd>
         <dt>{{ translate("txt-parent-type") }}</dt>
         <dd>{{ translate(affiliation.parentOrganisation.parent.getMemberType(true)) }}</dd>
         <dt>{{ translate("txt-has-doa-for-program") }}</dt>

@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace Affiliation\Navigation\Invokable;
 
-use General\Navigation\Invokable\AbstractNavigationInvokable;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Loi;
-use Project\Entity\Project;
+use General\Navigation\Invokable\AbstractNavigationInvokable;
 use Laminas\Navigation\Page\Mvc;
+use Project\Entity\Project;
 
 /**
  * Class LoiLabel
@@ -44,6 +44,9 @@ final class LoiLabel extends AbstractNavigationInvokable
             );
             $label = $this->translator->translate('txt-loi');
         }
-        $page->set('label', $label);
+
+        if (null === $page->getLabel()) {
+            $page->set('label', $label);
+        }
     }
 }

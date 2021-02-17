@@ -6,6 +6,7 @@
     <table class="table table-hover table-striped table-sm">
         <thead>
         <tr>
+            <th>{{ translate("txt-id") }}</th>
             <th>{{ translate("txt-version") }}</th>
             <th>{{ translate("txt-status") }}</th>
             <th>{{ translate("txt-date-reviewed") }}</th>
@@ -15,14 +16,15 @@
         </thead>
         <tfoot>
         <tr>
-            <td colspan="5"></td>
+            <td colspan="7"></td>
         </tr>
         </tfoot>
         <tbody>
         {% for affiliationVersion in affiliation.version %}
             <tr>
                 {% set version = affiliationVersion.version %}
-                <td>{{ versionLink(version,'general','description') }}</td>
+                <td><small class="text-muted">{{ affiliationVersion.id }}</small></td>
+                <td>{{ versionLink(version,'general','description') }} <small class="text-muted">({{ version.id }})</small></td>
                 <td>{{ versionService.parseStatus(version) }}</td>
                 <td>{{ version.dateReviewed|string_date }}</td>
                 <td class="text-right">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>

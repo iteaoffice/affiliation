@@ -14,7 +14,6 @@ namespace Affiliation\Entity;
 
 use Contact\Entity\Contact;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use General\Entity\ContentType;
@@ -23,6 +22,8 @@ use Laminas\Form\Annotation;
 /**
  * @ORM\Table(name="project_doa")
  * @ORM\Entity(repositoryClass="Affiliation\Repository\Doa")
+ * @Annotation\Hydrator("Laminas\Hydrator\ObjectPropertyHydrator")
+ * @Annotation\Name("project_doa")
  */
 class Doa extends AbstractEntity
 {
@@ -98,7 +99,7 @@ class Doa extends AbstractEntity
      * @ORM\Column(name="date_approved", type="datetime", nullable=true)
      * @Annotation\Type("\Laminas\Form\Element\Date")
      * @Annotation\Attributes({"step":"any"})
-     * @Annotation\Options({"label":"txt-date-approved", "format":"Y-m-d"})
+     * @Annotation\Options({"help-block":"txt-affiliation-doa-date-approved-help-block","label":"txt-date-approved", "format":"Y-m-d"})
      *
      * @var DateTime
      */
@@ -149,14 +150,14 @@ class Doa extends AbstractEntity
      */
     private $chamberOfCommerceLocation;
 
-    public function hasObject(): bool
-    {
-        return ! $this->object->isEmpty();
-    }
-
     public function __toString(): string
     {
-        return sprintf('Doa: %s', $this->id);
+        return $this->parseFileName();
+    }
+
+    public function parseFileName(): string
+    {
+        return sprintf('DOA %s %s', $this->affiliation->parseBranchedName(), $this->affiliation->getProject());
     }
 
     public function isApproved(): bool
@@ -164,9 +165,14 @@ class Doa extends AbstractEntity
         return null !== $this->dateApproved;
     }
 
-    public function parseFileName(): string
+    public function isSigned(): bool
     {
-        return sprintf('DOA_%s_%s', $this->affiliation->getOrganisation(), $this->affiliation->getProject());
+        return null !== $this->dateSigned;
+    }
+
+    public function hasObject(): bool
+    {
+        return null !== $this->object;
     }
 
     public function getId()
@@ -207,7 +213,7 @@ class Doa extends AbstractEntity
         return $this->approver;
     }
 
-    public function setApprover(Contact $approver): Doa
+    public function setApprover(?Contact $approver): Doa
     {
         $this->approver = $approver;
         return $this;
@@ -235,12 +241,12 @@ class Doa extends AbstractEntity
         return $this;
     }
 
-    public function getObject()
+    public function getObject(): ?DoaObject
     {
         return $this->object;
     }
 
-    public function setObject($object): Doa
+    public function setObject(?DoaObject $object): Doa
     {
         $this->object = $object;
         return $this;

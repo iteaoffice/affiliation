@@ -61,9 +61,6 @@ final class SubmitForm extends Form implements InputFilterProviderInterface
                     'inline'     => true,
                     'help-block' => _('txt-self-approve-loi-checkbox-help-text'),
                 ],
-                'attributes' => [
-
-                ]
             ]
         );
         $this->add(

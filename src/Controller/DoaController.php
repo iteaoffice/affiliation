@@ -170,7 +170,7 @@ final class DoaController extends AffiliationAbstractController
          */
         $doa = $this->affiliationService->find(Entity\Doa::class, (int)$this->params('id'));
 
-        if (null === $doa || null === $doa->getObject()) {
+        if (null === $doa || ! $doa->hasObject()) {
             return $this->notFoundAction();
         }
         $data = array_merge_recursive(
@@ -190,15 +190,14 @@ final class DoaController extends AffiliationAbstractController
 
             if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
-                /*
-                 * Remove the current entity
-                 */
-                foreach ($doa->getObject() as $object) {
-                    $this->affiliationService->delete($object);
+
+                $doaObject = $doa->getObject();
+                if (null === $doaObject) {
+                    $doaObject = new Entity\DoaObject();
+                    $doaObject->setDoa($doa);
                 }
-                //Create a article object element
-                $affiliationDoaObject = new Entity\DoaObject();
-                $affiliationDoaObject->setObject(file_get_contents($fileData['file']['tmp_name']));
+
+                $doaObject->setObject(file_get_contents($fileData['file']['tmp_name']));
                 $fileSizeValidator = new FilesSize(PHP_INT_MAX);
                 $fileSizeValidator->isValid($fileData['file']);
                 $doa->setSize($fileSizeValidator->size);
@@ -210,8 +209,7 @@ final class DoaController extends AffiliationAbstractController
                     $this->generalService->findContentTypeByContentTypeName($fileTypeValidator->type)
                 );
 
-                $affiliationDoaObject->setDoa($doa);
-                $this->affiliationService->save($affiliationDoaObject);
+                $this->affiliationService->save($doaObject);
 
                 $changelogMessage = sprintf(
                     $this->translator->translate('txt-project-doa-for-organisation-%s-in-project-%s-has-been-replaced'),
@@ -254,7 +252,7 @@ final class DoaController extends AffiliationAbstractController
         /** @var Response $response */
         $response = $this->getResponse();
 
-        if (null === $doa || null === $doa->getObject()) {
+        if (null === $doa || ! $doa->hasObject()) {
             return $response->setStatusCode(Response::STATUS_CODE_404);
         }
 

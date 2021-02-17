@@ -24,6 +24,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use General\Service\CountryService;
 use General\Service\EmailService;
 use General\Service\GeneralService;
 use Invoice\Service\InvoiceService;
@@ -77,9 +78,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -100,9 +100,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -126,9 +125,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -154,9 +152,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -191,9 +188,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -235,9 +231,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -258,9 +253,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -333,9 +327,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
@@ -362,16 +355,14 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );
         $affiliation  = new Entity\Affiliation();
         $organisation = new Organisation();
         $type         = new Type();
-        $type->setInvoice(Type::INVOICE);
         $organisation->setType($type);
         $affiliation->setOrganisation($organisation);
         self::assertIsArray($service->canCreateInvoice($affiliation));
@@ -390,9 +381,8 @@ class AffiliationServiceTest extends AbstractServiceTest
             $this->getMockBuilder(VersionService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ParentService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContactService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(DeeplinkService::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(CountryService::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(EmailService::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(HelperPluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(PluginManager::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(TranslatorInterface::class)->disableOriginalConstructor()->getMock()
         );

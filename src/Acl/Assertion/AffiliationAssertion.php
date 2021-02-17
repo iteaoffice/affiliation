@@ -45,12 +45,11 @@ final class AffiliationAssertion extends AbstractAssertion
         RoleInterface $role = null,
         ResourceInterface $affiliation = null,
         $privilege = null
-    ): bool
-    {
+    ): bool {
         $this->setPrivilege($privilege);
         $id = $this->getId();
 
-        if (!($affiliation instanceof AffiliationEntity) && (null !== $id)) {
+        if (! ($affiliation instanceof AffiliationEntity) && (null !== $id)) {
             $affiliation = $this->affiliationService->findAffiliationById((int)$id);
         }
 
@@ -59,8 +58,24 @@ final class AffiliationAssertion extends AbstractAssertion
         }
 
         switch ($this->getPrivilege()) {
-            case 'view-community':
+            case 'view-community': //General community link
+            case 'details':
+            case 'description':
+            case 'market-access':
+            case 'costs-and-effort':
+            case 'project-versions':
+            case 'financial':
+            case 'contract':
+            case 'payment-sheet':
+            case 'contacts':
+            case 'reporting':
+            case 'achievements':
+            case 'questionnaires':
                 if ($this->contactService->contactHasPermit($this->contact, 'view', $affiliation)) {
+                    return true;
+                }
+
+                if ($this->contactService->contactHasPermit($this->contact, 'financial', $affiliation)) {
                     return true;
                 }
 
@@ -68,11 +83,12 @@ final class AffiliationAssertion extends AbstractAssertion
                 return $this->projectAssertion->assert($acl, $role, $affiliation->getProject(), 'view-community');
             case 'add-associate':
             case 'manage-associates':
-            case 'edit-cost-and-effort':
+            case 'edit-costs-and-effort':
             case 'edit-market-access':
             case 'edit-affiliation':
             case 'edit-description':
             case 'edit-community':
+            case 'edit-financial':
                 return $this->contactService->contactHasPermit(
                     $this->contact,
                     ['edit', 'edit_proxy', 'financial'],
@@ -100,14 +116,6 @@ final class AffiliationAssertion extends AbstractAssertion
                     ['edit', 'edit_proxy', 'financial'],
                     $affiliation
                 );
-
-                break;
-            case 'edit-financial':
-            case 'payment-sheet':
-            case 'payment-sheet-contract':
-            case 'payment-sheet-pdf':
-            case 'payment-sheet-pdf-contract':
-                return $this->contactService->contactHasPermit($this->contact, 'financial', $affiliation);
             default:
             case 'view-admin':
             case 'edit-admin':

@@ -91,12 +91,27 @@ return [
             Service\AffiliationService::class,
             TranslatorInterface::class,
             ProjectService::class,
+            VersionService::class,
+            ReportService::class,
             ContactService::class,
             OrganisationService::class,
             InvoiceService::class,
             ParentService::class,
             Service\FormService::class,
             EntityManager::class
+        ],
+        Controller\Json\DoaController::class                           => [
+            Service\DoaService::class,
+            Service\AffiliationService::class,
+            ContactService::class,
+            EmailService::class,
+            TranslatorInterface::class
+        ],
+        Controller\Json\LoiController::class                           => [
+            Service\LoiService::class,
+            Service\AffiliationService::class,
+            ContactService::class,
+            TranslatorInterface::class
         ],
         Controller\DoaController::class                                => [
             Service\AffiliationService::class,

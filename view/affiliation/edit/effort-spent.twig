@@ -1,9 +1,6 @@
 {% do headTitle().append(translate("txt-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
 {% do headTitle().append(translate("txt-edit-costs-and-effort")) %}
 
-<h1>{{ translate("txt-update-effort-spent") }}</h1>
-
-
 <h1>{{ translate("txt-update-effort-spent-for-affiliation-in-period-%s")|format(report.parseName()) }}</h1>
 
 {% do form.prepare() %}

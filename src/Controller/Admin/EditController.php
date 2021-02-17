@@ -50,21 +50,13 @@ final class EditController extends AffiliationAbstractController
     private FormService $formService;
     private EntityManager $entityManager;
 
-    public function __construct(
-        AffiliationService $affiliationService,
-        TranslatorInterface $translator,
-        ProjectService $projectService,
-        ContactService $contactService,
-        OrganisationService $organisationService,
-        InvoiceService $invoiceService,
-        ParentService $parentService,
-        FormService $formService,
-        EntityManager $entityManager
-    )
+    public function __construct(AffiliationService $affiliationService, TranslatorInterface $translator, ProjectService $projectService, VersionService $versionService, ReportService $reportService, ContactService $contactService, OrganisationService $organisationService, InvoiceService $invoiceService, ParentService $parentService, FormService $formService, EntityManager $entityManager)
     {
         $this->affiliationService  = $affiliationService;
         $this->translator          = $translator;
         $this->projectService      = $projectService;
+        $this->versionService      = $versionService;
+        $this->reportService       = $reportService;
         $this->contactService      = $contactService;
         $this->organisationService = $organisationService;
         $this->invoiceService      = $invoiceService;
@@ -93,7 +85,6 @@ final class EditController extends AffiliationAbstractController
         $formData['communicationContactEmail'] = $affiliation->getCommunicationContactEmail();
         $formData['branch']                    = $affiliation->getBranch();
         $formData['valueChain']                = $affiliation->getValueChain();
-        $formData['marketAccess']              = $affiliation->getMarketAccess();
         if ($this->projectService->hasTasksAndAddedValue($affiliation->getProject())) {
             $formData['tasksAndAddedValue'] = $affiliation->getTasksAndAddedValue();
         }
@@ -133,19 +124,14 @@ final class EditController extends AffiliationAbstractController
 
         $form->get('contact')->injectContact($affiliation->getContact());
         $form->get('organisation')->injectOrganisation($affiliation->getOrganisation());
-        if (null !== $affiliation->getFinancial()) {
-            $form->get('financialOrganisation')->injectOrganisation($affiliation->getFinancial()->getOrganisation());
-            $form->get('financialContact')->injectContact($affiliation->getFinancial()->getContact());
-        }
 
-        //Remove the delete when an affilation is active in a version
+        //Remove the delete when an affiliation is active in a version
         if ($this->affiliationService->isActiveInVersion($affiliation)) {
             $form->remove('delete');
         }
 
 
         if ($this->getRequest()->isPost() && $form->setData($data)) {
-
             if (isset($data['delete']) && $this->affiliationService->isActiveInVersion($affiliation)) {
                 $this->affiliationService->deactivateAffiliation($affiliation);
 
@@ -168,15 +154,12 @@ final class EditController extends AffiliationAbstractController
                 );
 
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation/details',
-                    ['id' => $affiliation->getId(),]
+                    'zfcadmin/project/project/affiliation',
+                    ['id' => $affiliation->getProject()->getId(),]
                 );
-
-
             }
 
-            if (isset($data['delete']) && !$this->affiliationService->isActiveInVersion($affiliation)) {
-
+            if (isset($data['delete']) && ! $this->affiliationService->isActiveInVersion($affiliation)) {
                 $changelogMessage = sprintf(
                     $this->translator->translate('txt-affiliation-%s-has-successfully-been-deleted'),
                     $affiliation->parseBranchedName()
@@ -215,7 +198,7 @@ final class EditController extends AffiliationAbstractController
                 $contact      = $this->contactService->findContactById((int)$formData['contact']);
 
                 switch (true) {
-                    case !empty($formData['parentOrganisationLike']):
+                    case ! empty($formData['parentOrganisationLike']):
                         /** @var Organisation $parentOrganisation */
                         $parentOrganisation = $this->parentService->find(
                             Organisation::class,
@@ -224,7 +207,7 @@ final class EditController extends AffiliationAbstractController
                         $affiliation->setParentOrganisation($parentOrganisation);
                         $affiliation->setOrganisation($parentOrganisation->getOrganisation());
                         break;
-                    case !empty($formData['parentOrganisation']):
+                    case ! empty($formData['parentOrganisation']):
                         /** @var Organisation $parentOrganisation */
                         $parentOrganisation = $this->parentService->find(
                             Organisation::class,
@@ -233,7 +216,7 @@ final class EditController extends AffiliationAbstractController
                         $affiliation->setParentOrganisation($parentOrganisation);
                         $affiliation->setOrganisation($parentOrganisation->getOrganisation());
                         break;
-                    case !empty($formData['parent']):
+                    case ! empty($formData['parent']):
                         // When a parent is selected, use that to find the $parent
                         $parent             = $this->parentService->findParentById($formData['parent']);
                         $parentOrganisation = $this->parentService->findParentOrganisationInParentByOrganisation(
@@ -316,10 +299,9 @@ final class EditController extends AffiliationAbstractController
 
                 $affiliation->setValueChain($formData['valueChain']);
                 $affiliation->setMainContribution($formData['mainContribution']);
-                $affiliation->setMarketAccess($formData['marketAccess']);
 
                 $affiliation->setInvoiceMethod(null);
-                if (!empty($formData['invoiceMethod'])) {
+                if (! empty($formData['invoiceMethod'])) {
                     /** @var Method $method */
                     $method = $this->invoiceService->find(Method::class, (int)$formData['invoiceMethod']);
                     $affiliation->setInvoiceMethod($method);
@@ -563,7 +545,6 @@ final class EditController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($this->getRequest()->isPost()) {
-
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/contacts',
@@ -629,14 +610,14 @@ final class EditController extends AffiliationAbstractController
         $form->setData($data);
 
         if ($request->isPost()) {
-            if (!empty($data['cancel'])) {
+            if (! empty($data['cancel'])) {
                 return $this->redirect()->toRoute(
                     'zfcadmin/affiliation/contacts',
                     ['id' => $affiliation->getId()],
                 );
             }
 
-            if (!empty($data['delete'])) {
+            if (! empty($data['delete'])) {
                 $affiliation->removeAssociate($contact);
                 $this->affiliationService->save($affiliation);
 
@@ -720,7 +701,7 @@ final class EditController extends AffiliationAbstractController
             );
 
         if (
-        !$effortSpent
+            ! $effortSpent
             = $this->reportService->findEffortSpentByReportAndAffiliation($report, $affiliation)
         ) {
             $effortSpent = new \Project\Entity\Report\EffortSpent();
@@ -817,7 +798,7 @@ final class EditController extends AffiliationAbstractController
 
         //Create an array for the proxies, but not on submission
         $proxyContacts = [];
-        if (!$this->getRequest()->isPost()) {
+        if (! $this->getRequest()->isPost()) {
             foreach ($affiliation->getProxyContact() as $contact) {
                 $proxyContacts[] = $contact->getId();
             }
@@ -918,14 +899,14 @@ final class EditController extends AffiliationAbstractController
         if ($this->getRequest()->isPost()) {
             if (isset($data['cancel'])) {
                 return $this->redirect()->toRoute(
-                    'zfcadmin/affiliation/invoicing',
+                    'zfcadmin/affiliation/financial',
                     [
                         'id' => $affiliation->getId(),
                     ],
                 );
             }
 
-            if (isset($data['delete']) && !$affiliationFinancial->isEmpty()) {
+            if (isset($data['delete']) && ! $affiliationFinancial->isEmpty()) {
                 $this->affiliationService->delete($affiliationFinancial);
 
                 $changelogMessage = sprintf(
@@ -942,7 +923,6 @@ final class EditController extends AffiliationAbstractController
                     Changelog::SOURCE_OFFICE,
                     $changelogMessage
                 );
-
             }
 
 
@@ -985,5 +965,4 @@ final class EditController extends AffiliationAbstractController
             ]
         );
     }
-
 }

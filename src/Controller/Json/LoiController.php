@@ -14,8 +14,7 @@ namespace Affiliation\Controller\Json;
 
 use Affiliation\Controller\AffiliationAbstractController;
 use Affiliation\Entity;
-use Affiliation\Service\AffiliationService;
-use Affiliation\Service\LoiService;
+use Affiliation\Service;
 use Contact\Service\ContactService;
 use DateTime;
 use Laminas\I18n\Translator\TranslatorInterface;
@@ -27,20 +26,20 @@ use Laminas\View\Model\JsonModel;
  */
 final class LoiController extends AffiliationAbstractController
 {
-    private LoiService $loiService;
+    private Service\LoiService $loiService;
+    private Service\AffiliationService $affiliationService;
     private ContactService $contactService;
-    private AffiliationService $affiliationService;
     private TranslatorInterface $translator;
 
     public function __construct(
-        LoiService $loiService,
+        Service\LoiService $loiService,
+        Service\AffiliationService $affiliationService,
         ContactService $contactService,
-        AffiliationService $affiliationService,
         TranslatorInterface $translator
     ) {
         $this->loiService         = $loiService;
-        $this->contactService     = $contactService;
         $this->affiliationService = $affiliationService;
+        $this->contactService     = $contactService;
         $this->translator         = $translator;
     }
 

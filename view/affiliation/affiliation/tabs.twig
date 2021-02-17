@@ -27,51 +27,130 @@
     )|raw }}
 {% endif %}
 
+{% set financial =
+    {   'financial' :
+        {   'route': 'community/affiliation/financial',
+            'text' : translate("txt-invoicing-details")
+        },
+        'contract':
+        {
+            'route': 'community/affiliation/contract',
+            'text' : translate("txt-funding-contract")
+        },
+        'parent':
+        {
+            'route': 'community/affiliation/parent',
+            'text' : translate("txt-membership")
+        },
+        'payment-sheet':
+        {
+            'route': 'community/affiliation/payment-sheet',
+            'text' : translate("txt-payment-sheet")
+        },
+    } %}
 
-
-    {% set navigation =
-        {   'details' :
-            {   'route': 'community/affiliation/details',
-                'text' : translate("txt-details")
+{% if not showParentTab %}
+    {% set financial =
+        {   'financial' :
+            {   'route': 'community/affiliation/financial',
+                'text' : translate("txt-invoicing-details")
             },
-            'description':
+            'contract':
             {
-                'route': 'community/affiliation/description',
-                'text' : translate("txt-description")
+                'route': 'community/affiliation/contract',
+                'text' : translate("txt-funding-contract")
             },
-            'market-access':
+            'payment-sheet':
             {
-                'route': 'community/affiliation/market-access',
-                'text' : translate("txt-market-access")
-            },
-            'costs-and-effort':
-            {
-                'route': 'community/affiliation/costs-and-effort',
-                'text' : translate("txt-costs-and-effort")
-            },
-            'project-verions':
-            {
-                'route': 'community/affiliation/project-versions',
-                'text' : translate("txt-project-versions")
-            },
-            'financial':
-            {
-                'route': 'community/affiliation/financial',
-                'text' : translate("txt-financial")
-            },
-            'contacts':
-            {
-                'route': 'community/affiliation/contacts',
-                'text' : translate("txt-contacts")
+                'route': 'community/affiliation/payment-sheet',
+                'text' : translate("txt-payment-sheet")
             },
         } %}
+{% endif %}
 
+{% set management =
+    {
+        'contacts':
+        {
+            'route': 'community/affiliation/contacts',
+            'text' : translate("txt-contacts")
+        },
+        'reporting':
+        {
+            'route': 'community/affiliation/reporting',
+            'text' : translate("txt-reporting")
+        },
+        'achievements':
+        {
+            'route': 'community/affiliation/achievements',
+            'text' : translate("txt-achievements")
+        },
+        'questionnaires':
+        {
+            'route': 'community/affiliation/questionnaires',
+            'text' : translate("txt-questionnaires")
+        },
+    } %}
+
+
+{% set navigation =
+    {   'details' :
+        {   'route': 'community/affiliation/details',
+            'text' : translate("txt-details")
+        },
+        'description':
+        {
+            'route': 'community/affiliation/description',
+            'text' : translate("txt-description")
+        },
+        'market-access':
+        {
+            'route': 'community/affiliation/market-access',
+            'text' : translate("txt-market-access")
+        },
+        'costs-and-effort':
+        {
+            'route': 'community/affiliation/costs-and-effort',
+            'text' : translate("txt-costs-and-effort")
+        },
+        'project-versions':
+        {
+            'route': 'community/affiliation/project-versions',
+            'text' : translate("txt-project-versions")
+        },
+        'financial':
+        {
+            'route': 'community/affiliation/financial',
+            'text' : translate("txt-financial"),
+            'pages': financial
+        },
+        'management':
+        {
+            'route': 'community/affiliation/contacts',
+            'text' : translate("txt-management"),
+            'pages': management
+        },
+    } %}
 
 <ul class="nav nav-tabs pt-3" role="tablist">
     {% for key, params in navigation %}
-        <li class="nav-item"><a href="{{ url(params.route,{'id':affiliation.id}) }}"
-                                aria-controls="{{ key }}"
-                                role="tab"
-                                class="nav-link {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a></li>
+        {% if not params.pages %}
+            <li class="nav-item"><a href="{{ url(params.route,{'id':affiliation.id}) }}" aria-controls="{{ key }}"
+                                    role="tab"
+                                    class="nav-link {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a></li>
+        {% endif %}
+        {% if params.pages %}
+            <li class="nav-item dropdown">
+                <a href="{{ url(params.route,{'id':affiliation.id}) }}" aria-controls="{{ key }}" aria-expanded="false"
+                   aria-haspopup="true" role="button" data-toggle="dropdown"
+                   class="nav-link dropdown-toggle {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a>
+                <ul class="dropdown-menu">
+                    {% for key, params in params.pages %}
+                        <li><a href="{{ url(params.route,{'id':affiliation.id}) }}" aria-controls="{{ key }}"
+                               class="dropdown-item">{{ params.text|raw }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endif %}
     {% endfor %}
 </ul>

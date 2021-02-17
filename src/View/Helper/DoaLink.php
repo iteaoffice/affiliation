@@ -45,7 +45,7 @@ final class DoaLink extends AbstractLink
 
             $showOptions['name'] = $doa->parseFileName();
 
-            if (! $doa->getObject()->isEmpty()) {
+            if ($doa->hasObject()) {
                 $routeParams['ext'] = $doa->getContentType()->getExtension();
             }
         }

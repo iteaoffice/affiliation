@@ -30,18 +30,17 @@ final class LoiLink extends AbstractLink
         $action = 'view',
         $show = 'name',
         Affiliation $affiliation = null
-    ): string
-    {
+    ): string {
         $loi ??= (new Loi())->setAffiliation($affiliation);
 
-        if (!$this->hasAccess($loi, LoiAssertion::class, $action)) {
+        if (! $this->hasAccess($loi, LoiAssertion::class, $action)) {
             return '';
         }
 
         $routeParams = [];
         $showOptions = [];
 
-        if (!$loi->isEmpty()) {
+        if (! $loi->isEmpty()) {
             $routeParams['id']   = $loi->getId();
             $showOptions['name'] = $loi->parseFileName();
         }

@@ -18,6 +18,7 @@ use Contact\Service\ContactService;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Form\Element\EntitySelect;
 use DragonBe\Vies\Vies;
+use DragonBe\Vies\ViesException;
 use General\Entity\Country;
 use Laminas\Filter\StringTrim;
 use Laminas\Form\Element\Email;
@@ -31,7 +32,6 @@ use Laminas\InputFilter\InputFilterProviderInterface;
 use Laminas\Validator\Callback;
 use Laminas\Validator\NotEmpty;
 use Organisation\Entity\Financial as FinancialOrganisation;
-use Organisation\Entity\Organisation;
 
 use function asort;
 
@@ -52,7 +52,6 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
         $this->setAttribute('method', 'post');
         $this->setAttribute('action', '');
         $this->setAttribute('class', 'form-horizontal');
-
 
 
         $this->add(
@@ -96,9 +95,9 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type'       => Select::class,
-                'name'       => 'financial',
-                'options'    => [
+                'type'    => Select::class,
+                'name'    => 'contact',
+                'options' => [
                     'value_options' => $financialContactValueOptions,
                     'label'         => _('txt-affiliation-financial-contact-label'),
                     'help-block'    => _('txt-affiliation-financial-contact-help-block'),
@@ -131,10 +130,12 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
                 'type'       => Text::class,
                 'name'       => 'vat',
                 'options'    => [
-                    'label' => _('txt-vat-number'),
+                    'label'      => _('txt-eu-vat-number-label'),
+                    'help-block' => _('txt-financial-eu-vat-number-help-block'),
                 ],
                 'attributes' => [
-                    'placeholder' => _('txt-financial-vat-number-placeholder'),
+                    'placeholder' => _('txt-financial-eu-vat-number-placeholder'),
+
                 ],
             ]
         );
@@ -159,7 +160,7 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
                 'options' => [
                     'value_options' => FinancialOrganisation::getOmitContactTemplates(),
                     'label'         => _('txt-affiliation-financial-omit-contact-label'),
-                    'help-block'         => _('txt-affiliation-financial-omit-contact-help-block'),
+                    'help-block'    => _('txt-affiliation-financial-omit-contact-help-block'),
                 ],
             ]
         );
@@ -258,17 +259,23 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
             'organisation' => [
                 'required' => true,
             ],
+            'contact'      => [
+                'required' => true,
+            ],
+            'emailCC'      => [
+                'required' => false,
+            ],
             'vat'          => [
                 'required'   => false,
                 'filters'    => [
-                    StringTrim::class
+                    new StringTrim()
                 ],
                 'validators' => [
                     new NotEmpty(NotEmpty::NULL),
                     new Callback(
                         [
                             'messages' => [
-                                Callback::INVALID_VALUE => 'The VAT number (%value%) is incorrect',
+                                Callback::INVALID_VALUE => 'The VAT number (%value%) is not a correct EU VAT number. This field can be left empty for NON-EU companies',
                             ],
                             'callback' => function (string $value, array $context) {
 
@@ -279,10 +286,13 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
                                 $countryCode = $country->getCd();
                                 $vatNumber   = str_replace($countryCode, '', $value);
 
-                                //Do an in-situ vat check
-                                $vies = new Vies();
-
-                                return $vies->validateVat($countryCode, $vatNumber);
+                                try {
+                                    //Do an in-situ vat check
+                                    $vies = new Vies();
+                                    return $vies->validateVat($countryCode, $vatNumber);
+                                } catch (ViesException $e) {
+                                    return false;
+                                }
                             },
                         ]
                     ),

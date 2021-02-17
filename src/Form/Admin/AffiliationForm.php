@@ -232,8 +232,7 @@ final class AffiliationForm extends Form implements InputFilterProviderInterface
                     'help-block' => _('txt-main-contribution-for-the-project-inline-help'),
                 ],
                 'attributes' => [
-                    'label'       => _('txt-tasks-and-added-value-label'),
-                    'placeholder' => _('txt-tasks-and-added-value-help-placeholder'),
+                    'placeholder' => _('txt-main-contribution-for-the-project-placeholder'),
                 ],
             ]
         );

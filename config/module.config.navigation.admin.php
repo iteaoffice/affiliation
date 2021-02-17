@@ -10,7 +10,6 @@
 
 namespace Affiliation;
 
-
 return [
     'navigation' => [
         'admin' => [
@@ -128,6 +127,36 @@ return [
                                                                     ],
                                                                 ],
                                                             ],
+                                                            'contract' => [
+                                                                'label'   => _('txt-contract'),
+                                                                'route'   => 'zfcadmin/affiliation/contract',
+                                                                'visible' => false,
+                                                                'params'  => [
+                                                                    'entities' => [
+                                                                        'id' => Entity\Affiliation::class,
+                                                                    ],
+                                                                ],
+                                                            ],
+                                                            'parent'   => [
+                                                                'label'   => _('txt-membership'),
+                                                                'route'   => 'zfcadmin/affiliation/parent',
+                                                                'visible' => false,
+                                                                'params'  => [
+                                                                    'entities' => [
+                                                                        'id' => Entity\Affiliation::class,
+                                                                    ],
+                                                                ],
+                                                            ],
+                                                            'payment-sheet'       => [
+                                                                'label'   => _('txt-affiliation-payment-sheet'),
+                                                                'route'   => 'zfcadmin/affiliation/payment-sheet',
+                                                                'visible' => false,
+                                                                'params'  => [
+                                                                    'entities' => [
+                                                                        'id' => Entity\Affiliation::class,
+                                                                    ],
+                                                                ],
+                                                            ],
                                                         ]
                                                     ],
                                                     'contacts'         => [
@@ -171,6 +200,27 @@ return [
                                                             ],
                                                         ]
                                                     ],
+                                                    'reporting' => [
+                                                        'label'   => _('txt-reports-on-project-progress'),
+                                                        'route'   => 'zfcadmin/affiliation/reporting',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities' => [
+                                                                'id' => Entity\Affiliation::class,
+                                                            ],
+                                                        ],
+                                                    ],
+
+                                                    'achievements' => [
+                                                        'label'   => _('txt-achievements'),
+                                                        'route'   => 'zfcadmin/affiliation/achievements',
+                                                        'visible' => false,
+                                                        'params'  => [
+                                                            'entities' => [
+                                                                'id' => Entity\Affiliation::class,
+                                                            ],
+                                                        ],
+                                                    ],
 
                                                     'view-doa' => [
                                                         'label'   => _('txt-nav-view-doa'),
@@ -206,7 +256,7 @@ return [
                                                         'visible' => false,
                                                         'params'  => [
                                                             'entities'   => [
-                                                                'id' => Loi::class,
+                                                                'id' => Entity\Loi::class,
                                                             ],
                                                             'invokables' => [
                                                                 Navigation\Invokable\LoiLabel::class,

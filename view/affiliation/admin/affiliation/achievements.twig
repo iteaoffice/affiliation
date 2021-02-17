@@ -2,7 +2,6 @@
 
 <h2>{{ translate("txt-achievements") }}</h2>
 
-<h2>{{ translate("txt-achievement") }}</h2>
 {% if affiliation.achievement.count > 0 %}
     <table class="table table-hover table-striped table-sm">
         <thead>
@@ -24,12 +23,12 @@
         <tbody>
         {% for achievement in affiliation.achievement %}
             <tr>
-                <td><small class="text-muted">{{ loop.index }}</small></td>
+                <td><small class="text-muted">{{ achievement.id }}</small></td>
                 <td>
-                    {{ achievementLink(achievement,'view-community', 'name') }}
+                    {{ achievementLink(achievement,'view-admin', 'name') }}
                 </td>
                 <td>{{ achievement.dateCreated|string_date }} {% if latestReviewMeeting and latestReviewMeeting.dateEnd < result.dateCreated %}
-                        <span class="label label-primary">{{ translate("txt-new") }}</span>{% endif %}</td>
+                        <span class="badge badge-primary">{{ translate("txt-new") }}</span>{% endif %}</td>
                 <td>{{ translate(achievement.getStatus(true)) }}</td>
                 <td>{{ achievement.type.category }}</td>
                 <td>{{ achievement.type }}</td>
@@ -42,4 +41,5 @@
     {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()))|raw }}
 {% endif %}
 
+<strong>{{ translate("txt-community-links") }}</strong><br>
 {{ achievementLink(null, 'create', 'button', affiliation) }}

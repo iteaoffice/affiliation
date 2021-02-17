@@ -20,6 +20,7 @@ use Affiliation\Form\SubmitLoi;
 use Affiliation\Form\UploadLoi;
 use Affiliation\Service\AffiliationService;
 use Affiliation\Service\LoiService;
+use DateTime;
 use General\Service\GeneralService;
 use Laminas\Http\Response;
 use Laminas\I18n\Translator\TranslatorInterface;
@@ -28,6 +29,10 @@ use Laminas\Validator\File\MimeType;
 use Laminas\View\Model\ViewModel;
 use Project\Entity\Changelog;
 use Project\Service\ProjectService;
+
+use function count;
+use function stream_get_contents;
+use function strlen;
 
 /**
  * Class LoiController
@@ -137,7 +142,7 @@ final class LoiController extends AffiliationAbstractController
     {
         $loi = $this->loiService->findLoiById((int)$this->params('id'));
 
-        if (null === $loi || \count($loi->getObject()) === 0) {
+        if (null === $loi || ! $loi->hasObject()) {
             return $this->notFoundAction();
         }
         $data = array_merge_recursive(
@@ -158,14 +163,12 @@ final class LoiController extends AffiliationAbstractController
 
             if ($form->isValid()) {
                 $fileData = $this->params()->fromFiles();
-                /*
-                 * Remove the current entity
-                 */
-                foreach ($loi->getObject() as $object) {
-                    $this->affiliationService->delete($object);
+
+                $affiliationLoiObject = $loi->getObject();
+                if (null === $affiliationLoiObject) {
+                    $affiliationLoiObject = new Entity\LoiObject();
                 }
-                //Create a article object element
-                $affiliationLoiObject = new Entity\LoiObject();
+
                 $affiliationLoiObject->setObject(file_get_contents($fileData['file']['tmp_name']));
 
                 $fileSizeValidator = new FilesSize(PHP_INT_MAX);
@@ -173,7 +176,7 @@ final class LoiController extends AffiliationAbstractController
                 $loi->setSize($fileSizeValidator->size);
 
                 $loi->setContact($this->identity());
-                $loi->setDateSigned(new \DateTime());
+                $loi->setDateSigned(new DateTime());
 
                 $fileTypeValidator = new MimeType();
                 $fileTypeValidator->isValid($fileData['file']);
@@ -240,7 +243,7 @@ final class LoiController extends AffiliationAbstractController
                 'attachment; filename="' . $programLoi->parseFileName() . '.pdf"'
             )
             ->addHeaderLine('Content-Type: application/pdf')
-            ->addHeaderLine('Content-Length', \strlen($renderProjectLoi->getPDFData()));
+            ->addHeaderLine('Content-Length', strlen($renderProjectLoi->getPDFData()));
         $response->setContent($renderProjectLoi->getPDFData());
 
         return $response;
@@ -253,15 +256,15 @@ final class LoiController extends AffiliationAbstractController
         /** @var Response $response */
         $response = $this->getResponse();
 
-        if (null === $loi || \count($loi->getObject()) === 0) {
+        if (null === $loi || ! $loi->hasObject()) {
             return $response->setStatusCode(Response::STATUS_CODE_404);
         }
         /*
          * Due to the BLOB issue, we treat this as an array and we need to capture the first element
          */
-        $object = $loi->getObject()->first()->getObject();
+        $object = $loi->getObject()->getObject();
 
-        $response->setContent(\stream_get_contents($object));
+        $response->setContent(stream_get_contents($object));
         $response->getHeaders()
             ->addHeaderLine(
                 'Content-Disposition',

@@ -37,6 +37,39 @@ final class DoaFilter extends InputFilter
                 'required' => false,
             ],
         );
+        $inputFilter->add(
+            [
+                'name'     => 'groupName',
+                'required' => false,
+                'filters'  => [
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
+                    ['name' => 'ToNull'],
+                ],
+            ],
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'chamberOfCommerceNumber',
+                'required' => false,
+                'filters'  => [
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
+                    ['name' => 'ToNull'],
+                ],
+            ],
+        );
+        $inputFilter->add(
+            [
+                'name'     => 'chamberOfCommerceLocation',
+                'required' => false,
+                'filters'  => [
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
+                    ['name' => 'ToNull'],
+                ],
+            ],
+        );
         $this->add(
             [
                 'name'       => 'file',

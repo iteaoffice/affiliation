@@ -30,9 +30,8 @@ final class AffiliationLink extends AbstractLink
         string $show = 'organisation-branch',
         int $year = null,
         int $period = null
-    ): string
-    {
-        if (!$this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
+    ): string {
+        if (! $this->hasAccess($affiliation, AffiliationAssertion::class, $action)) {
             return $action !== 'view-community' ? '' : $affiliation->parseBranchedName();
         }
 
@@ -56,8 +55,28 @@ final class AffiliationLink extends AbstractLink
                 $linkParams = [
                     'icon'  => 'far fa-circle',
                     'route' => 'community/affiliation/details',
-                    'text'  => $showOptions[$show]
-                        ?? sprintf($this->translator->translate('txt-view-affiliation-%s'), $affiliation->parseBranchedName())
+                    'text'  => $showOptions[$show] ?? $affiliation->parseBranchedName()
+                ];
+                break;
+            case 'description':
+                $linkParams = [
+                    'icon'  => 'far fa-circle',
+                    'route' => 'community/affiliation/description',
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-description')
+                ];
+                break;
+            case 'reporting':
+                $linkParams = [
+                    'icon'  => 'far fa-file',
+                    'route' => 'community/affiliation/reporting',
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-reporting')
+                ];
+                break;
+            case 'market-access':
+                $linkParams = [
+                    'icon'  => 'far fa-circle',
+                    'route' => 'community/affiliation/market-access',
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-market-accesse')
                 ];
                 break;
             case 'technical-contact': //deprecated
@@ -66,7 +85,7 @@ final class AffiliationLink extends AbstractLink
                     'icon'  => 'far fa-user',
                     'route' => 'community/affiliation/edit/technical-contact',
                     'text'  => $showOptions[$show]
-                        ?? sprintf($this->translator->translate('txt-manage-technical-contact-link-text'))];
+                        ?? $this->translator->translate('txt-manage-technical-contact-link-text')];
                 break;
             case 'edit-community':
                 $linkParams = [
@@ -90,8 +109,7 @@ final class AffiliationLink extends AbstractLink
                 $linkParams = [
                     'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/financial',
-                    'text'  => $showOptions[$show]
-                        ?? sprintf($this->translator->translate('txt-edit-financial-affiliation-%s'), $affiliation->parseBranchedName())
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-edit-financial-information')
                 ];
                 break;
             case 'add-associate':
@@ -113,7 +131,7 @@ final class AffiliationLink extends AbstractLink
                 $linkParams = [
                     'icon'  => 'far fa-edit',
                     'route' => 'community/affiliation/edit/costs-and-effort',
-                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-edit-cost-and-effort')
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-edit-costs-and-effort')
                 ];
                 break;
             case 'edit-description':
@@ -127,8 +145,15 @@ final class AffiliationLink extends AbstractLink
                 $linkParams = [
                     'icon'  => 'far fa-circle',
                     'route' => 'zfcadmin/affiliation/details',
-                    'text'  => $showOptions[$show]
-                        ?? sprintf($this->translator->translate('txt-view-affiliation-in-admin-%s'), $affiliation->parseBranchedName())
+                    'text'  => $showOptions[$show] ?? $affiliation->parseBranchedName()
+                ];
+
+                break;
+            case 'reporting-admin':
+                $linkParams = [
+                    'icon'  => 'far fa-file',
+                    'route' => 'zfcadmin/affiliation/reporting',
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-reporting')
                 ];
 
                 break;

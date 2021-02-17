@@ -5,18 +5,23 @@
 
 <dl class="dl-horizontal">
     <dt>{{ translate("txt-organisation-name") }}</dt>
-    <dd>{{ organisationLink(organisation,'view-admin', 'name') }} ({{ translate("txt-legacy") }})</dd>
-    <dt>{{ translate("txt-organisation-country") }}</dt>
-    <dd>{{ countryLink(organisation.country,'view-admin','name') }}</dd>
+    <dd>{{ organisationLink(organisation,'view-admin', 'name') }}
+        ({{ countryLink(organisation.country,'view-admin','name') }}) ({{ translate("txt-legacy") }})
+    </dd>
     {% if affiliation.parentOrganisation %}
         <dt>{{ translate("txt-parent-name") }}</dt>
         <dd>{{ parentLink(affiliation.parentOrganisation.parent,'view', 'parent') }}
+            ({{ countryLink(affiliation.parentOrganisation.parent.organisation.country,'view-admin','name') }})
             ({{ translate(affiliation.parentOrganisation.parent.getMemberType(true)) }})
         </dd>
     {% endif %}
     {% if affiliation.parentOrganisation %}
         <dt>{{ translate("txt-parent-organisation-name") }}</dt>
-        <dd>{{ parentOrganisationLink(affiliation.parentOrganisation,'view', 'organisation') }}</dd>
+        <dd>
+            {{ parentOrganisationLink(affiliation.parentOrganisation,'view', 'organisation') }}
+            ({{ countryLink(affiliation.parentOrganisation.organisation.country,'view-admin','name') }})
+        </dd>
+
     {% endif %}
     {% if affiliation.branch %}
         <dt>{{ translate("txt-branch") }}</dt>
@@ -29,6 +34,16 @@
     <dd>{{ contactLink(affiliation.contact,'view-admin','name') }} <a
                 href="mailto:{{ affiliation.contact.email }}"><i
                     class="far fa-envelope"></i></a></dd>
+
+    {% if affiliation.proxyContact.count() > 0 %}
+        <dt>{{ translate("txt-proxy-technical-contact") }}</dt>
+        {% for contact in affiliation.proxyContact %}
+            <dd>{{ contactLink(contact,'view-admin','name') }}
+                ({{ contact.contactOrganisation.organisation|trim }})
+                <a href="mailto:{{ contact.email }}"><i class="far fa-envelope"></i></a>
+            </dd>
+        {% endfor %}
+    {% endif %}
 </dl>
 <dl class="dl-horizontal">
     <dt>{{ translate("txt-project-name") }}</dt>
@@ -83,7 +98,8 @@
     {% if affiliation.project.call.requireDoaPerProgram %}
         <dt>{{ translate("txt-program-declaration-of-acceptance") }}</dt>
         {% if affiliation.parentOrganisation %}
-            <dd>{% for doa in affiliation.parentOrganisation.parent.doa|filter(doa => doa.program.id == project.call.program.id) -%}
+            <dd>
+            {% for doa in affiliation.parentOrganisation.parent.doa|filter(doa => doa.program.id == project.call.program.id) -%}
                     {% if programDoa.dateApproved is null %}
                         {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|format(doa.dateCreated|date("d-m-Y"))|raw }}
                         {# {{ parentDoaLink(doa,'replace','icon') }} #}
@@ -117,16 +133,18 @@
         <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
         <dd>
             {% if not affiliationService.hasDoa(affiliation) %}
-                {{ doaLink(null,'submit','text', affiliation) }}
+                {{ affiliationDoaLink(null,'submit','text', affiliation) }}
             {% elseif affiliation.doa.dateApproved is null %}
                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
                 format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
-                {{ doaLink(affiliation.doa,'download','icon') }}
-                {{ doaLink(affiliation.doa,'edit-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'download','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'view-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'edit-admin','icon') }}
             {% else %}
                 {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date)|raw }}
-                {{ doaLink(affiliation.doa,'download','icon') }}
-                {{ doaLink(affiliation.doa,'edit-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'download','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'view-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'edit-admin','icon') }}
             {% endif %}
         </dd>
     {% endif %}
@@ -139,19 +157,21 @@
         <dd>{% if affiliationService.hasParentDoa(affiliation) %}{{ translate("txt-yes") }}{% else %}{{ translate("txt-no") }}{% endif %}</dd>
 
 
-        <dt>{{ translate("txt-project-declaration-of-acceptance") }}</dt>
+        <dt>{{ translate("txt-project-declaration-of-acceptance") }}d</dt>
         <dd>
             {% if not affiliationService.hasDoa(affiliation) %}
-                {{ doaLink(null,'submit','text', affiliation) }}
+                {{ affiliationDoaLink(null,'submit','text', affiliation) }}
             {% elseif affiliation.doa.dateApproved is null %}
                 {{ translate("txt-doa-received-on-%s-but-waiting-for-approval")|
                 format(affiliation.doa.getDateCreated()|date("d-m-Y"))|raw }}
-                {{ doaLink(affiliation.doa,'download','icon') }}
-                {{ doaLink(affiliation.doa,'edit-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'download','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'view-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'edit-admin','icon') }}
             {% else %}
                 {{ translate("txt-doa-received-and-approved-on-%s")|format(affiliation.doa.dateApproved|string_date)|raw }}
-                {{ doaLink(affiliation.doa,'download','icon') }}
-                {{ doaLink(affiliation.doa,'edit-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'download','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'view-admin','icon') }}
+                {{ affiliationDoaLink(affiliation.doa,'edit-admin','icon') }}
             {% endif %}
         </dd>
     {% endif %}
@@ -160,24 +180,23 @@
         <dt>{{ translate("txt-letter-of-intent") }}</dt>
         <dd>
             {% if not affiliationService.hasLoi(affiliation) %}
-                {{ loiLink(null,'submit','text', affiliation) }}
+                {{ affiliationLoiLink(null,'submit','text', affiliation) }}
             {% elseif affiliation.loi.dateApproved is null %}
                 {{ translate("txt-loi-received-on-%s-but-waiting-for-approval")|
                 format(affiliation.loi.getDateCreated()|date("d-m-Y"))|raw }}
-                {{ loiLink(affiliation.loi,'edit-admin','icon') }}
-                {% if affiliation.loi.object %}
-                    {{ loiLink(affiliation.loi,'download','icon') }}
-                {% endif %}
+                {{ affiliationLoiLink(affiliation.loi,'download','icon') }}
+                {{ affiliationLoiLink(affiliation.loi,'view-admin','icon') }}
+                {{ affiliationLoiLink(affiliation.loi,'edit-admin','icon') }}
             {% else %}
                 {{ translate("txt-loi-received-and-approved-on-%s")|format(affiliation.loi.dateApproved|string_date) }}
-                {% if affiliation.loi.object %}
-                    {{ loiLink(affiliation.loi,'download','icon') }}
-                {% endif %}
-                {{ loiLink(affiliation.loi,'edit-admin','icon') }}
+                {{ affiliationLoiLink(affiliation.loi,'download','icon') }}
+                {{ affiliationLoiLink(affiliation.loi,'view-admin','icon') }}
+                {{ affiliationLoiLink(affiliation.loi,'edit-admin','icon') }}
             {% endif %}
         </dd>
     {% endif %}
 </dl>
+
 <dl class="dl-horizontal">
 
     {% if affiliation.communicationContactName %}
