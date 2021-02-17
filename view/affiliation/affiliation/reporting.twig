@@ -53,7 +53,7 @@
                         <tr>
                             <td></td>
                             <td colspan="4"><strong>{{ translate("txt-main-results-during-reporting-period") }}
-                                    : </strong>{{ effortSpent.summary|nl2br|default(translate("txt-not-provided")) }}
+                                    : </strong>{{ effortSpent.summary|default(translate("txt-not-provided"))|nl2br }}
                             </td>
                         </tr>
                     {% endif %}
@@ -61,7 +61,7 @@
                         <tr>
                             <td></td>
                             <td colspan="4"><strong>{{ translate("txt-descrepancy-explanation") }}
-                                    : </strong>{{ effortSpent.comment }}
+                                    : </strong>{{ effortSpent.comment|nl2br }}
                             </td>
                         </tr>
                         <tr>

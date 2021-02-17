@@ -101,7 +101,7 @@ final class AffiliationAssertion extends AbstractAssertion
                     ['edit'],
                     $affiliation
                 );
-            case 'update-effort-spent':
+            case 'edit-effort-spent':
                 // Block access to an already closed report
                 $reportId = $this->getRouteMatch()->getParam('report');
                 if (null !== $reportId) {

@@ -190,7 +190,7 @@ return [
                                             'route'    => '/[:id]/affiliation.html',
                                             'defaults' => [
                                                 'action'    => 'affiliation',
-                                                'privilege' => 'edit',
+                                                'privilege' => 'edit-community',
                                             ],
                                         ],
                                     ],
@@ -199,7 +199,7 @@ return [
                                         'options' => [
                                             'route'    => '/[:id]/technical-contact.html',
                                             'defaults' => [
-                                                'action' => 'technical-contact',
+                                                'action'    => 'technical-contact',
                                             ],
                                         ],
                                     ],
@@ -226,7 +226,8 @@ return [
                                         'options' => [
                                             'route'    => '/[:id]/costs-and-effort.html',
                                             'defaults' => [
-                                                'action' => 'costs-and-effort',
+                                                'action'    => 'costs-and-effort',
+                                                'privilege' => 'edit-costs-and-effort',
                                             ],
                                         ],
                                     ],
@@ -235,7 +236,8 @@ return [
                                         'options' => [
                                             'route'    => '/[:id]/financial.html',
                                             'defaults' => [
-                                                'action' => 'financial',
+                                                'action'    => 'financial',
+                                                'privilege' => 'edit-financial',
                                             ],
                                         ],
                                     ],
@@ -244,7 +246,8 @@ return [
                                         'options' => [
                                             'route'    => '/[:id]/description.html',
                                             'defaults' => [
-                                                'action' => 'description',
+                                                'action'    => 'description',
+                                                'privilege' => 'edit-description',
                                             ],
                                         ],
                                     ],
@@ -253,7 +256,8 @@ return [
                                         'options' => [
                                             'route'    => '/[:id]/market-access.html',
                                             'defaults' => [
-                                                'action' => 'market-access',
+                                                'action'    => 'market-access',
+                                                'privilege' => 'edit-market-access',
                                             ],
                                         ],
                                     ],
@@ -262,7 +266,8 @@ return [
                                         'options' => [
                                             'route'    => '/[:id]/effort/spent/report-[:report].html',
                                             'defaults' => [
-                                                'action' => 'effort-spent',
+                                                'action'    => 'effort-spent',
+                                                'privilege' => 'edit-effort-spent',
                                             ],
                                         ],
                                     ],
