@@ -1,0 +1,122 @@
+{% do headTitle().append(translate("txt-admin")) %}
+{% do headTitle().append(translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.parseBranchedName(), affiliation.project.parseFullName())) %}
+
+<h1>{{ translate("txt-merge-affiliation-%s-in-%s")|format(affiliation.organisation, affiliation.project.parseFullName()) }}</h1>
+
+<h2>{{ translate("txt-project-information") }}</h2>
+
+{% set mainAffiliationId = affiliation.id %}
+
+<dl class="dl-horizontal">
+    <dt>{{ translate("txt-project-name") }}</dt>
+    <dd>{{ projectLink(affiliation.project,'view-admin', 'name') }}
+        {{ projectLink(affiliation.project,'view-community', 'icon') }}
+    </dd>
+    <dt>{{ translate("txt-program-call") }}</dt>
+    <dd>{{ callLink(affiliation.project.call,'view-admin','name') }}</dd>
+    <dt>{{ translate("txt-status") }}</dt>
+    <dd>{{ projectService.parseStatus(affiliation.project) }}</dd>
+    <dt>{{ translate("txt-project-leader") }}</dt>
+    <dd>{{ contactLink(affiliation.project.contact,'view-admin','name') }} <a
+                href="mailto:{{ affiliation.project.contact.email }}"><i class="far fa-envelope"></i></a>
+    </dd>
+</dl>
+
+<h2>{{ translate("txt-main-affiliation") }}</h2>
+
+{% set effortVersionTableAmount = 0 %}
+    {% for affiliationVersion in affiliation.version %}
+        {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}
+    {% endfor %}
+ {% set costVersionTableAmount = 0 %}
+    {% for affiliationVersion in affiliation.version %}
+        {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
+    {% endfor %}
+
+<form method="post" action="">
+    <table class="table table-hover table-striped table-sm">
+        <thead>
+        <tr>
+            <th colspan="2">{{ translate("txt-organisation-name") }}</th>
+            <th>{{ translate("txt-country") }}</th>
+            <th colspan="2">{{ translate("txt-draft") }}</th>
+            <th>{{ translate("txt-versions") }}</th>
+            <th colspan="2">{{ translate("txt-version") }}</th>
+            <th colspan="3">{{ translate("txt-reporting") }}</th>
+            <th>{{ translate("txt-associates") }}</th>
+            <th>{{ translate("txt-invoices") }}</th>
+        </tr>
+        <tr>
+            <td colspan="3"></td>
+            <td>{{ translate("txt-effort") }}</td>
+            <td>{{ translate("txt-cost") }}</td>
+            <td>{{ translate("txt-versions") }}</td>
+            <td>{{ translate("txt-effort") }}</td>
+            <td>{{ translate("txt-cost") }}</td>
+            <td>{{ translate("txt-effort-spent") }}</td>
+            <td>{{ translate("txt-effort-cost-change-table") }}</td>
+            <td>{{ translate("txt-achievements") }}</td>
+            <td>{{ translate("txt-associates") }}</td>
+            <td>{{ translate("txt-invoices") }}</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="table-success">
+            <td>
+                {{ translate("txt-main") }}:
+            </td>
+            <td>
+                {{ affiliationLink(affiliation,'view-admin', 'name') }}
+            </td>
+            <td>{{ countryLink(affiliation.organisation.country,'view-admin','name') }}</td>
+            <td>{{ affiliation.effort.count() }}</td>
+            <td>{{ affiliation.cost.count() }}</td>
+            <td>{{ affiliation.version.count() }}</td>
+            <td>{{ effortVersionTableAmount }}</td>
+            <td>{{ costVersionTableAmount }}</td>
+            <td>{{ affiliation.spent.count() }}</td>
+            <td>{{ affiliation.projectReportEffortSpent.count() }}</td>
+            <td>{{ affiliation.achievement.count() }}</td>
+            <td>{{ affiliation.associate.count() }}</td>
+            <td>{{ affiliation.invoice.count() }}</td>
+        </tr>
+        {% for affiliation in affiliationService.findAffiliationByProjectAndWhich(affiliation.project, constant("Affiliation\\Service\\AffiliationService::WHICH_ONLY_ACTIVE"))|filter(affiliation => affiliation.id != mainAffiliationId) -%}
+            {% set effortVersionTableAmount = 0 %}
+            {% for affiliationVersion in affiliation.version %}
+                {% set effortVersionTableAmount = effortVersionTableAmount + affiliationVersion.effortVersion.count() %}
+            {% endfor %}
+            {% set costVersionTableAmount = 0 %}
+            {% for affiliationVersion in affiliation.version %}
+                {% set costVersionTableAmount = costVersionTableAmount + affiliationVersion.costVersion.count() %}
+            {% endfor %}
+            <tr {% if merge == affiliation.id %}class="table-info"{% endif %}>
+                <td>
+                    {% if merge != affiliation.id %}
+                        <input type="radio" name="merge" value="{{ affiliation.id }}">
+                    {% else %}
+                        <input type="hidden" name="merge" value="{{ affiliation.id }}">
+                        {{ translate("txt-sub") }}:
+                    {% endif %}
+                </td>
+                <td>{{ affiliationLink(affiliation,'merge-admin', 'name') }} {{ affiliationLink(affiliation,'view-admin', 'icon') }}</td>
+                <td>{{ countryLink(affiliation.organisation.country,'view-admin','name') }}</td>
+                <td>{{ affiliation.effort.count() }}</td>
+                <td>{{ affiliation.cost.count() }}</td>
+                <td>{{ affiliation.version.count() }}</td>
+                <td>{{ effortVersionTableAmount }}</td>
+                <td>{{ costVersionTableAmount }}</td>
+                <td>{{ affiliation.spent.count() }}</td>
+                <td>{{ affiliation.projectReportEffortSpent.count() }}</td>
+                <td>{{ affiliation.achievement.count() }}</td>
+                <td>{{ affiliation.associate.count() }}</td>
+                <td>{{ affiliation.invoice.count() }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <input type="submit" name="select" class="btn btn-info" value="{{ translate("txt-select") }}">
+    {% if merge %}
+        <input type="submit" name="submit" class="btn btn-primary " value="{{ translate("txt-merge") }}">
+    {% endif %}
+</form>
