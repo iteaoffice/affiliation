@@ -130,11 +130,11 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
                 'type'       => Text::class,
                 'name'       => 'vat',
                 'options'    => [
-                    'label'      => _('txt-eu-vat-number-label'),
-                    'help-block' => _('txt-financial-eu-vat-number-help-block'),
+                    'label'      => _('txt-vat-number-label'),
+                    'help-block' => _('txt-financial-vat-number-help-block'),
                 ],
                 'attributes' => [
-                    'placeholder' => _('txt-financial-eu-vat-number-placeholder'),
+                    'placeholder' => _('txt-financial-vat-number-placeholder'),
 
                 ],
             ]

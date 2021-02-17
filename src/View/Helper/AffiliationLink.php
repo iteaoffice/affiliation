@@ -76,7 +76,7 @@ final class AffiliationLink extends AbstractLink
                 $linkParams = [
                     'icon'  => 'far fa-circle',
                     'route' => 'community/affiliation/market-access',
-                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-market-accesse')
+                    'text'  => $showOptions[$show] ?? $this->translator->translate('txt-market-access')
                 ];
                 break;
             case 'technical-contact': //deprecated
