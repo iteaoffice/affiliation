@@ -312,6 +312,7 @@ final class AffiliationController extends AffiliationAbstractController
             [
                 'affiliation'      => $affiliation,
                 'projectChecklist' => $this->projectChecklist($affiliation->getProject()),
+                'latestVersion'    => $this->projectService->getLatestApprovedProjectVersion($affiliation->getProject()),
                 'reportService'    => $this->reportService,
                 'versionService'   => $this->versionService,
                 'showParentTab'    => $this->invoiceModuleOptions->getInvoiceViaParent(),

@@ -23,7 +23,6 @@
                 {% for report in affiliation.project.report %}
 
                     {% set effortSpent = reportService.findEffortSpentByReportAndAffiliation(report, affiliation) %}
-
                     {% if latestVersion %}
                         {% set totalPlannedEffort = versionService.findTotalEffortByAffiliationAndVersionUpToReportingPeriod(
                             affiliation,
