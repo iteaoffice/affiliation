@@ -51,14 +51,14 @@ final class QuestionnaireLink extends AbstractLink
             case 'overview':
                 $linkParams = [
                     'icon'  => 'fas fa-plus',
-                    'route' => 'community/affiliation/questionnaire/overview',
+                    'route' => 'community/questionnaire/overview',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-view-questionnaire')
                 ];
                 break;
             case 'view-community':
                 $linkParams = [
                     'icon'  => 'far fa-question-circle',
-                    'route' => 'community/affiliation/questionnaire/view',
+                    'route' => 'community/questionnaire/view',
                     'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-view-answers')
                 ];
@@ -66,7 +66,7 @@ final class QuestionnaireLink extends AbstractLink
             case 'edit-community':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
-                    'route' => 'community/affiliation/questionnaire/edit',
+                    'route' => 'community/questionnaire/edit',
                     'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-update-answers')
                 ];
@@ -74,21 +74,21 @@ final class QuestionnaireLink extends AbstractLink
             case 'view-admin':
                 $linkParams = [
                     'icon'  => 'far fa-question-circle',
-                    'route' => 'zfcadmin/affiliation/questionnaire/view',
+                    'route' => 'zfcadmin/questionnaire/view',
                     'text'  => $showOptions[$show] ?? $questionnaire->getQuestionnaire()
                 ];
                 break;
             case 'copy-admin':
                 $linkParams = [
                     'icon'  => 'far fa-clone',
-                    'route' => 'zfcadmin/affiliation/questionnaire/copy',
+                    'route' => 'zfcadmin/questionnaire/copy',
                     'text'  => $showOptions[$show] ?? $this->translator->translate('txt-copy-questionnaire')
                 ];
                 break;
             case 'edit-admin':
                 $linkParams = [
                     'icon'  => 'far fa-edit',
-                    'route' => 'zfcadmin/affiliation/questionnaire/edit',
+                    'route' => 'zfcadmin/questionnaire/edit',
                     'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-edit-questionnaire')
                 ];
@@ -96,7 +96,7 @@ final class QuestionnaireLink extends AbstractLink
             case 'new-admin':
                 $linkParams = [
                     'icon'  => 'fas fa-plus',
-                    'route' => 'zfcadmin/affiliation/questionnaire/new',
+                    'route' => 'zfcadmin/questionnaire/new',
                     'text'  => $showOptions[$show]
                         ?? $this->translator->translate('txt-new-questionnaire')
                 ];

@@ -181,17 +181,17 @@ return [
                     'assertion' => Assertion\LoiAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/questionnaire/view',
+                    'route'     => 'community/questionnaire/view',
                     'roles'     => ['user'],
                     'assertion' => Assertion\QuestionnaireAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/questionnaire/edit',
+                    'route'     => 'community/questionnaire/edit',
                     'roles'     => ['user'],
                     'assertion' => Assertion\QuestionnaireAssertion::class,
                 ],
                 [
-                    'route'     => 'community/affiliation/questionnaire/overview',
+                    'route'     => 'community/questionnaire/overview',
                     'roles'     => ['user'],
                     'assertion' => Assertion\QuestionnaireAssertion::class,
                 ],
