@@ -34,7 +34,7 @@ abstract class AbstractService
 
     public function __construct(EntityManager $entityManager, SelectionContactService $selectionContactService = null)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager           = $entityManager;
         $this->selectionContactService = $selectionContactService;
     }
 
@@ -112,7 +112,7 @@ abstract class AbstractService
         $role = $this->entityManager->getRepository(Permit\Role::class)->findOneBy(
             [
                 'entity' => $permitEntity,
-                'role' => $roleName,
+                'role'   => $roleName,
             ]
         );
 

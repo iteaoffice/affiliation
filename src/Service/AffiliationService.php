@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Affiliation\Service;
 
+use Affiliation\Entity\AbstractEntity;
 use Affiliation\Entity\Affiliation;
 use Affiliation\Entity\Doa;
 use Affiliation\Entity\DoaObject;
@@ -262,6 +263,17 @@ class AffiliationService extends AbstractService
         $this->save($loiObject);
 
         return $loiObject->getLoi();
+    }
+
+    public function save(AbstractEntity $entity): AbstractEntity
+    {
+        parent::save($entity);
+
+        if ($entity instanceof Affiliation) {
+            $this->projectService->flushPermitsByEntityAndId($entity->getProject(), (int)$entity->getProject()->getId());
+        }
+
+        return $entity;
     }
 
     public function submitLoi(Contact $contact, Affiliation $affiliation): Loi
