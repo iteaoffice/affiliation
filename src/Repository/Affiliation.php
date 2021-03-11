@@ -382,7 +382,7 @@ class Affiliation extends EntityRepository
 
         if ($which === AffiliationService::WHICH_INVOICING) {
             $dateTime = \DateTime::createFromFormat('d-m-Y', '01-01-' . ($year - 4));
-            $qb->andWhere('project_entity_project.dateStart > :dateTime');
+            $qb->andWhere('program_entity_call.fppCloseDate > :dateTime');
             $qb->setParameter('dateTime', $dateTime, Types::DATETIME_MUTABLE);
         }
 
