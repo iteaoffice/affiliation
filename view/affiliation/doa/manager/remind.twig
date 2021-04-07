@@ -51,7 +51,12 @@
     <label class="col-sm-3 col-form-label">{{ translate("txt-message") }}</label>
 
     <div class="col-sm-9">
-        <p class="form-control-plaintext">{{ include(template_from_string(webInfo.content, {'contact': 'Contact Placeholder', 'project':affiliation.project,'organisation':affiliation.parseBranchedName(),'country':affiliation.organsation.country})) }}</p>
+        <p class="form-control-plaintext">{{ include(template_from_string(
+                webInfo.content,
+                webInfo.name
+            ),
+                {'contact': 'Contact Placeholder', 'project':affiliation.project,'organisation':affiliation.parseBranchedName(),'country':affiliation.organsation.country}
+            ) }}</p>
     </div>
 </div>
 

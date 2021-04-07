@@ -73,7 +73,7 @@ class Version extends AbstractEntity
      */
     private $fundingVersion;
     /**
-     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\ContractVersion", inversedBy="affiliationVersion", cascade="persist")
+     * @ORM\ManyToOne(targetEntity="Affiliation\Entity\ContractVersion", inversedBy="affiliationVersion", cascade={"persist"})
      * @ORM\JoinColumn(name="affiliation_contract_version_id", referencedColumnName="affiliation_contract_version_id", nullable=true)
      *
      * @var ContractVersion

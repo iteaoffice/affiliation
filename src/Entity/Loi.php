@@ -100,14 +100,14 @@ class Loi extends AbstractEntity
      */
     private $dateCreated;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="loi")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade={"persist"}, inversedBy="loi")
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id", nullable=false)
      *
      * @var Affiliation
      */
     private $affiliation;
     /**
-     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="loi")
+     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="loi")
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * @Annotation\Type("\Contact\Form\Element\Contact")
      * @Annotation\Attributes({"label":"txt-affiliation-loi-contact-label"})

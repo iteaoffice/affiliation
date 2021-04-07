@@ -33,7 +33,7 @@ class DoaObject extends AbstractEntity
      */
     private $object;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade="persist", inversedBy="object")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Doa", cascade={"persist"}, inversedBy="object")
      * @ORM\JoinColumn(name="doa_id", referencedColumnName="doa_id", nullable=false)
      */
     private \Affiliation\Entity\Doa $doa;

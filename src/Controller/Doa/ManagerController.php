@@ -143,7 +143,7 @@ final class ManagerController extends AffiliationAbstractController
                 ];
                 $email->setTemplateVariables($templateVariables);
 
-                $email->addDeeplink('community/affiliation/details', 'deeplink', $receiver);
+                $email->addDeeplink('community/affiliation/details', 'deeplink', $receiver, null, (string) $affiliation->getId());
                 $this->emailService->sendBuilder($email);
 
                 //Store the reminder in the database

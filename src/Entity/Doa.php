@@ -37,7 +37,7 @@ class Doa extends AbstractEntity
      */
     private $id;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade="persist", inversedBy="doa")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Affiliation", cascade={"persist"}, inversedBy="doa")
      * @ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")
      * @Annotation\Exclude()
      *
@@ -105,7 +105,7 @@ class Doa extends AbstractEntity
      */
     private $dateApproved;
     /**
-     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="affiliationDoa")
+     * @ORM\ManyToOne(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="affiliationDoa")
      * @ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id", nullable=false)
      * @Annotation\Exclude()
      *

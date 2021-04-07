@@ -8,14 +8,8 @@
  * @license     https://itea3.org/license.txt proprietary
  */
 
-use Affiliation\Acl;
-use Affiliation\Controller;
-use Affiliation\Factory;
-use Affiliation\InputFilter;
-use Affiliation\Navigation;
-use Affiliation\Options;
-use Affiliation\Service;
-use Affiliation\View;
+namespace Affiliation;
+
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Gedmo\Sluggable\SluggableListener;
 use Gedmo\Timestampable\TimestampableListener;
@@ -46,6 +40,8 @@ $config = [
     ],
     'service_manager'    => [
         'factories' => [
+            Provider\AffiliationProvider::class => ConfigAbstractFactory::class,
+
             Service\AffiliationService::class                            => ConfigAbstractFactory::class,
             Service\QuestionnaireService::class                          => ConfigAbstractFactory::class,
             Service\DoaService::class                                    => ConfigAbstractFactory::class,

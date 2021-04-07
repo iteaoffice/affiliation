@@ -134,7 +134,7 @@ class Affiliation extends AbstractEntity
      */
     private $contact;
     /**
-     * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", cascade="persist", inversedBy="proxyAffiliation", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", cascade={"persist"}, inversedBy="proxyAffiliation", orphanRemoval=true)
      * @ORM\JoinTable(name="affiliation_contact_proxy",
      *            joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
      *            inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id")}
@@ -221,7 +221,7 @@ class Affiliation extends AbstractEntity
     private $contractVersion;
     /**
      * @ORM\ManyToMany(targetEntity="Contact\Entity\Contact", inversedBy="associate", cascade={"persist"})
-     * @ORM\OrderBy=({"Lastname"="ASC"})
+     * @ORM\OrderBy({"lastName"="ASC"})
      * @ORM\JoinTable(name="associate",
      *    joinColumns={@ORM\JoinColumn(name="affiliation_id", referencedColumnName="affiliation_id")},
      *    inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="contact_id")}
@@ -286,7 +286,7 @@ class Affiliation extends AbstractEntity
     private $doa;
     /**
      * @ORM\OneToMany(targetEntity="Affiliation\Entity\Doa\Reminder", cascade={"persist","remove"}, mappedBy="affiliation")
-     * @ORM\OrderBy=({"DateCreated"="DESC"})
+     * @ORM\OrderBy({"dateCreated"="DESC"})
      *
      * @var \Affiliation\Entity\Doa\Reminder[]|Collections\ArrayCollection
      */

@@ -54,7 +54,7 @@ class ContractVersion extends AbstractEntity
      */
     private $costVersion;
     /**
-     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Version", cascade="persist", mappedBy="contractVersion")
+     * @ORM\OneToMany(targetEntity="Affiliation\Entity\Version", cascade={"persist"}, mappedBy="contractVersion")
      * @Annotation\Exclude()
      *
      * @var Version[]|ArrayCollection

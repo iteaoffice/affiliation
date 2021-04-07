@@ -14,6 +14,7 @@ namespace Affiliation;
 
 use Admin\Service\AdminService;
 use Affiliation\Service;
+use Contact\Provider\ContactProvider;
 use Contact\Service\ContactService;
 use Contact\Service\SelectionContactService;
 use Doctrine\ORM\EntityManager;
@@ -32,6 +33,10 @@ use ZfcTwig\View\TwigRenderer;
 
 return [
     ConfigAbstractFactory::class => [
+        Provider\AffiliationProvider::class                  => [
+            VersionService::class,
+            ContactProvider::class
+        ],
         // Controller plugins
         Service\AffiliationService::class                    => [
             EntityManager::class,

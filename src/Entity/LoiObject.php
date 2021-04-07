@@ -33,7 +33,7 @@ class LoiObject extends AbstractEntity
      */
     private $object;
     /**
-     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade="persist", inversedBy="object")
+     * @ORM\OneToOne(targetEntity="Affiliation\Entity\Loi", cascade={"persist"}, inversedBy="object")
      * @ORM\JoinColumn(name="loi_id", referencedColumnName="loi_id", nullable=false)
      */
     private \Affiliation\Entity\Loi $loi;
