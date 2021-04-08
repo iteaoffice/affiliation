@@ -15,10 +15,6 @@
         <dt>{{ translate("txt-address-label") }}</dt>
         <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch, affiliation.financial.organisation) }}</dd>
 
-        {% if organisation.financial.omitContact == constant("Organisation\\Entity\\Financial::NO_OMIT_CONTACT") %}
-            <dd>{{ contactService.parseAttention(affiliation.financial.contact) }} {{ affiliation.financial.contact.parseFullName() }}</dd>
-        {% endif %}
-
         {% if affiliation.organisation.hasFinancial() and not affiliation.organisation.financial.hasOmitContact %}
             <dd>{{ contactService.parseAttention(affiliation.financial.contact) }} {{ affiliation.financial.contact.parseFullName() }}</dd>
         {% endif %}
@@ -34,7 +30,8 @@
 
         <dt>{{ translate("txt-vat-number") }}</dt>
         {% if affiliation.financial.organisation.financial %}
-            <dd>{{ affiliation.financial.organisation.financial.vat }}</dd>
+
+            <dd>{{ affiliation.financial.organisation.financial.vat|default(translate("txt-no-vat-number-known")) }}</dd>
         {% else %}
             <dd>{{ translate("txt-no-finanical-organisation-for-%s")|format(affiliation.financial.organisation) }}</dd>
         {% endif %}

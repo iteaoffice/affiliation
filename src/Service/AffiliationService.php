@@ -63,6 +63,7 @@ use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
 use stdClass;
+use Throwable;
 
 use function array_pop;
 use function count;
@@ -360,10 +361,10 @@ class AffiliationService extends AbstractService
             );
 
             if (null !== $financialAddress) {
-                $formData['address'] = $financialAddress->getAddress();
-                $formData['zipCode'] = $financialAddress->getZipCode();
-                $formData['city']    = $financialAddress->getCity();
-                $formData['country'] = $financialAddress->getCountry()->getId();
+                $formData['address']        = $financialAddress->getAddress();
+                $formData['zipCode']        = $financialAddress->getZipCode();
+                $formData['city']           = $financialAddress->getCity();
+                $formData['addressCountry'] = $financialAddress->getCountry()->getId();
             }
 
             $formData['organisation']      = $this->organisationService
@@ -396,44 +397,61 @@ class AffiliationService extends AbstractService
         int $omitContact,
         string $address,
         string $zipCode,
-        string $city
+        string $city,
+        int $addressCountryId
     ): void {
         //We need to find the organisation, first by trying the VAT, then via the name and country and then just create it
         $organisation = null;
 
         //Check if an organisation with the given VAT is already found
         $organisationFinancial = $this->organisationService->findFinancialOrganisationWithVAT($vat);
+        /** @var Country $country */
+        $country = $this->countryService->find(Country::class, $countryId);
 
+
+        //We have not found a financial organisation, so we are forced to create a new one
+        if (null === $organisationFinancial) {
+            //Now we try to find the corresponding organisation
+            //try to find the organisation based on te country and name
+            if (null === $organisation) {
+                $organisation = $this->organisationService
+                    ->findOrganisationByNameCountry(
+                        $organisationName,
+                        $country
+                    );
+            }
+
+            /**
+             * If the organisation is still not found, create it
+             */
+            if (null === $organisation) {
+                $organisation = new \Organisation\Entity\Organisation();
+                $organisation->setOrganisation($organisationName);
+                $organisation->setCountry($country);
+                $organisationType = $this->organisationService->find(Type::class, Type::TYPE_UNKNOWN);
+                $organisation->setType($organisationType);
+            }
+
+            //Check if the organisation already has a financial organisation
+            $organisationFinancial = $organisation->getFinancial();
+            if (null === $organisationFinancial) {
+                $organisationFinancial = new \Organisation\Entity\Financial();
+                $organisationFinancial->setOrganisation($organisation);
+            }
+
+            //Only set the VAT when it is not empty
+            if (! empty($vat) && empty($organisationFinancial->getVat())) {
+                $organisationFinancial->setVat($vat);
+            }
+        }
 
         //If the organisation is found, it has by default an organisation
         if (null !== $organisationFinancial) {
             $organisation = $organisationFinancial->getOrganisation();
         }
 
-        /** @var Country $country */
-        $country = $this->countryService->find(Country::class, $countryId);
         /** @var Contact $contact */
         $contact = $this->contactService->findContactById($contactId);
-
-        //try to find the organisation based on te country and name
-        if (null === $organisation) {
-            $organisation = $this->organisationService
-                ->findOrganisationByNameCountry(
-                    $organisationName,
-                    $country
-                );
-        }
-
-        /**
-         * If the organisation is still not found, create it
-         */
-        if (null === $organisation) {
-            $organisation = new \Organisation\Entity\Organisation();
-            $organisation->setOrganisation($$organisationName);
-            $organisation->setCountry($country);
-            $organisationType = $this->organisationService->find(Type::class, Type::TYPE_UNKNOWN);
-            $organisation->setType($organisationType);
-        }
 
         /**
          * Update the affiliationFinancial
@@ -451,24 +469,8 @@ class AffiliationService extends AbstractService
         $affiliationFinancial->setBranch(OrganisationService::determineBranch($organisationName, $organisation->getOrganisation()));
         $this->save($affiliationFinancial);
 
-        /**
-         * Update the organisation financial
-         */
-        $organisationFinancial = $organisation->getFinancial();
-        if (null === $organisationFinancial) {
-            $organisationFinancial = new \Organisation\Entity\Financial();
-            $organisationFinancial->setOrganisation($organisation);
-        }
-
-
-        /**
-         * The presence of a VAT number triggers the creation of a financial organisation
-         */
-        $organisationFinancial->setVat(null);
-
+        //Now we do a VAT update
         if (! empty($vat)) {
-            $organisationFinancial->setVat($vat);
-
             //Do an in-situ vat check
             $vies = new Vies();
             try {
@@ -478,13 +480,12 @@ class AffiliationService extends AbstractService
                 if ($result->isValid()) {
                     //Update the financial
                     $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_VALID);
-                    $organisationFinancial->setDateVat(new \DateTime());
                 } else {
                     //Update the financial
                     $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_INVALID);
-                    $organisationFinancial->setDateVat(new \DateTime());
                 }
-            } catch (\Throwable $e) {
+                $organisationFinancial->setDateVat(new \DateTime());
+            } catch (Throwable $e) {
                 //Only update the vatStatus when not set already
                 if (null === $organisationFinancial->getVatStatus()) {
                     $organisationFinancial->setVatStatus(\Organisation\Entity\Financial::VAT_STATUS_UNCHECKED);
@@ -497,10 +498,14 @@ class AffiliationService extends AbstractService
         $organisationFinancial->setOmitContact($omitContact);
         $this->organisationService->save($organisationFinancial);
 
+
         /**
          * save the financial address
          */
         $financialAddress = $this->contactService->getFinancialAddress($contact);
+
+        /** @var Country $addressCountry */
+        $addressCountry = $this->countryService->find(Country::class, $addressCountryId);
 
         if (null === $financialAddress) {
             $financialAddress = new Address();
@@ -515,7 +520,7 @@ class AffiliationService extends AbstractService
         $financialAddress->setAddress($address);
         $financialAddress->setZipCode($zipCode);
         $financialAddress->setCity($city);
-        $financialAddress->setCountry($country);
+        $financialAddress->setCountry($addressCountry);
         $this->contactService->save($financialAddress);
     }
 

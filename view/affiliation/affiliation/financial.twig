@@ -8,7 +8,7 @@
             <dl class="dl-horizontal">
 
                 <dt>{{ translate("txt-billing-organisation") }}</dt>
-                <dd>{{ affiliation.financial.organisation }}</dd>
+                <dd>{{ organisationService.parseOrganisationWithBranch(affiliation.financial.branch, affiliation.financial.organisation) }}</dd>
                 <dt>{{ translate("txt-country") }}</dt>
                 <dd>{{ affiliation.financial.organisation.country }}</dd>
                 <dt>{{ translate("txt-financial-contact") }}</dt>

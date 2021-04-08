@@ -300,7 +300,7 @@ final class EditController extends AffiliationAbstractController
                 $this->affiliationService->saveFinancial(
                     $affiliation,
                     $formData['vat'],
-                    (int)$formData['country'],
+                    (int)$formData['registeredCountry'],
                     trim($formData['organisation']),
                     (int)$formData['contact'],
                     (int)$formData['preferredDelivery'],
@@ -308,6 +308,7 @@ final class EditController extends AffiliationAbstractController
                     (string)$formData['address'],
                     (string)$formData['zipCode'],
                     (string)$formData['city'],
+                    (int)$formData['addressCountry'],
                 );
 
                 $changelogMessage = sprintf(

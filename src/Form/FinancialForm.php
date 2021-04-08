@@ -204,7 +204,7 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
         $this->add(
             [
                 'type'       => EntitySelect::class,
-                'name'       => 'country',
+                'name'       => 'addressCountry',
                 'options'    => [
                     'target_class'   => Country::class,
                     'object_manager' => $entityManager,
@@ -265,6 +265,15 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
             'emailCC'      => [
                 'required' => false,
             ],
+            'address'      => [
+                'required' => true,
+            ],
+            'zipCode'      => [
+                'required' => true,
+            ],
+            'city'         => [
+                'required' => true,
+            ],
             'vat'          => [
                 'required'   => false,
                 'filters'    => [
@@ -281,7 +290,7 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
 
                                 //Grab the country from the context
                                 /** @var Country $country */
-                                $country = $this->entityManager->find(\General\Entity\Country::class, (int)$context['country']);
+                                $country = $this->entityManager->find(\General\Entity\Country::class, (int)$context['registeredCountry']);
 
                                 $countryCode = $country->getCd();
                                 $vatNumber   = str_replace($countryCode, '', $value);

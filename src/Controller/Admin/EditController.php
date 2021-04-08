@@ -892,7 +892,6 @@ final class EditController extends AffiliationAbstractController
         }
 
         $affiliationFinancial = $affiliation->getFinancial() ?? (new Entity\Financial())->setAffiliation($affiliation);
-
         $data = $this->getRequest()->getPost()->toArray();
         $form = $this->formService->prepare($affiliationFinancial, $data);
 
