@@ -25,6 +25,7 @@ use Invoice\Entity\Method;
 use Invoice\Service\InvoiceService;
 use Organisation\Entity\Financial;
 use Organisation\Service\OrganisationService;
+use Project\Entity\Project;
 use Project\Service\ContractService;
 use Project\Service\ProjectService;
 use Project\Service\VersionService;
@@ -84,6 +85,7 @@ final class RenderPaymentSheet extends AbstractPlugin
         int $period,
         bool $useContractData = true
     ): AffiliationPdf {
+        /** @var Project $project */
         $project = $affiliation->getProject();
         $contact = $affiliation->getContact();
         $latestVersion = $this->projectService->getLatestNotRejectedProjectVersion($project);
@@ -789,7 +791,7 @@ final class RenderPaymentSheet extends AbstractPlugin
                     0,
                     '',
                     '',
-                    $this->invoiceService->parseExchangeRateLine(null, $currency, $year),
+                    $this->invoiceService->parseExchangeRateLine(null, $currency, $year, $period),
                     0,
                     0,
                     0

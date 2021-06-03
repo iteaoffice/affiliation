@@ -166,7 +166,7 @@ return [
                                     'route'    => '/missing-parent[/f-:encodedFilter][/page-:page].html',
                                     'defaults' => [
                                         'controller' => Controller\Admin\IndexController::class,
-                                        'action'     => 'missing-parent',
+                                        'action'     => 'missing-affiliation-parent',
                                     ],
                                 ],
                             ],

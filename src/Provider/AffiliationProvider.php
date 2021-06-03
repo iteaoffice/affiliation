@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Affiliation\Provider;
 
 use Affiliation\Entity;
+use Contact\Entity\Contact;
 use Contact\Provider\ContactProvider;
 use Project\Entity\Version\Version;
 use Project\Service\VersionService;
@@ -36,14 +37,13 @@ class AffiliationProvider
     {
         $affiliationData = [];
 
-        $affiliationData['id']                 = $affiliation->getId();
-        $affiliationData['partner']            = $affiliation->parseBranchedName();
-        $affiliationData['country']            = $affiliation->getOrganisation()->getCountry()->getCd();
-        $affiliationData['partner_type_code']  = $affiliation->getOrganisation()->getType()->getStandardType();
-        $affiliationData['partner_type_label'] = $affiliation->getOrganisation()->getType()->getDescription();
-        $affiliationData['active']             = $affiliation->isActive();
-        $affiliationData['self_funded']        = $affiliation->isSelfFunded();
-
+        $affiliationData['id']           = $affiliation->getId();
+        $affiliationData['partner']      = $affiliation->parseBranchedName();
+        $affiliationData['country']      = $affiliation->getOrganisation()->getCountry()->getCd();
+        $affiliationData['partner_type'] = $affiliation->getOrganisation()->getType()->getStandardType();
+        $affiliationData['active']       = $affiliation->isActive();
+        $affiliationData['coordinator']  = $affiliation->getContact() === $affiliation->getProject()->getContact();
+        $affiliationData['self_funded']  = $affiliation->isSelfFunded();
 
         $costsPerYear  = $this->versionService->findTotalCostVersionByAffiliationAndVersionPerYear($affiliation, $version); //@todo contracts?
         $effortPerYear = $this->versionService->findTotalEffortVersionByAffiliationAndVersionPerYear($affiliation, $version);
@@ -73,6 +73,8 @@ class AffiliationProvider
         $affiliationData['costs_and_effort'] = $costsAndEffort;
 
         //Find the technical contact
+
+        /** @var Contact $technicalContact */
         $technicalContact = $affiliation->getContact();
         foreach ($affiliation->getVersion() as $affiliationVersion) {
             if ($affiliationVersion->getVersion() === $version && null !== $affiliationVersion->getContact()) {

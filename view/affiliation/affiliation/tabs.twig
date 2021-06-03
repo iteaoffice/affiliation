@@ -142,7 +142,9 @@
         {% if params.pages %}
             <li class="nav-item dropdown">
                 <a href="{{ url(params.route,{'id':affiliation.id}) }}" aria-controls="{{ key }}" aria-expanded="false"
-                   aria-haspopup="true" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" role="button"
+                   data-toggle="dropdown"
+                   data-bs-toggle="dropdown"
                    class="nav-link dropdown-toggle {% if key == tab %}active{% endif %}">{{ params.text|raw }}</a>
                 <ul class="dropdown-menu">
                     {% for key, params in params.pages %}

@@ -18,7 +18,7 @@
     <fieldset>
         <legend>{{ translate("txt-loi-sign-digital-version") }}</legend>
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <div class="offset-sm-3 col-sm-9">
                 <p>{{ translate("txt-please-read-the-text-below-before-signing-the-loi") }}</p>
                 <div style="background-color: #f8f8f8; padding: 10px;">
@@ -40,7 +40,7 @@
         </div>
 
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <div class="offset-sm-3 col-sm-9">
                 {{ formelement(form.get('approve')) }}
             </div>
@@ -52,7 +52,7 @@
     <fieldset>
         <legend>{{ translate("txt-sign-and-upload-paper-version") }}</legend>
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <label class="col-sm-3 col-form-label">{{ translate("txt-project") }}</label>
 
             <div class="col-sm-9">
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <label class="col-sm-3 col-form-label">{{ translate("txt-organisation") }}</label>
 
             <div class="col-sm-9">
@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <label class="col-sm-3 col-form-label">{{ translate("txt-download-loi") }}</label>
 
             <div class="col-sm-9">
@@ -79,7 +79,7 @@
 
         {{ ztbformelement(form.get('file')) }}
 
-        <div class="form-group row">
+        <div class="row mb-3">
             <div class="offset-sm-3 col-sm-9">
                 {{ ztbformelement(form.get('submit')) }}
                 {{ ztbformelement(form.get('cancel')) }}

@@ -10,7 +10,7 @@
 {% do form.prepare() %}
 {{ form().openTag(form)|raw }}
 
-<div class="form-group row">
+<div class="row mb-3">
     <label class="col-sm-3 col-form-label">{{ translate("txt-project") }}</label>
 
     <div class="col-sm-9">
@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<div class="form-group row">
+<div class="row mb-3">
     <label class="col-sm-3 col-form-label">{{ translate("txt-organisation") }}</label>
 
     <div class="col-sm-9">
@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<div class="form-group row">
+<div class="row mb-3">
     <label class="col-sm-3 col-form-label">{{ translate("txt-download-current-loi") }}</label>
 
     <div class="col-sm-9">
@@ -35,7 +35,7 @@
     </div>
 </div>
 
-<div class="form-group row">
+<div class="row mb-3">
     <label class="col-sm-3 col-form-label">{{ translate("txt-download-loi") }}</label>
 
     <div class="col-sm-9">
@@ -47,7 +47,7 @@
 {{ ztbformelement(form.get('file')) }}
 
 
-<div class="form-group row">
+<div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
         {{ ztbformelement(form.get('submit'))|raw }}
         {{ ztbformelement(form.get('cancel')) }}

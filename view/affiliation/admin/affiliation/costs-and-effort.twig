@@ -391,6 +391,7 @@
         let $downIcon = $('<i class="fas fa-angle-double-down text-decrease">');
 
         $editEffortElement.siblings().remove();
+        $editEffortElement.show();
         if (parseFloat($oldValue) > parseFloat($newValue)) {
             $editEffortElement.parent().prepend($downIcon);
         } else if (parseFloat($oldValue) < parseFloat($newValue)) {
@@ -421,6 +422,7 @@
         let $downIcon = $('<i class="fas fa-angle-double-down text-decrease">');
 
         $editCostElement.siblings().remove();
+        $editCostElement.show();
         if (parseFloat($oldValue) > parseFloat($newValue)) {
             $editCostElement.parent().prepend($downIcon);
         } else if (parseFloat($oldValue) < parseFloat($newValue)) {

@@ -40,8 +40,8 @@
                 <td>{{ projectService.parseStatus(affiliation.project) }}</td>
                 <td>{{ affiliationDoaLink(null, 'reminders-admin', 'text', affiliation) }}</td>
                 <td>
-                    {% if affiliation.doaReminder.last.dateCreated %}
-                        {{ affiliation.doaReminder.last.dateCreated|string_date }}
+                    {% if affiliation.doaReminder.first.dateCreated %}
+                        {{ affiliation.doaReminder.first.dateCreated|string_date }}
                     {% endif %}
                 </td>
                 <td>{{ affiliationDoaLink(null, 'remind-admin', 'text', affiliation) }}</td>
