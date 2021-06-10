@@ -43,7 +43,7 @@
     <tr class="table-success">
         <th>{{ translate("txt-costs") }} {% if useContract %}({{ translate("txt-from-contract") }}){% else %}[k&euro;]{% endif %}</th>
         {% for year in yearRange %}
-            <th class="text-right">
+            <th class="text-end">
                 {% if projectService.isOutOfBounds(project, year) %}<span
                     class="text-danger"
                     title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
@@ -52,7 +52,7 @@
                 {% endif %}
             </th>
         {% endfor %}
-        <th class="text-right">{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
+        <th class="text-end">{{ translate("txt-total") }} {% if not useContract %}[k&euro;]{% endif %}</th>
     </tr>
 
     {# Rows for the costs #}
@@ -66,7 +66,7 @@
             {% for year in yearRange %}
                 {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
 
-                <td class="text-right text-monospace">
+                <td class="text-end text-monospace">
                     {{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}
 
                     {% set contractVersion = contractService.findLatestContractVersionByAffiliation(affiliation) %}
@@ -84,7 +84,7 @@
                 </td>
             {% endfor %}
 
-            <td class="text-right text-monospace">{{ totalContractCost|currency_decimal(contractVersion.contract.currency) }}</td>
+            <td class="text-end text-monospace">{{ totalContractCost|currency_decimal(contractVersion.contract.currency) }}</td>
         {% else %}
             <td></td>
             {% for year in yearRange %}
@@ -107,7 +107,7 @@
                 </td>
             {% endfor %}
 
-            <td class="text-right text-monospace total-cost-affiliation-{{ affiliation.id }}">
+            <td class="text-end text-monospace total-cost-affiliation-{{ affiliation.id }}">
                 {{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}
             </td>
         {% endif %}
@@ -116,7 +116,7 @@
     <tr class="table-success">
         <th>{{ translate("txt-effort") }} [PY]</th>
         {% for year in yearRange %}
-            <th class="text-right">
+            <th class="text-end">
                 {% if projectService.isOutOfBounds(project, year) %}<span
                     class="text-danger"
                     title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
@@ -125,7 +125,7 @@
                 {% endif %}
             </th>
         {% endfor %}
-        <th class="text-right">{{ translate("txt-total") }}</th>
+        <th class="text-end">{{ translate("txt-total") }}</th>
     </tr>
 
 
@@ -152,7 +152,7 @@
                 </td>
             {% endfor %}
 
-            <td class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}">
+            <td class="text-end text-monospace total-effort-affiliation-{{ affiliation.id }}">
                 {{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}
             </td>
         </tr>
@@ -188,7 +188,7 @@
                     </td>
                 {% endfor %}
 
-                <td class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}-workpackage-{{ workpackage.id }}">
+                <td class="text-end text-monospace total-effort-affiliation-{{ affiliation.id }}-workpackage-{{ workpackage.id }}">
                     {{ projectService.findTotalEffortByWorkpackageAndAffiliation(workpackage, affiliation)|parse_effort }}
                 </td>
             </tr>
@@ -200,11 +200,11 @@
             {% set totalEffortByAffiliationPerYear = projectService.findTotalEffortByAffiliationPerYear(affiliation) %}
 
             {% for year in yearRange %}
-                <th class="text-right text-monospace total-effort-year-{{ year }}">
+                <th class="text-end text-monospace total-effort-year-{{ year }}">
                     {{ totalEffortByAffiliationPerYear[year]|parse_effort }}
                 </th>
             {% endfor %}
-            <th class="text-right text-monospace total-effort-affiliation-{{ affiliation.id }}">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
+            <th class="text-end text-monospace total-effort-affiliation-{{ affiliation.id }}">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
         </tr>
     {% endif %}
 

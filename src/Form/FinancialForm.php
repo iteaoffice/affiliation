@@ -83,7 +83,7 @@ final class FinancialForm extends Form implements InputFilterProviderInterface
                 $contact = $otherAffiliation->getFinancial()->getContact();
 
                 //Skip any inactive contact
-                if (!$contact->isActive()) {
+                if (! $contact->isActive()) {
                     continue;
                 }
 

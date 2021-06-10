@@ -10,8 +10,8 @@
             <th>{{ translate("txt-version") }}</th>
             <th>{{ translate("txt-status") }}</th>
             <th>{{ translate("txt-date-reviewed") }}</th>
-            <th class="text-right">{{ translate("txt-total-effort") }}</th>
-            <th class="text-right">{{ translate("txt-total-cost") }}</th>
+            <th class="text-end">{{ translate("txt-total-effort") }}</th>
+            <th class="text-end">{{ translate("txt-total-cost") }}</th>
         </tr>
         </thead>
         <tfoot>
@@ -27,8 +27,8 @@
                 <td>{{ versionLink(version,'general','description') }} <small class="text-muted">({{ version.id }})</small></td>
                 <td>{{ versionService.parseStatus(version) }}</td>
                 <td>{{ version.dateReviewed|string_date }}</td>
-                <td class="text-right">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
-                <td class="text-right">
+                <td class="text-end">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
+                <td class="text-end">
                     {% if affiliationVersion.hasContractVersion() %}
                         {{ versionService.findTotalCostVersionByAffiliationAndVersionIncludingContract(affiliationVersion.affiliation, version, true)|currency_decimal(affiliationVersion.contractVersion.version.contract.currency) }}
                         <i class="far fa-handshake"></i>
@@ -51,7 +51,7 @@
         <th colspan="2">{{ translate("txt-type") }}</th>
 
         {% for year in years %}
-            <th class="text-right">
+            <th class="text-end">
                 {% if projectService.isOutOfBounds(project, year) %}<span
                     class="text-danger"
                     title="{{ translate("txt-the-project-is-not-active-in-this-year") }}">{{ year }}</span>
@@ -60,7 +60,7 @@
                 {% endif %}
             </th>
         {% endfor %}
-        <th class="text-right">{{ translate("txt-total") }}</th>
+        <th class="text-end">{{ translate("txt-total") }}</th>
     </tr>
     </thead>
     <tfoot>
@@ -83,9 +83,9 @@
 
             {% for year in years %}
                 {% set yearTotal = versionService.findTotalEffortVersionByAffiliationAndVersionPerYear(affiliation, version)[year] %}
-                <td class="text-right">{{ yearTotal|parse_effort }}</td>
+                <td class="text-end">{{ yearTotal|parse_effort }}</td>
             {% endfor %}
-            <td class="text-right">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliation, version)|parse_effort }}</td>
+            <td class="text-end">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliation, version)|parse_effort }}</td>
         </tr>
         <tr>
 
@@ -96,7 +96,7 @@
 
                 {% set yearTotal = versionService.findTotalCostVersionByAffiliationAndVersionPerYear(affiliation, version, 'objects')[year] %}
 
-                <td class="text-right">
+                <td class="text-end">
 
                     {# find the affiliationVersion by going over the versions, #}
                     {% set affiliationVersionId = null %}
@@ -116,7 +116,7 @@
                             data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost }}</a>
                 </td>
             {% endfor %}
-            <th class="text-right cost-version-total"
+            <th class="text-end cost-version-total"
                 data-version="{{ version.id }}">{{ versionService.findTotalCostVersionByAffiliationAndVersion(affiliation, version)|parse_cost }}</th>
         </tr>
 
@@ -128,9 +128,9 @@
                 <td>{{ translate("txt-contract") }} {{ contractVersionLink(contractVersion.version,'view','icon') }}</td>
                 {% for year in years %}
                     {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion.version, affiliation) %}
-                    <td class="text-right">{{ contractVersionCost[year]|currency_decimal(contractVersion.version.contract.currency) }}</td>
+                    <td class="text-end">{{ contractVersionCost[year]|currency_decimal(contractVersion.version.contract.currency) }}</td>
                 {% endfor %}
-                <th class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion.version)|currency_decimal(contractVersion.version.contract.currency) }}</th>
+                <th class="text-end">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion.version)|currency_decimal(contractVersion.version.contract.currency) }}</th>
             </tr>
         {% endif %}
 
@@ -146,9 +146,9 @@
         {% for year in years %}
             {% set yearTotal = projectService.findTotalEffortByAffiliationPerYear(affiliation)[year] %}
 
-            <td class="text-right">{{ yearTotal|parse_effort }}</td>
+            <td class="text-end">{{ yearTotal|parse_effort }}</td>
         {% endfor %}
-        <th class="text-right">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
+        <th class="text-end">{{ projectService.findTotalEffortByAffiliation(affiliation)|parse_effort }}</th>
     </tr>
     <tr>
         <td></td>
@@ -157,7 +157,7 @@
         {% for year in years %}
             {% set yearTotal = projectService.findCostByAffiliationAndYear(affiliation, year) %}
 
-            <td class="text-right">
+            <td class="text-end">
                 <a class="text-primary cost-edit single-cost"
                    data-year="{{ year }}"
                    data-version="0"
@@ -169,7 +169,7 @@
                    data-title="{{ translate("txt-update-costs") }}">{{ yearTotal.costs|parse_cost }}</a>
             </td>
         {% endfor %}
-        <th class="text-right cost-version-total"
+        <th class="text-end cost-version-total"
             data-version="0">{{ projectService.findTotalCostByAffiliation(affiliation)|parse_cost }}</th>
     </tr>
     {% if affiliationService.useActiveContract(affiliation) %}
@@ -180,15 +180,15 @@
             <td>{{ translate("txt-contract") }} {{ contractVersionLink(contractVersion,'view','icon') }}</td>
             {% for year in years %}
                 {% set contractVersionCost = contractService.findTotalCostByAffiliationInVersionPerYear(contractVersion, affiliation) %}
-                <td class="text-right">{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
+                <td class="text-end">{{ contractVersionCost[year]|currency_decimal(contractVersion.contract.currency) }}</td>
             {% endfor %}
-            <th class="text-right">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion)|currency_decimal(contractVersion.contract.currency) }}</th>
+            <th class="text-end">{{ contractService.findTotalCostVersionByAffiliationAndVersion(affiliation, contractVersion)|currency_decimal(contractVersion.contract.currency) }}</th>
         </tr>
     {% endif %}
     <tr>
         <td></td>
         <td>{{ translate("txt-funding-national") }}</td>
-        <td class="text-right" colspan="{{ years|length + 1 }}">
+        <td class="text-end" colspan="{{ years|length + 1 }}">
             &euro; <a
                     class="text-primary funding-edit"
                     data-type="text"
@@ -202,7 +202,7 @@
     <tr>
         <td></td>
         <td>{{ translate("txt-funding-eu") }}</td>
-        <td class="text-right" colspan="{{ years|length  + 1 }}">
+        <td class="text-end" colspan="{{ years|length  + 1 }}">
             &euro; <a
                     class="text-primary funding-edit"
                     data-type="text"

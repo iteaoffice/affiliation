@@ -11,8 +11,8 @@
                     <th>{{ translate("txt-version") }}</th>
                     <th>{{ translate("txt-status") }}</th>
                     <th>{{ translate("txt-date-reviewed") }}</th>
-                    <th class="text-right">{{ translate("txt-total-effort") }}</th>
-                    <th class="text-right">{{ translate("txt-total-cost") }}</th>
+                    <th class="text-end">{{ translate("txt-total-effort") }}</th>
+                    <th class="text-end">{{ translate("txt-total-cost") }}</th>
                 </tr>
                 </thead>
                 <tfoot>
@@ -28,8 +28,8 @@
                         <td>{{ versionLink(version,'general','description') }}</td>
                         <td>{{ versionService.parseStatus(version) }}</td>
                         <td>{{ version.dateReviewed|string_date }}</td>
-                        <td class="text-right">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
-                        <td class="text-right">
+                        <td class="text-end">{{ versionService.findTotalEffortVersionByAffiliationAndVersion(affiliationVersion.affiliation, version)|parse_effort }}</td>
+                        <td class="text-end">
                             {% if affiliationVersion.hasContractVersion() %}
                                 {{ versionService.findTotalCostVersionByAffiliationAndVersionIncludingContract(affiliationVersion.affiliation, version, true)|currency_decimal(affiliationVersion.contractVersion.version.contract.currency) }}
                                 <i class="far fa-handshake"></i>

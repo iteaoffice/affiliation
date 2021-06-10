@@ -137,16 +137,16 @@
         <th>{{ translate("txt-period") }}</th>
         <th>{{ translate("txt-funding-status") }}</th>
         {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
-            <th class="text-right">{{ translate("txt-costs-local-currency") }}</th>
+            <th class="text-end">{{ translate("txt-costs-local-currency") }}</th>
             <th>{{ translate("txt-fee-percentage") }}</th>
-            <th class="text-right">{{ translate("txt-contribution") }}</th>
-            <th class="text-right">{{ translate("txt-amount-invoiced") }}</th>
+            <th class="text-end">{{ translate("txt-contribution") }}</th>
+            <th class="text-end">{{ translate("txt-amount-invoiced") }}</th>
         {% else %}
-            <th class="text-right">{{ translate("txt-costs") }}</th>
+            <th class="text-end">{{ translate("txt-costs") }}</th>
             <th>{{ translate("txt-fee-percentage") }}</th>
-            <th class="text-right">{{ translate("txt-contribution") }}</th>
+            <th class="text-end">{{ translate("txt-contribution") }}</th>
             <th>{{ translate("txt-due") }}</th>
-            <th class="text-right">{{ translate("txt-amount-due") }}</th>
+            <th class="text-end">{{ translate("txt-amount-due") }}</th>
         {% endif %}
     </tr>
     </thead>
@@ -167,23 +167,23 @@
             {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
                 {% set dueInYear = contractContributionInformation.cost[projectYear] / 100 * projectService.findProjectFeeByYear(projectYear).percentage %}
 
-                <td class="text-right">
+                <td class="text-end">
                     {{ contractContributionInformation.cost[projectYear]|currency_decimal(currency) }}
                 </td>
 
                 {% if affiliationService.isFundedInYear(affiliation, projectYear) %}
                     <td>{{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}%</td>
-                    <td class="text-right">{{ dueInYear|currency_decimal(currency) }}</td>
+                    <td class="text-end">{{ dueInYear|currency_decimal(currency) }}</td>
                     {% if projectYear <= year %}
-                        <td class="text-right">{{ affiliationService.parseAmountInvoicedInYearByAffiliation(affiliation,projectYear)|currency_decimal() }}</td>
+                        <td class="text-end">{{ affiliationService.parseAmountInvoicedInYearByAffiliation(affiliation,projectYear)|currency_decimal() }}</td>
                     {% else %}
                         <td></td>
                     {% endif %}
                 {% else %}
                     <td>{{ 0|number_format(2) }}%</td>
-                    <td class="text-right">{{ 0|currency_decimal(currency) }}</td>
+                    <td class="text-end">{{ 0|currency_decimal(currency) }}</td>
                     {% if projectYear <= year %}
-                        <td class="text-right">
+                        <td class="text-end">
                             {{ affiliationService.parseAmountInvoicedInYearByAffiliation(affiliation,projectYear)|currency_decimal() }}
                         </td>
                     {% else %}
@@ -194,17 +194,17 @@
 
             {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE") %}
                 {% set dueInYear = versionContributionInformation.cost[projectYear] / 100 * projectService.findProjectFeeByYear(projectYear).percentage %}
-                <td class="text-right">
+                <td class="text-end">
                     &euro; {{ versionContributionInformation.cost[projectYear]|number_format(0) }}
                 </td>
                 <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ projectService.findProjectFeeByYear(projectYear).percentage|number_format(2) }}{% else %}0{% endif %}
                     %
                 </td>
-                <td class="text-right">
+                <td class="text-end">
                     {% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal() }}{% else %}{{ 0|currency_decimal() }}{% endif %}
                 </td>
                 <td>{{ dueFactor|format_number(style='percent') }}</td>
-                <td class="text-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</td>
+                <td class="text-end">{{ (dueInYear * dueFactor)|currency_decimal() }}</td>
             {% endif %}
 
             {% if invoiceMethod.id is constant("\\Invoice\\Entity\\Method::METHOD_CONTRIBUTION") %}
@@ -215,7 +215,7 @@
                 <td>{% if affiliationService.isFundedInYear(affiliation, projectYear) %}{{ dueInYear|currency_decimal() }}{% else %}{{ 0|currency_decimal() }}{% endif %}</td>
 
                 <td>{{ dueFactor|format_number(style='percent') }}</td>
-                <td class="text-right">{{ (dueInYear * dueFactor)|currency_decimal() }}</td>
+                <td class="text-end">{{ (dueInYear * dueFactor)|currency_decimal() }}</td>
             {% endif %}
             {% set totalDueBasedOnProjectData = totalDueBasedOnProjectData + dueInYear * dueFactor %}
         </tr>
@@ -228,10 +228,10 @@
             <td colspan="8"></td>
         {% else %}
             <td colspan="4"></td>
-            <th colspan="2" class="text-right"
+            <th colspan="2" class="text-end"
             >{{ translate("txt-total-contribution-amount-due-upto-year-%s-period-%s")|format(year,period) }}</th>
             <th style="border-top: 2px solid black;"
-                class="text-right">{{ totalDueBasedOnProjectData|currency_decimal() }}</th>
+                class="text-end">{{ totalDueBasedOnProjectData|currency_decimal() }}</th>
         {% endif %}
     </tr>
     </tfoot>
@@ -255,7 +255,7 @@
                 <th>{{ translate("txt-date") }}</th>
                 <th>{{ translate("txt-contribution-euro") }}</th>
                 <th>{{ translate("txt-paid") }}</th>
-                <th class="text-right">{{ translate("txt-invoiced-euro") }}</th>
+                <th class="text-end">{{ translate("txt-invoiced-euro") }}</th>
             </tr>
             </thead>
             <tbody>
@@ -271,13 +271,13 @@
                     <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
                     <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
                     <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
-                    <td class="text-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                    <td class="text-end">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
                 </tr>
             {% endfor %}
             </tbody>
             <tfoot>
             <tr>
-                <th colspan="4" class="text-right">
+                <th colspan="4" class="text-end">
                     {{ translate("txt-total-contribution-invoiced-upto-year-%s-period-%s")|format(year,period) }}</th>
                 <th style="border-top: 2px solid black;">{{ contributionPaid|currency_decimal() }}</th>
                 <td colspan="2"></td>
@@ -297,7 +297,7 @@
             <tr>
                 <th>{{ translate("txt-period") }}</th>
                 <th>{{ translate("txt-information") }}</th>
-                <th class="text-right">{{ translate("txt-amount") }}</th>
+                <th class="text-end">{{ translate("txt-amount") }}</th>
                 <th></th>
             </tr>
             </thead>
@@ -306,7 +306,7 @@
                 <tr>
                     <td>{{ invoiceLine.periodOrdinal }}</td>
                     <td>{{ invoiceLine.description }}</td>
-                    <td class="text-right">{{ invoiceLine.lineTotal|currency_decimal() }}</td>
+                    <td class="text-end">{{ invoiceLine.lineTotal|currency_decimal() }}</td>
                     <td>{% if invoiceLine.lineTotal < -0.1 %}{{ translate("txt-credit") }}{% endif %}</td>
                 </tr>
             {% endfor %}
@@ -314,8 +314,8 @@
             <tfoot>
             <tr>
                 <td></td>
-                <th class="text-right">{{ translate("txt-total") }}</th>
-                <th style="border-top: 2px solid black;" class="text-right">{{ (total)|currency_decimal() }}</th>
+                <th class="text-end">{{ translate("txt-total") }}</th>
+                <th style="border-top: 2px solid black;" class="text-end">{{ (total)|currency_decimal() }}</th>
                 <th>{% if  total < -0.1 %}{{ translate("txt-credit") }}{% endif %}</th>
             </tr>
             </tfoot>
@@ -342,7 +342,7 @@
                 <th>{{ translate("txt-date") }}</th>
                 <th>{{ translate("txt-contribution-euro") }}</th>
                 <th>{{ translate("txt-paid") }}</th>
-                <th class="text-right">{{ translate("txt-invoiced-euro") }} {% if hasVat %}({{ translate("txt-including-vat") }}){% endif %}</th>
+                <th class="text-end">{{ translate("txt-invoiced-euro") }} {% if hasVat %}({{ translate("txt-including-vat") }}){% endif %}</th>
             </tr>
             </thead>
             <tbody>
@@ -358,7 +358,7 @@
                     <td>{{ affiliationInvoice.invoice.dateSent|date("d-m-Y") }}</td>
                     <td>{{ invoiceService.parseSumAmount(affiliationInvoice.invoice)|currency_decimal() }}</td>
                     <td>{% if affiliationInvoice.invoice.bookingDate %}{{ affiliationInvoice.invoice.bookingDate|date("d-m-Y") }}{% endif %}</td>
-                    <td class="text-right">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
+                    <td class="text-end">{{ invoiceService.parseTotal(affiliationInvoice.invoice)|currency_decimal() }}</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -373,7 +373,7 @@
                 {% endfor %}
                 <tr>
                     <td></td>
-                    <td colspan="2" class="text-right">{{ translate("txt-total-excl-vat") }}</td>
+                    <td colspan="2" class="text-end">{{ translate("txt-total-excl-vat") }}</td>
                     <th colspan="4">{{ affiliationInvoice.amountInvoiced|currency_decimal() }}</th>
                 </tr>
             {% endfor %}
@@ -402,19 +402,19 @@
         </thead>
         <tbody>
         <tr>
-            <td class="text-right">{{ translate("txt-total-contribution-amount-due-upto-year-%s-period-%s")|format(year,period) }}</td>
-            <td class="text-right">{{ contributionDue|currency_decimal() }}</td>
+            <td class="text-end">{{ translate("txt-total-contribution-amount-due-upto-year-%s-period-%s")|format(year,period) }}</td>
+            <td class="text-end">{{ contributionDue|currency_decimal() }}</td>
         </tr>
         <tr>
-            <td class="text-right">
+            <td class="text-end">
                 {{ translate("txt-total-contribution-invoiced-upto-year-%s-period-%s")|format(year,period) }}</td>
-            <td class="text-right">{{ contributionPaid|currency_decimal() }}</td>
+            <td class="text-end">{{ contributionPaid|currency_decimal() }}</td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
-            <th class="text-right">{{ translate("txt-correction") }}</th>
-            <th style="border-top: 2px solid black;" class="text-right">{{ balance|currency_decimal() }}</th>
+            <th class="text-end">{{ translate("txt-correction") }}</th>
+            <th style="border-top: 2px solid black;" class="text-end">{{ balance|currency_decimal() }}</th>
         </tr>
         </tfoot>
     </table>
@@ -425,7 +425,7 @@
         <tr>
             <th>{{ translate("txt-period") }}</th>
             <th>{{ translate("txt-information") }}</th>
-            <th class="text-right">{{ translate("txt-amount") }}</th>
+            <th class="text-end">{{ translate("txt-amount") }}</th>
             <th></th>
         </tr>
         </thead>
@@ -433,21 +433,21 @@
         <tr>
             <td>{{ year }}-{{ period }}</td>
             <td>{{ translate("txt-%s-contribution-for-%s")|format(affiliationService.parseContributionFactor(affiliation, year, period)|format_number(style='percent'),year) }}</td>
-            <td class="text-right">{{ contribution|currency_decimal() }}</td>
+            <td class="text-end">{{ contribution|currency_decimal() }}</td>
             <td></td>
         </tr>
         <tr>
             <td></td>
             <td>{{ translate("txt-correction") }}</td>
-            <td class="text-right">{{ balance|currency_decimal() }}</td>
+            <td class="text-end">{{ balance|currency_decimal() }}</td>
             <td>{% if balance < -0.1 %}{{ translate("txt-credit") }}{% endif %}</td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
             <td></td>
-            <th class="text-right">{{ translate("txt-total") }}</th>
-            <th style="border-top: 2px solid black;" class="text-right">{{ (total)|currency_decimal() }}</th>
+            <th class="text-end">{{ translate("txt-total") }}</th>
+            <th style="border-top: 2px solid black;" class="text-end">{{ (total)|currency_decimal() }}</th>
             <th>{% if  total < -0.1 %}{{ translate("txt-credit") }}{% endif %}</th>
         </tr>
         </tfoot>
