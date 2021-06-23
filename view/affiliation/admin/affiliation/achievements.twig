@@ -28,7 +28,7 @@
                     {{ achievementLink(achievement,'view-admin', 'name') }}
                 </td>
                 <td>{{ achievement.dateCreated|string_date }} {% if latestReviewMeeting and latestReviewMeeting.dateEnd < result.dateCreated %}
-                        <span class="badge badge-primary">{{ translate("txt-new") }}</span>{% endif %}</td>
+                        <span class="badge bg-primary">{{ translate("txt-new") }}</span>{% endif %}</td>
                 <td>{{ translate(achievement.getStatus(true)) }}</td>
                 <td>{{ achievement.type.category }}</td>
                 <td>{{ achievement.type }}</td>

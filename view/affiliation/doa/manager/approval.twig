@@ -94,7 +94,7 @@
             <tr id="doa-{{ doa.id }}">
                 <td><small class="text-muted">{{ loop.index }}</small></td>
                 <td>{{ affiliationLink(doa.affiliation,'view-admin','name') }} {% if not doa.affiliation.hasParentOrganisation %}
-                        <span class="badge badge-danger">{{ translate("txt-not-linked-to-parent") }}</span>{% endif %}
+                        <span class="badge bg-danger">{{ translate("txt-not-linked-to-parent") }}</span>{% endif %}
                 </td>
                 <td>{{ doa.affiliation.organisation.country }}</td>
                 <td>{{ projectLink(doa.affiliation.project,'view-admin','name') }}</td>
