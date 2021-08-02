@@ -151,7 +151,7 @@ class Affiliation extends EntityRepository
          * @var $projectRepository \Project\Repository\Project
          */
         $projectRepository = $this->_em->getRepository(Project::class);
-        $qb                = $projectRepository->onlyActiveProject($qb);
+        $qb                = $projectRepository->requireDoaProject($qb);
 
         /*
          * Filter on the relevant programme calls

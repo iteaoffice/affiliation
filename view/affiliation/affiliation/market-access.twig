@@ -9,7 +9,7 @@
                 <dd>{{ affiliation.marketAccess|nl2br }}</dd>
             </dl>
         {% else %}
-            {{ ztbalert().warning(translate("txt-no-market-access-found-for-%s")|format(
+            {{ lbs5alert().warning(translate("txt-no-market-access-found-for-%s")|format(
                 affiliation.parseBranchedName()
             ))|raw }}
         {% endif %}

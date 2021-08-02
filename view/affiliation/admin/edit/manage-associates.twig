@@ -57,6 +57,6 @@
         <input type="submit" class="btn btn-danger" name="delete" value="{{ translate("txt-remove-associate") }}">
         <input type="submit" class="btn btn-warning" name="cancel" value="{{ translate("txt-cancel") }}">
     {% else %}
-        {{ ztbalert().info(translate("txt-no-associates-in-this-affiliation"))|raw }}
+        {{ lbs5alert().info(translate("txt-no-associates-in-this-affiliation"))|raw }}
     {% endif %}
 </form>

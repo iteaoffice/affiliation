@@ -10,20 +10,20 @@
 </p>
 
 {% if not affiliation.isActive() %}
-    {{ ztbalert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(
+    {{ lbs5alert().danger(translate("txt-affiliation-%s-has-been-deactivated-on-%s-date"))|format(
         affiliation,
         affiliation.dateEnd|string_date
     )|raw }}
 {% endif %}
 
 {% if affiliation.isSelfFunded() %}
-    {{ ztbalert().success(translate("txt-affiliation-%s-is-self-funded"))|format(
+    {{ lbs5alert().success(translate("txt-affiliation-%s-is-self-funded"))|format(
         affiliation
     )|raw }}
 {% endif %}
 
 {% if affiliation.selfFunded is constant("Affiliation\\Entity\\Affiliation::SELF_FUNDED") and not affiliation.dateSelfFunded %}
-    {{ ztbalert().info(translate("txt-affiliation-%s-is-indicated-as-self-funded-but-not-yet-approved-by-the-office"))|format(
+    {{ lbs5alert().info(translate("txt-affiliation-%s-is-indicated-as-self-funded-but-not-yet-approved-by-the-office"))|format(
         affiliation
     )|raw }}
 {% endif %}

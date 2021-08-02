@@ -47,7 +47,7 @@
             </dl>
 
         {% else %}
-            {{ ztbalert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliation.parseBranchedName()))|raw }}
+            {{ lbs5alert().danger(translate("txt-we-have-no-financial-information-for-this-partner-%s")|format(affiliation.parseBranchedName()))|raw }}
         {% endif %}
 
         {{ affiliationLink(affiliation, 'edit-financial','button') }}

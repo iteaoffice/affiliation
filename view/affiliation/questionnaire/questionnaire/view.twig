@@ -22,7 +22,7 @@
     {% elseif not answer.questionnaireQuestion.question.required %}
         <p>({{ translate("txt-no-answer-provided") }})</p>
     {% else %}
-        {{ ztbalert().info(translate("txt-no-answer-provided"))|raw }}
+        {{ lbs5alert().info(translate("txt-no-answer-provided"))|raw }}
     {% endif %}
 {% endfor %}
 

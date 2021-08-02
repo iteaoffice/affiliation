@@ -38,7 +38,7 @@
         </tbody>
     </table>
 {% else %}
-    {{ ztbalert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()))|raw }}
+    {{ lbs5alert().info(translate("txt-no-exploitation-related-achievements-were-created-for-%s")|format(affiliation.project.parseFullName()))|raw }}
 {% endif %}
 
 <strong>{{ translate("txt-community-links") }}</strong><br>

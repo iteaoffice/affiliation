@@ -47,7 +47,7 @@
             </table>
             {% include 'application/partial/pagination-control' %}
         {% else %}
-            {{ ztbalert().info(translate("txt-affiliation-with-missing-parent-organisation"))|raw }}
+            {{ lbs5alert().info(translate("txt-affiliation-with-missing-parent-organisation"))|raw }}
         {% endif %}
     </div>
     <div class="col-md-2">

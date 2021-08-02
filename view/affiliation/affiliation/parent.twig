@@ -24,7 +24,7 @@
 
             <p>{{ translate("txt-parent-status-incorrect-contact-the-office-message") }}</p>
         {% else %}
-            {{ ztbalert().info(translate("txt-organisation-%s-in-%s-is-not-member")|format(affiliation.organisation, affiliation.organisation.country))|raw }}
+            {{ lbs5alert().info(translate("txt-organisation-%s-in-%s-is-not-member")|format(affiliation.organisation, affiliation.organisation.country))|raw }}
         {% endif %}
     </div>
     <div class="col-md-2">

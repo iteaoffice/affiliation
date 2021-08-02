@@ -34,7 +34,7 @@
         </tbody>
     </table>
 {% else %}
-    {{ ztbalert().info(translate("txt-no-missing-lois-found"))|raw }}
+    {{ lbs5alert().info(translate("txt-no-missing-lois-found"))|raw }}
 {% endif %}
 
 {% include 'application/partial/pagination-control' with {'paginator': paginator} %}

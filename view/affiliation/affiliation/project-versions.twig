@@ -42,7 +42,7 @@
                 </tbody>
             </table>
         {% else %}
-            {{ ztbalert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
+            {{ lbs5alert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
         {% endif %}
     </div>
     <div class="col-md-2">

@@ -157,7 +157,7 @@
         {% if projectService.canSubmitNextVersion(affiliation.project) %}
             <h2>{{ translate("txt-latest-unsubmitted-version") }}</h2>
 
-            {{ ztbalert().info(translate("txt-explanation-cost-and-effort-edit-in-place"))|raw }}
+            {{ lbs5alert().info(translate("txt-explanation-cost-and-effort-edit-in-place"))|raw }}
 
             <table class="table table-hover table-striped table-sm">
                 <thead>
@@ -445,9 +445,6 @@
 
         updateCost();
         updateTotalCost();
-
-        //turn to inline mode
-        $.fn.editable.defaults.mode = 'inline';
 
         $('.cost-edit').editable({
             'emptytext': 0,

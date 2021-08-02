@@ -4,9 +4,12 @@
 <h1>{{ translate("txt-unapproved-affiliation-doa") }}</h1>
 
 
+
 {% if notApprovedDigitalDoa|length > 0 %}
 
     <h2>{{ translate("txt-unapproved-affiliation-digitally-signed-doa") }}</h2>
+
+    <p>{{ translate("txt-unapproved-affiliation-digital-doa-explanation") }}</p>
 
     <label>
         {{ formelement(form.get('sendMail')) }}
@@ -19,6 +22,7 @@
             <th>{{ translate("txt-organisation") }}</th>
             <th>{{ translate("txt-country") }}</th>
             <th>{{ translate("txt-project") }}</th>
+            <th>{{ translate("txt-primary-cluster") }}</th>
             <th>{{ translate("txt-signer") }}</th>
             <th>{{ translate("txt-date-signed") }}</th>
             <th>{{ translate("txt-group-name") }}</th>
@@ -40,6 +44,7 @@
                 <td>{{ affiliationLink(doa.affiliation,'view-community','name') }}</td>
                 <td>{{ doa.affiliation.organisation.country.iso3 }}</td>
                 <td>{{ projectLink(doa.affiliation.project,'view-admin','name') }}</td>
+                <td>{% for projectCluster in doa.affiliation.project.projectCluster|filter(projectCluster => projectCluster.isPrimary) %}{{ projectCluster.cluster }}{% endfor %}</td>
                 <td>{{ contactLink(doa.contact,'view-admin') }}</td>
                 <td>{{ doa.dateSigned|date('d-m-Y') }}</td>
                 <td>{{ doa.groupName }}</td>
@@ -60,7 +65,7 @@
         </tbody>
     </table>
 {% else %}
-    {{ ztbalert().info(translate("txt-no-digitally-signed-affiliation-doa-are-waiting-for-approval"))|raw }}
+    {{ lbs5alert().info(translate("txt-no-digitally-signed-affiliation-doa-are-waiting-for-approval"))|raw }}
 {% endif %}
 
 {% if notApprovedUploadedDoa|length > 0 %}
@@ -78,6 +83,7 @@
             <th>{{ translate("txt-organisation") }}</th>
             <th>{{ translate("txt-country") }}</th>
             <th>{{ translate("txt-project") }}</th>
+            <th>{{ translate("txt-primary-cluster") }}</th>
             <th>{{ translate("txt-signer") }}</th>
             <th>{{ translate("txt-date-signed") }}</th>
             <th></th>
@@ -98,7 +104,8 @@
                 </td>
                 <td>{{ doa.affiliation.organisation.country }}</td>
                 <td>{{ projectLink(doa.affiliation.project,'view-admin','name') }}</td>
-                <td width="250">{{ contactformelement(form.get('affiliation_' ~ doa.affiliation.id).get('contact').setValue(doa.contact.id), true, true) }}</td>
+                <td>{% for projectCluster in doa.affiliation.project.projectCluster|filter(projectCluster => projectCluster.isPrimary) %}{{ projectCluster.cluster }}{% endfor %}</td>
+                <td width="250">{{ contactformelement(form.get('affiliation_' ~ doa.affiliation.id).get('contact').setValue(doa.contact.id), 'element_only') }}</td>
                 <td>{{ formElement(form.get('affiliation_' ~ doa.affiliation.id).get('dateSigned').setValue(doa.dateSigned)) }}</td>
                 <td>
                     {{ affiliationDoaLink(doa,'view-admin','icon') }} {{ affiliationDoaLink(doa,'download','icon') }} {{ affiliationDoaLink(doa,'edit-admin','icon') }}
@@ -113,7 +120,7 @@
         </tbody>
     </table>
 {% else %}
-    {{ ztbalert().info(translate("txt-no-uploaded-affiliation-doa-are-waiting-for-approval"))|raw }}
+    {{ lbs5alert().info(translate("txt-no-uploaded-affiliation-doa-are-waiting-for-approval"))|raw }}
 {% endif %}
 
 <script type="text/javascript">

@@ -1411,6 +1411,56 @@ class AffiliationService extends AbstractService
         return $hasBeenInvoicedInPast;
     }
 
+    public function findSortedAffiliationByWorkpackage(Workpackage $workpackage, string $sort, string $direction): ArrayCollection
+    {
+        /** @var Affiliation[]|ArrayCollection $affiliations */
+        $affiliations = $this->findAffiliationByProjectAndWhich($workpackage->getProject());
+
+        //create an array where we can sort on
+        $sortArray = [];
+
+
+        /** @var Affiliation $affiliation */
+        foreach ($affiliations as $affiliation) {
+            //Create a local array of the effort for this workpackage
+            $totalEffort   = 0;
+            $effortPerYear = [];
+            foreach ($affiliation->getEffort() as $effort) {
+                if ($effort->getWorkpackage() === $workpackage) {
+                    $totalEffort                                         += $effort->getEffort();
+                    $effortPerYear[$effort->getDateStart()->format('Y')] = $effort->getEffort();
+                }
+            }
+
+            switch ($sort) {
+                case 'partner':
+                    $sortArray[$affiliation->getId()] = $affiliation->parseBranchedName();
+                    break;
+                case 'total':
+                    $sortArray[$affiliation->getId()] = $totalEffort;
+                    break;
+                default:
+                    $sortArray[$affiliation->getId()] = $effortPerYear[$sort] ?? 0;
+                    break;
+            }
+        }
+
+        if ($direction === 'asc') {
+            asort($sortArray);
+        }
+        if ($direction === 'desc') {
+            arsort($sortArray);
+        }
+
+        $sortArrayValues = array_keys($sortArray);
+
+        $iterator = $affiliations->getIterator();
+        $iterator->uasort(function (Affiliation $a, Affiliation $b) use ($sortArrayValues) {
+            return ((array_search($a->getId(), $sortArrayValues, true) > array_search($b->getId(), $sortArrayValues, true)) ? 1 : -1);
+        });
+        return new ArrayCollection(iterator_to_array($iterator));
+    }
+
     public function findAffiliationByProjectAndWhich(
         Project $project,
         int $which = self::WHICH_ONLY_ACTIVE

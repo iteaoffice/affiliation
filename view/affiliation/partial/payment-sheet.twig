@@ -13,7 +13,7 @@
 </h2>
 
 {% if invoiceMethodId is constant("\\Invoice\\Entity\\Method::METHOD_PERCENTAGE_CONTRACT") %}
-    {{ ztbalert().info(translate("txt-payment-sheet-is-based-on-national-contract-data"))|raw }}
+    {{ lbs5alert().info(translate("txt-payment-sheet-is-based-on-national-contract-data"))|raw }}
 {% endif %}
 
 

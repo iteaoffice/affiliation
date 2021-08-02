@@ -31,7 +31,7 @@
 
 {% if hasWorkPackages and not project.hasWorkPackages() %}
     <br>
-    {{ ztbalert().danger(translate("txt-in-order-to-complete-the-costs-and-effort-in-this-phase-of-the-project-you-need-to-create-work-packages-first-here-%s")|format(url('community/project/project/work-packages',{'docRef':project.docRef})))|raw }}
+    {{ lbs5alert().danger(translate("txt-in-order-to-complete-the-costs-and-effort-in-this-phase-of-the-project-you-need-to-create-work-packages-first-here-%s")|format(url('community/project/project/work-packages',{'docRef':project.docRef})))|raw }}
 {% endif %}
 
 

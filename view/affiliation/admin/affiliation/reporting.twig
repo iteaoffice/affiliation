@@ -71,5 +71,5 @@
         </tbody>
     </table>
 {% else %}
-    {{ ztbalert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(affiliation.project.parseFullname()))|raw }}
+    {{ lbs5alert().info(translate("txt-no-effort-spent-has-been-provided-for-%s")|format(affiliation.project.parseFullname()))|raw }}
 {% endif %}

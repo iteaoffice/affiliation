@@ -14,7 +14,7 @@ $options = [
      */
     'doa_template'           => __DIR__ . '/../../../../styles/itea/template/pdf/doa-template.pdf',
     'loi_template'           => __DIR__ . '/../../../../styles/itea/template/pdf/nda-template.pdf',
-    'payment_sheet_template' => __DIR__ . '/../../../../styles/itea/template/pdf/blank-template-firstpage.pdf',
+    'payment_sheet_template' => __DIR__ . '/../../../../styles/itea/template/pdf/invoice-template.pdf',
 ];
 
 return [

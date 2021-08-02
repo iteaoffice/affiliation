@@ -41,7 +41,7 @@
         </tbody>
     </table>
 {% else %}
-    {{ ztbalert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
+    {{ lbs5alert().info(translate("txt-there-are-no-versions-for-project-%s")|format(affiliation.project))|raw }}
 {% endif %}
 
 <h2>{{ translate("txt-costs-and-effort-overview") }}</h2>
@@ -221,9 +221,6 @@
      * Calculate the sum per year
      */
     $(function () {
-        //turn to inline mode
-        $.fn.editable.defaults.mode = 'popup';
-
         $('.cost-edit').editable({
             'emptytext': 0,
             'success': function (response, value) {

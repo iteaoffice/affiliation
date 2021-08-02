@@ -26,7 +26,7 @@
                 </dl>
             {% endfor %}
         {% else %}
-            {{ ztbalert().info(translate("txt-there-are-no-contract-for-affiliation-%s")|format(affiliation.parseBranchedName()))|raw }}
+            {{ lbs5alert().info(translate("txt-there-are-no-contract-for-affiliation-%s")|format(affiliation.parseBranchedName()))|raw }}
         {% endif %}
     </div>
     <div class="col-md-2">
