@@ -31,15 +31,15 @@
 
 {% set doaForm = form.get('affiliation_entity_doa') %}
 
-{{ ztbformelement(doaForm.get('dateSigned')) }}
+{{ lbs5formelement(doaForm.get('dateSigned')) }}
 {{ contactformelement(doaForm.get('contact')) }}
 
-{{ ztbformelement(doaForm.get('dateApproved')) }}
+{{ lbs5formelement(doaForm.get('dateApproved')) }}
 {{ contactformelement(doaForm.get('approver')) }}
 
-{{ ztbformelement(doaForm.get('groupName')) }}
-{{ ztbformelement(doaForm.get('chamberOfCommerceNumber')) }}
-{{ ztbformelement(doaForm.get('chamberOfCommerceLocation')) }}
+{{ lbs5formelement(doaForm.get('groupName')) }}
+{{ lbs5formelement(doaForm.get('chamberOfCommerceNumber')) }}
+{{ lbs5formelement(doaForm.get('chamberOfCommerceLocation')) }}
 
 {% if doa.hasObject() %}
     <div class="row mb-3">
@@ -51,17 +51,17 @@
     </div>
 {% endif %}
 
-{{ ztbformelement(doaForm.get('file')) }}
+{{ lbs5formelement(doaForm.get('file')) }}
 
 <hr>
 
 
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
-        {{ ztbformelement(form.get('csrf')) }}
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
-        {{ ztbformelement(form.get('delete')) }}
+        {{ lbs5formelement(form.get('csrf')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('delete')) }}
     </div>
 </div>
 

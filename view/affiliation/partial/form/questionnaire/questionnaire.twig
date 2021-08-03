@@ -4,11 +4,11 @@
 
 {% set questionnaireFieldset = form.get('affiliation_entity_questionnaire_questionnaire') %}
 
-{{ ztbformelement(questionnaireFieldset.get('questionnaire')) }}
-{{ ztbformelement(questionnaireFieldset.get('description')) }}
-{{ ztbformelement(questionnaireFieldset.get('organisationType')) }}
-{{ ztbformelement(questionnaireFieldset.get('programCall')) }}
-{{ ztbformelement(questionnaireFieldset.get('phase')) }}
+{{ lbs5formelement(questionnaireFieldset.get('questionnaire')) }}
+{{ lbs5formelement(questionnaireFieldset.get('description')) }}
+{{ lbs5formelement(questionnaireFieldset.get('organisationType')) }}
+{{ lbs5formelement(questionnaireFieldset.get('programCall')) }}
+{{ lbs5formelement(questionnaireFieldset.get('phase')) }}
 
 {% if not edit %}
     <div class="row mb-3">

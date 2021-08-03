@@ -4,21 +4,21 @@
 
 {% set question = form.get('affiliation_entity_questionnaire_question') %}
 
-{{ ztbformelement(question.get('category')) }}
-{{ ztbformelement(question.get('question')) }}
-{{ ztbformelement(question.get('helpBlock')) }}
-{{ ztbformelement(question.get('placeholder')) }}
-{{ ztbformelement(question.get('inputType')) }}
-{{ ztbformelement(question.get('values')) }}
-{{ ztbformelement(question.get('required')) }}
-{{ ztbformelement(question.get('enabled')) }}
+{{ lbs5formelement(question.get('category')) }}
+{{ lbs5formelement(question.get('question')) }}
+{{ lbs5formelement(question.get('helpBlock')) }}
+{{ lbs5formelement(question.get('placeholder')) }}
+{{ lbs5formelement(question.get('inputType')) }}
+{{ lbs5formelement(question.get('values')) }}
+{{ lbs5formelement(question.get('required')) }}
+{{ lbs5formelement(question.get('enabled')) }}
 
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
         {% if form.has('delete') %}
-            {{ ztbformelement(form.get('delete')) }}
+            {{ lbs5formelement(form.get('delete')) }}
         {% endif %}
     </div>
 </div>

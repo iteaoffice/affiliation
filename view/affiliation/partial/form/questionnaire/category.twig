@@ -6,15 +6,15 @@
 
 {% set category = form.get('affiliation_entity_questionnaire_category') %}
 
-{{ ztbformelement(category.get('sequence')) }}
-{{ ztbformelement(category.get('category')) }}
+{{ lbs5formelement(category.get('sequence')) }}
+{{ lbs5formelement(category.get('category')) }}
 
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
         {% if form.has('delete') %}
-            {{ ztbformelement(form.get('delete')) }}
+            {{ lbs5formelement(form.get('delete')) }}
         {% endif %}
     </div>
 </div>

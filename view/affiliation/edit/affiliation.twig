@@ -22,24 +22,24 @@
     </div>
 </div>
 
-{{ ztbformelement(form.get('affiliation')) }}
-{{ ztbformelement(form.get('technical')) }}
-{{ ztbformelement(form.get('communicationContactName')) }}
-{{ ztbformelement(form.get('communicationContactEmail')) }}
-{{ ztbformelement(form.get('valueChain')) }}
-{{ ztbformelement(form.get('mainContribution')) }}
+{{ lbs5formelement(form.get('affiliation')) }}
+{{ lbs5formelement(form.get('technical')) }}
+{{ lbs5formelement(form.get('communicationContactName')) }}
+{{ lbs5formelement(form.get('communicationContactEmail')) }}
+{{ lbs5formelement(form.get('valueChain')) }}
+{{ lbs5formelement(form.get('mainContribution')) }}
 {% if form.has('tasksAndAddedValue') %}
-    {{ ztbformelement(form.get('tasksAndAddedValue')) }}
+    {{ lbs5formelement(form.get('tasksAndAddedValue')) }}
 {% endif %}
-{{ ztbformelement(form.get('strategicImportance')) }}
-{{ ztbformelement(form.get('selfFunded')) }}
+{{ lbs5formelement(form.get('strategicImportance')) }}
+{{ lbs5formelement(form.get('selfFunded')) }}
 
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
         {% if form.has('deactivate') %}
-            {{ ztbformelement(form.get('deactivate')) }}
+            {{ lbs5formelement(form.get('deactivate')) }}
         {% endif %}
         {% if affiliationHasCostOrEffortInDraft %}
             <button type="button" class="btn btn-danger"
@@ -48,7 +48,7 @@
                 title='{{ translate("txt-deactivation-of-partner-is-disabled-remove-cost-and-effort-in-draft-first") }}'></i>
         {% endif %}
         {% if form.has('reactivate') %}
-            {{ ztbformelement(form.get('reactivate')) }}
+            {{ lbs5formelement(form.get('reactivate')) }}
         {% endif %}
     </div>
 </div>

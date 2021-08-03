@@ -5,29 +5,29 @@
 
 <fieldset>
     <legend>{{ translate("txt-affiliation-information") }}</legend>
-    {{ ztbformelement(affiliation.get('firstName')) }}
-    {{ ztbformelement(affiliation.get('middleName')) }}
-    {{ ztbformelement(affiliation.get('lastName')) }}
-    {{ ztbformelement(affiliation.get('email')) }}
-    {{ ztbformelement(affiliation.get('gender')) }}
-    {{ ztbformelement(affiliation.get('title')) }}
+    {{ lbs5formelement(affiliation.get('firstName')) }}
+    {{ lbs5formelement(affiliation.get('middleName')) }}
+    {{ lbs5formelement(affiliation.get('lastName')) }}
+    {{ lbs5formelement(affiliation.get('email')) }}
+    {{ lbs5formelement(affiliation.get('gender')) }}
+    {{ lbs5formelement(affiliation.get('title')) }}
 </fieldset>
 
 <fieldset>
     <legend>{{ translate("txt-organisation-information") }}</legend>
     {{ organisationformelement(form.get('organisation')) }}
-    {{ ztbformelement(form.get('branch')) }}
-    {{ ztbformelement(affiliation.get('department')) }}
-    {{ ztbformelement(affiliation.get('position')) }}
+    {{ lbs5formelement(form.get('branch')) }}
+    {{ lbs5formelement(affiliation.get('department')) }}
+    {{ lbs5formelement(affiliation.get('position')) }}
 </fieldset>
 
 
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
         {% if form.has('deactivate') %}
-            {{ ztbformelement(form.get('deactivate')) }}
+            {{ lbs5formelement(form.get('deactivate')) }}
         {% endif %}
     </div>
 </div>

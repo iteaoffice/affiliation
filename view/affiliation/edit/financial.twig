@@ -25,32 +25,32 @@
 
 <fieldset>
     <legend>{{ translate("txt-organisation") }}</legend>
-    {{ ztbformelement(form.get('organisation')) }}
-    {{ ztbformelement(form.get('contact')) }}
-    {{ ztbformelement(form.get('registeredCountry')) }}
-    {{ ztbformelement(form.get('vat')) }}
+    {{ lbs5formelement(form.get('organisation')) }}
+    {{ lbs5formelement(form.get('contact')) }}
+    {{ lbs5formelement(form.get('registeredCountry')) }}
+    {{ lbs5formelement(form.get('vat')) }}
 </fieldset>
 
 <fieldset>
     <legend>{{ translate("txt-billing-address") }}</legend>
 
-    {{ ztbformelement(form.get('emailCC')) }}
-    {{ ztbformelement(form.get('omitContact')) }}
-    {{ ztbformelement(form.get('address')) }}
-    {{ ztbformelement(form.get('zipCode')) }}
-    {{ ztbformelement(form.get('city')) }}
-    {{ ztbformelement(form.get('addressCountry')) }}
+    {{ lbs5formelement(form.get('emailCC')) }}
+    {{ lbs5formelement(form.get('omitContact')) }}
+    {{ lbs5formelement(form.get('address')) }}
+    {{ lbs5formelement(form.get('zipCode')) }}
+    {{ lbs5formelement(form.get('city')) }}
+    {{ lbs5formelement(form.get('addressCountry')) }}
 </fieldset>
 
 
-{{ ztbformelement(form.get('preferredDelivery')) }}
+{{ lbs5formelement(form.get('preferredDelivery')) }}
 
 <hr>
 
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
     </div>
 </div>
 

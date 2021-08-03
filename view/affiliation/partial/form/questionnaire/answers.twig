@@ -10,13 +10,13 @@
         <h2>{{ currentCategory }}</h2>
         {% set activeCategory = currentCategory %}
     {% endif %}
-    {{ ztbformelement(fieldset.get('value')) }}
+    {{ lbs5formelement(fieldset.get('value')) }}
 {% endfor %}
 <hr>
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-3">
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
     </div>
 </div>
 

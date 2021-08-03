@@ -31,8 +31,8 @@
 
 {% set loiForm = form.get('affiliation_entity_loi') %}
 
-{{ ztbformelement(loiForm.get('dateSigned')) }}
-{{ ztbformelement(loiForm.get('dateApproved')) }}
+{{ lbs5formelement(loiForm.get('dateSigned')) }}
+{{ lbs5formelement(loiForm.get('dateApproved')) }}
 {{ contactformelement(loiForm.get('approver')) }}
 {{ contactformelement(loiForm.get('contact')) }}
 
@@ -46,14 +46,14 @@
     </div>
 {% endif %}
 
-{{ ztbformelement(loiForm.get('file')) }}
+{{ lbs5formelement(loiForm.get('file')) }}
 {{ formelement(form.get('csrf')) }}
 
 <div class="row mb-3">
     <div class="offset-sm-3 col-sm-9">
-        {{ ztbformelement(form.get('submit')) }}
-        {{ ztbformelement(form.get('cancel')) }}
-        {{ ztbformelement(form.get('delete')) }}
+        {{ lbs5formelement(form.get('submit')) }}
+        {{ lbs5formelement(form.get('cancel')) }}
+        {{ lbs5formelement(form.get('delete')) }}
     </div>
 </div>
 
