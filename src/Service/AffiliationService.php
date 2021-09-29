@@ -57,6 +57,7 @@ use Project\Entity\Funding\Funding;
 use Project\Entity\Funding\Source;
 use Project\Entity\Funding\Status;
 use Project\Entity\Project;
+use Project\Entity\Rationale;
 use Project\Entity\Version\Version;
 use Project\Entity\Workpackage\Workpackage;
 use Project\Service\ContractService;

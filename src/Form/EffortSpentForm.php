@@ -12,10 +12,12 @@ declare(strict_types=1);
 
 namespace Affiliation\Form;
 
+use Laminas\Filter\ToFloat;
 use Laminas\Form\Element\Submit;
 use Laminas\Form\Element\Text;
 use Laminas\Form\Element\Textarea;
 use Laminas\Form\Form;
+use Laminas\I18n\Validator\IsFloat;
 use Laminas\InputFilter\InputFilterProviderInterface;
 use Laminas\Validator\Callback;
 use Laminas\Validator\NotEmpty;
@@ -142,9 +144,12 @@ final class EffortSpentForm extends Form implements InputFilterProviderInterface
         return [
             'effort'  => [
                 'required'   => true,
+                'filters'    => [
+                    ['name' => ToFloat::class],
+                ],
                 'validators' => [
                     [
-                        'name' => 'IsFloat',
+                        'name' => IsFloat::class,
                     ],
                     [
                         'name'    => 'Between',

@@ -740,7 +740,7 @@ final class EditController extends AffiliationAbstractController
             }
 
             if ($form->isValid()) {
-                $effortSpent->setEffort($data['effort']);
+                $effortSpent->setEffort((float) $data['effort']);
                 $effortSpent->setComment($data['comment']);
                 $effortSpent->setSummary($data['summary']);
                 //Force the technical contact
