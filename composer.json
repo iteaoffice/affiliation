@@ -21,7 +21,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^7.4 || ^8.0",
+    "php": "^8.0",
     "laminas/laminas-mvc": "^3.2",
     "laminas/laminas-mvc-form": "^2.1",
     "laminas/laminas-cli": "^1.0",
@@ -39,7 +39,8 @@
     "iteaoffice/general": "^5.1",
     "iteaoffice/invoice": "^5.1",
     "iteaoffice/project": "^5.1",
-    "setasign/fpdi-tcpdf": "^2.2"
+    "setasign/fpdi-tcpdf": "^2.2",
+    "jetbrains/phpstorm-attributes": "dev-master"
   },
   "autoload": {
     "psr-4": {

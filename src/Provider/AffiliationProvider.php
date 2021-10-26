@@ -59,6 +59,7 @@ class AffiliationProvider
 
             $costsAndEffort[$year]['costs'] += round($costs, 2);
         }
+
         foreach ($effortPerYear as $year => $effort) {
             if (! array_key_exists($year, $costsAndEffort)) {
                 $costsAndEffort[$year] = [
