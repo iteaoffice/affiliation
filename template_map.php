@@ -1,5 +1,4 @@
 <?php
-
 return [
     'affiliation/questionnaire/questionnaire/overview' => __DIR__ . '/./view/affiliation/questionnaire/questionnaire/overview.twig',
     'affiliation/questionnaire/questionnaire/view' => __DIR__ . '/./view/affiliation/questionnaire/questionnaire/view.twig',
